@@ -1,0 +1,35 @@
+Develep is an open-source genetic programming tool that incorporates epigenetic learning.
+
+It uses a linear genome for constructing candidate equations. 
+
+Develep is built to include different evolutionary methods for system identification adapted from literature. 
+
+The options include  normal tournament selection, deterministic crowding, lexicase selection, and age-pareto fitness selection. 
+
+HOW TO RUN DEVELEP
+
+Run Develep from the command line. Here is the syntax:
+
+Develep sampleparams.txt sampledata.txt
+
+As you can see, Develep takes two arguments: a parameter file and a data file. The parameter file includes all of the run-time 
+settings for your search. The data file includes all your experimental data. See the sampleparams.txt and sampledata.txt files
+to see how formatting works.   
+
+HOW TO RUN RUNTRIALS
+
+RunTrials will run Develep for many trials. Here is the syntax:
+
+RunTrials sampletrials.txt
+
+RunTrials takes one input file. The trials file contains three columns:
+
+#trials parameterfile datafile
+
+These are the simple instructions for running Develep. 
+
+
+
+
+ 
+
