@@ -7,3 +7,6 @@
 *.opensdf
 *.vcxproj
 *.ipch
+*.vcxproj
+*.ilk
+*.vcxproj
