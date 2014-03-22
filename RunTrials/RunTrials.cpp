@@ -1,0 +1,90 @@
+// RunTrials.cpp : Run trials of Develep.
+// input is a file containing the number of trials, the parameter file for those trials, and the data for those trials. 
+// the settings are passed on to run Develep.  parameter file names and data are then passed on to Develep to run. 
+
+#include "stdafx.h"
+#include "runDevelep.h"
+using namespace std;
+
+void getTrialSetup(ifstream& fs,int&,vector<int>&,vector<string>&,vector<string>&);
+
+int main(int argc, char** argv)
+{
+	/* run multiple trials of Develep 
+	   input: trial text file
+	   first column: number of trials to run
+	   second column: paramter file for trials
+	   third column: data for trials
+	*/
+	try
+	{
+		string trialsetup(argv[1]);
+
+		int totaltrials = 0;
+		vector<int> trialset; 
+		vector<string> paramfile;
+		vector<string> datafile;
+
+		ifstream fs(trialsetup);
+		getTrialSetup(fs,totaltrials,trialset,paramfile,datafile);
+		cout << "Running Trials: \n";
+		#pragma omp parallel for schedule(dynamic)
+		for(int i=0;i<totaltrials;i++)
+		{
+			cout << to_string(static_cast<long long>(i)) + ": " + paramfile.at(i).substr(paramfile.at(i).rfind('\\')+1,paramfile.at(i).size()) + ", " + datafile.at(i).substr(datafile.at(i).rfind('\\')+1,datafile.at(i).size())  + "\n";
+			runDevelep(paramfile.at(i),datafile.at(i),1); //run develep
+		}
+	
+		char key;
+		cout << "All trials completed. Press return to exit." << endl;
+		key = getchar();
+	}
+	catch( const exception & e) 
+	{
+		cout << "Error: " << &e << endl;
+
+	}
+	return 0;
+}
+
+void getTrialSetup(ifstream& fs,int& totaltrials,vector<int>& trialset,vector<string>& paramfile,vector<string>& datafile)
+{
+	if (!fs.good()) 
+	{
+			cout << "error: can't find input file." << "\n";
+			throw;
+	}
+	
+	vector<string> paramset;
+	vector<string> dataset;
+	string s;
+	string tmps;
+	int tmpi;
+	//string trash;
+	//s.erase();
+    //s.reserve(is.rdbuf()->in_avail());
+	boost::regex re("~");
+	int n=0;
+    while(!fs.eof())
+    {		
+		getline(fs,s,'\n');
+		istringstream ss(s);
+		
+		ss >> tmpi;
+		trialset.push_back(tmpi);
+		ss >> tmps;
+		paramset.push_back(boost::regex_replace(tmps,re," "));
+		ss >> tmps;
+		dataset.push_back(boost::regex_replace(tmps,re," "));
+		n++;
+	}
+	for(unsigned int i=0;i<trialset.size();i++)
+	{
+		for (unsigned int j = 0; j<trialset[i];j++)
+		{
+			paramfile.push_back(paramset[i]);
+			datafile.push_back(dataset[i]);
+		}
+		totaltrials+=trialset[i];
+	}
+}
