@@ -1,0 +1,9 @@
+*/Debug/
+*/Release/
+*.pdb
+*.exe
+*.sdf
+*.suo
+*.opensdf
+*.vcxproj
+*.ipch
