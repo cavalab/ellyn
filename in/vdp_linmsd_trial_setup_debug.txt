@@ -1,0 +1,4 @@
+2 C:\Users\BionicBill\Documents\PhD\C++\Visual~Studio\Develep\Release\params_linmsd_p1000_g1000_eHC_off.txt C:\Users\BionicBill\Documents\PhD\C++\Visual~Studio\Develep\Release\lin_msd.txt
+2 C:\Users\BionicBill\Documents\PhD\C++\Visual~Studio\Develep\Release\params_linmsd_p1000_g1000_eHC_on.txt C:\Users\BionicBill\Documents\PhD\C++\Visual~Studio\Develep\Release\lin_msd.txt
+2 C:\Users\BionicBill\Documents\PhD\C++\Visual~Studio\Develep\Release\params_vdp_p1000_g1000_eHC_off.txt C:\Users\BionicBill\Documents\PhD\C++\Visual~Studio\Develep\Release\VDP.txt
+2 C:\Users\BionicBill\Documents\PhD\C++\Visual~Studio\Develep\Release\params_vdp_p1000_g1000_eHC_on.txt C:\Users\BionicBill\Documents\PhD\C++\Visual~Studio\Develep\Release\VDP.txt
