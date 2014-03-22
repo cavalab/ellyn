@@ -1,11 +1,19 @@
 Develep is an open-source genetic programming tool that incorporates epigenetic learning.
 It is very much under development! Or you could say, under-develeped...
 
-It uses a linear genome for constructing candidate equations. 
+The files are built in Visual Studio C++ Express 2010 with some boost library dependencies. 
 
-Develep is built to include different evolutionary methods for system identification adapted from literature. 
+ABOUT
 
-The options include  normal tournament selection, deterministic crowding, lexicase selection, and age-pareto fitness selection. 
+Develep uses a developmental, syntax-free, linear genome for constructing candidate equations. 
+
+It is built to include different evolutionary methods for system identification adapted from literature. 
+The options include  normal tournament selection, deterministic crowding, lexicase selection, and age-pareto fitness selection.
+All algorithm choices are mangaged by one parameter file. 
+
+HOW TO BUILD DEVELEP
+The project should be built in Visual Studio 2010 C++ Express, which is free from Microsoft. The boost libraries (also free) 
+should be installed. Lastly, the OpenMP files (which were removed from VS 2010) need to be added to the VS path.
 
 HOW TO RUN DEVELEP
 
