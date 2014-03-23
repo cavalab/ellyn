@@ -46,16 +46,16 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 	{
 		if ( tmppop.at(0).fitness <= pop.at(p1).fitness )
 		{
-			/*if( tmppop.at(0).fitness < pop.at(p1).fitness )
+			if( tmppop.at(0).fitness < pop.at(p1).fitness )
 				s.good_cross[omp_get_thread_num()]=s.good_cross[omp_get_thread_num()]+1;
 			else
 				s.neut_cross[omp_get_thread_num()]=s.neut_cross[omp_get_thread_num()]+1;
-*/
+
 			swap(tmppop.at(0),pop.at(p1));
 
 		}
-		/*else
-			s.bad_cross[omp_get_thread_num()]=s.bad_cross[omp_get_thread_num()]+1;*/
+		else
+			s.bad_cross[omp_get_thread_num()]=s.bad_cross[omp_get_thread_num()]+1;
 
 	}
 	else if (tmppop.size()==2)
@@ -69,27 +69,27 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 
 		if ( tmppop.at(0).fitness <= pop.at(p1).fitness )
 		{
-			/*if( tmppop.at(0).fitness < pop.at(p1).fitness )
+			if( tmppop.at(0).fitness < pop.at(p1).fitness )
 				s.good_cross[omp_get_thread_num()]=s.good_cross[omp_get_thread_num()]+1;
 			else
-				s.neut_cross[omp_get_thread_num()]=s.neut_cross[omp_get_thread_num()]+1;*/
+				s.neut_cross[omp_get_thread_num()]=s.neut_cross[omp_get_thread_num()]+1;
 
 			swap(tmppop.at(0),pop.at(p1));
 		}
-	/*	else
-			s.bad_cross[omp_get_thread_num()]=s.bad_cross[omp_get_thread_num()]+1;*/
+		else
+			s.bad_cross[omp_get_thread_num()]=s.bad_cross[omp_get_thread_num()]+1;
 
 		if ( tmppop.at(1).fitness <= pop.at(p2).fitness )
 		{
-			/*if( tmppop.at(1).fitness < pop.at(p2).fitness )
+			if( tmppop.at(1).fitness < pop.at(p2).fitness )
 				s.good_cross[omp_get_thread_num()]=s.good_cross[omp_get_thread_num()]+1;
 			else
-				s.neut_cross[omp_get_thread_num()]=s.neut_cross[omp_get_thread_num()]+1;*/
+				s.neut_cross[omp_get_thread_num()]=s.neut_cross[omp_get_thread_num()]+1;
 
 			swap(tmppop.at(1),pop.at(p2));
 		}
-		/*else
-			s.bad_cross[omp_get_thread_num()]=s.bad_cross[omp_get_thread_num()]+1;*/
+		else
+			s.bad_cross[omp_get_thread_num()]=s.bad_cross[omp_get_thread_num()]+1;
 	}
 	else
 	{

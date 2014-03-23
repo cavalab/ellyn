@@ -4,6 +4,7 @@
 
 #include "stdafx.h"
 #include "runDevelep.h"
+#include <omp.h>
 using namespace std;
 
 void getTrialSetup(ifstream& fs,int&,vector<int>&,vector<string>&,vector<string>&);

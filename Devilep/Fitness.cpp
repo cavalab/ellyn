@@ -85,27 +85,6 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 	}
 	
 	s.numevals[omp_get_thread_num()]=s.numevals[omp_get_thread_num()]+pop.size();
+	//cout << "\nFitness Time: ";
 		
 }
-
-	//for(count = 0; count<pop.size(); count++)
-	//{
-	//	d.parser.compile(pop.at(count).eqn,pop.at(count).expression);
-	// /*   if (!d.parser.compile(pop.at(count).eqn,pop.at(count).expression))
-	//    {
-	//	   printf("Error: %s\tExpression: %s\n",
-	// 			 d.parser.error().c_str(),
- //				 pop.at(count).eqn.c_str());
- // 
- //		  for (std::size_t i = 0; i < d.parser.error_count(); ++i)
-	//	  {
-	//		 error_t error = d.parser.get_error(i);
-	//		 printf("Error: %02d Position: %02d Type: [%s] Msg: %s Expr: %s\n",
-	//				static_cast<int>(i),
-	//				static_cast<int>(error.token.position),
-	//				exprtk::parser_error::to_str(error.mode).c_str(),
-	//				error.diagnostic.c_str(),
-	//				pop.at(count).eqn.c_str());
-	//	  }
-	//   }*/
-	//}

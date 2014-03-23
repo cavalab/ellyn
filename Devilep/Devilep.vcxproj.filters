@@ -51,9 +51,6 @@
     <ClInclude Include="exprtk.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="exprtk_flt.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="isnan.h">
       <Filter>Header Files</Filter>
     </ClInclude>

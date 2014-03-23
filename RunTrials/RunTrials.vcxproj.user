@@ -5,7 +5,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LocalDebuggerCommandArguments>$(SolutionDir)\in\linmsd_trial_setup_debug_NH.txt</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>$(SolutionDir)\in\lv_trials_debug_nighthawk.txt</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

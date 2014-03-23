@@ -1,5 +1,5 @@
-g					10	// number of generations
-popsize				10000	//population size
+g					100	// number of generations
+popsize				1000	//population size
 numits				1	// number of trials
 
 // Generation Settings 

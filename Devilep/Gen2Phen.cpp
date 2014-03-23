@@ -21,7 +21,7 @@ void Gen2Phen(vector<ind> &pop,params& p)
 	//int i; j;
 	//int count=0;
 
-	//#pragma omp parallel for 
+	#pragma omp parallel for 
 	for(int i=0;i<pop.size();i++)
 	{
 		pop.at(i).eqn = p.sim_nom_mod; //set equation embryo
@@ -65,6 +65,7 @@ void Gen2Phen(vector<ind> &pop,params& p)
 	//d.parser.compile(pop.at(i).eqn,pop.at(i).expression);
 	}
 
+	//cout << "\nGen2Phen time: ";
 	
 }
 void getEqn_Form(std::string& eqn,std::string& eqn_form)

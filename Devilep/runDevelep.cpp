@@ -281,7 +281,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		{
 			s.out << "Initial validation..."; 
 			float worstfit;
-			int counter=0;
+			int cnt=0;
 			//float bestfit;
 			vector<ind> tmppop;
 			// s.out << "Initialize Population..." << "\n";
@@ -291,7 +291,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 			// s.out << "Fitness..." << "\n";
 			Fitness(T.pop,p,d,s);
 			worstfit = T.worstFit();
-			while(worstfit == p.max_fit && counter<100)
+			while(worstfit == p.max_fit && cnt<100)
 			{
 				for (int j=0;j<T.pop.size(); j++)
 				{
@@ -301,14 +301,15 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 						tmppop.push_back(ind());
 					}
 				}
+				s.out << "\ntmppop size: " << tmppop.size();
 				InitPop(tmppop,p,r);
 				Gen2Phen(tmppop,p);
 				Fitness(tmppop,p,d,s);
 				T.pop.insert(T.pop.end(),tmppop.begin(),tmppop.end());
 				tmppop.clear();
 				worstfit = T.worstFit();
-				counter++;
-				if(counter==100)
+				cnt++;
+				if(cnt==100)
 					s.out << "initial population count exceeded. Starting evolution...\n";
 			}
 		}
@@ -342,6 +343,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		 		 }
 				 if (p.eHC_on) 
 				 {
+					 boost::progress_timer tm1;
 					 #pragma omp parallel for
 					for(int m=0; m<T.pop.size(); m++)
 						EpiHC(T.pop.at(m),p,r,d,s);

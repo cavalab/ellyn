@@ -83,6 +83,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\Boost\boost_1_55_0;</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj /openmp /Zm200 %(AdditionalOptions)</AdditionalOptions>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -114,6 +115,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\Boost\boost_1_55_0;</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj /openmp /Zm200 %(AdditionalOptions)</AdditionalOptions>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -147,7 +149,6 @@
     <ClInclude Include="Develep.h" />
     <ClInclude Include="evaluator.h" />
     <ClInclude Include="exprtk.hpp" />
-    <ClInclude Include="exprtk_flt.hpp" />
     <ClInclude Include="Fitness.h" />
     <ClInclude Include="Gen2Phen.h" />
     <ClInclude Include="general_fns.h" />
