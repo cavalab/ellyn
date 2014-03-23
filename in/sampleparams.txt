@@ -16,7 +16,7 @@ stoperror			0.0001	// stop condition / convergence condition
 init_validate_on	1	// initial fitness validation of starting population
 
 // Results
-resultspath			C:\Users\BionicBill\Documents\PhD\C++\Visual Studio\Develep\Results
+resultspath			D:\Develep\Results
 loud				1
 // Computer Settings
 parallel			1

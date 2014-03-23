@@ -10,13 +10,7 @@
 *.vcxproj
 *.ilk
 *.vcxproj
-*.vcxproj
 *.user
-*.vcxproj
-*.vcxproj
-*.vcxproj
-*.user
-RunTrials/RunTrials.vcxproj
+Devilep/Devilep.vcxproj
 RunTrials/RunTrials.vcxproj
 RunTrials/RunTrials.vcxproj.user
-Devilep/Devilep.vcxproj
