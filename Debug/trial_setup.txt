@@ -1,0 +1,1 @@
+10 C:\Users\BionicBill\Documents\PhD\C++\Visual~Studio\Develep\Debug\sampleparams.txt C:\Users\BionicBill\Documents\PhD\C++\Visual~Studio\Develep\Debug\mydata.txt
