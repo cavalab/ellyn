@@ -13,6 +13,5 @@ Release/
 *.ilk
 *.vcxproj
 *.user
-Devilep/Devilep.vcxproj
-RunTrials/RunTrials.vcxproj
-RunTrials/RunTrials.vcxproj.user
+*/*.vcxproj
+*/*.vcxproj.user
