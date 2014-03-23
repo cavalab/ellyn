@@ -16,3 +16,7 @@
 *.vcxproj
 *.vcxproj
 *.user
+RunTrials/RunTrials.vcxproj
+RunTrials/RunTrials.vcxproj
+RunTrials/RunTrials.vcxproj.user
+Devilep/Devilep.vcxproj
