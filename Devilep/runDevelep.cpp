@@ -140,7 +140,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		// run separate islands 
 		if (p.init_validate_on)
 		{
-			 s.out << "Initial validation..."; 
+			s.out << "Initial validation..."; 
 			#pragma omp parallel for 
 			for(int i=0;i<num_islands;i++)
 			{
@@ -278,7 +278,8 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 	{
 		tribe T(p.popsize,p.max_fit,p.min_fit);
 		if (p.init_validate_on)
-		{		
+		{
+			s.out << "Initial validation..."; 
 			float worstfit;
 			int counter=0;
 			//float bestfit;
@@ -378,7 +379,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 
 void printstats(tribe& T,int &i,state& s,params& p)
 {
-	boost::progress_timer timer;
+	//boost::progress_timer timer;
 s.out << "--- Generation " << i << "---------------------------------------------------------------" << "\n";
 s.out << "Number of evals: " << s.genevals.back() << "\n";
 s.out << "Best Fitness: " << T.bestFit() <<"\n";

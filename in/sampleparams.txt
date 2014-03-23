@@ -1,5 +1,5 @@
 g					10	// number of generations
-popsize				1000	//population size
+popsize				10000	//population size
 numits				1	// number of trials
 
 // Generation Settings 
@@ -74,7 +74,7 @@ pHC_its				1
 pHC_gauss			1
 
 // epigenetic Hill Climber
-eHC_on				1
+eHC_on				0
 eHC_its				1
 eHC_prob			0.1
 eHC_size			1

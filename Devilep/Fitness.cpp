@@ -17,7 +17,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 	int wtf = pop.size();
 
 	//#pragma omp parallel for private(e)
-	for(unsigned int count = 0; count<pop.size(); count++)
+	for(int count = 0; count<pop.size(); count++)
 	{
 		///*if(count==0)
 		//	cout<<"number of threads: " << omp_get_num_threads() << endl;*/
@@ -72,7 +72,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 
 		if ( boost::math::isnan(pop.at(count).abserror) || boost::math::isinf(pop.at(count).abserror) || boost::math::isnan(pop.at(count).corr) || boost::math::isinf(pop.at(count).corr))
 			pop.at(count).fitness=p.max_fit;
-		else
+		//else
 			//pop.at(count).fitness = pop.at(count).abserror/pop.at(count).corr;
 		
 
@@ -80,7 +80,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 			pop.at(count).fitness=p.max_fit;
 		else if(pop.at(count).fitness<p.min_fit)
 			(pop.at(count).fitness=p.min_fit);
-		else{}
+		
 		//cout << count << "\t" << pop.at(count).fitness << endl; 
 	}
 	
