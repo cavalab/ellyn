@@ -120,10 +120,10 @@ struct tribe{
 	}	
 	float medFit() //median fitness
 	{
-		vector<ind> tmppop = pop;
-		sort(tmppop.begin(),tmppop.end(),SortFit());
-		int index = (int)floor((float)tmppop.size()/2);
-		return tmppop.at(index).fitness; 
+		//vector<ind> tmppop = pop;
+		sort(pop.begin(),pop.end(),SortFit());
+		int index = (int)floor((float)pop.size()/2);
+		return pop.at(index).fitness; 
 
 	} 
 	float meanFit() // mean fitness
@@ -159,22 +159,22 @@ struct tribe{
 	}
 	int medSize() // median line length
 	{		
-		vector<ind> tmppop = pop;
-		sort(tmppop.begin(),tmppop.end(),SortSize());
-		int index = (int)floor((float)tmppop.size()/2);
-		return tmppop.at(index).line.size(); 
+		//vector<ind> tmppop = pop;
+		sort(pop.begin(),pop.end(),SortSize());
+		int index = (int)floor((float)pop.size()/2);
+		return pop.at(index).line.size(); 
 	}
 
 	void topTen(vector <ind>& eqns) //returns address to vector of equation strings
 	{
-		vector<ind> tmppop = pop;
-		sort(tmppop.begin(),tmppop.end(),SortFit());
+		//vector<ind> tmppop = pop;
+		sort(pop.begin(),pop.end(),SortFit());
 		vector <float> fitnesses;
 		int i=0;
 		bool pass=true;
-		while(eqns.size()<10 && i<tmppop.size())
+		while(eqns.size()<10 && i<pop.size())
 		{
-			fitnesses.push_back(tmppop.at(i).fitness);
+			fitnesses.push_back(pop.at(i).fitness);
 			for(unsigned int j=0;j<fitnesses.size()-1;j++)
 			{
 				if(fitnesses.at(j)==fitnesses.back())
@@ -186,7 +186,7 @@ struct tribe{
 			}
 
 			if (pass)
-				eqns.push_back(tmppop.at(i));
+				eqns.push_back(pop.at(i));
 			else
 				pass=1;
 			++i;
@@ -194,9 +194,9 @@ struct tribe{
 	}
 	void getbestind(ind& bestind)
 	{
-		vector<ind> tmppop = pop;
-		sort(tmppop.begin(),tmppop.end(),SortFit());
-		bestind = tmppop.front();
+		//vector<ind> tmppop = pop;
+		sort(pop.begin(),pop.end(),SortFit());
+		bestind = pop.front();
 	}// address of best individual
 	/*
 private:
