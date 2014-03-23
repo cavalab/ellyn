@@ -335,17 +335,19 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 			 {
 				 if (p.pHC_on && p.ERC)
 				 {
+					 #pragma omp parallel for
 		 			for(int k=0; k<T.pop.size(); k++)
 		 				HillClimb(T.pop.at(k),p,r,d,s);
 		 		 }
 				 if (p.eHC_on) 
 				 {
+					 #pragma omp parallel for
 					for(int m=0; m<T.pop.size(); m++)
 						EpiHC(T.pop.at(m),p,r,d,s);
 				 } 
 
 				 s.setgenevals();
-				 s.out << "Elapsed time: \n";
+				 //s.out << "Elapsed time: \n";
 				 printstats(T,counter,s,p);
 				
 				s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
@@ -376,8 +378,8 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 
 void printstats(tribe& T,int &i,state& s,params& p)
 {
-	//boost::progress_timer timer;
-	s.out << "--- Generation " << i << "---------------------------------------------------------------" << "\n";
+	boost::progress_timer timer;
+s.out << "--- Generation " << i << "---------------------------------------------------------------" << "\n";
 s.out << "Number of evals: " << s.genevals.back() << "\n";
 s.out << "Best Fitness: " << T.bestFit() <<"\n";
 s.out << "Median Fitness: " << T.medFit()<<"\n";

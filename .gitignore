@@ -10,3 +10,6 @@
 *.vcxproj
 *.ilk
 *.vcxproj
+*.vcxproj
+*.user
+*.vcxproj

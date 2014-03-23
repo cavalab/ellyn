@@ -1,0 +1,2 @@
+12 C:\Users\WECava\Documents\GitHub\develep\in\params_linmsd_p1000_g1000_eHC_off.txt C:\Users\WECava\Documents\GitHub\develep\in\lin_msd.txt
+12 C:\Users\WECava\Documents\GitHub\develep\in\params_linmsd_p1000_g1000_eHC_on.txt C:\Users\WECava\Documents\GitHub\develep\in\lin_msd.txt
