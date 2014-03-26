@@ -9,7 +9,7 @@ rt_rep				0.1
 rt_cross			0.7
 rt_mut				0.2
 cross				1	// 1: ultra 2: one point1
-cross_ar			.01 //crossover alternation rate (ultra only)
+cross_ar			.05 //crossover alternation rate (ultra only)
 mut_ar				.01 //mutation alternation rate (ultra only)
 stoperror			0.0001	// stop condition / convergence condition
 
@@ -33,7 +33,7 @@ cons
 cvals					
 seeds				
 
-ERC					0 // ephemeral random constants
+ERC					1 // ephemeral random constants
 ERCints				0	
 maxERC				10
 minERC				-10
@@ -51,7 +51,7 @@ op_weight			10		1	1		1		0.5		0.5		1	1	1	1		0.5		0.5		2	2	2	1		1
 weight_ops_on		1
 
 min_len				10
-max_len				100
+max_len				50
 
 max_dev_len			128
 
@@ -66,7 +66,7 @@ lineHC_on			1
 lineHC_its			1
 
 // parameter Hill Climber
-pHC_on				0
+pHC_on				1
 pHC_delay_on		1
 pHC_delay			1
 pHC_size			1
@@ -74,7 +74,7 @@ pHC_its				1
 pHC_gauss			1
 
 // epigenetic Hill Climber
-eHC_on				0
+eHC_on				1
 eHC_its				1
 eHC_prob			0.1
 eHC_size			1
@@ -94,4 +94,4 @@ prto_sel_on			1
 
 // island model
 islands				1
-island_gens			100
+island_gens			82

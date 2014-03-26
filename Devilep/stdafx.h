@@ -19,7 +19,6 @@
 #include <boost/timer.hpp>
 #include <boost/progress.hpp>
 #include <boost/regex.hpp>
-#include "exprtk.hpp"
 #include "time.h"
 #include <math.h>
 #include "rnd.h"

@@ -15,7 +15,7 @@ void makeline(ind&,params& p,vector<Randclass>& r);
 void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 {
 	//boost::progress_timer timer;
-	#pragma omp parallel for
+	//#pragma omp parallel for
 	for(int i=0;i<pop.size();i++)
 	{
 		makeline(pop.at(i),p,r);

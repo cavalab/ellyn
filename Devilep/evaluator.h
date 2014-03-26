@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "params.h"
 #include "data.h"
+#include "exprtk.hpp"
 
 struct evaluator {
 	typedef exprtk::symbol_table<float> symbol_table_t;
@@ -23,6 +24,9 @@ struct evaluator {
 
 		expression.register_symbol_table(symbol_table);
 	}
+	
+	/*evaluator(){}
+	~evaluator(){}*/
 
 };
 #endif

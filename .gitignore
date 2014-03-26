@@ -7,11 +7,7 @@ Release/
 *.sdf
 *.suo
 *.opensdf
-*.vcxproj
 *.ipch
-*.vcxproj
 *.ilk
-*.vcxproj
 *.user
-*/*.vcxproj
-*/*.vcxproj.user
+*/*.user
