@@ -172,6 +172,7 @@
     <ClInclude Include="isnan.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="mstream.h" />
+    <ClInclude Include="op_node.h" />
     <ClInclude Include="params.h" />
     <ClInclude Include="pop.h" />
     <ClInclude Include="rnd.h" />
