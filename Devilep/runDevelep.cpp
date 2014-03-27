@@ -14,6 +14,7 @@
 #include "strdist.h"
 #include <time.h>
 #include <cstring>
+#include "vld.h"
 //#define _CRTDBG_MAP_ALLOC
 //#include <stdlib.h>
 //#include <crtdbg.h>
@@ -360,7 +361,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 				
 				s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
 				s.out << "Total Evals: " << s.totalevals() << "\n";
-				s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
+				s.out << "Average point evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
 
 				if (p.sel==2)
 					trigger+=p.popsize*(p.rt_mut+p.rt_rep)+p.popsize*p.rt_cross/2;
@@ -770,6 +771,11 @@ void load_data(data &d, std::ifstream& fs,params& p)
 		}
 		rownum++;
     }
+	// pop end in case of extra blank lines in data file
+	while(d.vals.back().empty())
+	{
+		d.vals.back().pop_back();
+	}
 	//d.dattovar.resize(p.allvars.size());
 	//d.mapdata();
 }

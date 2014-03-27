@@ -1,4 +1,4 @@
-g					10	// number of generations
+g					10000	// number of generations
 popsize				1000	//population size
 numits				1	// number of trials
 
@@ -50,7 +50,7 @@ op_weight			10		1	1		1		0.5		0.5		1	1	1		1	1		0.5		0.5		2	2	2
 weight_ops_on		1
 
 min_len				10
-max_len				100
+max_len				50
 
 max_dev_len			128
 
@@ -92,5 +92,5 @@ prto_arch_size		425
 prto_sel_on			1
 
 // island model
-islands				1
+islands				0
 island_gens			82

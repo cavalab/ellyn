@@ -137,6 +137,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 			pop.at(count).fitness=p.max_fit;*/
 		
 		//cout << count << "\t" << pop.at(count).fitness << endl; 
+		
 	}
 	dattovar.clear();
 	datatable.clear();

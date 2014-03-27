@@ -1,4 +1,4 @@
-g					100	// number of generations
+g					10000	// number of generations
 popsize				1000	//population size
 numits				1	// number of trials
 
@@ -81,7 +81,7 @@ eHC_size			1
 eHC_cluster			1
 eHC_dev				1
 eHC_best			1
-eHC_init			0.6 // percent of starting epiline to initialize with true values
+eHC_init			1 //0: start with true epilines, 1: start with a mix of on/off values
 eHC_prob_scale		1
 eHC_max_prob		.75
 eHC_min_prob		0.25
