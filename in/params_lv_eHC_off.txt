@@ -1,4 +1,4 @@
-g					10// number of generations
+g					10000 	// number of generations
 popsize				1000	//population size
 numits				1	// number of trials
 
@@ -36,7 +36,7 @@ seeds
 ERC					1 // ephemeral random constants
 ERCints				0	
 maxERC				10
-minERC				-10
+minERC				0
 numERC				3
 
 fit_type			3	// 1: error, 2: corr, 3: combo

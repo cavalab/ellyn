@@ -85,7 +85,7 @@ struct tribe{
 	float bestFit() // returns best fitness value
 	{
 
-		#pragma omp parallel
+		/*#pragma omp parallel
 		{
 		   float localbest = maxf;
 
@@ -97,13 +97,16 @@ struct tribe{
 		   {
 			  best = min(localbest, best);
 		   }
-		}
+		}*/
+		best = maxf;
+		for(int i = 0; i < pop.size(); i++)
+			   best = min(best, pop.at(i).fitness);
 		return best;
 	}
 	float worstFit() //worst fitness
 	{
 		worst = minf;
-		#pragma omp parallel
+		/*#pragma omp parallel
 		{
 		   float localworst = minf;
 
@@ -115,7 +118,9 @@ struct tribe{
 		   {
 			  worst = max(localworst, worst);
 		   }
-		}
+		}*/
+		 for(int i = 0; i < pop.size(); i++)
+			 worst = max(worst, pop.at(i).fitness);
 		return worst;
 	}	
 	float medFit() //median fitness
@@ -129,7 +134,7 @@ struct tribe{
 	float meanFit() // mean fitness
 	{
 		float answer=0;
-		#pragma omp parallel for reduction(+ : answer)
+		//#pragma omp parallel for reduction(+ : answer)
 		for(int i=0; i<pop.size(); i++)
 		{
 			answer+=pop.at(i).fitness;
@@ -140,7 +145,7 @@ struct tribe{
 	float meanSize() // mean line length
 	{
 		float answer=0;
-		#pragma omp parallel for reduction(+ : answer)
+		//#pragma omp parallel for reduction(+ : answer)
 		for(int i=0; i<pop.size(); i++)
 		{
 			answer+=pop.at(i).line.size();
@@ -150,7 +155,7 @@ struct tribe{
 	float meanEffSize()
 	{
 		float answer=0;
-		#pragma omp parallel for reduction(+ : answer)
+		//#pragma omp parallel for reduction(+ : answer)
 		for(int i=0; i<pop.size(); i++)
 		{
 			answer+=pop.at(i).eff_size;

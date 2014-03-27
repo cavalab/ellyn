@@ -13,7 +13,8 @@ bool is_number(const std::string& s)
 void NewInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 {
 	
-	vector <string> load_choices = p.allblocks;
+	vector <string> load_choices(p.allblocks);
+	int choice=0;
 	//cout<<"iterator definition\n";
 	std::vector<int>::iterator it;
 	it = newind.line.begin();
@@ -38,11 +39,6 @@ void NewInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 	{
 		partial_sum(p.op_weight.begin(), p.op_weight.end(), wheel.begin());
 	}
-	else
-	{}
-		
-
-	int choice;
 	
 	if (p.weight_ops_on) //fns are weighted
 	{

@@ -14,6 +14,10 @@
 #include "strdist.h"
 #include <time.h>
 #include <cstring>
+#include "vld.h"
+//#define _CRTDBG_MAP_ALLOC
+//#include <stdlib.h>
+//#include <crtdbg.h>
 
 using namespace std;
 
@@ -29,6 +33,7 @@ void printbestind(tribe& T,params& p,string& logname);
 void runDevelep(string& paramfile, string& datafile,bool trials)
 {
 	
+					
 	/* steps:
 	Initialize population
 		make genotypes
@@ -61,9 +66,10 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 	ifstream ds(datafile);
 	load_data(d,ds,p);
 	s.out.set(trials);
-
+	
 	std::time_t t =  std::time(NULL);
-    std::tm tm    = *std::localtime(&t);
+    std::tm tm;
+	localtime_s(&tm,&t);
 	char tmplog[100];
 	strftime(tmplog,100,"%Y-%m-%d_%H-%M-%S",&tm);
 	const char * c = p.resultspath.c_str();
@@ -337,14 +343,14 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 			 {
 				 if (p.pHC_on && p.ERC)
 				 {
-					 #pragma omp parallel for
+					//#pragma omp parallel for
 		 			for(int k=0; k<T.pop.size(); k++)
 		 				HillClimb(T.pop.at(k),p,r,d,s);
 		 		 }
 				 if (p.eHC_on) 
 				 {
-					 boost::progress_timer tm1;
-					 #pragma omp parallel for
+					// boost::progress_timer tm1;
+					//#pragma omp parallel for
 					for(int m=0; m<T.pop.size(); m++)
 						EpiHC(T.pop.at(m),p,r,d,s);
 				 } 
@@ -360,6 +366,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 				if (p.sel==2)
 					trigger+=p.popsize*(p.rt_mut+p.rt_rep)+p.popsize*p.rt_cross/2;
 				counter++;
+		
 			 }
 			i++;
 		}
@@ -376,6 +383,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 	{
 		s.out << "Program finished. \n";
 	}
+	_CrtDumpMemoryLeaks();
 
 }
 
@@ -399,9 +407,9 @@ s.clearCross();
 s.out << "Equation" << "\t \t \t \t \t" << "Abs Error" << "\n";
 vector <ind> besteqns;
 T.topTen(besteqns);
-for(unsigned int i=0;i<besteqns.size();i++)
+for(unsigned int j=0;j<besteqns.size();j++)
 {
-	s.out << besteqns.at(i).eqn <<"\t \t \t \t \t" <<besteqns.at(i).abserror << "\n";
+	s.out << besteqns.at(j).eqn <<"\t \t \t \t \t" <<besteqns.at(j).abserror << "\n";
 }
 s.out << "-------------------------------------------------------------------------------" << "\n";
 }
@@ -750,25 +758,26 @@ void load_data(data &d, std::ifstream& fs,params& p)
     while(!fs.eof())
     {		
 		getline(fs,s,'\n');
-		istringstream ss(s);
+		istringstream ss2(s);
 		// get target data
-		ss >> tarf;
+		ss2 >> tarf;
 		d.target.push_back(tarf);
 		d.vals.push_back(vector<float>());
 		// get variable data
-		while(ss >> tmpf)
+		while(ss2 >> tmpf)
 		{
 			d.vals[rownum].push_back(tmpf);
 			//varnum++;
 		}
 		rownum++;
     }
-	d.dattovar.resize(p.allvars.size());
-	//symbol_table.add_constants();
-	//for (unsigned int i=0; i<p.cons.size();i++)
-	//	d.symbol_table.add_constant(p.cons.at(i),p.cvals.at(i));
-
-	
+	// pop end in case of extra blank lines in data file
+	while(d.vals.back().empty())
+	{
+		d.vals.back().pop_back();
+	}
+	//d.dattovar.resize(p.allvars.size());
+	//d.mapdata();
 }
 bool stopcondition(float &bestfit)
 {

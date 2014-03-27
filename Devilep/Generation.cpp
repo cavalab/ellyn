@@ -18,7 +18,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		{
 		//if (p.loud) boost::progress_timer timer;
 		// return pop ids for parents 
-		vector<unsigned int> parloc(p.popsize);
+		vector<unsigned int> parloc(pop.size());
 		//if (p.loud ) fcout << "     Tournament...";
 		Tournament(pop,parloc,p,r);		
 		//if (p.loud ) fcout << "     Apply Genetics...";

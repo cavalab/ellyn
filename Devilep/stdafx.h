@@ -19,7 +19,6 @@
 #include <boost/timer.hpp>
 #include <boost/progress.hpp>
 #include <boost/regex.hpp>
-#include "exprtk.hpp"
 #include "time.h"
 #include <math.h>
 #include "rnd.h"
@@ -29,4 +28,5 @@
 #include <omp.h>
 #include "general_fns.h"
 #include <direct.h>
+#include<exception>
 // TODO: reference additional headers your program requires here

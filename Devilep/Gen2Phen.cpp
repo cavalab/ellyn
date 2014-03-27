@@ -21,7 +21,7 @@ void Gen2Phen(vector<ind> &pop,params& p)
 	//int i; j;
 	//int count=0;
 
-	#pragma omp parallel for 
+	//#pragma omp parallel for 
 	for(int i=0;i<pop.size();i++)
 	{
 		pop.at(i).eqn = p.sim_nom_mod; //set equation embryo

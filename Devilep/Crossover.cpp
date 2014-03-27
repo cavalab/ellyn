@@ -111,6 +111,10 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 				cout << "size mismatch between epiline and line\n";
 		}
 	}
+	else if (p.cross==2) // two-point crossover
+	{
+
+	}
 	//tmpinssize=0;
 	//for(unsigned int t=0; t<kids[0].line.size();t++)
 	//	if(kids[0].line.at(t)>99) tmpinssize++;

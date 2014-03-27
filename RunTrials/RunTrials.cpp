@@ -5,16 +5,23 @@
 #include "stdafx.h"
 #include "runDevelep.h"
 #include <omp.h>
+
+#include "vld.h"
 using namespace std;
 
 void getTrialSetup(ifstream& fs,int&,vector<int>&,vector<string>&,vector<string>&);
 
 int main(int argc, char** argv)
 {
+	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+
+	_CrtMemState s1;
+	_CrtMemCheckpoint( &s1 );
+
 	/* run multiple trials of Develep 
 	   input: trial text file
 	   first column: number of trials to run
-	   second column: paramter file for trials
+	   second column: parameter file for trials
 	   third column: data for trials
 	*/
 	try
@@ -28,22 +35,29 @@ int main(int argc, char** argv)
 
 		ifstream fs(trialsetup);
 		getTrialSetup(fs,totaltrials,trialset,paramfile,datafile);
+
+		
 		cout << "Running Trials: \n";
 		#pragma omp parallel for schedule(dynamic)
 		for(int i=0;i<totaltrials;i++)
 		{
 			cout << to_string(static_cast<long long>(i)) + ": " + paramfile.at(i).substr(paramfile.at(i).rfind('\\')+1,paramfile.at(i).size()) + ", " + datafile.at(i).substr(datafile.at(i).rfind('\\')+1,datafile.at(i).size())  + "\n";
 			runDevelep(paramfile.at(i),datafile.at(i),1); //run develep
+			_CrtMemDumpStatistics( &s1 );
 		}
 	
 		char key;
 		cout << "All trials completed. Press return to exit." << endl;
 		key = getchar();
 	}
-	catch( const exception & e) 
+	catch(exception& er) 
 	{
-		cout << "Error: " << &e << endl;
+		cout << "Error: " << er.what() << endl;
 
+	}
+	catch(...)
+	{
+		cout << "Exception Occurred."<<endl;
 	}
 	return 0;
 }

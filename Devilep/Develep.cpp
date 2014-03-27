@@ -4,6 +4,7 @@
 #include "stdafx.h"
 // mine
 #include "runDevelep.h"
+#include <exception>
 //#include "logger.h"
 //#include "pop.h"
 //#include "data.h"
@@ -46,10 +47,14 @@ int main(int argc, char** argv)
 		string datafile(argv[2]);
 		runDevelep(paramfile,datafile,0);
 	}
-	catch( const exception & e) 
+	catch(exception& er) 
 	{
-		cout << "Error: " << &e << endl;
+		cout << "Error: " << er.what() << endl;
 
+	}
+	catch(...)
+	{
+		cout << "Exception Occurred."<<endl;
 	}
 	return 0;
 }

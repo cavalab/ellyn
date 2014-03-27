@@ -52,12 +52,12 @@ using namespace std;
 //	newind.ptr.front() = newind.ptr.back()+3; 
 //	newind.ptr.back() += 5;
 //}
-//void DNL(ind &newind)
-//{
-//}
-//void DNR(ind &newind)
-//{
-//}
+void DNL(ind &newind)
+{
+}
+void DNR(ind &newind)
+{
+}
 //void FLIP(ind &newind)
 //{
 //}
@@ -216,7 +216,7 @@ void subR(ind &newind)
 	newind.eqn.insert(newind.ptr.front(),"(");
 
 	newind.ptr.front() = newind.ptr.back()+3; 
-	newind.ptr.back() += 3;
+	newind.ptr.back()  = newind.ptr.front();
 }
 void mul(ind &newind)
 {
@@ -224,7 +224,7 @@ void mul(ind &newind)
 	newind.eqn.insert(newind.ptr.front(),"(");
 
 	newind.ptr.front() = newind.ptr.back()+3; 
-	newind.ptr.back() += 3;
+	newind.ptr.back()  = newind.ptr.front();
 }
 void divR(ind &newind)
 {
@@ -232,7 +232,7 @@ void divR(ind &newind)
 	newind.eqn.insert(newind.ptr.front(),"(");
 
 	newind.ptr.front() = newind.ptr.back()+3; 
-	newind.ptr.back() += 3;
+	newind.ptr.back()  = newind.ptr.front();
 }
 void subL(ind &newind)
 {
@@ -323,243 +323,243 @@ void totheL(ind &newind)
 void totheR(ind &newind)
 {
 }
-void DNL(ind &newind)
-{	
-	std::string tmp;
-	tmp = newind.eqn.substr(newind.ptr[0],newind.ptr[1]-newind.ptr[0]+1);
-	if (tmp.find('(') != std::string::npos && 
-		tmp.find(')') != std::string::npos) // only descend if there is nesting to descend
-	{
-		ind tmpind = newind;
-		vector<int> newptr(newind.ptr);
-		string eqn = newind.eqn;	
-		char tmp = eqn[newptr.front()];
-		if (eqn[newptr.front()]=='(')
-		{
-			newptr.front() ++;
-			if (eqn.find_first_of("+-*//^",newptr.front()) != string::npos)
-				newptr.back() = eqn.find_first_of("+-*//^",newptr.front())-1;
-			else
-				newptr.back()--;
-			if (newptr.back() < 0 || newptr.front()<0)
-				cout<< "mistake\n";
-
-		}
-		else
-		{
-			// if a unary function is highlighted, pointer becomes the argument contained within
-			if (eqn.find("abs",newptr.front()) != std::string::npos ||
-				eqn.find("sin",newptr.front()) != std::string::npos ||
-				eqn.find("cos",newptr.front()) != std::string::npos ||
-				eqn.find("exp",newptr.front()) != std::string::npos ||
-				eqn.find("log",newptr.front()) != std::string::npos)
-			{
-
-				newptr.front() = eqn.find('(',newind.ptr.front()+1)+1;
-				newptr.back()--;
-				
-				if (newptr.back() < 0 || newptr.front()<0)
-				cout<< "mistake\n";
-				
-
-			}
-			else
-			{
-				std::cout<<"Something's wrong\n";
-
-			}
-
-		}
-		
-		// check parenthesis in new equation
-		eqn.assign(newind.eqn,newptr.front(),newptr.back()-newptr.front()+1);
-				int n_in = 0;
-				int n_out= 0;
-				std::string ::size_type pos_in = 0;
-				std::string ::size_type pos_out = 0;
-
-				while( (pos_in = eqn.find( '(', pos_in )) 
-							 != std::string::npos ) {
-    				n_in++;
-    				pos_in++; 
-				}
-				while( (pos_out = eqn.find( ')', pos_out )) 
-							 != std::string::npos ) {
-    				n_out++;
-    				pos_out++; 
-				}
-
-				while (n_in != n_out)
-				{
-					if (n_in > n_out)
-					{
-				
-						pos_out = newptr.back()-newptr.front()+1;
-						pos_in = pos_out;
-
-						newptr.back() = newind.eqn.find(')',newptr.back()+1);
-						n_out++;
-						eqn.assign(newind.eqn,newptr.front(),newptr.back()-newptr.front()+1);
-				
-						while( (pos_in = eqn.find( '(', pos_in)) 
-							 != std::string::npos ) {
-    						n_in++;
-    						pos_in++;
-
-						}
-					}
-					else
-					{
-						pos_in = newptr.front();
-						newptr.front() = newind.eqn.rfind('(',newptr.front()-1);			
-						n_in++;
-
-						eqn.assign(newind.eqn,newptr.front(),newptr.back()-newptr.front()+1);
-				
-						pos_in -= newptr.front();
-						string tmpeqn; 
-						tmpeqn.assign(newind.eqn,newptr.front(),pos_in);
-
-			
-						// check parenthesis in new equation
-						pos_out=0;
-						while( (pos_out = tmpeqn.find( ')', pos_out )) 
-									 != std::string::npos ) {
-    						n_out++;
-    						pos_out++; 
-						}
-					}
-			
-		
-		
-				}
-				if (newptr.back() < 0 || newptr.front()<0)
-				cout<< "mistake\n";
-		newind.ptr.swap(newptr);
-
-		if (newind.eqn.find('(',0)==std::string::npos)
-			std::cout<< "mistake\n";
-	}
-}
-void DNR(ind &newind)
-{
-	std::string tmp;
-	tmp = newind.eqn.substr(newind.ptr[0],newind.ptr[1]-newind.ptr[0]+1);
-	if (tmp.find('(') != std::string::npos && 
-		tmp.find(')') != std::string::npos) // only descend if there is nesting to descend
-	{
-		ind tmpind = newind;
-		vector<int> newptr(newind.ptr);
-		string eqn = newind.eqn;	
-		char tmp = eqn[newptr.back()];
-		if (eqn[newptr.front()]=='(')
-		{
-			newptr.back() --;
-			tmp = eqn.find_last_of("+-*/^",newptr.back());
-			if (eqn.find_last_of("+-*/^",newptr.back()) != string::npos)
-				newptr.front() = eqn.find_last_of("+-*//^",newptr.back())+1;
-			else
-				newptr.front()++;
-			if (newptr.back() < 0 || newptr.front()<0)
-				cout<< "mistake\n";
-
-		}
-		else
-		{
-			// if a unary function is highlighted, pointer becomes the argument contained within
-			if (eqn.find("abs",newptr.front()) != std::string::npos ||
-				eqn.find("sin",newptr.front()) != std::string::npos ||
-				eqn.find("cos",newptr.front()) != std::string::npos ||
-				eqn.find("exp",newptr.front()) != std::string::npos ||
-				eqn.find("log",newptr.front()) != std::string::npos)
-			{
-
-				newptr.front() = eqn.find('(',newind.ptr.front()+1)+1;
-				newptr.back()--;
-				
-				if (newptr.back() < 0 || newptr.front()<0)
-				cout<< "mistake\n";
-				
-
-			}
-			else
-			{
-				std::cout<<"Something's wrong\n";
-
-			}
-
-		}
-		
-		// check parenthesis in new equation
-		eqn.assign(newind.eqn,newptr.front(),newptr.back()-newptr.front()+1);
-				int n_in = 0;
-				int n_out= 0;
-				std::string ::size_type pos_in = 0;
-				std::string ::size_type pos_out = 0;
-
-				while( (pos_in = eqn.find( '(', pos_in )) 
-							 != std::string::npos ) {
-    				n_in++;
-    				pos_in++; 
-				}
-				while( (pos_out = eqn.find( ')', pos_out )) 
-							 != std::string::npos ) {
-    				n_out++;
-    				pos_out++; 
-				}
-
-				while (n_in != n_out)
-				{
-					if (n_in > n_out)
-					{
-				
-						pos_out = newptr.back()-newptr.front()+1;
-						pos_in = pos_out;
-
-						newptr.back() = newind.eqn.find(')',newptr.back()+1);
-						n_out++;
-						eqn.assign(newind.eqn,newptr.front(),newptr.back()-newptr.front()+1);
-				
-						while( (pos_in = eqn.find( '(', pos_in)) 
-							 != std::string::npos ) {
-    						n_in++;
-    						pos_in++;
-
-						}
-					}
-					else
-					{
-						pos_in = newptr.front();
-						newptr.front() = newind.eqn.rfind('(',newptr.front()-1);			
-						n_in++;
-
-						eqn.assign(newind.eqn,newptr.front(),newptr.back()-newptr.front()+1);
-				
-						pos_in -= newptr.front();
-						string tmpeqn; 
-						tmpeqn.assign(newind.eqn,newptr.front(),pos_in);
-
-			
-						// check parenthesis in new equation
-						pos_out=0;
-						while( (pos_out = tmpeqn.find( ')', pos_out )) 
-									 != std::string::npos ) {
-    						n_out++;
-    						pos_out++; 
-						}
-					}
-			
-		
-		
-				}
-				if (newptr.back() < 0 || newptr.front()<0)
-				cout<< "mistake\n";
-		newind.ptr.swap(newptr);
-
-		if (newind.eqn.find('(',0)==std::string::npos)
-			std::cout<< "mistake\n";
-	}
-}
+//void DNL(ind &newind)
+//{	
+//	std::string tmp;
+//	tmp = newind.eqn.substr(newind.ptr[0],newind.ptr[1]-newind.ptr[0]+1);
+//	if (tmp.find('(') != std::string::npos && 
+//		tmp.find(')') != std::string::npos) // only descend if there is nesting to descend
+//	{
+//		ind tmpind = newind;
+//		vector<int> newptr(newind.ptr);
+//		string eqn = newind.eqn;	
+//		char tmp = eqn[newptr.front()];
+//		if (eqn[newptr.front()]=='(')
+//		{
+//			newptr.front() ++;
+//			if (eqn.find_first_of("+-*//^",newptr.front()) != string::npos)
+//				newptr.back() = eqn.find_first_of("+-*//^",newptr.front())-1;
+//			else
+//				newptr.back()--;
+//			if (newptr.back() < 0 || newptr.front()<0)
+//				cout<< "mistake\n";
+//
+//		}
+//		else
+//		{
+//			// if a unary function is highlighted, pointer becomes the argument contained within
+//			if (eqn.find("abs",newptr.front()) != std::string::npos ||
+//				eqn.find("sin",newptr.front()) != std::string::npos ||
+//				eqn.find("cos",newptr.front()) != std::string::npos ||
+//				eqn.find("exp",newptr.front()) != std::string::npos ||
+//				eqn.find("log",newptr.front()) != std::string::npos)
+//			{
+//
+//				newptr.front() = eqn.find('(',newind.ptr.front()+1)+1;
+//				newptr.back()--;
+//				
+//				if (newptr.back() < 0 || newptr.front()<0)
+//				cout<< "mistake\n";
+//				
+//
+//			}
+//			else
+//			{
+//				std::cout<<"Something's wrong\n";
+//
+//			}
+//
+//		}
+//		
+//		// check parenthesis in new equation
+//		eqn.assign(newind.eqn,newptr.front(),newptr.back()-newptr.front()+1);
+//				int n_in = 0;
+//				int n_out= 0;
+//				std::string ::size_type pos_in = 0;
+//				std::string ::size_type pos_out = 0;
+//
+//				while( (pos_in = eqn.find( '(', pos_in )) 
+//							 != std::string::npos ) {
+//    				n_in++;
+//    				pos_in++; 
+//				}
+//				while( (pos_out = eqn.find( ')', pos_out )) 
+//							 != std::string::npos ) {
+//    				n_out++;
+//    				pos_out++; 
+//				}
+//
+//				while (n_in != n_out)
+//				{
+//					if (n_in > n_out)
+//					{
+//				
+//						pos_out = newptr.back()-newptr.front()+1;
+//						pos_in = pos_out;
+//
+//						newptr.back() = newind.eqn.find(')',newptr.back()+1);
+//						n_out++;
+//						eqn.assign(newind.eqn,newptr.front(),newptr.back()-newptr.front()+1);
+//				
+//						while( (pos_in = eqn.find( '(', pos_in)) 
+//							 != std::string::npos ) {
+//    						n_in++;
+//    						pos_in++;
+//
+//						}
+//					}
+//					else
+//					{
+//						pos_in = newptr.front();
+//						newptr.front() = newind.eqn.rfind('(',newptr.front()-1);			
+//						n_in++;
+//
+//						eqn.assign(newind.eqn,newptr.front(),newptr.back()-newptr.front()+1);
+//				
+//						pos_in -= newptr.front();
+//						string tmpeqn; 
+//						tmpeqn.assign(newind.eqn,newptr.front(),pos_in);
+//
+//			
+//						// check parenthesis in new equation
+//						pos_out=0;
+//						while( (pos_out = tmpeqn.find( ')', pos_out )) 
+//									 != std::string::npos ) {
+//    						n_out++;
+//    						pos_out++; 
+//						}
+//					}
+//			
+//		
+//		
+//				}
+//				if (newptr.back() < 0 || newptr.front()<0)
+//				cout<< "mistake\n";
+//		newind.ptr.swap(newptr);
+//
+//		if (newind.eqn.find('(',0)==std::string::npos)
+//			std::cout<< "mistake\n";
+//	}
+//}
+//void DNR(ind &newind)
+//{
+//	std::string tmp;
+//	tmp = newind.eqn.substr(newind.ptr[0],newind.ptr[1]-newind.ptr[0]+1);
+//	if (tmp.find('(') != std::string::npos && 
+//		tmp.find(')') != std::string::npos) // only descend if there is nesting to descend
+//	{
+//		ind tmpind = newind;
+//		vector<int> newptr(newind.ptr);
+//		string eqn = newind.eqn;	
+//		char tmp = eqn[newptr.back()];
+//		if (eqn[newptr.front()]=='(')
+//		{
+//			newptr.back() --;
+//			tmp = eqn.find_last_of("+-*/^",newptr.back());
+//			if (eqn.find_last_of("+-*/^",newptr.back()) != string::npos)
+//				newptr.front() = eqn.find_last_of("+-*//^",newptr.back())+1;
+//			else
+//				newptr.front()++;
+//			if (newptr.back() < 0 || newptr.front()<0)
+//				cout<< "mistake\n";
+//
+//		}
+//		else
+//		{
+//			// if a unary function is highlighted, pointer becomes the argument contained within
+//			if (eqn.find("abs",newptr.front()) != std::string::npos ||
+//				eqn.find("sin",newptr.front()) != std::string::npos ||
+//				eqn.find("cos",newptr.front()) != std::string::npos ||
+//				eqn.find("exp",newptr.front()) != std::string::npos ||
+//				eqn.find("log",newptr.front()) != std::string::npos)
+//			{
+//
+//				newptr.front() = eqn.find('(',newind.ptr.front()+1)+1;
+//				newptr.back()--;
+//				
+//				if (newptr.back() < 0 || newptr.front()<0)
+//				cout<< "mistake\n";
+//				
+//
+//			}
+//			else
+//			{
+//				std::cout<<"Something's wrong\n";
+//
+//			}
+//
+//		}
+//		
+//		// check parenthesis in new equation
+//		eqn.assign(newind.eqn,newptr.front(),newptr.back()-newptr.front()+1);
+//				int n_in = 0;
+//				int n_out= 0;
+//				std::string ::size_type pos_in = 0;
+//				std::string ::size_type pos_out = 0;
+//
+//				while( (pos_in = eqn.find( '(', pos_in )) 
+//							 != std::string::npos ) {
+//    				n_in++;
+//    				pos_in++; 
+//				}
+//				while( (pos_out = eqn.find( ')', pos_out )) 
+//							 != std::string::npos ) {
+//    				n_out++;
+//    				pos_out++; 
+//				}
+//
+//				while (n_in != n_out)
+//				{
+//					if (n_in > n_out)
+//					{
+//				
+//						pos_out = newptr.back()-newptr.front()+1;
+//						pos_in = pos_out;
+//
+//						newptr.back() = newind.eqn.find(')',newptr.back()+1);
+//						n_out++;
+//						eqn.assign(newind.eqn,newptr.front(),newptr.back()-newptr.front()+1);
+//				
+//						while( (pos_in = eqn.find( '(', pos_in)) 
+//							 != std::string::npos ) {
+//    						n_in++;
+//    						pos_in++;
+//
+//						}
+//					}
+//					else
+//					{
+//						pos_in = newptr.front();
+//						newptr.front() = newind.eqn.rfind('(',newptr.front()-1);			
+//						n_in++;
+//
+//						eqn.assign(newind.eqn,newptr.front(),newptr.back()-newptr.front()+1);
+//				
+//						pos_in -= newptr.front();
+//						string tmpeqn; 
+//						tmpeqn.assign(newind.eqn,newptr.front(),pos_in);
+//
+//			
+//						// check parenthesis in new equation
+//						pos_out=0;
+//						while( (pos_out = tmpeqn.find( ')', pos_out )) 
+//									 != std::string::npos ) {
+//    						n_out++;
+//    						pos_out++; 
+//						}
+//					}
+//			
+//		
+//		
+//				}
+//				if (newptr.back() < 0 || newptr.front()<0)
+//				cout<< "mistake\n";
+//		newind.ptr.swap(newptr);
+//
+//		if (newind.eqn.find('(',0)==std::string::npos)
+//			std::cout<< "mistake\n";
+//	}
+//}
 void UP(ind &newind)
 {
 	//cout << "UP" << endl;

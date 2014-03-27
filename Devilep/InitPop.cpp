@@ -15,7 +15,7 @@ void makeline(ind&,params& p,vector<Randclass>& r);
 void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 {
 	//boost::progress_timer timer;
-	#pragma omp parallel for
+	//#pragma omp parallel for
 	for(int i=0;i<pop.size();i++)
 	{
 		makeline(pop.at(i),p,r);
@@ -54,8 +54,9 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 	
 	int linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len);
 	
-	vector <string> load_choices = p.allblocks;
-	
+	vector <string> load_choices(p.allblocks);
+
+	int choice=0;
 	
 	//uniform_int_distribution<int> dist(0,21);
 	if (p.ERC)
@@ -76,12 +77,7 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 	{
 		partial_sum(p.op_weight.begin(), p.op_weight.end(), wheel.begin());
 	}
-	else
-	{}
-		
-		
 
-	int choice;
 	for (int x = 0; x<linelen; x++)
 	{
 		if (p.weight_ops_on) //fns are weighted

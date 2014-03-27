@@ -14,7 +14,8 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 	
 	vector <ind> tmppop;
 	float choice = r[omp_get_thread_num()].rnd_flt(0,1);
-	int p1,p2;
+	int p1=0;
+	int p2=0;
 
 	if (choice<p.rep_wheel[1]) // crossover, as long as there are at least two parents left
 	{			
