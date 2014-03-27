@@ -6,6 +6,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RunTrials", "RunTrials\RunTrials.vcxproj", "{50AF7427-EC14-4E46-96EC-675CD0C284B7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EDDCA6B8-2EFE-467C-96AB-C65417A74D98}"
+	ProjectSection(SolutionItems) = preProject
+		Performance2.psess = Performance2.psess
+		Performance3.psess = Performance3.psess
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

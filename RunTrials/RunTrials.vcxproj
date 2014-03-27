@@ -74,8 +74,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+<<<<<<< HEAD
     <IncludePath>$(VCInstallDir)PlatformSDK\include;$(VCInstallDir)PlatformSDK\common\include;$(IncludePath);C:\Program Files (x86)\Visual Leak Detector\include</IncludePath>
     <LibraryPath>$(VCInstallDir)PlatformSDK\lib;$(VCInstallDir)PlatformSDK\common\lib;$(LibraryPath);C:\Program Files (x86)\Visual Leak Detector\lib\Win32</LibraryPath>
+=======
+>>>>>>> 28d415955d56755da3215348d667c1ff729bb8f2
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

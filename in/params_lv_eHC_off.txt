@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 g					10000 	// number of generations
+=======
+g					100 	// number of generations
+>>>>>>> 28d415955d56755da3215348d667c1ff729bb8f2
 popsize				1000	//population size
 numits				1	// number of trials
 
