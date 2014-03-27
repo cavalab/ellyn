@@ -5,6 +5,10 @@
 #include "stdafx.h"
 #include "runDevelep.h"
 #include <omp.h>
+<<<<<<< HEAD
+
+=======
+>>>>>>> 28d415955d56755da3215348d667c1ff729bb8f2
 #include "vld.h"
 using namespace std;
 

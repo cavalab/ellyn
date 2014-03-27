@@ -250,11 +250,11 @@ float EvalEqnStr(string& expr,unordered_map<string,float*>& datatable)
 							op->op.compare("exp")!=0 &&
 							op->op.compare("log")!=0) 
 					{
-<<<<<<< HEAD
+
 						cout<< "ERROR: Illegal use of binary operator " + op->op +"\n";
-=======
-						fprintf(stderr, "ERROR: Illegal use of binary operator (%c)\n", op->op);
->>>>>>> 28d415955d56755da3215348d667c1ff729bb8f2
+
+
+
 						exit(EXIT_FAILURE);
 					}
 				}

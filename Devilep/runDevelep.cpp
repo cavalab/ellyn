@@ -361,7 +361,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 				
 				s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
 				s.out << "Total Evals: " << s.totalevals() << "\n";
-				s.out << "Average point evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
+				s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
 
 				if (p.sel==2)
 					trigger+=p.popsize*(p.rt_mut+p.rt_rep)+p.popsize*p.rt_cross/2;
