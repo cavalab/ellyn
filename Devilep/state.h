@@ -41,6 +41,8 @@ struct state{
 		good_cross_pct=0;
 		neut_cross_pct=0;
 	}
+	~state() {}
+
 	int getgenevals()
 	{
 		return genevals.back();

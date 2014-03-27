@@ -38,6 +38,7 @@ struct ind {
 	{
 		age=1;
 	}
+	~ind() {}
 	//void init(string& nom_mod)
 	//{
 	//	eqn = nom_mod;
@@ -81,6 +82,7 @@ struct tribe{
 		maxf=max_fit;
 		minf=min_fit;
 	}
+	~tribe() {}
 
 	float bestFit() // returns best fitness value
 	{

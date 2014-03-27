@@ -39,7 +39,7 @@ struct data {
 		for (unsigned int i=0;i<label.size(); i++)
 			datatable.insert(pair<string,float*>(label[i],&dattovar[i]));
 	}*/
-
+	~data() {}
 };
 
 #endif

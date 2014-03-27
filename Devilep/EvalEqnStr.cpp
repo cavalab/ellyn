@@ -78,6 +78,7 @@ struct op_s {
 	int assoc;
 	bool unary;
 	float (*eval)(float a1, float a2);
+	~op_s() {}
 } ops[]={
 	{"_", 11, ASSOC_RIGHT, 1, eval_uminus},
 	{"^", 9, ASSOC_RIGHT, 0, eval_exponent},

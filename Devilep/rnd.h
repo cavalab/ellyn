@@ -60,6 +60,7 @@ public:
 	{
 		std::random_shuffle(vec.begin(),vec.end(),);
 	}*/
+	~RandClass() {}
 
 private:
   RandomGeneratorType rg;
