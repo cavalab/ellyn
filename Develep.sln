@@ -7,11 +7,19 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RunTrials", "RunTrials\RunT
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EDDCA6B8-2EFE-467C-96AB-C65417A74D98}"
 	ProjectSection(SolutionItems) = preProject
+		Develep.vsmdi = Develep.vsmdi
+		Local.testsettings = Local.testsettings
 		Performance2.psess = Performance2.psess
 		Performance3.psess = Performance3.psess
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FitnessTestProject", "FitnessTestProject\FitnessTestProject.vcxproj", "{5842FB9E-970A-481E-B30C-B752B041E5C1}"
+EndProject
 Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = Develep.vsmdi
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
@@ -33,6 +41,12 @@ Global
 		{50AF7427-EC14-4E46-96EC-675CD0C284B7}.Release|Win32.Build.0 = Release|Win32
 		{50AF7427-EC14-4E46-96EC-675CD0C284B7}.Release|x64.ActiveCfg = Release|x64
 		{50AF7427-EC14-4E46-96EC-675CD0C284B7}.Release|x64.Build.0 = Release|x64
+		{5842FB9E-970A-481E-B30C-B752B041E5C1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5842FB9E-970A-481E-B30C-B752B041E5C1}.Debug|Win32.Build.0 = Debug|Win32
+		{5842FB9E-970A-481E-B30C-B752B041E5C1}.Debug|x64.ActiveCfg = Debug|Win32
+		{5842FB9E-970A-481E-B30C-B752B041E5C1}.Release|Win32.ActiveCfg = Release|Win32
+		{5842FB9E-970A-481E-B30C-B752B041E5C1}.Release|Win32.Build.0 = Release|Win32
+		{5842FB9E-970A-481E-B30C-B752B041E5C1}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

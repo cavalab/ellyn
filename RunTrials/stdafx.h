@@ -32,10 +32,8 @@
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
-<<<<<<< HEAD
 #include<exception>
-=======
->>>>>>> 28d415955d56755da3215348d667c1ff729bb8f2
+
 
 
 // TODO: reference additional headers your program requires here
