@@ -3,7 +3,7 @@
 #include "state.h"
 #include "Generationfns.h"
 
-void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r)
+void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r,data& d)
 {
 	//boost::progress_timer timer;
 	float choice;
@@ -39,7 +39,7 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 		}
 		else if (choice < p.rep_wheel[2]) //mutation
 		{
-			Mutate(pop.at(parloc[numits]),tmppop,p,r);
+			Mutate(pop.at(parloc[numits]),tmppop,p,r,d);
 			numits++;
 		}
 

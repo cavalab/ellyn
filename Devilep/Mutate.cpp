@@ -2,7 +2,7 @@
 #include "pop.h"
 #include "general_fns.h"
 
-void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r)
+void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)
 {
 	vector<unsigned int> ichange;
 	//ind kid;
@@ -14,28 +14,24 @@ void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r)
 	}
 	for(unsigned int j=0;j<ichange.size();j++)
 	{
-		if(par.line.at(ichange.at(j))>=100) // insert function
+		if(par.line.at(ichange.at(j))->type=='n') // insert function
 		{
 			if (p.ERC)
 			{
-				//if constant, perturb with gaussian noise
-				if (is_number(par.args.at(par.line.at(ichange.at(j))-100)))
-				{
-					float num = std::stof(par.args.at(par.line.at(ichange.at(j))-100));
+				    float num = static_pointer_cast<n_num>(par.line.at(ichange.at(j)))->value;
 					num = num/2 + r[omp_get_thread_num()].gasdev()*num/2;
-					par.args.at(par.line.at(ichange.at(j))-100) = to_string(static_cast<long double>(num));
-				}
-				//else if variable, pick random variable replacement
-				else
-					par.args.at(par.line.at(ichange.at(j))-100) = p.allvars.at(r[omp_get_thread_num()].rnd_int(0,p.allvars.size()-1));
+					static_pointer_cast<n_num>(par.line.at(ichange.at(j)))->value = num;
 			}
-			else
-				par.args.at(par.line.at(ichange.at(j))-100) = p.allvars.at(r[omp_get_thread_num()].rnd_int(0,p.allvars.size()-1));
-
+		}
+		else if (par.line.at(ichange.at(j))->type=='v'){
+				//else if variable, pick random variable replacement
+			static_pointer_cast<n_sym>(par.line.at(ichange.at(j)))->varname = d.label.at(r[omp_get_thread_num()].rnd_int(0,d.label.size()-1));
+			static_pointer_cast<n_sym>(par.line.at(ichange.at(j)))->valpt = d.datatable.at(static_pointer_cast<n_sym>(par.line.at(ichange.at(j)))->varname);
 		}
 		else
 		{
-			NewInstruction(par,ichange.at(j),p,r);
+			
+			NewInstruction(par,ichange.at(j),p,r,d);
 		}
 	}
 		par.origin='m';

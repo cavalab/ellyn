@@ -12,7 +12,10 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 	int r2,off1,off2,offset,head,it;
 	//std::vector<int>::iterator it;
 	int tmpinssize = 0;
-	
+	vector<int> psize; 
+	psize.push_back(p1.line.size());
+	psize.push_back(p2.line.size());
+
 	if(p.cross==1)
 	{
 		for (int r1=0; r1 < 2; r1++)
@@ -39,25 +42,8 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 			}
 			head = r1;
 			offset=off1;
-			it = 0;
 			// assign beginning of parent to kid if it is longer
-			while(kids.at(r1).line.size() < offset)
-			{
-				if (parents[r1].line.at(it)>=100)
-				{
-					kids.at(r1).args.push_back(parents[r1].args.at(parents[r1].line.at(it)-100));
-					kids.at(r1).line.push_back(kids.at(r1).args.size()+99);
-					
-				}
-				else
-				{
-					kids.at(r1).line.push_back(parents[r1].line.at(it));
-				}
-				if (p.eHC_on)
-						kids.at(r1).epiline.push_back(parents[r1].epiline.at(it));
-				++it;
-			}
-
+			kids.at(r1).line.insert(kids.at(r1).line.end(),parents[r1].line.begin(),parents[r1].line.begin()+offset);
 
 			for (unsigned int i=0;i<std::min(parents[r1].line.size(),parents[r2].line.size());i++)
 			{
@@ -75,44 +61,25 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 					}
 				}
 					
-				if (p.eHC_on)
-						kids.at(r1).epiline.push_back(parents[r1].epiline.at(it));
-			
-				if(parents[head].line.at(i+offset)>99)
-				{// grab arguments
-					kids.at(r1).args.push_back(parents[head].args.at(parents[head].line.at(i+offset)-100));
-					kids.at(r1).line.push_back(kids.at(r1).args.size()+99);
-				}
-				else
-					kids.at(r1).line.push_back(parents[head].line.at(i+offset));
-			
-			/*tmpinssize=0;
-			for(unsigned int t=0; t<kids[r1].line.size();t++)
-				if(kids[r1].line.at(t)>99) tmpinssize++;
-			if(tmpinssize!=kids[r1].args.size())
-				cout << "size mismatch" << endl;*/
+				kids.at(r1).line.push_back(parents[head].line.at(i+offset));
 			}
-		
-			
-			while(kids.at(r1).line.size() < parents[r1].line.size())
+			if(kids.at(r1).line.size() < parents[r1].line.size())
 			{
-				if (parents[r1].line.at(kids.at(r1).line.size())>=100)
-				{
-					kids.at(r1).args.push_back(parents[r1].args.at(parents[r1].line.at(kids.at(r1).line.size())-100));
-					kids.at(r1).line.push_back(kids.at(r1).args.size()+99);
-				}
-				else
-					kids.at(r1).line.push_back(parents[r1].line.at(kids.at(r1).line.size()));
-				
-				if (p.eHC_on)
-						kids.at(r1).epiline.push_back(parents[r1].epiline.at(it));
+				int gap = kids.at(r1).line.size() < parents[r1].line.size()+1;
+				kids.at(r1).line.insert(kids.at(r1).line.end(),parents[r1].line.end()-gap,parents[r1].line.end());
 			}
-			if (p.eHC_on && kids[r1].epiline.size() != kids[r1].line.size())
-				cout << "size mismatch between epiline and line\n";
+				//kids.at(r1).line.push_back(parents[r1].line.at(kids.at(r1).line.size()));
 		}
 	}
-	else if (p.cross==2) // two-point crossover
+	else if (p.cross==2) // one-point crossover
 	{
+		int point1 = r[omp_get_thread_num()].rnd_int(1,min(p1.line.size(),p2.line.size())-1);
+		
+		kids[0].line.assign(p1.line.begin(),p1.line.begin()+point1);
+		kids[0].line.insert(kids[0].line.end(),p2.line.begin()+point1,p2.line.end());
+
+		kids[1].line.assign(p2.line.begin(),p2.line.begin()+point1);
+		kids[1].line.insert(kids[1].line.end(),p1.line.begin()+point1,p1.line.end());
 
 	}
 	//tmpinssize=0;
@@ -123,26 +90,12 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 
 	tmpinssize=0;
 
-	for(unsigned int t=0; t<kids[1].line.size();t++)
-		if(kids[1].line.at(t)>99) tmpinssize++;
-	if(p.eHC_on && tmpinssize!=kids[1].args.size())
-		cout << "size mismatch" << endl;
-
 	kids[0].origin = 'c';
 	kids[0].parentfitness = parents[0].fitness;
 	kids[1].origin = 'c';
 	kids[1].parentfitness = parents[1].fitness;
 
-	if(!p.eHC_on) // set epiline to all ones 
-	{
-		kids[0].epiline.assign(kids[0].line.size(),1);
-		kids[1].epiline.assign(kids[1].line.size(),1);
-	}
 	tmppop.push_back(kids[0]);
 	tmppop.push_back(kids[1]);
 
-	if (kids[0].epiline.size() != kids[0].line.size())
-				cout << "size mismatch between epiline and line\n";
-	if (kids[1].epiline.size() != kids[1].line.size())
-				cout << "size mismatch between epiline and line\n";
 }

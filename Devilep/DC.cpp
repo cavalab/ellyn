@@ -4,7 +4,6 @@
 #include "state.h"
 #include "Generationfns.h"
 #include "strdist.h"
-#include "Gen2Phen.h"
 #include "Fitness.h"
 
 // steady-state deterministic crowding algorithm.
@@ -29,17 +28,15 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 		}
 		else
 		{
-			Mutate(pop.at(p1),tmppop,p,r);
-			Mutate(pop.at(p2),tmppop,p,r);
+			Mutate(pop.at(p1),tmppop,p,r,d);
+			Mutate(pop.at(p2),tmppop,p,r,d);
 		}
 	}
 	else if (choice < p.rep_wheel[2]) //mutation
 	{
 		p1 = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
-		Mutate(pop.at(p1),tmppop,p,r);
+		Mutate(pop.at(p1),tmppop,p,r,d);
 	}
-	//if (p.loud ) cout << "  Gen2Phen...\n";
-	Gen2Phen(tmppop,p);
 	//if (p.loud ) cout << "  Fitness...\n";
 	Fitness(tmppop,p,d,s);
 

@@ -9,7 +9,6 @@
 #include "Fitness.h"
 #include "Generation.h"
 #include "instructionset.h"
-#include "Gen2Phen.h"
 #include "Generationfns.h"
 #include "strdist.h"
 #include <time.h>
@@ -28,7 +27,7 @@ void load_params(params &p, std::ifstream& is);
 void load_data(data &d, std::ifstream& is,params&);
 bool stopcondition(float&);
 void printstats(tribe& T,int &i,state& s,params& p);
-void printbestind(tribe& T,params& p,string& logname);
+void printbestind(tribe& T,params& p,state& s,string& logname);
 
 void runDevelep(string& paramfile, string& datafile,bool trials)
 {
@@ -154,9 +153,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 				float bestfit;
 				vector<ind> tmppop;
 				// s.out << "Initialize Population..." << "\n";
-				InitPop(T.at(i).pop,p,r);
-				// s.out << "Gen 2 Phen..." << "\n";
-				Gen2Phen(T.at(i).pop,p);
+				InitPop(T.at(i).pop,p,r,d);
 				// s.out << "Fitness..." << "\n";
 				Fitness(T.at(i).pop,p,d,s);
 				worstfit = T.at(i).worstFit();
@@ -173,8 +170,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 						}
 					}
 
-					InitPop(tmppop,p,r);
-					Gen2Phen(tmppop,p);
+					InitPop(tmppop,p,r,d);
 					Fitness(tmppop,p,d,s);
 					T.at(i).pop.insert(T.at(i).pop.end(),tmppop.begin(),tmppop.end());
 					tmppop.clear();
@@ -195,9 +191,8 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 			#pragma omp parallel for
 			for(int i=0;i<num_islands;i++)
 			{
-				InitPop(T.at(i).pop,p,r);
+				InitPop(T.at(i).pop,p,r,d);
 				// s.out << "Gen 2 Phen..." << "\n";
-				Gen2Phen(T.at(i).pop,p);
 				// s.out << "Fitness..." << "\n";
 				Fitness(T.at(i).pop,p,d,s);
 			}
@@ -278,7 +273,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		//World.pop.clear();
 		gen++;
 		}
-		printbestind(World,p,logname);
+		printbestind(World,p,s,logname);
 	}
 	else //no islands
 	{
@@ -291,25 +286,25 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 			//float bestfit;
 			vector<ind> tmppop;
 			// s.out << "Initialize Population..." << "\n";
-			InitPop(T.pop,p,r);
+			InitPop(T.pop,p,r,d);
 			// s.out << "Gen 2 Phen..." << "\n";
-			Gen2Phen(T.pop,p);
 			// s.out << "Fitness..." << "\n";
 			Fitness(T.pop,p,d,s);
 			worstfit = T.worstFit();
 			while(worstfit == p.max_fit && cnt<100)
 			{
-				for (int j=0;j<T.pop.size(); j++)
+				for (vector<ind>::iterator j=T.pop.begin();j!=T.pop.end();)
 				{
-					if ( T.pop.at(j).fitness == p.max_fit)
+					if ( (*j).fitness == p.max_fit)
 					{
-						T.pop.erase(T.pop.begin()+j);
+						j=T.pop.erase(j);
 						tmppop.push_back(ind());
 					}
+					else
+						j++;
 				}
 				s.out << "\ntmppop size: " << tmppop.size();
-				InitPop(tmppop,p,r);
-				Gen2Phen(tmppop,p);
+				InitPop(tmppop,p,r,d);
 				Fitness(tmppop,p,d,s);
 				T.pop.insert(T.pop.end(),tmppop.begin(),tmppop.end());
 				tmppop.clear();
@@ -321,7 +316,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		}
 		s.setgenevals();
 		s.out << " number of evals: " << s.getgenevals() << "\n";
-		int i=1;
+		int its=1;
 		int trigger=0;
 		int gen=0;
 		int counter=0;
@@ -332,14 +327,14 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		}
 		else
 			gen=p.g;
-		while (i<=gen && !stopcondition(T.best))
+		while (its<=gen && !stopcondition(T.best))
 		{
 			
 			 
 			 Generation(T.pop,p,r,d,s);
 
 
-			 if (i>trigger)
+			 if (its>trigger)
 			 {
 				 if (p.pHC_on && p.ERC)
 				 {
@@ -368,9 +363,9 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 				counter++;
 		
 			 }
-			i++;
+			its++;
 		}
-		printbestind(T,p,logname);
+		printbestind(T,p,s,logname);
 	}
 
 	if(!trials)
@@ -413,8 +408,9 @@ for(unsigned int j=0;j<besteqns.size();j++)
 }
 s.out << "-------------------------------------------------------------------------------" << "\n";
 }
-void printbestind(tribe& T,params& p,string& logname)
+void printbestind(tribe& T,params& p,state& s,string& logname)
 {
+	s.out << "saving results... \n";
 	ind best;
 	T.getbestind(best);
 	string bestname = logname.substr(0,logname.size()-4)+"_best_ind.log";
@@ -426,11 +422,15 @@ void printbestind(tribe& T,params& p,string& logname)
 	fout << "f = " + best.eqn + "\n";
 	fout << " line: ";
 	for(unsigned int i =0;i<best.line.size();i++)
-		fout << best.line[i] << "\t";
+		fout << best.line[i]->type << "\t";
 	fout << endl;
 	fout << "eline: ";
-	for(unsigned int i =0;i<best.epiline.size();i++)
-		fout << best.epiline[i] << "\t";
+	for(unsigned int i =0;i<best.line.size();i++){
+		if (best.line.at(i)->on)
+			fout <<"1\t";
+		else
+			fout <<"0\t";
+	}
 	fout << endl;
 	fout << "args: ";
 	for(unsigned int i =0;i<best.args.size();i++)
@@ -655,54 +655,28 @@ void load_params(params &p, std::ifstream& fs)
 
 	for (unsigned int i=0; i<p.op_list.size(); i++)
 	{
-		if (p.op_list.at(i).compare("insert")==0)
+		if (p.op_list.at(i).compare("n")==0)
 			p.op_choice.push_back(0);
-		else if (p.op_list.at(i).compare("absf")==0)
+		else if (p.op_list.at(i).compare("v")==0)
 			p.op_choice.push_back(1);
-		else if (p.op_list.at(i).compare("add")==0)
+		else if (p.op_list.at(i).compare("+")==0)
 			p.op_choice.push_back(2);
-		else if (p.op_list.at(i).compare("cosf")==0)
+		else if (p.op_list.at(i).compare("-")==0)
 			p.op_choice.push_back(3);
-		else if (p.op_list.at(i).compare("DEL0")==0)
+		else if (p.op_list.at(i).compare("*")==0)
 			p.op_choice.push_back(4);
-		else if (p.op_list.at(i).compare("DEL1")==0)
+		else if (p.op_list.at(i).compare("/")==0)
 			p.op_choice.push_back(5);
-		else if (p.op_list.at(i).compare("divL")==0)
+		else if (p.op_list.at(i).compare("sin")==0)
 			p.op_choice.push_back(6);
-		else if (p.op_list.at(i).compare("divR")==0)
+		else if (p.op_list.at(i).compare("cos")==0)
 			p.op_choice.push_back(7);
-		else if (p.op_list.at(i).compare("DNL")==0)
+		else if (p.op_list.at(i).compare("exp")==0)
 			p.op_choice.push_back(8);
-		else if (p.op_list.at(i).compare("DNR")==0)
+		else if (p.op_list.at(i).compare("log")==0)
 			p.op_choice.push_back(9);
-		else if (p.op_list.at(i).compare("FLIP")==0)
-			p.op_choice.push_back(10);
-		else if (p.op_list.at(i).compare("mul")==0)
-			p.op_choice.push_back(11);
-		else if (p.op_list.at(i).compare("NOOP")==0)
-			p.op_choice.push_back(12);
-		else if (p.op_list.at(i).compare("sinf")==0)
-			p.op_choice.push_back(13);
-		else if (p.op_list.at(i).compare("subL")==0)
-			p.op_choice.push_back(14);
-		else if (p.op_list.at(i).compare("subR")==0)
-			p.op_choice.push_back(15);
-		else if (p.op_list.at(i).compare("totheL")==0)
-			p.op_choice.push_back(16);
-		else if (p.op_list.at(i).compare("totheR")==0)
-			p.op_choice.push_back(17);
-		else if (p.op_list.at(i).compare("UP")==0)
-			p.op_choice.push_back(18);
-		else if (p.op_list.at(i).compare("UP2")==0)
-			p.op_choice.push_back(19);
-		else if (p.op_list.at(i).compare("UP3")==0)
-			p.op_choice.push_back(20);
-		else if (p.op_list.at(i).compare("expf")==0)
-			p.op_choice.push_back(21);
-		else if (p.op_list.at(i).compare("logf")==0)
-			p.op_choice.push_back(22);
 		else 
-			cout << "bad command (develep line 306)" << "\n";
+			cout << "bad command (load params op_choice)" << "\n";
 	}
 	
 	p.rep_wheel.push_back(p.rt_rep);
@@ -776,8 +750,8 @@ void load_data(data &d, std::ifstream& fs,params& p)
 	{
 		d.vals.back().pop_back();
 	}
-	//d.dattovar.resize(p.allvars.size());
-	//d.mapdata();
+	d.dattovar.resize(p.allvars.size());
+	d.mapdata();
 }
 bool stopcondition(float &bestfit)
 {

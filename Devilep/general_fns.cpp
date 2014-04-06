@@ -10,14 +10,14 @@ bool is_number(const std::string& s)
 }
 
 
-void NewInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
+void NewInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,data& d)
 {
 	
 	vector <string> load_choices(p.allblocks);
 	int choice=0;
 	//cout<<"iterator definition\n";
-	std::vector<int>::iterator it;
-	it = newind.line.begin();
+	//std::vector<int>::iterator it;
+	//it = newind.line.begin();
 	//cout<<"end def \n";
 
 	//uniform_int_distribution<int> dist(0,21);
@@ -57,35 +57,45 @@ void NewInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 	else 
 		choice = r[omp_get_thread_num()].rnd_int(0,p.op_list.size()-1);
 
-		
-	if (choice==0) // store number reference to argument from all blocks in next position in line
-	{
-		
-		newind.args.push_back(load_choices.at(r[omp_get_thread_num()].rnd_int(0,load_choices.size()-1)));
-		/*if(it+loc>newind.line.size())
-		{
-			cout<< "it+ loc: " << *it+loc << "line size: " << newind.line.size() << ". too big" <<endl;
-			newind.line.push_back(100+newind.args.size()-1);
-		}
-		else*/
-		//cout<< "newind insert\n";
-			/*newind.line.insert(it+loc,100+newind.args.size()-1);*/
-		newind.line.at(loc) = 100+newind.args.size()-1;
-		//cout<<"end newind insert\n";
-	}
-	else 
-	{
-		/*if(*it+loc>newind.line.size())
-		{
-			cout<< "it+ loc: " << it+loc << "line size: " << newind.line.size() <<". too big!\n";
+		string varchoice;
 			
-			newind.line.push_back(p.op_choice.at(choice));
+		switch (p.op_choice.at(choice))
+		{
+		case 0: //load number
+			if(p.ERCints)
+				newind.line.at(loc)=shared_ptr<node>(new n_num((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC)));
+			else
+				newind.line.at(loc)=shared_ptr<node>(new n_num(r[omp_get_thread_num()].rnd_flt(p.minERC,p.maxERC)));
+			break;
+		case 1: //load variable
+			varchoice = d.label.at(r[omp_get_thread_num()].rnd_int(0,d.label.size()-1));
+			newind.line.at(loc)=shared_ptr<node>(new n_sym(d.datatable.at(varchoice),varchoice));
+			break;
+		case 2: // +
+			newind.line.at(loc)=shared_ptr<node>(new n_add());
+			break;
+		case 3: // -
+			newind.line.at(loc)=shared_ptr<node>(new n_sub());
+			break;
+		case 4: // *
+			newind.line.at(loc)=shared_ptr<node>(new n_mul());
+			break;
+		case 5: // /
+			newind.line.at(loc)=shared_ptr<node>(new n_div());
+			break;
+		case 6: // sin
+			newind.line.at(loc)=shared_ptr<node>(new n_sin());
+			break;
+		case 7: // cos
+			newind.line.at(loc)=shared_ptr<node>(new n_cos());
+			break;
+		case 8: // exp
+			newind.line.at(loc)=shared_ptr<node>(new n_exp());
+			break;
+		case 9: // log
+			newind.line.at(loc)=shared_ptr<node>(new n_log());
+			break;
 		}
-		else*/
-		//cout<< "newind insert\n";
-			//newind.line.insert(it+loc,p.op_choice.at(choice));
-		newind.line.at(loc) = p.op_choice.at(choice);
-			//cout<<"end newind insert\n";
-	}
+		
 
 }

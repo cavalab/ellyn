@@ -161,15 +161,15 @@
   <ItemGroup>
     <ClInclude Include="data.h" />
     <ClInclude Include="Develep.h" />
-    <ClInclude Include="EvalEqnStr.h" />
     <ClInclude Include="exprtk.hpp" />
     <ClInclude Include="Fitness.h" />
-    <ClInclude Include="Gen2Phen.h" />
     <ClInclude Include="general_fns.h" />
     <ClInclude Include="Generation.h" />
     <ClInclude Include="Generationfns.h" />
+    <ClInclude Include="InitPop.h" />
     <ClInclude Include="instructionset.h" />
     <ClInclude Include="isnan.h" />
+    <ClInclude Include="Line2Eqn.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="mstream.h" />
     <ClInclude Include="op_node.h" />
@@ -187,16 +187,10 @@
     <ClCompile Include="AgeFitSelect.cpp" />
     <ClCompile Include="ApplyGenetics.cpp" />
     <ClCompile Include="Crossover.cpp" />
-    <ClCompile Include="CrossoverP.cpp" />
     <ClCompile Include="DC.cpp" />
     <ClCompile Include="Develep.cpp" />
     <ClCompile Include="EpiHC.cpp" />
-    <ClCompile Include="EvalEqnStr.cpp" />
     <ClCompile Include="Fitness.cpp" />
-    <ClCompile Include="Gen2Phen.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj /openmp %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj /openmp %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
     <ClCompile Include="general_fns.cpp" />
     <ClCompile Include="Generation.cpp" />
     <ClCompile Include="HillClimb.cpp" />
@@ -205,8 +199,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="instructionset.cpp" />
+    <ClCompile Include="Line2Eqn.cpp" />
     <ClCompile Include="Mutate.cpp" />
-    <ClCompile Include="MutateP.cpp" />
     <ClCompile Include="runDevelep.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

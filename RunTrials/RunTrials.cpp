@@ -49,6 +49,11 @@ int main(int argc, char** argv)
 		cout << "All trials completed. Press return to exit." << endl;
 		key = getchar();
 	}
+	catch(const std::bad_alloc&)
+	{
+		cout << "bad allocation error. \n";
+		abort();
+	}
 	catch(exception& er) 
 	{
 		cout << "Error: " << er.what() << endl;

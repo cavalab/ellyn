@@ -1,127 +1,251 @@
+#ifndef OP_NODE_H
+#define OP_NODE_H
 #include "stdafx.h"
-
-enum {NUM,OP,SYM};
+#include <vector>
+using namespace std;
+//#include <boost/ptr_container/ptr_vector.hpp>
+//#include <boost/utility.hpp>
+//enum {NUM,OP,SYM};
 
 class node{
 public:
-	int type;
-	node() {type=0;}
-	node(int set) {type=set;}
-	~node() {}
-	virtual void eval(vector<float> & outstack);
+	char type;
+	bool on;
+	int arity;
+	//float value;
+	//float* valpt;
+	//string varname;
+	node() {type=0; on=1; arity=0;}
+	node(int set) {type=set;on=1;}
+	virtual ~node() {}
+	virtual void eval(vector<float> & outstack)=0;
+	/*node* clone() const
+	{
+		return do_clone();
+	}*/
+//private:
+	/*virtual node* do_clone() const
+	{
+		return new node(*this); 
+	}*/
 };
 
-class n_sym : public node{
-	float* valpt;
-public: 
-	n_sym(float& set)
-	{
-		valpt = &set;
-	}
-	~n_sym(){}
-	virtual void eval(vector<float> & outstack)
-	{
-		outstack.push_back(*valpt);
-	}
-};
+//inline node* new_clone(const node& a)
+//{
+//	return a.clone();
+//}
 
 class n_num : public node{
 public:
 	float value;
-	n_num(float set) {value=set;}
-	virtual void eval(vector<float> & outstack)	{outstack.push_back(value);}
+	n_num(float set) {type='n'; value=set;}
+	~n_num(){}
+	virtual void eval(vector<float> & outstack)	
+	{
+		//if (on)
+			outstack.push_back(value);
+	}
+//private:
+//	virtual node* do_clone() const
+//	{
+//		return new n_num(*this); 
+//	}
+};
+
+class n_sym : public node{
+public: 
+	float* valpt;
+	string varname;
+	n_sym();
+	n_sym(float* set,string& vname)
+	{
+		type='v';
+		valpt = set;
+		varname=vname;
+	}
+	~n_sym(){}
+	virtual void eval(vector<float> & outstack)
+	{
+		//if (on)
+			outstack.push_back(*valpt);
+	}
+//private:
+//	virtual node* do_clone() const
+//	{
+//		return new n_sym(*this); 
+//	}
 };
 
 class n_add: public node{
 public:
-	n_add(){}
+	n_add(){type='+';arity=2;}
 	~n_add(){}
 	virtual void eval(vector<float> & outstack)
 	{
-		float n1 = outstack.back(); outstack.pop_back();
-		float n2 = outstack.back(); outstack.pop_back();
+		//if (on){
+			if(outstack.size()>=2){
+				float n1 = outstack.back(); outstack.pop_back();
+				float n2 = outstack.back(); outstack.pop_back();
 
-		outstack.push_back(n1+n2);
+				outstack.push_back(n2+n1);
+			}
+		//}
 	}
+//private:
+//	virtual node* do_clone() const
+//	{
+//		return new n_add(*this); 
+//	}
 };
 
 class n_sub: public node{
 public:
-	n_sub(){}
+	n_sub(){type='-';arity=2;}
 	~n_sub(){}
 	virtual void eval(vector<float> & outstack)
 	{
-		float n1 = outstack.back(); outstack.pop_back();
-		float n2 = outstack.back(); outstack.pop_back();
+		//if (on){
+			if(outstack.size()>=2){
+				float n1 = outstack.back(); outstack.pop_back();
+				float n2 = outstack.back(); outstack.pop_back();
 
-		outstack.push_back(n1-n2);
+				outstack.push_back(n2-n1);
+			}
+		//}
 	}
+//private:
+//	virtual node* do_clone() const
+//	{
+//		return new n_sub(*this); 
+//	}
 };
 class n_mul: public node{
 public:
-	n_mul(){}
+	n_mul(){type='*';arity=2;}
 	~n_mul(){}
 	virtual void eval(vector<float> & outstack)
 	{
-		float n1 = outstack.back(); outstack.pop_back();
-		float n2 = outstack.back(); outstack.pop_back();
+		//if (on){
+			if(outstack.size()>=2){
+				float n1 = outstack.back(); outstack.pop_back();
+				float n2 = outstack.back(); outstack.pop_back();
 
-		outstack.push_back(n1*n2);
+				outstack.push_back(n2*n1);
+			}
+		//}
 	}
+//private:
+//	virtual node* do_clone() const
+//	{
+//		return new n_mul(*this); 
+//	}
 };
 class n_div: public node{
 public:
-	n_div(){}
+	n_div(){type='/';; on=1;arity=2;}
 	~n_div(){}
 	virtual void eval(vector<float> & outstack)
 	{
-		float n1 = outstack.back(); outstack.pop_back();
-		float n2 = outstack.back(); outstack.pop_back();
-
-		outstack.push_back(n1+n2);
+		//if (on){
+			if(outstack.size()>=2){
+				float n1 = outstack.back(); outstack.pop_back();
+				float n2 = outstack.back(); outstack.pop_back();
+				if(n1<0.0001)
+					outstack.push_back(0);
+				else
+					outstack.push_back(n2/n1);
+			}
+		//}
 	}
+//private:
+//	virtual node* do_clone() const
+//	{
+//		return new n_div(*this); 
+//	}
 };
 
 class n_sin: public node{
 public:
-	n_sin(){}
+	n_sin(){type='s';arity=1;}
 	~n_sin(){}
 	virtual void eval(vector<float> & outstack)
 	{
-		float n1 = outstack.back(); outstack.pop_back();
-		outstack.push_back(sin(n1));
+		//if (on){
+			if(outstack.size()>=1){
+				float n1 = outstack.back(); outstack.pop_back();
+				outstack.push_back(sin(n1));
+			}
+		//}
 	}
+//private:
+//	virtual node* do_clone() const
+//	{
+//		return new n_sin(*this); 
+//	}
+
 };
 
 class n_cos: public node{
 public:
-	n_cos(){}
+	n_cos(){type='c';arity=1;}
 	~n_cos(){}
 	virtual void eval(vector<float> & outstack)
 	{
-		float n1 = outstack.back(); outstack.pop_back();
-		outstack.push_back(cos(n1));
+		//if (on){
+			if(outstack.size()>=1){
+				float n1 = outstack.back(); outstack.pop_back();
+				outstack.push_back(cos(n1));
+			}
+		//}
 	}
+//private:
+//	virtual node* do_clone() const
+//	{
+//		return new n_cos(*this); 
+//	}
 };
 
 class n_exp: public node{
 public:
-	n_exp(){}
+	n_exp(){type='e';arity=1;}
 	~n_exp(){}
 	virtual void eval(vector<float> & outstack)
 	{
-		float n1 = outstack.back(); outstack.pop_back();
-		outstack.push_back(exp(n1));
+		//if (on){
+			if(outstack.size()>=1){
+				float n1 = outstack.back(); outstack.pop_back();
+				outstack.push_back(exp(n1));
+			}
+		}
 	}
+//private:
+//	virtual node* do_clone() const
+//	{
+//		return new n_exp(*this); 
+//	}
 };
 
 class n_log: public node{
 public:
-	n_log(){}
+	n_log(){type='l';arity=1;}
 	~n_log(){}
 	virtual void eval(vector<float> & outstack)
 	{
-		float n1 = outstack.back(); outstack.pop_back();
-		outstack.push_back(log(n1));
+		//if (on){
+			if(outstack.size()>=1){
+				float n1 = outstack.back(); outstack.pop_back();
+				if (n1<0.0001)
+					outstack.push_back(0);
+				else
+					outstack.push_back(log(n1));
+			}
+		}
 	}
+//private:
+//	virtual node* do_clone() const
+//	{
+//		return new n_log(*this); 
+//	}
 };
+
+#endif

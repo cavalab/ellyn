@@ -15,8 +15,6 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
 		tmp_ind[0]=oldind; 
 		tmp_ind[0].clrPhen(p.sim_nom_mod);
 		bool updated = false;
-		if (oldind.epiline.size() != oldind.line.size())
-				cout << "size mismatch between epiline and line\n";
 		for (int j=0;j<p.eHC_its; j++) // for number of specified iterations
 		{
 			if (updated)
@@ -25,12 +23,12 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
 				tmp_ind[0].clrPhen(p.sim_nom_mod); // clear phenotype
 			}
 
-			for(unsigned int h = 0;h<tmp_ind[0].epiline.size();h++)
+			for(unsigned int h = 0;h<tmp_ind[0].line.size();h++)
 			{
 				if(r[omp_get_thread_num()].rnd_flt(0,1)<=p.eHC_prob)
-					tmp_ind[0].epiline.at(h) = !tmp_ind[0].epiline.at(h);
+					tmp_ind[0].line.at(h)->on = !tmp_ind[0].line.at(h)->on;
 			}	
-			Gen2Phen(tmp_ind,p);
+			//Gen2Phen(tmp_ind,p);
 			Fitness(tmp_ind,p,d,s); //get fitness 
 			if ( tmp_ind[0].fitness < oldind.fitness) // if fitness is better, replace individual
 			{

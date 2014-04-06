@@ -1,7 +1,4 @@
-
-
-
-g					10000	// number of generations
+g					25	// number of generations
 
 popsize				1000	//population size
 numits				1	// number of trials
@@ -12,7 +9,7 @@ tourn_size			2
 rt_rep				0.1
 rt_cross			0.7
 rt_mut				0.2
-cross				1	// 1: ultra 2: one point1
+cross				2	// 1: ultra 2: one point1
 cross_ar			.05 //crossover alternation rate (ultra only)
 mut_ar				.01 //mutation alternation rate (ultra only)
 stoperror			0.0001	// stop condition / convergence condition
@@ -48,12 +45,12 @@ fit_method			1   //1: algebraic, 2: runge kutta
 max_fit				100000000000000000000
 min_fit				0.00000000000000000001
 
-//available operators: insert	absf	add	cosf	DEL0	DEL1	divL	divR	DNL	DNR	FLIP	mul	NOOP	sinf	subL	subR	totheL	totheR	UP	UP2	UP3	expf	logf
-//					   0	    1		2	3		4		5		6		7		8	9	10		11	12		13		14		15		16		17		18	19	20	21	22	
-op_list				insert	add	DEL0	DEL1	divL	divR	DNL	DNR	mul	NOOP	subL	subR	UP	UP2	UP3	expf	logf
-op_weight			10		1	1		1		0.5		0.5		1	1	1	1		0.5		0.5		2	2	2	1		1		
-weight_ops_on		1
+//available operators: n	v	+	-	*	/	sin	cos	exp	log
+//index                0	1	2	3	4	5	6	7	8	9
 
+op_list				n	v	+	-	*	/	sin	cos	exp	log	
+op_weight			4	4	1	1	1	1	1	1	1	1				
+weight_ops_on		1
 min_len				10
 max_len				50
 
@@ -97,5 +94,5 @@ prto_arch_size		425
 prto_sel_on			1
 
 // island model
-islands				1
+islands				0
 island_gens			82

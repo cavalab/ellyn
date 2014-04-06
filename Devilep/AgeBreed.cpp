@@ -3,7 +3,6 @@
 #include "state.h"
 #include "Generationfns.h"
 #include "Fitness.h"
-#include "Gen2Phen.h"
 
 void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 {
@@ -39,8 +38,8 @@ void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 			}
 			else
 			{
-				Mutate(pop.at(numits),tmppop,p,r);
-				Mutate(pop.at(numits+1),tmppop,p,r);
+				Mutate(pop.at(numits),tmppop,p,r,d);
+				Mutate(pop.at(numits+1),tmppop,p,r,d);
 				//update ages
 				tmppop.at(tmppop.size()-2).age = pop.at(numits).age;
 				tmppop.back().age = pop.at(numits+1).age;
@@ -53,7 +52,7 @@ void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 		}
 		else if (choice < p.rep_wheel[2]) //mutation
 		{
-			Mutate(pop.at(numits),tmppop,p,r);
+			Mutate(pop.at(numits),tmppop,p,r,d);
 			//update ages
 			tmppop.back().age=pop.at(numits).age;
 			pop.at(numits).age++;
@@ -68,7 +67,6 @@ void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 	while(tmppop.size()>pop.size())
 		tmppop.erase(tmppop.end()-1);
 	//get tmppop fitness 
-	Gen2Phen(tmppop,p);
 	Fitness(tmppop,p,d,s);
 	// genetic stats
 	s.setCrossPct(tmppop);

@@ -7,12 +7,13 @@
 #include<vector>
 #include "params.h"
 #include "data.h"
-
+#include <boost/ptr_container/ptr_vector.hpp>
+//#include "RPN_class.h"
+#include "op_node.h"
 
 struct ind {
 	//unsigned int id;
-	std::vector <int> line;
-	std::vector <bool> epiline;
+	vector <shared_ptr<node>> line;
 	std::vector <std::string> args;
 	std::string eqn;
 	std::string eqn_form; // equation form for string distance comparison to other forms
@@ -38,7 +39,17 @@ struct ind {
 	{
 		age=1;
 	}
-	~ind() {}
+	~ind() {
+		//cout << "ind destructor\n";
+		//if(!line.empty())
+		//{
+		//	for(vector<node*>::iterator it= line.begin();it!=line.end();it++)
+		//		delete(*it);
+		//	line.clear();
+		//	//cout << "ind destructor deleted line nodes\n";
+		//}
+		//
+	}
 	//void init(string& nom_mod)
 	//{
 	//	eqn = nom_mod;
@@ -49,7 +60,7 @@ struct ind {
 	//}
 	void clrPhen(string& nom_mod)
 	{
-		eqn = nom_mod;
+		eqn = "";
 		output.clear();
 		// nominal model must be encased in set of parenthesis. the pointer points to that which is encased.
 		//ptr[0]= 1;
@@ -182,7 +193,7 @@ struct tribe{
 		while(eqns.size()<10 && i<pop.size())
 		{
 			fitnesses.push_back(pop.at(i).fitness);
-			for(unsigned int j=0;j<fitnesses.size()-1;j++)
+			for(unsigned int j=0;j<fitnesses.size()-1;j++)		 
 			{
 				if(fitnesses.at(j)==fitnesses.back())
 				{

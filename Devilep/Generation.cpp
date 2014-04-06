@@ -2,7 +2,6 @@
 #include "pop.h"
 #include "params.h"
 #include "state.h"
-#include "Gen2Phen.h"
 #include "Fitness.h"
 #include "Generationfns.h"
 #include "InitPop.h"
@@ -24,7 +23,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		//if (p.loud ) fcout << "     Apply Genetics...";
 		try
 		{
-			ApplyGenetics(pop,parloc,p,r);
+			ApplyGenetics(pop,parloc,p,r,d);
 		}
 		catch(...)
 				{
@@ -32,7 +31,6 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 					throw;
 				}
 		//if (p.loud ) fcout << "     Gen 2 Phen...";
-		Gen2Phen(pop,p);
 		//if (p.loud ) fcout << "     Fitness...";
 		Fitness(pop,p,d,s);
 		//get mutation/crossover stats
@@ -68,8 +66,8 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 			// add one new individual
 			vector<ind> tmppop(1);
 			tmppop[0].age=0;
-			InitPop(tmppop,p,r);
-			Gen2Phen(tmppop,p);
+			InitPop(tmppop,p,r,d);
+			
 			Fitness(tmppop,p,d,s);
 			pop.push_back(tmppop[0]);
 			// select new population with tournament size 2, based on pareto age-fitness
