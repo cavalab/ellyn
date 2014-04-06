@@ -216,7 +216,7 @@ public:
 				float n1 = outstack.back(); outstack.pop_back();
 				outstack.push_back(exp(n1));
 			}
-		}
+		//}
 	}
 //private:
 //	virtual node* do_clone() const
@@ -239,7 +239,7 @@ public:
 				else
 					outstack.push_back(log(n1));
 			}
-		}
+		//}
 	}
 //private:
 //	virtual node* do_clone() const
