@@ -11,3 +11,4 @@ Release/
 *.ilk
 *.user
 */*.user
+*.vsp
