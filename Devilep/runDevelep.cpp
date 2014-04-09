@@ -161,13 +161,15 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 				int counter=0;
 				while(worstfit == p.max_fit && counter<100)
 				{
-					for (int j=0;j<T.at(i).pop.size(); j++)
+					for (vector<ind>::iterator j=T.at(i).pop.begin();j!=T.at(i).pop.end();)
 					{
-						if ( T.at(i).pop.at(j).fitness == p.max_fit)
+						if ( (*j).fitness == p.max_fit)
 						{
-							T.at(i).pop.erase(T.at(i).pop.begin()+j);
+							j=T.at(i).pop.erase(j);
 							tmppop.push_back(ind());
 						}
+						else
+							j++;
 					}
 
 					InitPop(tmppop,p,r,d);
@@ -188,7 +190,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		}
 		else
 		{
-			#pragma omp parallel for
+			#pragma omp parallel for 
 			for(int i=0;i<num_islands;i++)
 			{
 				InitPop(T.at(i).pop,p,r,d);
@@ -203,7 +205,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		while(gen<=p.g && !stopcondition(World.best))
 		{
 			
-			#pragma omp parallel for
+			#pragma omp parallel for 
 			for(int i=0;i<num_islands;i++)
 			{
 				if(pass)
@@ -253,12 +255,12 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 
 				
 		s.setgenevals();
-		if(s.genevals.back()>mixtrigger) 
+		if(s.totalevals()>mixtrigger) 
 		{
 			//shuffle population	
 			std::random_shuffle(World.pop.begin(),World.pop.end(),r[omp_get_thread_num()]);
 			//redistribute populations to islands
-			#pragma omp parallel for
+			#pragma omp parallel for 
 			for(int i=0;i<num_islands;i++)
 			{
 				T.at(i).pop.assign(World.pop.begin()+i*subpops,World.pop.begin()+(i+1)*subpops);
@@ -341,6 +343,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 					//#pragma omp parallel for
 		 			for(int k=0; k<T.pop.size(); k++)
 		 				HillClimb(T.pop.at(k),p,r,d,s);
+
 		 		 }
 				 if (p.eHC_on) 
 				 {
@@ -348,6 +351,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 					//#pragma omp parallel for
 					for(int m=0; m<T.pop.size(); m++)
 						EpiHC(T.pop.at(m),p,r,d,s);
+
 				 } 
 
 				 s.setgenevals();
@@ -399,7 +403,15 @@ s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "\%\n";
 s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "\%\n";
 s.out << "Bad Genetics: " << s.getBadCrossPct() << "%\n";
 s.clearCross();
-s.out << "Equation" << "\t \t \t \t \t" << "Abs Error" << "\n";
+float totalshares = 0;
+float c1=0;
+for (int i = 0; i<T.pop.size();i++)
+{
+	for (int j=0;j<T.pop.at(i).line.size();j++){
+		totalshares+=float(T.pop.at(i).line.at(j).use_count()); c1++;}
+}
+s.out << "Average shared pointer use count: " << totalshares/(c1) << "\n";
+s.out << "Equation" << "\t \t \t \t \t" << "Mean Absolute Error" << "\n";
 vector <ind> besteqns;
 T.topTen(besteqns);
 for(unsigned int j=0;j<besteqns.size();j++)
@@ -431,10 +443,6 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 		else
 			fout <<"0\t";
 	}
-	fout << endl;
-	fout << "args: ";
-	for(unsigned int i =0;i<best.args.size();i++)
-		fout << best.args.at(i) << "\t";
 	fout << endl;
 	fout << "size: " << best.line.size() << "\n";
 	fout << "eff size: " << best.eff_size << "\n";
@@ -750,8 +758,8 @@ void load_data(data &d, std::ifstream& fs,params& p)
 	{
 		d.vals.back().pop_back();
 	}
-	d.dattovar.resize(p.allvars.size());
-	d.mapdata();
+	//d.dattovar.resize(p.allvars.size());
+	//d.mapdata();
 }
 bool stopcondition(float &bestfit)
 {

@@ -93,5 +93,16 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 	{
 		//cout << "Problem in DC. tmppop size: " << tmppop.size() << endl;
 	}
+	tmppop.clear();
 		
+	/*for (int i = 0; i<pop.size();i++)
+	{
+		int totalshares = 0;
+		for (int j=0;j<pop.at(i).line.size();j++)
+			totalshares+=pop.at(i).line.at(j).use_count();
+
+		if (totalshares>pop.at(i).line.size())
+			cout << "shares exceeded\n";
+	}*/
+
 }

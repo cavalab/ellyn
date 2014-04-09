@@ -167,7 +167,6 @@
     <ClInclude Include="Generation.h" />
     <ClInclude Include="Generationfns.h" />
     <ClInclude Include="InitPop.h" />
-    <ClInclude Include="instructionset.h" />
     <ClInclude Include="isnan.h" />
     <ClInclude Include="Line2Eqn.h" />
     <ClInclude Include="logger.h" />
@@ -198,7 +197,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="instructionset.cpp" />
     <ClCompile Include="Line2Eqn.cpp" />
     <ClCompile Include="Mutate.cpp" />
     <ClCompile Include="runDevelep.cpp" />

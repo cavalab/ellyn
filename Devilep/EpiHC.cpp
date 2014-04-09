@@ -11,16 +11,16 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
 	//for (int i=0; i<pop.size(); i++) // for each individual
 	//{
 		
-		vector<ind> tmp_ind(1);
-		tmp_ind[0]=oldind; 
-		tmp_ind[0].clrPhen(p.sim_nom_mod);
+		vector<ind> tmp_ind(1,oldind);
+		tmp_ind[0].clrPhen();
 		bool updated = false;
 		for (int j=0;j<p.eHC_its; j++) // for number of specified iterations
 		{
 			if (updated)
 			{
-				tmp_ind[0] = oldind; 
-				tmp_ind[0].clrPhen(p.sim_nom_mod); // clear phenotype
+				//tmp_ind.clear();
+				tmp_ind.push_back(oldind); 
+				tmp_ind[0].clrPhen(); // clear phenotype
 			}
 
 			for(unsigned int h = 0;h<tmp_ind[0].line.size();h++)
@@ -38,13 +38,15 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
 			}
 			else if (tmp_ind[0].fitness == oldind.fitness && tmp_ind[0].eqn.size() < oldind.eqn.size()) // if fitness is same but equation is smaller, replace individual
 			{
-				oldind = tmp_ind[0];
+				swap(oldind,tmp_ind[0]);
+				tmp_ind.clear();
 				updated = true;
 				s.eHC_updates[omp_get_thread_num()]++;
 			}
 			else
 				updated = false;
 		}
+		tmp_ind.clear();
 	//}
 
 }

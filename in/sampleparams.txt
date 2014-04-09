@@ -1,5 +1,4 @@
-g					25	// number of generations
-
+g					10	// number of generations
 popsize				1000	//population size
 numits				1	// number of trials
 
@@ -9,9 +8,9 @@ tourn_size			2
 rt_rep				0.1
 rt_cross			0.7
 rt_mut				0.2
-cross				2	// 1: ultra 2: one point1
-cross_ar			.05 //crossover alternation rate (ultra only)
-mut_ar				.01 //mutation alternation rate (ultra only)
+cross				1	// 1: ultra 2: one point1
+cross_ar			.1 //crossover alternation rate (ultra only)
+mut_ar				.1 //mutation alternation rate (ultra only)
 stoperror			0.0001	// stop condition / convergence condition
 
 init_validate_on	1	// initial fitness validation of starting population
@@ -48,8 +47,8 @@ min_fit				0.00000000000000000001
 //available operators: n	v	+	-	*	/	sin	cos	exp	log
 //index                0	1	2	3	4	5	6	7	8	9
 
-op_list				n	v	+	-	*	/	sin	cos	exp	log	
-op_weight			4	4	1	1	1	1	1	1	1	1				
+op_list				n	v	+	-	*	/	
+op_weight			4	4	1	1	1	1					
 weight_ops_on		1
 min_len				10
 max_len				50

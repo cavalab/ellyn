@@ -167,7 +167,6 @@
     <ClInclude Include="..\Devilep\Generation.h" />
     <ClInclude Include="..\Devilep\Generationfns.h" />
     <ClInclude Include="..\Devilep\InitPop.h" />
-    <ClInclude Include="..\Devilep\instructionset.h" />
     <ClInclude Include="..\Devilep\isnan.h" />
     <ClInclude Include="..\Devilep\Line2Eqn.h" />
     <ClInclude Include="..\Devilep\logger.h" />
@@ -194,7 +193,6 @@
     <ClCompile Include="..\Devilep\Generation.cpp" />
     <ClCompile Include="..\Devilep\HillClimb.cpp" />
     <ClCompile Include="..\Devilep\InitPop.cpp" />
-    <ClCompile Include="..\Devilep\instructionset.cpp" />
     <ClCompile Include="..\Devilep\Line2Eqn.cpp" />
     <ClCompile Include="..\Devilep\Mutate.cpp" />
     <ClCompile Include="..\Devilep\runDevelep.cpp" />

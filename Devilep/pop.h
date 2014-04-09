@@ -14,11 +14,11 @@
 struct ind {
 	//unsigned int id;
 	vector <shared_ptr<node>> line;
-	std::vector <std::string> args;
+	//std::vector <std::string> args;
 	std::string eqn;
 	std::string eqn_form; // equation form for string distance comparison to other forms
 
-	std::vector <int> ptr;
+	//std::vector <int> ptr;
 	char origin; // x: crossover, m: mutation, i: initialization
 
 	std::vector<float> output;
@@ -37,6 +37,8 @@ struct ind {
 	}*/
 	ind()
 	{
+		abserror = 0;
+		corr = 0;
 		age=1;
 	}
 	~ind() {
@@ -58,9 +60,14 @@ struct ind {
 	//	//nominal_model=nom_mod;
 	//	//expression.register_symbol_table(d.symbol_table);
 	//}
-	void clrPhen(string& nom_mod)
+
+	void clrPhen()
 	{
+		abserror = 0;
+		corr = 0;
+		fitness=0;
 		eqn = "";
+		eqn_form="";
 		output.clear();
 		// nominal model must be encased in set of parenthesis. the pointer points to that which is encased.
 		//ptr[0]= 1;

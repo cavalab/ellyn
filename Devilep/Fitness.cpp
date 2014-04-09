@@ -28,10 +28,24 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 	/*evaluator e;
 	e.init(p,d);*/
 	//int wtf = pop.size();
+
+	//set up data table for conversion of symbolic variables
+	unordered_map <string,float*> datatable;
+	vector<float> dattovar(d.label.size());
+
+	for (unsigned int i=0;i<d.label.size(); i++)
+			datatable.insert(pair<string,float*>(d.label[i],&dattovar[i]));
+
 	
 	//#pragma omp parallel for private(e)
 	for(int count = 0; count<pop.size(); count++)
 	{
+		/*for (unsigned int y = 0;y<pop.at(count).line.size();y++)
+		{
+			if (pop.at(count).line.at(y)->type == 'v')
+			{}
+
+		}*/
 			try 
 			{
 			pop.at(count).abserror = 0;
@@ -42,29 +56,48 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 			//get equation and equation form
 			pop.at(count).eqn = Line2Eqn(pop.at(count).line);
 			getEqnForm(pop.at(count).eqn,pop.at(count).eqn_form);
+			
+			// set pointer to dattovar in symbolic functions
+
 			//GET EFFECTIVE SIZE
 			pop.at(count).eff_size=0;
 			for(int m=0;m<pop.at(count).line.size();m++){
+
 				if(pop.at(count).line.at(m)->on)
 					pop.at(count).eff_size++;
+			}
+			for(int m=0;m<pop.at(count).line.size();m++){
+				if(pop.at(count).line.at(m)->type=='v')
+					{// set pointer to dattovar 
+						float* set = datatable.at(static_pointer_cast<n_sym>(pop.at(count).line.at(m))->varname);
+						if(set==NULL)
+							cout<<"hmm";
+						static_pointer_cast<n_sym>(pop.at(count).line.at(m))->setpt(set);
+						if (static_pointer_cast<n_sym>(pop.at(count).line.at(m))->valpt==NULL)
+							cout<<"wth";
+					}
 			}
 			//cout << "Equation" << count << ": f=" << pop.at(count).eqn << "\n";
 			if(!pop.at(count).eqn.compare("unwriteable")==0){
 				vector<float> outstack;
-
+				pop.at(count).output.clear();
 				for(unsigned int sim=0;sim<d.vals.size();sim++)
 				{
 					for (unsigned int j=0; j<p.allvars.size();j++)
-						d.dattovar.at(j)= d.vals[sim][j];
+						dattovar.at(j)= d.vals[sim][j];
 
 					for(int k=0;k<pop.at(count).line.size();k++){
+						if(pop.at(count).line.at(k)->type=='v'){
+							if (static_pointer_cast<n_sym>(pop.at(count).line.at(k))->valpt==NULL)
+								cout<<"WTF";
+						}
 						if (pop.at(count).line.at(k)->on)
 							pop.at(count).line.at(k)->eval(outstack);
 					}
 
 					if(!outstack.empty()){
 						pop.at(count).output.push_back(outstack.front());
-						pop.at(count).abserror += abs(d.target.at(sim)-pop.at(count).output.at(sim));
+						pop.at(count).abserror += abs(d.target.at(sim)-pop.at(count).output.at(sim))/d.vals.size();
 						meantarget += d.target.at(sim)/d.vals.size();
 						meanout += pop.at(count).output[sim]/d.vals.size();
 					}
@@ -74,7 +107,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 			}
 			else
 				pop.at(count).abserror=p.max_fit;
-
+			
 			pop.at(count).corr = 0;
 						
 
@@ -96,6 +129,9 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 				pop.at(count).fitness=p.max_fit;
 			else if(pop.at(count).fitness<p.min_fit)
 				(pop.at(count).fitness=p.min_fit);
+
+			//if(pop.at(count).eqn.compare("x")==0 && int(pop.at(count).fitness)!=1844)
+			//	cout << "x";
 
 			}
 			catch(CException ex)

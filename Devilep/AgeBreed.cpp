@@ -72,5 +72,5 @@ void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 	s.setCrossPct(tmppop);
 	//add tmppop to pop
 	pop.insert(pop.end(),tmppop.begin(),tmppop.end());
-
+	tmppop.clear();
 }

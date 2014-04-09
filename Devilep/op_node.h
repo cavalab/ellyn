@@ -38,7 +38,8 @@ public:
 class n_num : public node{
 public:
 	float value;
-	n_num(float set) {type='n'; value=set;}
+	n_num(){on=1;arity=0;}
+	n_num(float set) {type='n'; value=set; on=1; arity=0;}
 	~n_num(){}
 	virtual void eval(vector<float> & outstack)	
 	{
@@ -56,17 +57,26 @@ class n_sym : public node{
 public: 
 	float* valpt;
 	string varname;
-	n_sym();
-	n_sym(float* set,string& vname)
+	n_sym(){on=1; arity=0;};
+	n_sym(string& vname)
 	{
 		type='v';
-		valpt = set;
 		varname=vname;
+		on=1;
 	}
 	~n_sym(){}
+	void setpt(float* set)
+	{
+		if (set==NULL)
+			cout<<"bad set";
+
+		valpt=set;
+	}
 	virtual void eval(vector<float> & outstack)
 	{
-		//if (on)
+		if (valpt==NULL)
+			cout<<"problem";
+		else
 			outstack.push_back(*valpt);
 	}
 //private:
@@ -78,7 +88,7 @@ public:
 
 class n_add: public node{
 public:
-	n_add(){type='+';arity=2;}
+	n_add(){type='+';arity=2;on=1;}
 	~n_add(){}
 	virtual void eval(vector<float> & outstack)
 	{
@@ -100,7 +110,7 @@ public:
 
 class n_sub: public node{
 public:
-	n_sub(){type='-';arity=2;}
+	n_sub(){type='-';arity=2;on=1;}
 	~n_sub(){}
 	virtual void eval(vector<float> & outstack)
 	{
@@ -121,7 +131,7 @@ public:
 };
 class n_mul: public node{
 public:
-	n_mul(){type='*';arity=2;}
+	n_mul(){type='*';arity=2;on=1;}
 	~n_mul(){}
 	virtual void eval(vector<float> & outstack)
 	{
@@ -142,7 +152,7 @@ public:
 };
 class n_div: public node{
 public:
-	n_div(){type='/';; on=1;arity=2;}
+	n_div(){type='/';on=1;arity=2;}
 	~n_div(){}
 	virtual void eval(vector<float> & outstack)
 	{
@@ -150,7 +160,7 @@ public:
 			if(outstack.size()>=2){
 				float n1 = outstack.back(); outstack.pop_back();
 				float n2 = outstack.back(); outstack.pop_back();
-				if(n1<0.0001)
+				if(abs(n1)<0.0001)
 					outstack.push_back(0);
 				else
 					outstack.push_back(n2/n1);
@@ -166,7 +176,7 @@ public:
 
 class n_sin: public node{
 public:
-	n_sin(){type='s';arity=1;}
+	n_sin(){type='s';arity=1;on=1;}
 	~n_sin(){}
 	virtual void eval(vector<float> & outstack)
 	{
@@ -187,7 +197,7 @@ public:
 
 class n_cos: public node{
 public:
-	n_cos(){type='c';arity=1;}
+	n_cos(){type='c';arity=1;on=1;}
 	~n_cos(){}
 	virtual void eval(vector<float> & outstack)
 	{
@@ -207,7 +217,7 @@ public:
 
 class n_exp: public node{
 public:
-	n_exp(){type='e';arity=1;}
+	n_exp(){type='e';arity=1;on=1;}
 	~n_exp(){}
 	virtual void eval(vector<float> & outstack)
 	{
@@ -227,14 +237,14 @@ public:
 
 class n_log: public node{
 public:
-	n_log(){type='l';arity=1;}
+	n_log(){type='l';arity=1;on=1;}
 	~n_log(){}
 	virtual void eval(vector<float> & outstack)
 	{
 		//if (on){
 			if(outstack.size()>=1){
 				float n1 = outstack.back(); outstack.pop_back();
-				if (n1<0.0001)
+				if (abs(n1)<0.0001)
 					outstack.push_back(0);
 				else
 					outstack.push_back(log(n1));

@@ -69,7 +69,7 @@ void NewInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,data& d)
 			break;
 		case 1: //load variable
 			varchoice = d.label.at(r[omp_get_thread_num()].rnd_int(0,d.label.size()-1));
-			newind.line.at(loc)=shared_ptr<node>(new n_sym(d.datatable.at(varchoice),varchoice));
+			newind.line.at(loc)=shared_ptr<node>(new n_sym(varchoice));
 			break;
 		case 2: // +
 			newind.line.at(loc)=shared_ptr<node>(new n_add());

@@ -73,13 +73,13 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 	}
 	else if (p.cross==2) // one-point crossover
 	{
-		int point1 = r[omp_get_thread_num()].rnd_int(1,min(p1.line.size(),p2.line.size())-1);
+		int point1 = r[omp_get_thread_num()].rnd_int(0,min(p1.line.size(),p2.line.size()));
 		
-		kids[0].line.assign(p1.line.begin(),p1.line.begin()+point1);
-		kids[0].line.insert(kids[0].line.end(),p2.line.begin()+point1,p2.line.end());
+		kids[0].line.assign(parents[0].line.begin(),parents[0].line.begin()+point1);
+		kids[0].line.insert(kids[0].line.end(),parents[1].line.begin()+point1,parents[1].line.end());
 
-		kids[1].line.assign(p2.line.begin(),p2.line.begin()+point1);
-		kids[1].line.insert(kids[1].line.end(),p1.line.begin()+point1,p1.line.end());
+		kids[1].line.assign(parents[1].line.begin(),parents[1].line.begin()+point1);
+		kids[1].line.insert(kids[1].line.end(),parents[0].line.begin()+point1,parents[0].line.end());
 
 	}
 	//tmpinssize=0;
@@ -98,4 +98,6 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 	tmppop.push_back(kids[0]);
 	tmppop.push_back(kids[1]);
 
+	kids.clear();
+	parents.clear();
 }

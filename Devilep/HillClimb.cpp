@@ -10,7 +10,7 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
 	//for (int i=0; i<pop.size(); i++) // for each individual
 	//	{
 			vector<ind> tmp_ind(1,oldind); 
-			tmp_ind[0].clrPhen(p.sim_nom_mod); // clear phenotype
+			tmp_ind[0].clrPhen(); // clear phenotype
 
 			bool updated=0;
 
@@ -18,8 +18,8 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
 			{
 				if (updated)
 				{
-					tmp_ind[0] = oldind; 
-					tmp_ind[0].clrPhen(p.sim_nom_mod); // clear phenotype
+				    tmp_ind.push_back(oldind);  
+					tmp_ind[0].clrPhen(); // clear phenotype
 				}
 				for (int h= 0; h<tmp_ind[0].line.size();h++) // for length of genotype
 				{
@@ -37,7 +37,8 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
 				Fitness(tmp_ind,p,d,s); //get fitness 
 				if ( tmp_ind[0].fitness < oldind.fitness) // if fitness is better, replace individual
 				{
-					oldind = tmp_ind[0];
+					swap(oldind,tmp_ind[0]);
+				    tmp_ind.clear();
 					updated = true;
 					s.pHC_updates[omp_get_thread_num()]++;
 				}
@@ -50,5 +51,7 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
 				else
 					updated = false;
 			}
+
+			tmp_ind.clear();
 		//}
 }

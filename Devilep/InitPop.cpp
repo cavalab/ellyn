@@ -16,9 +16,14 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r,data& d)
 {
 	//boost::progress_timer timer;
 	//#pragma omp parallel for
+
 	for(int i=0;i<pop.size();i++)
 	{
 		makeline(pop.at(i),p,r,d);
+		//remove dangling numbers and variables from end
+		/*while((pop.at(i).line.back()->type=='n' || pop.at(i).line.back()->type=='v') && pop.at(i).line.size()>1)
+			pop.at(i).line.pop_back();*/
+			
 		pop.at(i).origin = 'i';
 		if (p.eHC_on)
 		{
@@ -32,6 +37,7 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r,data& d)
 				}
 			}
 		}
+
 
 	}
 	//cout <<"\nInit Pop time: ";
@@ -90,7 +96,7 @@ void makeline(ind& newind,params& p,vector<Randclass>& r,data& d)
 				break;
 			case 1: //load variable
 				varchoice = d.label.at(r[omp_get_thread_num()].rnd_int(0,d.label.size()-1));
-				newind.line.push_back(shared_ptr<node>(new n_sym(d.datatable.at(varchoice),varchoice)));
+				newind.line.push_back(shared_ptr<node>(new n_sym(varchoice)));
 				break;
 			case 2: // +
 				newind.line.push_back(shared_ptr<node>(new n_add()));
