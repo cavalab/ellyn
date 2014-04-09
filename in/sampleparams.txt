@@ -1,4 +1,4 @@
-g					25	// number of generations
+g					10	// number of generations
 popsize				1000	//population size
 numits				1	// number of trials
 

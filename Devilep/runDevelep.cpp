@@ -28,6 +28,7 @@ void load_data(data &d, std::ifstream& is,params&);
 bool stopcondition(float&);
 void printstats(tribe& T,int &i,state& s,params& p);
 void printbestind(tribe& T,params& p,state& s,string& logname);
+void printlastpop(tribe& T,params& p,state& s,string& logname);
 
 void runDevelep(string& paramfile, string& datafile,bool trials)
 {
@@ -283,6 +284,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		gen++;
 		}
 		printbestind(World,p,s,logname);
+		printlastpop(World,p,s,logname);
 	}
 	else //no islands
 	{
@@ -377,6 +379,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 			its++;
 		}
 		printbestind(T,p,s,logname);
+		printlastpop(T,p,s,logname);
 	}
 
 	if(!trials)
@@ -429,7 +432,7 @@ s.out << "----------------------------------------------------------------------
 }
 void printbestind(tribe& T,params& p,state& s,string& logname)
 {
-	s.out << "saving results... \n";
+	s.out << "saving best ind... \n";
 	ind best;
 	T.getbestind(best);
 	string bestname = logname.substr(0,logname.size()-4)+"_best_ind.log";
@@ -438,10 +441,18 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	//boost::progress_timer timer;
 	fout << "--- Best Individual ---------------------------------------------------------------" << "\n";
 	fout << "Corresponding Logfile: " + logname + "\n";
+	fout << "Total Evaluations: " << s.totalevals() << "\n";
 	fout << "f = " + best.eqn + "\n";
 	fout << " line: ";
 	for(unsigned int i =0;i<best.line.size();i++)
-		fout << best.line[i]->type << "\t";
+	{
+		if (best.line[i]->type=='n')
+			fout << static_pointer_cast<n_num>(best.line[i])->value << "\t";
+		else if (best.line[i]->type=='v')
+			fout << static_pointer_cast<n_sym>(best.line[i])->varname << "\t";
+		else
+			fout << best.line[i]->type << "\t";
+	}
 	fout << endl;
 	fout << "eline: ";
 	for(unsigned int i =0;i<best.line.size();i++){
@@ -461,6 +472,53 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	fout << "origin: " << best.origin << "\n";
 	fout << "age: " << best.age << "\n";
 	fout << "eqn form: " << best.eqn_form << "\n";
+}
+void printlastpop(tribe& T,params& p,state& s,string& logname)
+{
+	s.out << "saving last pop... \n";
+	T.sortpop();
+	string bestname = logname.substr(0,logname.size()-4)+"_last_pop.log";
+	std::ofstream fout;
+	fout.open(bestname);
+	//boost::progress_timer timer;
+	fout << "--- Final Population ---------------------------------------------------------------" << "\n";
+	fout << "Corresponding Logfile: " + logname + "\n";
+	fout << "Total Evaluations: " << s.totalevals() << "\n";
+
+	for (int h = 0; h<T.pop.size(); h++){
+		fout << "--- Individual "<< h << " ------------------------------------------------------------" << "\n";
+		fout << "f = " + T.pop.at(h).eqn + "\n";
+		fout << " line: ";
+		for(unsigned int i =0;i<T.pop.at(h).line.size();i++)
+		{
+			if (T.pop.at(h).line[i]->type=='n')
+				fout << static_pointer_cast<n_num>(T.pop.at(h).line[i])->value << "\t";
+			else if (T.pop.at(h).line[i]->type=='v')
+				fout << static_pointer_cast<n_sym>(T.pop.at(h).line[i])->varname << "\t";
+			else
+				fout << T.pop.at(h).line[i]->type << "\t";
+		}
+		fout << endl;
+		fout << "eline: ";
+		for(unsigned int i =0;i<T.pop.at(h).line.size();i++){
+			if (T.pop.at(h).line.at(i)->on)
+				fout <<"1\t";
+			else
+				fout <<"0\t";
+		}
+		fout << endl;
+		fout << "size: " << T.pop.at(h).line.size() << "\n";
+		fout << "eff size: " << T.pop.at(h).eff_size << "\n";
+		fout << "abs error: " << T.pop.at(h).abserror<< "\n";;
+		fout << "correlation: " << T.pop.at(h).corr<< "\n";;
+		fout << "fitness: " << T.pop.at(h).fitness<< "\n";;
+
+		fout << "parent fitness: " << T.pop.at(h).parentfitness << "\n";;
+		fout << "origin: " << T.pop.at(h).origin << "\n";
+		fout << "age: " << T.pop.at(h).age << "\n";
+		fout << "eqn form: " << T.pop.at(h).eqn_form << "\n";
+		fout << "------------------------------------------------------------------" << "\n";
+		}
 }
 void load_params(params &p, std::ifstream& fs)
 {

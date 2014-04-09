@@ -223,6 +223,10 @@ struct tribe{
 		sort(pop.begin(),pop.end(),SortFit());
 		bestind = pop.front();
 	}// address of best individual
+	void sortpop()
+	{
+		sort(pop.begin(),pop.end(),SortFit());
+	}
 	/*
 private:
 	
