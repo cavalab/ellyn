@@ -205,7 +205,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		while(gen<=p.g && !stopcondition(World.best))
 		{
 			
-			#pragma omp parallel for 
+			//#pragma omp parallel for 
 			for(int i=0;i<num_islands;i++)
 			{
 				if(pass)
@@ -250,7 +250,14 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 				}
 
 			// construct world population
-				swap_ranges(World.pop.begin()+i*subpops,World.pop.begin()+(i+1)*subpops,T.at(i).pop.begin());
+				int cntr=0;
+				for(int k=i*subpops;k<(i+1)*subpops;k++){
+					World.pop.at(k)=T.at(i).pop.at(cntr);
+					cntr++;
+				}
+
+				
+				//swap_ranges(World.pop.begin()+i*subpops,World.pop.begin()+(i+1)*subpops,T.at(i).pop.begin());
 			}
 
 				

@@ -99,3 +99,50 @@ void NewInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,data& d)
 		
 
 }
+
+void makenewcopy(ind& newind)
+{
+	for (int i=0;i<newind.line.size();i++)
+	{
+		if (newind.line.at(i).use_count()>1)
+		{
+			string varname;
+			float value;
+			switch (newind.line.at(i)->type){
+			case 'n':
+				value = static_pointer_cast<n_num>(newind.line.at(i))->value;
+				newind.line.at(i) = shared_ptr<node>(new n_num(value));
+				break;
+			case 'v':
+				varname = static_pointer_cast<n_sym>(newind.line.at(i))->varname;
+				newind.line.at(i) = shared_ptr<node>(new n_sym(varname));
+				break;
+			case '+': // +
+				newind.line.at(i)=shared_ptr<node>(new n_add());
+				break;
+			case '-': // -
+				newind.line.at(i)=shared_ptr<node>(new n_sub());
+				break;
+			case '*': // *
+				newind.line.at(i)=shared_ptr<node>(new n_mul());
+				break;
+			case '/': // /
+				newind.line.at(i)=shared_ptr<node>(new n_div());
+				break;
+			case 's': // sin
+				newind.line.at(i)=shared_ptr<node>(new n_sin());
+				break;
+			case 'c': // cos
+				newind.line.at(i)=shared_ptr<node>(new n_cos());
+				break;
+			case 'e': // exp
+				newind.line.at(i)=shared_ptr<node>(new n_exp());
+				break;
+			case 'l': // log
+				newind.line.at(i)=shared_ptr<node>(new n_log());
+				break;
+				}
+		}
+
+}
+}

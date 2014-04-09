@@ -5,6 +5,7 @@
 #include "Generationfns.h"
 #include "strdist.h"
 #include "Fitness.h"
+#include "general_fns.h"
 
 // steady-state deterministic crowding algorithm.
 // update_locs are the indices of the update locations for passage to hill climbing. 
@@ -48,7 +49,8 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 				s.good_cross[omp_get_thread_num()]=s.good_cross[omp_get_thread_num()]+1;
 			else
 				s.neut_cross[omp_get_thread_num()]=s.neut_cross[omp_get_thread_num()]+1;
-
+			
+			//makenewcopy(tmppop.at(0));
 			swap(tmppop.at(0),pop.at(p1));
 
 		}
@@ -71,7 +73,7 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 				s.good_cross[omp_get_thread_num()]=s.good_cross[omp_get_thread_num()]+1;
 			else
 				s.neut_cross[omp_get_thread_num()]=s.neut_cross[omp_get_thread_num()]+1;
-
+			//makenewcopy(tmppop.at(0));
 			swap(tmppop.at(0),pop.at(p1));
 		}
 		else
@@ -83,7 +85,7 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 				s.good_cross[omp_get_thread_num()]=s.good_cross[omp_get_thread_num()]+1;
 			else
 				s.neut_cross[omp_get_thread_num()]=s.neut_cross[omp_get_thread_num()]+1;
-
+			//makenewcopy(tmppop.at(0));
 			swap(tmppop.at(1),pop.at(p2));
 		}
 		else
@@ -94,7 +96,7 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 		//cout << "Problem in DC. tmppop size: " << tmppop.size() << endl;
 	}
 	tmppop.clear();
-		
+	
 	/*for (int i = 0; i<pop.size();i++)
 	{
 		int totalshares = 0;

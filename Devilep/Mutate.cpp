@@ -37,6 +37,7 @@ void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)
 			NewInstruction(kid[0],ichange.at(j),p,r,d);
 		}
 	}
+	makenewcopy(kid[0]);
 	tmppop.push_back(kid[0]);
 	kid.clear();
 		

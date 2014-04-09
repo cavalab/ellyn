@@ -95,6 +95,9 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 	kids[1].origin = 'c';
 	kids[1].parentfitness = parents[1].fitness;
 
+	makenewcopy(kids[0]);
+	makenewcopy(kids[1]);
+
 	tmppop.push_back(kids[0]);
 	tmppop.push_back(kids[1]);
 
