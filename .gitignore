@@ -12,3 +12,4 @@ Release/
 *.user
 */*.user
 *.vsp
+*.psess
