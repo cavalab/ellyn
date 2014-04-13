@@ -1,9 +1,9 @@
-g					100	// number of generations
+g					1000000	// number of generations
 popsize				1000	//population size
 numits				1	// number of trials
 
 // Generation Settings 
-sel					4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
+sel					2	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 tourn_size			2
 rt_rep				0.1
 rt_cross			0.7
@@ -16,42 +16,35 @@ stoperror			0.0001	// stop condition / convergence condition
 init_validate_on	1	// initial fitness validation of starting population
 
 // Results
-resultspath			D:\Develep\Results
+resultspath			D:\Develep\Results\CART
 loud				1
-// Computer Settings
-parallel			1
-numcores			8
-
-
-sim_nom_mod			(1) // embryo equation
-nstates				1	// state space modelling: number of states
 
 // Problem information
-intvars				x	y
+intvars				x	dx	AZ	TQ	B	V t
 extvars					
-cons					
-cvals					
+cons				m	R	H	
+cvals				30436.0	20.0	34.8615
 seeds				
 
-ERC					0 // ephemeral random constants
+ERC					1 // ephemeral random constants
 ERCints				0	
 maxERC				10
 minERC				-10
-numERC				3
+numERC				6
 
 fit_type			3	// 1: error, 2: corr, 3: combo
 fit_method			1   //1: algebraic, 2: runge kutta
 max_fit				100000000000000000000
 min_fit				0.00000000000000000001
 
-//available operators: n	v	+	-	*	/	sin	cos	exp	log
-//index                0	1	2	3	4	5	6	7	8	9
+//available operators: n	v	+	-	*	/	sin	cos	
+//index                0	1	2	3	4	5	6	7	
 
 op_list				n	v	+	-	*	/	
 op_weight			4	4	1	1	1	1					
 weight_ops_on		1
-min_len				10
-max_len				50
+min_len				30
+max_len				150
 
 max_dev_len			128
 
@@ -81,7 +74,7 @@ eHC_size			1
 eHC_cluster			1
 eHC_dev				1
 eHC_best			1
-eHC_init			.75 //0: start with true epilines, 1: start with a mix of on/off values
+eHC_init			1 //0: start with true epilines, 1: start with a mix of on/off values
 eHC_prob_scale		1
 eHC_max_prob		.75
 eHC_min_prob		0.25
@@ -94,4 +87,4 @@ prto_sel_on			1
 
 // island model
 islands				1
-island_gens			82
+island_gens			4000

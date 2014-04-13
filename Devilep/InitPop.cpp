@@ -33,7 +33,7 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r,data& d)
 				//cout << "tmp: " << tmp << " p.eHC: " << p.eHC_init; 
 				if (tmp > p.eHC_init)
 				{
-					pop.at(i).line[j]->on=!pop.at(i).line[j]->on;
+					pop.at(i).line[j]->on=false;
 				}
 			}
 		}

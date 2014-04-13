@@ -206,7 +206,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		while(gen<=p.g && !stopcondition(World.best))
 		{
 			
-			//#pragma omp parallel for 
+			#pragma omp parallel for 
 			for(int i=0;i<num_islands;i++)
 			{
 				if(pass)
@@ -273,7 +273,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 			{
 				T.at(i).pop.assign(World.pop.begin()+i*subpops,World.pop.begin()+(i+1)*subpops);
 			}
-			mixtrigger+=p.island_gens*subpops;
+			mixtrigger+=1000*subpops;
 		}
 		 
 		 printstats(World,gen,s,p);
@@ -435,7 +435,7 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	s.out << "saving best ind... \n";
 	ind best;
 	T.getbestind(best);
-	string bestname = logname.substr(0,logname.size()-4)+"_best_ind.log";
+	string bestname = logname.substr(0,logname.size()-4)+".best_ind";
 	std::ofstream fout;
 	fout.open(bestname);
 	//boost::progress_timer timer;
@@ -477,7 +477,7 @@ void printlastpop(tribe& T,params& p,state& s,string& logname)
 {
 	s.out << "saving last pop... \n";
 	T.sortpop();
-	string bestname = logname.substr(0,logname.size()-4)+"_last_pop.log";
+	string bestname = logname.substr(0,logname.size()-4)+".last_pop";
 	std::ofstream fout;
 	fout.open(bestname);
 	//boost::progress_timer timer;
@@ -821,8 +821,10 @@ void load_data(data &d, std::ifstream& fs,params& p)
 	// pop end in case of extra blank lines in data file
 	while(d.vals.back().empty())
 	{
-		d.vals.back().pop_back();
+		d.vals.pop_back();
 	}
+	
+
 	//d.dattovar.resize(p.allvars.size());
 	//d.mapdata();
 }

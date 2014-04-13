@@ -108,38 +108,59 @@ void makenewcopy(ind& newind)
 		{
 			string varname;
 			float value;
+			bool onval;
 			switch (newind.line.at(i)->type){
 			case 'n':
 				value = static_pointer_cast<n_num>(newind.line.at(i))->value;
+				onval = newind.line.at(i)->on;
 				newind.line.at(i) = shared_ptr<node>(new n_num(value));
+				newind.line.at(i)->on=onval;
 				break;
 			case 'v':
 				varname = static_pointer_cast<n_sym>(newind.line.at(i))->varname;
+				onval = newind.line.at(i)->on;
 				newind.line.at(i) = shared_ptr<node>(new n_sym(varname));
+				newind.line.at(i)->on=onval;
 				break;
 			case '+': // +
+				onval = newind.line.at(i)->on;
 				newind.line.at(i)=shared_ptr<node>(new n_add());
+				newind.line.at(i)->on=onval;
 				break;
 			case '-': // -
+				onval = newind.line.at(i)->on;
 				newind.line.at(i)=shared_ptr<node>(new n_sub());
+				newind.line.at(i)->on=onval;
 				break;
 			case '*': // *
+				onval = newind.line.at(i)->on;
 				newind.line.at(i)=shared_ptr<node>(new n_mul());
+				newind.line.at(i)->on=onval;
 				break;
 			case '/': // /
+				onval = newind.line.at(i)->on;
 				newind.line.at(i)=shared_ptr<node>(new n_div());
+				newind.line.at(i)->on=onval;
 				break;
 			case 's': // sin
+				onval = newind.line.at(i)->on;
 				newind.line.at(i)=shared_ptr<node>(new n_sin());
+				newind.line.at(i)->on=onval;
 				break;
 			case 'c': // cos
+				onval = newind.line.at(i)->on;
 				newind.line.at(i)=shared_ptr<node>(new n_cos());
+				newind.line.at(i)->on=onval;
 				break;
 			case 'e': // exp
+				onval = newind.line.at(i)->on;
 				newind.line.at(i)=shared_ptr<node>(new n_exp());
+				newind.line.at(i)->on=onval;
 				break;
 			case 'l': // log
+				onval = newind.line.at(i)->on;
 				newind.line.at(i)=shared_ptr<node>(new n_log());
+				newind.line.at(i)->on=onval;
 				break;
 				}
 		}
