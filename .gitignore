@@ -12,3 +12,5 @@ Release/
 *.user
 */*.user
 *.vsp
+*.psess
+*.testsettings
