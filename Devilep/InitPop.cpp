@@ -89,10 +89,28 @@ void makeline(ind& newind,params& p,vector<Randclass>& r,data& d)
 		switch (p.op_choice.at(choice))
 			{
 			case 0: //load number
-				if(p.ERCints)
-					newind.line.push_back(shared_ptr<node>(new n_num((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC))));
-				else
-					newind.line.push_back(shared_ptr<node>(new n_num(r[omp_get_thread_num()].rnd_flt(p.minERC,p.maxERC))));
+				if(p.ERC){ // if ephemeral random constants are on
+					if (!p.cvals.empty()){
+						if (r[omp_get_thread_num()].rnd_flt(0,1)<.5)
+							newind.line.push_back(shared_ptr<node>(new n_num(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1)))));
+						else{	
+							if(p.ERCints)
+								newind.line.push_back(shared_ptr<node>(new n_num((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC))));
+							else
+								newind.line.push_back(shared_ptr<node>(new n_num(r[omp_get_thread_num()].rnd_flt(p.minERC,p.maxERC))));
+						}
+					}
+					else{
+						if(p.ERCints)
+								newind.line.push_back(shared_ptr<node>(new n_num((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC))));
+							else
+								newind.line.push_back(shared_ptr<node>(new n_num(r[omp_get_thread_num()].rnd_flt(p.minERC,p.maxERC))));
+					}
+				}
+				else if (!p.cvals.empty())
+				{
+					newind.line.push_back(shared_ptr<node>(new n_num(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1)))));
+				}
 				break;
 			case 1: //load variable
 				varchoice = d.label.at(r[omp_get_thread_num()].rnd_int(0,d.label.size()-1));

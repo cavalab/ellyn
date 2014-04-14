@@ -10,6 +10,7 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
 	//for (int i=0; i<pop.size(); i++) // for each individual
 	//	{
 			vector<ind> tmp_ind(1,oldind); 
+			makenewcopy(tmp_ind[0]);
 			tmp_ind[0].clrPhen(); // clear phenotype
 
 			bool updated=0;
@@ -19,6 +20,7 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
 				if (updated)
 				{
 				    tmp_ind.push_back(oldind);  
+					makenewcopy(tmp_ind[0]);
 					tmp_ind[0].clrPhen(); // clear phenotype
 				}
 				for (int h= 0; h<tmp_ind[0].line.size();h++) // for length of genotype

@@ -728,7 +728,7 @@ void load_params(params &p, std::ifstream& fs)
 
 	for (unsigned int i=0; i<p.op_list.size(); i++)
 	{
-		if (p.op_list.at(i).compare("n")==0)
+		if (p.op_list.at(i).compare("n")==0 && ( p.ERC || !p.cvals.empty() ) )
 			p.op_choice.push_back(0);
 		else if (p.op_list.at(i).compare("v")==0)
 			p.op_choice.push_back(1);

@@ -1,4 +1,4 @@
-g					100	// number of generations
+g					5000	// number of generations
 popsize				1000	//population size
 numits				1	// number of trials
 
@@ -29,15 +29,15 @@ nstates				1	// state space modelling: number of states
 // Problem information
 intvars				x	y
 extvars					
-cons				1	
-cvals				1	
+cons					
+cvals					
 seeds				
 
 ERC					1 // ephemeral random constants
 ERCints				0	
 maxERC				10
 minERC				-10
-numERC				3
+numERC				2
 
 fit_type			3	// 1: error, 2: corr, 3: combo
 fit_method			1   //1: algebraic, 2: runge kutta
@@ -93,5 +93,5 @@ prto_arch_size		425
 prto_sel_on			1
 
 // island model
-islands				0
+islands				1
 island_gens			82

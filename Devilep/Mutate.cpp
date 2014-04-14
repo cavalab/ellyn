@@ -6,6 +6,7 @@ void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)
 {
 	vector<unsigned int> ichange;
 	vector<ind> kid(1,par);
+	makenewcopy(kid[0]);
 	kid[0].origin='m';
 	kid[0].parentfitness=par.fitness;
 	kid[0].clrPhen();
@@ -37,7 +38,7 @@ void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)
 			NewInstruction(kid[0],ichange.at(j),p,r,d);
 		}
 	}
-	makenewcopy(kid[0]);
+	
 	tmppop.push_back(kid[0]);
 	kid.clear();
 		

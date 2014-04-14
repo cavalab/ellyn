@@ -12,6 +12,7 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
 	//{
 		
 		vector<ind> tmp_ind(1,oldind);
+		makenewcopy(tmp_ind[0]);
 		tmp_ind[0].clrPhen();
 		bool updated = false;
 		for (int j=0;j<p.eHC_its; j++) // for number of specified iterations
@@ -20,6 +21,7 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
 			{
 				//tmp_ind.clear();
 				tmp_ind.push_back(oldind); 
+				makenewcopy(tmp_ind[0]);
 				tmp_ind[0].clrPhen(); // clear phenotype
 			}
 
