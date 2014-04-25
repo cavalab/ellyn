@@ -27,7 +27,7 @@ struct params {
 	float stoperror; // stop condition / convergence condition
 
 	bool init_validate_on; // initial fitness validation of individuals
-
+	bool train; // choice to turn on training for splitting up the data set
 	// Results
 	string resultspath;
 	bool loud;
@@ -116,7 +116,7 @@ struct params {
 
 	int seed;
 
-	params(){}
+	params(){train=0;}
 	~params(){}
 
 	void clear()

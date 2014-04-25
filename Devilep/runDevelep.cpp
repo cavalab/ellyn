@@ -29,6 +29,7 @@ bool stopcondition(float&);
 void printstats(tribe& T,int &i,state& s,params& p);
 void printbestind(tribe& T,params& p,state& s,string& logname);
 void printlastpop(tribe& T,params& p,state& s,string& logname);
+void shuffle_data(data& d, params& p, vector<Randclass>& r);
 
 void runDevelep(string& paramfile, string& datafile,bool trials)
 {
@@ -65,6 +66,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 	// load data file
 	ifstream ds(datafile);
 	load_data(d,ds,p);
+	
 	s.out.set(trials);
 	
 	std::time_t t =  std::time(NULL);
@@ -127,7 +129,9 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 	if(trials)
 		s.out << (omp_get_thread_num()+1)*seed1 << "\n";
 
-
+	//shuffle data for training
+	if (p.train)
+		shuffle_data(d,p,r);
 	
 	boost::timer time;
 	
@@ -401,8 +405,8 @@ void printstats(tribe& T,int &i,state& s,params& p)
 	//boost::progress_timer timer;
 s.out << "--- Generation " << i << "---------------------------------------------------------------" << "\n";
 s.out << "Number of evals: " << s.genevals.back() << "\n";
-s.out << "Best Fitness: " << T.bestFit() <<"\n";
-s.out << "Median Fitness: " << T.medFit()<<"\n";
+s.out << "Best Fitness: " << T.bestFit_v() <<"\n";
+s.out << "Median Fitness: " << T.medFit_v()<<"\n";
 s.out << "Mean Size: " << T.meanSize() << "\n";
 s.out << "Mean Eff Size: " << T.meanEffSize() << "\n";
 if(p.pHC_on)
@@ -421,12 +425,12 @@ for (int i = 0; i<T.pop.size();i++)
 		totalshares+=float(T.pop.at(i).line.at(j).use_count()); c1++;}
 }
 s.out << "Average shared pointer use count: " << totalshares/(c1) << "\n";
-s.out << "Equation" << "\t \t \t \t \t" << "Mean Absolute Error" << "\n";
+s.out << "MAE \t R^2 \t\t Equation \n";
 vector <ind> besteqns;
 T.topTen(besteqns);
 for(unsigned int j=0;j<besteqns.size();j++)
 {
-	s.out << besteqns.at(j).eqn <<"\t \t \t \t \t" <<besteqns.at(j).abserror << "\n";
+	s.out <<besteqns.at(j).abserror_v << "\t" << besteqns.at(j).corr_v << "\t" << besteqns.at(j).eqn <<"\n";
 }
 s.out << "-------------------------------------------------------------------------------" << "\n";
 }
@@ -472,6 +476,12 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	fout << "origin: " << best.origin << "\n";
 	fout << "age: " << best.age << "\n";
 	fout << "eqn form: " << best.eqn_form << "\n";
+	fout << "output: ";
+	for(unsigned int i =0;i<best.output.size();i++)
+	{
+		fout << best.output.at(i);
+	}
+	fout<<"\n";
 }
 void printlastpop(tribe& T,params& p,state& s,string& logname)
 {
@@ -517,6 +527,12 @@ void printlastpop(tribe& T,params& p,state& s,string& logname)
 		fout << "origin: " << T.pop.at(h).origin << "\n";
 		fout << "age: " << T.pop.at(h).age << "\n";
 		fout << "eqn form: " << T.pop.at(h).eqn_form << "\n";
+		fout << "output: ";
+		for(unsigned int i =0;i<T.pop.at(h).output.size();i++)
+		{
+			fout << T.pop.at(h).output.at(i);
+		}
+		fout<<"\n";
 		fout << "------------------------------------------------------------------" << "\n";
 		}
 }
@@ -709,6 +725,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.islands;
 		else if(varname.compare("island_gens") ==0)
 			ss>>p.island_gens;
+		else if(varname.compare("train") ==0)
+			ss>>p.train;
 		else{}
     }
 	p.allvars = p.intvars;
@@ -728,7 +746,7 @@ void load_params(params &p, std::ifstream& fs)
 
 	for (unsigned int i=0; i<p.op_list.size(); i++)
 	{
-		if (p.op_list.at(i).compare("n")==0 && ( p.ERC || !p.cvals.empty() ) )
+		if (p.op_list.at(i).compare("n")==0 )//&& ( p.ERC || !p.cvals.empty() ) )
 			p.op_choice.push_back(0);
 		else if (p.op_list.at(i).compare("v")==0)
 			p.op_choice.push_back(1);
@@ -802,6 +820,7 @@ void load_data(data &d, std::ifstream& fs,params& p)
 		pass=0;
 		index=0;
 	}
+	vector<int> shuffler;
     while(!fs.eof())
     {		
 		getline(fs,s,'\n');
@@ -823,10 +842,31 @@ void load_data(data &d, std::ifstream& fs,params& p)
 	{
 		d.vals.pop_back();
 	}
+
+	
 	
 
 	//d.dattovar.resize(p.allvars.size());
 	//d.mapdata();
+}
+void shuffle_data(data& d, params& p, vector<Randclass>& r)
+{
+	vector<int> shuffler;
+	vector<float> newtarget;
+	vector<vector<float>> newvals;
+
+	for(int i=0;i<d.vals.size();i++)
+		shuffler.push_back(i);
+
+	std::random_shuffle(shuffler.begin(),shuffler.end(),r[omp_get_thread_num()]);
+
+	for(int i=0;i<d.vals.size();i++)
+	{
+		newtarget.push_back(d.target.at(shuffler.at(i)));
+		newvals.push_back(d.vals.at(shuffler.at(i)));
+	}
+	swap(d.target,newtarget);
+	swap(d.vals,newvals);
 }
 bool stopcondition(float &bestfit)
 {

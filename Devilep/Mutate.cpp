@@ -34,8 +34,11 @@ void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)
 		}
 		else
 		{
-			
+			bool onstate = kid[0].line.at(ichange.at(j))->on;
 			NewInstruction(kid[0],ichange.at(j),p,r,d);
+			//inherit epigenetic state of gene location
+			kid[0].line.at(ichange.at(j))->on=onstate;
+
 		}
 	}
 	

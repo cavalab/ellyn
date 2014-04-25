@@ -7,6 +7,9 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 	parents.push_back(p1);
 	parents.push_back(p2);
 
+	makenewcopy(parents[0]);
+	makenewcopy(parents[1]);
+
 	vector<ind> kids(2);
 
 	int r2,off1,off2,offset,head,it;

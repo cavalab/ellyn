@@ -9,8 +9,8 @@ rt_rep				0.1
 rt_cross			0.7
 rt_mut				0.2
 cross				1	// 1: ultra 2: one point1
-cross_ar			.01 //crossover alternation rate (ultra only)
-mut_ar				.01 //mutation alternation rate (ultra only)
+cross_ar			.025 //crossover alternation rate (ultra only)
+mut_ar				.025 //mutation alternation rate (ultra only)
 stoperror			0.0001	// stop condition / convergence condition
 
 init_validate_on	1	// initial fitness validation of starting population
@@ -43,20 +43,18 @@ fit_type			3	// 1: error, 2: corr, 3: combo
 max_fit				100000000000000000000
 min_fit				0.00000000000000000001
 
-//available operators: insert	absf	add	cosf	DEL0	DEL1	divL	divR	DNL	DNR	FLIP	mul	NOOP	sinf	subL	subR	totheL	totheR	UP	UP2	UP3
-//					   0	    1		2	3		4		5		6		7		8	9	10		11	12		13		14		15		16		17		18	19	20	
-op_list				insert	add	DEL0	DEL1	divL	divR	DNL	DNR	FLIP	mul	NOOP	subL	subR	UP	UP2	UP3
-op_weight			10		1	1		1		0.5		0.5		1	1	1		1	1		0.5		0.5		2	2	2
-weight_ops_on		1
+//available operators: n	v	+	-	*	/	sin	cos	exp	log
+//index                0	1	2	3	4	5	6	7	8	9
 
+op_list				n	v	+	-	*	/	
+op_weight			4	4	1	1	1	1					
+weight_ops_on		1
 min_len				10
-max_len				50
+max_len				100
 
 max_dev_len			128
 
 complex_measure		2	// 1: genotype size 2: symbolic size 3: effective genotype size
-
-precision			0.0001
 
 // Hill Climbing Settings
 

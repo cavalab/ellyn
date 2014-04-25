@@ -22,9 +22,16 @@ struct ind {
 	char origin; // x: crossover, m: mutation, i: initialization
 
 	std::vector<float> output;
+	std::vector<float> output_v;
+
 	float abserror;
+	float abserror_v;
+
 	float corr;
+	float corr_v;
+
 	float fitness;
+	float fitness_v; 
 
 	float parentfitness;
 	int eff_size;
@@ -64,11 +71,15 @@ struct ind {
 	void clrPhen()
 	{
 		abserror = 0;
+		abserror_v=0;
 		corr = 0;
+		corr_v=0;
 		fitness=0;
+		fitness_v=0;
 		eqn = "";
 		eqn_form="";
 		output.clear();
+		output_v.clear();
 		// nominal model must be encased in set of parenthesis. the pointer points to that which is encased.
 		//ptr[0]= 1;
 		//ptr[1] = nom_mod.size()-2;
@@ -79,6 +90,9 @@ struct ind {
 
 struct SortFit{
 	bool operator() (ind& i,ind& j) { return (i.fitness<j.fitness);} 
+};
+struct SortFit_v{
+	bool operator() (ind& i,ind& j) { return (i.fitness_v<j.fitness_v);} 
 };
 struct SortSize{
 	bool operator() (ind& i,ind& j) { return (i.line.size()<j.line.size());} 
@@ -123,6 +137,27 @@ struct tribe{
 			   best = min(best, pop.at(i).fitness);
 		return best;
 	}
+	float bestFit_v() // returns best fitness value
+	{
+
+		/*#pragma omp parallel
+		{
+		   float localbest = maxf;
+
+		   #pragma omp for schedule(static)
+		   for(int i = 0; i < pop.size(); i++)
+			   localbest = min(localbest, pop.at(i).fitness);
+
+		   #pragma omp critical
+		   {
+			  best = min(localbest, best);
+		   }
+		}*/
+		best = maxf;
+		for(int i = 0; i < pop.size(); i++)
+			   best = min(best, pop.at(i).fitness_v);
+		return best;
+	}
 	float worstFit() //worst fitness
 	{
 		worst = minf;
@@ -151,6 +186,14 @@ struct tribe{
 		return pop.at(index).fitness; 
 
 	} 
+	float medFit_v() //median fitness
+	{
+		//vector<ind> tmppop = pop;
+		sort(pop.begin(),pop.end(),SortFit_v());
+		int index = (int)floor((float)pop.size()/2);
+		return pop.at(index).fitness_v; 
+
+	}
 	float meanFit() // mean fitness
 	{
 		float answer=0;

@@ -39,7 +39,25 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 		Mutate(pop.at(p1),tmppop,p,r,d);
 	}
 	//if (p.loud ) cout << "  Fitness...\n";
+	
 	Fitness(tmppop,p,d,s);
+	// look at parents and children equations
+	
+	string par1eqn = pop.at(p1).eqn;
+	float par1fit = pop.at(p1).fitness;
+	string kid1eqn = tmppop[0].eqn;
+	float kid1fit = tmppop[0].fitness;
+	string par2eqn;
+	float par2fit;
+	string kid2eqn; 
+	float kid2fit; 
+	if (tmppop.size()==2){
+			par2eqn = pop.at(p2).eqn;
+			par2fit = pop.at(p2).fitness;
+			kid2eqn = tmppop[1].eqn;
+			kid2fit = tmppop[1].fitness;
+	}
+
 
 	if(tmppop.size()==1)
 	{

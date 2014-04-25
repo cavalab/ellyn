@@ -88,7 +88,7 @@ struct state{
 		return val; 
 	}
 
-	int getGoodCrossPct()
+	float getGoodCrossPct()
 	{
 		
 		float total_good=0;
@@ -104,11 +104,11 @@ struct state{
 		else
 		{
 			float pct = total_good/total*100;
-			return int(pct);
+			return pct;
 		}
 		
 	}
-	int getNeutCrossPct()
+	float getNeutCrossPct()
 	{
 	
 		float total_neut=0;
@@ -125,11 +125,11 @@ struct state{
 		else
 		{
 			float pct = total_neut/total*100;
-			return int(pct);
+			return pct;
 		}
 
 	}
-	int getBadCrossPct()
+	float getBadCrossPct()
 	{
 	
 		float total_bad=0;
@@ -146,7 +146,7 @@ struct state{
 		else
 		{
 			float pct = total_bad/total*100;
-			return int(pct);
+			return pct;
 		}
 
 	}

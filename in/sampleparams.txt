@@ -3,7 +3,7 @@ popsize				1000	//population size
 numits				1	// number of trials
 
 // Generation Settings 
-sel					4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
+sel					2	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 tourn_size			2
 rt_rep				0.1
 rt_cross			0.7
@@ -27,7 +27,7 @@ sim_nom_mod			(1) // embryo equation
 nstates				1	// state space modelling: number of states
 
 // Problem information
-intvars				x	y
+intvars				x	
 extvars					
 cons				1	
 cvals				1	
@@ -48,7 +48,7 @@ min_fit				0.00000000000000000001
 //index                0	1	2	3	4	5	6	7	8	9
 
 op_list				n	v	+	-	*	/	
-op_weight			4	4	1	1	1	1					
+op_weight			3	3	1	1	1	1					
 weight_ops_on		1
 min_len				10
 max_len				50

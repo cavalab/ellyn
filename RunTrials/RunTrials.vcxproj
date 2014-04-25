@@ -161,7 +161,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Devilep\data.h" />
-    <ClInclude Include="..\Devilep\exprtk.hpp" />
     <ClInclude Include="..\Devilep\Fitness.h" />
     <ClInclude Include="..\Devilep\general_fns.h" />
     <ClInclude Include="..\Devilep\Generation.h" />
