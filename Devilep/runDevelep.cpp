@@ -476,12 +476,12 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	fout << "origin: " << best.origin << "\n";
 	fout << "age: " << best.age << "\n";
 	fout << "eqn form: " << best.eqn_form << "\n";
-	fout << "output: ";
+	/*fout << "output: ";
 	for(unsigned int i =0;i<best.output.size();i++)
 	{
-		fout << best.output.at(i);
+		fout << best.output.at(i) << " ";
 	}
-	fout<<"\n";
+	fout<<"\n";*/
 }
 void printlastpop(tribe& T,params& p,state& s,string& logname)
 {
@@ -527,12 +527,12 @@ void printlastpop(tribe& T,params& p,state& s,string& logname)
 		fout << "origin: " << T.pop.at(h).origin << "\n";
 		fout << "age: " << T.pop.at(h).age << "\n";
 		fout << "eqn form: " << T.pop.at(h).eqn_form << "\n";
-		fout << "output: ";
+		/*fout << "output: ";
 		for(unsigned int i =0;i<T.pop.at(h).output.size();i++)
 		{
 			fout << T.pop.at(h).output.at(i);
 		}
-		fout<<"\n";
+		fout<<"\n";*/
 		fout << "------------------------------------------------------------------" << "\n";
 		}
 }
