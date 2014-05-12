@@ -32,9 +32,10 @@ struct params {
 	string resultspath;
 	bool loud;
 	// Computer Settings
-	bool parallel;
-	int numcores;
+	//bool parallel;
+	//int numcores;
 
+	bool printeverypop;
 
 	string sim_nom_mod; // embryo equation
 	int nstates;    // state space modeling: number of states

@@ -2,6 +2,7 @@
 #pragma once
 #ifndef POP_H
 #define POP_H
+#include "stdafx.h"
 #include <iostream>
 #include<string>
 #include<vector>
@@ -10,6 +11,8 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 //#include "RPN_class.h"
 #include "op_node.h"
+//#include "general_fns.h"
+//#include "pareto.h"
 
 struct ind {
 	//unsigned int id;
@@ -17,7 +20,7 @@ struct ind {
 	//std::vector <std::string> args;
 	std::string eqn;
 	std::string eqn_form; // equation form for string distance comparison to other forms
-
+	int complexity;
 	//std::vector <int> ptr;
 	char origin; // x: crossover, m: mutation, i: initialization
 
@@ -36,6 +39,7 @@ struct ind {
 	float parentfitness;
 	int eff_size;
 	int age;
+	int rank;
 	//typedef exprtk::expression<float> expression_t;
 	//expression_t expression;
 	/*ind()

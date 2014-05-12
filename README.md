@@ -29,10 +29,10 @@ RunTrials will run Develep for many trials. Here is the syntax:
 ```
 RunTrials sampletrials.txt
 ```
-RunTrials takes one input file. The trials file contains three columns:
-
->> #trials parameterfile datafile
-
+RunTrials takes one input file. The trials input file contains three columns:
+```
+#trials parameterfile datafile
+```
 These are the simple instructions for running Develep. 
 
 

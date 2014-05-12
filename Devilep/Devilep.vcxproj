@@ -139,13 +139,17 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\Boost\boost_1_55_0;C:\Program Files %28x86%29\Visual Leak Detector\include</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
       <OpenMPSupport>true</OpenMPSupport>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -159,7 +163,9 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BruteforceAlgo.h" />
     <ClInclude Include="data.h" />
+    <ClInclude Include="Datapoint.h" />
     <ClInclude Include="Develep.h" />
     <ClInclude Include="exprtk.hpp" />
     <ClInclude Include="Fitness.h" />
@@ -171,11 +177,16 @@
     <ClInclude Include="Line2Eqn.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="mstream.h" />
+    <ClInclude Include="NondominatedsortAlgo.h" />
     <ClInclude Include="op_node.h" />
     <ClInclude Include="params.h" />
+    <ClInclude Include="pareto.h" />
+    <ClInclude Include="ParetoAlgo.h" />
     <ClInclude Include="pop.h" />
+    <ClInclude Include="p_archive.h" />
     <ClInclude Include="rnd.h" />
     <ClInclude Include="runDevelep.h" />
+    <ClInclude Include="StablesortAlgo.h" />
     <ClInclude Include="state.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="strdist.h" />
@@ -185,7 +196,9 @@
     <ClCompile Include="AgeBreed.cpp" />
     <ClCompile Include="AgeFitSelect.cpp" />
     <ClCompile Include="ApplyGenetics.cpp" />
+    <ClCompile Include="BruteforceAlgo.cc" />
     <ClCompile Include="Crossover.cpp" />
+    <ClCompile Include="Datapoint.cc" />
     <ClCompile Include="DC.cpp" />
     <ClCompile Include="Develep.cpp" />
     <ClCompile Include="EpiHC.cpp" />
@@ -199,7 +212,10 @@
     </ClCompile>
     <ClCompile Include="Line2Eqn.cpp" />
     <ClCompile Include="Mutate.cpp" />
+    <ClCompile Include="NondominatedsortAlgo.cc" />
+    <ClCompile Include="pareto.cc" />
     <ClCompile Include="runDevelep.cpp" />
+    <ClCompile Include="StablesortAlgo.cc" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

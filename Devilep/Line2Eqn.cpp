@@ -54,5 +54,5 @@ string Line2Eqn(vector<shared_ptr<node>>& line)
 		return "unwriteable";
 	}
 	
-	return eqnstack.front();
+	return eqnstack.back();
 }

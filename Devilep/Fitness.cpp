@@ -79,6 +79,23 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 				if(pop.at(count).line.at(m)->on)
 					pop.at(count).eff_size++;
 			}
+			// Get Complexity
+			pop.at(count).complexity=0;
+			for(int m=0;m<pop.at(count).line.size();m++){
+
+				if(pop.at(count).line.at(m)->on)
+				{
+					pop.at(count).complexity++;
+
+					if (pop.at(count).line.at(m)->type=='/')
+						pop.at(count).complexity++;
+					else if (pop.at(count).line.at(m)->type=='s' || pop.at(count).line.at(m)->type=='c')
+						pop.at(count).eff_size=pop.at(count).eff_size+2;
+					else if (pop.at(count).line.at(m)->type=='e' || pop.at(count).line.at(m)->type=='l')
+						pop.at(count).eff_size=pop.at(count).eff_size+3;
+				}
+			}
+			// Get Fitness
 			for(int m=0;m<pop.at(count).line.size();m++){
 				if(pop.at(count).line.at(m)->type=='v')
 					{// set pointer to dattovar 
@@ -86,8 +103,8 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 						if(set==NULL)
 							cout<<"hmm";
 						static_pointer_cast<n_sym>(pop.at(count).line.at(m))->setpt(set);
-						if (static_pointer_cast<n_sym>(pop.at(count).line.at(m))->valpt==NULL)
-							cout<<"wth";
+						/*if (static_pointer_cast<n_sym>(pop.at(count).line.at(m))->valpt==NULL)
+							cout<<"wth";*/
 					}
 			}
 			//cout << "Equation" << count << ": f=" << pop.at(count).eqn << "\n";
@@ -110,10 +127,10 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 						dattovar.at(j)= d.vals[sim][j];
 
 					for(int k=0;k<pop.at(count).line.size();k++){
-						if(pop.at(count).line.at(k)->type=='v'){
+						/*if(pop.at(count).line.at(k)->type=='v'){
 							if (static_pointer_cast<n_sym>(pop.at(count).line.at(k))->valpt==NULL)
 								cout<<"WTF";
-						}
+						}*/
 						if (pop.at(count).line.at(k)->on)
 							pop.at(count).line.at(k)->eval(outstack);
 					}
@@ -121,14 +138,14 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 					if(!outstack.empty()){
 						if (p.train){
 							if(sim<ndata_t){
-								pop.at(count).output.push_back(outstack.front());
+								pop.at(count).output.push_back(outstack.back());
 								pop.at(count).abserror += abs(d.target.at(sim)-pop.at(count).output.at(sim));
 								meantarget += d.target.at(sim);
 								meanout += pop.at(count).output[sim];
 							}
 							else
 							{
-								pop.at(count).output_v.push_back(outstack.front());
+								pop.at(count).output_v.push_back(outstack.back());
 								pop.at(count).abserror_v += abs(d.target.at(sim)-pop.at(count).output_v.at(sim-ndata_t));
 								meantarget_v += d.target.at(sim);
 								meanout_v += pop.at(count).output_v[sim-ndata_t];
@@ -136,7 +153,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 
 						}
 						else {
-							pop.at(count).output.push_back(outstack.front());
+							pop.at(count).output.push_back(outstack.back());
 							pop.at(count).abserror += abs(d.target.at(sim)-pop.at(count).output.at(sim));
 							meantarget += d.target.at(sim);
 							meanout += pop.at(count).output[sim];

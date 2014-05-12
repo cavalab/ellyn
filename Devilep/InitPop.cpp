@@ -10,16 +10,16 @@ using namespace std;
 		genotype to phenotype
 		calculate fitness
 */
-void makeline(ind&,params& p,vector<Randclass>& r,data& d);
+void makeline(ind&,params& p,vector<Randclass>& r);
 
-void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r,data& d)
+void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 {
 	//boost::progress_timer timer;
 	//#pragma omp parallel for
 
 	for(int i=0;i<pop.size();i++)
 	{
-		makeline(pop.at(i),p,r,d);
+		makeline(pop.at(i),p,r);
 		//remove dangling numbers and variables from end
 		/*while((pop.at(i).line.back()->type=='n' || pop.at(i).line.back()->type=='v') && pop.at(i).line.size()>1)
 			pop.at(i).line.pop_back();*/
@@ -43,7 +43,7 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r,data& d)
 	//cout <<"\nInit Pop time: ";
 }
 
-void makeline(ind& newind,params& p,vector<Randclass>& r,data& d)
+void makeline(ind& newind,params& p,vector<Randclass>& r)
 {
 	// construct line 
 	// obtain a seed from the system clock:
@@ -113,7 +113,8 @@ void makeline(ind& newind,params& p,vector<Randclass>& r,data& d)
 				}
 				break;
 			case 1: //load variable
-				varchoice = d.label.at(r[omp_get_thread_num()].rnd_int(0,d.label.size()-1));
+				varchoice = p.allvars.at(r[omp_get_thread_num()].rnd_int(0,p.allvars.size()-1));
+				//varchoice = d.label.at(r[omp_get_thread_num()].rnd_int(0,d.label.size()-1));
 				newind.line.push_back(shared_ptr<node>(new n_sym(varchoice)));
 				break;
 			case 2: // +
@@ -142,6 +143,9 @@ void makeline(ind& newind,params& p,vector<Randclass>& r,data& d)
 				break;
 			}
 	}
+	/*while (newind.line.back()->type=='n'||newind.line.back()->type=='v')
+		newind.line.pop_back();*/
+
 }
 
 //void makestack(ind& newind,params& p,vector<Randclass>& r)

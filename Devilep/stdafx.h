@@ -29,4 +29,7 @@
 #include "general_fns.h"
 #include <direct.h>
 #include<exception>
+#include "pop.h"
+#include "pareto.h"
+#include "p_archive.h"
 // TODO: reference additional headers your program requires here

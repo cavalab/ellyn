@@ -25,15 +25,13 @@
 #include "rnd.h"
 //#include <stdlib.h>
 #include <cstdlib>
+#include "ppl.h"
 #include <omp.h>
 #include "general_fns.h"
 #include <direct.h>
-// TODO: reference additional headers your pr
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
 #include<exception>
-
-
+#include "pop.h"
+#include "pareto.h"
+#include "p_archive.h"
 
 // TODO: reference additional headers your program requires here

@@ -26,15 +26,13 @@ using namespace std;
 void load_params(params &p, std::ifstream& is);
 void load_data(data &d, std::ifstream& is,params&);
 bool stopcondition(float&);
-void printstats(tribe& T,int &i,state& s,params& p);
+void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A);
 void printbestind(tribe& T,params& p,state& s,string& logname);
-void printlastpop(tribe& T,params& p,state& s,string& logname);
+void printlastpop(tribe& T,params& p,state& s,string& logname,int type);
 void shuffle_data(data& d, params& p, vector<Randclass>& r);
 
 void runDevelep(string& paramfile, string& datafile,bool trials)
-{
-	
-					
+{					
 	/* steps:
 	Initialize population
 		make genotypes
@@ -111,6 +109,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 	 s.out << "ERC: " << p.ERC << "\n";
 	 s.out << "Parameter Hill Climber: " << p.pHC_on <<"\n";
 	 s.out << "Epigenetic Hill Climber: " << p.eHC_on <<"\n";
+	 if(p.train) s.out << "Data split 50/50 for training and validation.\n";
 	 s.out << "Total Population Size: " << p.popsize << "\n";
 	 s.out << "Max Generations: " << p.g << "\n";
 
@@ -134,6 +133,8 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		shuffle_data(d,p,r);
 	
 	boost::timer time;
+
+	paretoarchive A(p.prto_arch_size);
 	
 	if (p.islands)
 	{
@@ -158,7 +159,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 				float bestfit;
 				vector<ind> tmppop;
 				// s.out << "Initialize Population..." << "\n";
-				InitPop(T.at(i).pop,p,r,d);
+				InitPop(T.at(i).pop,p,r);
 				// s.out << "Fitness..." << "\n";
 				Fitness(T.at(i).pop,p,d,s);
 				worstfit = T.at(i).worstFit();
@@ -177,7 +178,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 							j++;
 					}
 
-					InitPop(tmppop,p,r,d);
+					InitPop(tmppop,p,r);
 					Fitness(tmppop,p,d,s);
 					T.at(i).pop.insert(T.at(i).pop.end(),tmppop.begin(),tmppop.end());
 					tmppop.clear();
@@ -198,7 +199,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 			#pragma omp parallel for 
 			for(int i=0;i<num_islands;i++)
 			{
-				InitPop(T.at(i).pop,p,r,d);
+				InitPop(T.at(i).pop,p,r);
 				// s.out << "Gen 2 Phen..." << "\n";
 				// s.out << "Fitness..." << "\n";
 				Fitness(T.at(i).pop,p,d,s);
@@ -217,7 +218,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 				{
 					if (p.sel==2)
 					{
-						for(int j=0;j<p.island_gens;j++)
+						for(int j=0;j<subpops;j++)
 						{
 							if(pass)
 							{
@@ -272,15 +273,17 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 			//shuffle population	
 			std::random_shuffle(World.pop.begin(),World.pop.end(),r[omp_get_thread_num()]);
 			//redistribute populations to islands
+			s.out << "Shuffling island populations...\n";
 			#pragma omp parallel for 
 			for(int i=0;i<num_islands;i++)
 			{
 				T.at(i).pop.assign(World.pop.begin()+i*subpops,World.pop.begin()+(i+1)*subpops);
 			}
-			mixtrigger+=1000*subpops;
+			mixtrigger+=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
 		}
-		 
-		 printstats(World,gen,s,p);
+		 A.update(World.pop);
+		 printstats(World,gen,s,p,A);
+		 if (p.printeverypop) printlastpop(World,p,s,logname,2);
 		 s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
 		 s.out << "Total Evals: " << s.totalevals() << "\n";
 		 s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
@@ -288,7 +291,10 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		gen++;
 		}
 		printbestind(World,p,s,logname);
-		printlastpop(World,p,s,logname);
+		printlastpop(World,p,s,logname,0);
+		tribe FinalArchive(p.prto_arch_size,p.max_fit,p.min_fit);
+		FinalArchive.pop = A.pop;
+		printlastpop(FinalArchive,p,s,logname,1);
 	}
 	else //no islands
 	{
@@ -301,7 +307,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 			//float bestfit;
 			vector<ind> tmppop;
 			// s.out << "Initialize Population..." << "\n";
-			InitPop(T.pop,p,r,d);
+			InitPop(T.pop,p,r);
 			// s.out << "Gen 2 Phen..." << "\n";
 			// s.out << "Fitness..." << "\n";
 			Fitness(T.pop,p,d,s);
@@ -319,7 +325,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 						j++;
 				}
 				s.out << "\ntmppop size: " << tmppop.size();
-				InitPop(tmppop,p,r,d);
+				InitPop(tmppop,p,r);
 				Fitness(tmppop,p,d,s);
 				T.pop.insert(T.pop.end(),tmppop.begin(),tmppop.end());
 				tmppop.clear();
@@ -367,10 +373,11 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 
 				 } 
 
-				 s.setgenevals();
-				 //s.out << "Elapsed time: \n";
-				 printstats(T,counter,s,p);
-				
+				s.setgenevals();
+				//s.out << "Elapsed time: \n";
+				A.update(T.pop);
+				printstats(T,counter,s,p,A);
+				if (p.printeverypop) printlastpop(T,p,s,logname,2);
 				s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
 				s.out << "Total Evals: " << s.totalevals() << "\n";
 				s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
@@ -383,7 +390,10 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 			its++;
 		}
 		printbestind(T,p,s,logname);
-		printlastpop(T,p,s,logname);
+		printlastpop(T,p,s,logname,0);
+		tribe FinalArchive(p.prto_arch_size,p.max_fit,p.min_fit);
+		FinalArchive.pop = A.pop;
+		printlastpop(FinalArchive,p,s,logname,1);
 	}
 
 	if(!trials)
@@ -398,10 +408,12 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 	}
 	_CrtDumpMemoryLeaks();
 
+
 }
 
-void printstats(tribe& T,int &i,state& s,params& p)
+void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A)
 {
+	
 	//boost::progress_timer timer;
 s.out << "--- Generation " << i << "---------------------------------------------------------------" << "\n";
 s.out << "Number of evals: " << s.genevals.back() << "\n";
@@ -409,6 +421,7 @@ s.out << "Best Fitness: " << T.bestFit_v() <<"\n";
 s.out << "Median Fitness: " << T.medFit_v()<<"\n";
 s.out << "Mean Size: " << T.meanSize() << "\n";
 s.out << "Mean Eff Size: " << T.meanEffSize() << "\n";
+s.out << "Pareto Front Equations: " << A.pop.size() << "\n";
 if(p.pHC_on)
 	s.out << "Parameter updates: " << s.getpHCupdates() << "\n";
 if(p.eHC_on)
@@ -417,20 +430,20 @@ s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "\%\n";
 s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "\%\n";
 s.out << "Bad Genetics: " << s.getBadCrossPct() << "%\n";
 s.clearCross();
-float totalshares = 0;
-float c1=0;
-for (int i = 0; i<T.pop.size();i++)
-{
-	for (int j=0;j<T.pop.at(i).line.size();j++){
-		totalshares+=float(T.pop.at(i).line.at(j).use_count()); c1++;}
-}
-s.out << "Average shared pointer use count: " << totalshares/(c1) << "\n";
+//float totalshares = 0;
+//float c1=0;
+//for (int i = 0; i<T.pop.size();i++)
+//{
+//	for (int j=0;j<T.pop.at(i).line.size();j++){
+//		totalshares+=float(T.pop.at(i).line.at(j).use_count()); c1++;}
+//}
+//s.out << "Average shared pointer use count: " << totalshares/(c1) << "\n";
 s.out << "MAE \t R^2 \t\t Equation \n";
-vector <ind> besteqns;
-T.topTen(besteqns);
-for(unsigned int j=0;j<besteqns.size();j++)
+//vector <ind> besteqns;
+//T.topTen(besteqns);
+for(unsigned int j=0;j<min(10,int(A.pop.size()));j++)
 {
-	s.out <<besteqns.at(j).abserror_v << "\t" << besteqns.at(j).corr_v << "\t" << besteqns.at(j).eqn <<"\n";
+	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
 }
 s.out << "-------------------------------------------------------------------------------" << "\n";
 }
@@ -447,7 +460,7 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	fout << "Corresponding Logfile: " + logname + "\n";
 	fout << "Total Evaluations: " << s.totalevals() << "\n";
 	fout << "f = " + best.eqn + "\n";
-	fout << " line: ";
+	fout << "gline: ";
 	for(unsigned int i =0;i<best.line.size();i++)
 	{
 		if (best.line[i]->type=='n')
@@ -483,22 +496,34 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	}
 	fout<<"\n";*/
 }
-void printlastpop(tribe& T,params& p,state& s,string& logname)
+void printlastpop(tribe& T,params& p,state& s,string& logname,int type)
 {
-	s.out << "saving last pop... \n";
+	string bestname;
+	if (type==1){
+		s.out << "saving pareto archive... \n";
+		bestname = logname.substr(0,logname.size()-4)+".archive";
+	}
+	else if (type == 2){
+		string gen = to_string(s.genevals.size());
+		s.out << "saving pop... \n";
+		bestname = logname.substr(0,logname.size()-4) + "gen" + gen + ".pop";
+	}
+	else {
+		s.out << "saving last pop... \n";
+		bestname = logname.substr(0,logname.size()-4)+".last_pop";
+	}
 	T.sortpop();
-	string bestname = logname.substr(0,logname.size()-4)+".last_pop";
 	std::ofstream fout;
 	fout.open(bestname);
 	//boost::progress_timer timer;
-	fout << "--- Final Population ---------------------------------------------------------------" << "\n";
+	fout << "--- Population ---------------------------------------------------------------" << "\n";
 	fout << "Corresponding Logfile: " + logname + "\n";
 	fout << "Total Evaluations: " << s.totalevals() << "\n";
 
 	for (int h = 0; h<T.pop.size(); h++){
 		fout << "--- Individual "<< h << " ------------------------------------------------------------" << "\n";
 		fout << "f = " + T.pop.at(h).eqn + "\n";
-		fout << " line: ";
+		fout << "gline: ";
 		for(unsigned int i =0;i<T.pop.at(h).line.size();i++)
 		{
 			if (T.pop.at(h).line[i]->type=='n')
@@ -519,6 +544,7 @@ void printlastpop(tribe& T,params& p,state& s,string& logname)
 		fout << endl;
 		fout << "size: " << T.pop.at(h).line.size() << "\n";
 		fout << "eff size: " << T.pop.at(h).eff_size << "\n";
+		fout << "complexity: " << T.pop.at(h).complexity << "\n";
 		fout << "abs error: " << T.pop.at(h).abserror<< "\n";;
 		fout << "correlation: " << T.pop.at(h).corr<< "\n";;
 		fout << "fitness: " << T.pop.at(h).fitness<< "\n";;
@@ -540,7 +566,8 @@ void load_params(params &p, std::ifstream& fs)
 {
 	if (!fs.good()) 
 	{
-			cout << "BAD PARAMETER FILE LOCATION" << "\n";
+			cerr << "BAD PARAMETER FILE LOCATION" << "\n";
+			exit(1);
 	}
 
 	string s;
@@ -605,10 +632,10 @@ void load_params(params &p, std::ifstream& fs)
 		}
 		else if(varname.compare(0,4,"loud") == 0)
 			ss>>p.loud;
-		else if(varname.compare(0,8,"parallel") == 0)
+		/*else if(varname.compare(0,8,"parallel") == 0)
 			ss>>p.parallel;
 		else if(varname.compare(0,8,"numcores") == 0)
-			ss>>p.numcores;
+			ss>>p.numcores;*/
 		else if(varname.compare(0,11,"sim_nom_mod") == 0)
 			ss>>p.sim_nom_mod;
 		else if(varname.compare(0,7,"nstates") == 0)
@@ -727,6 +754,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.island_gens;
 		else if(varname.compare("train") ==0)
 			ss>>p.train;
+		else if(varname.compare("printeverypop") == 0)
+			ss>>p.printeverypop;
 		else{}
     }
 	p.allvars = p.intvars;

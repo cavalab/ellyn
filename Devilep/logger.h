@@ -5,7 +5,7 @@
 class logger {
 public:
 	bool trials;
-	logger(){}	// Opens a file for use with ofstream fout.
+	logger(){trials=false;}	// Opens a file for use with ofstream fout.
 	~logger(){fout.close();}			// Flushes and closes the logging file.
 	void set(bool t) {trials=t;};
 	void open(std::string& filename){fout.open(filename);}

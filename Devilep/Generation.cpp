@@ -66,7 +66,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 			// add one new individual
 			vector<ind> tmppop(1);
 			tmppop[0].age=0;
-			InitPop(tmppop,p,r,d);
+			InitPop(tmppop,p,r);
 			
 			Fitness(tmppop,p,d,s);
 			pop.push_back(tmppop[0]);
