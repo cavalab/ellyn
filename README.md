@@ -1,13 +1,15 @@
-Develep is an open=source genetic programming tool that incorporates epigenetic learning.
-It is very much under development! Or you could say, under=develeped...
+Develep
+=======
+Develep is a genetic programming tool for symbolic regression that incorporates epigenetic learning.
+It is very much under development! Or you could say, under-develeped...
 
 The files are built in Visual Studio C++ Express 2010 with some boost library dependencies. 
 
 About
 =====
-Develep uses a developmental, syntax=free, linear genome for constructing candidate equations. 
+Develep uses a developmental, syntax-free, linear genome for constructing candidate equations. 
 
-It is built to include different evolutionary methods for system identification adapted from literature. The options include  normal tournament selection, deterministic crowding, and age=pareto fitness selection. All algorithm choices are mangaged by one parameter file. 
+It is built to include different evolutionary methods for system identification adapted from literature. The options include  normal tournament selection, deterministic crowding, and age-pareto fitness selection. All algorithm choices are mangaged by one parameter file. 
 
 How to Build
 ============
