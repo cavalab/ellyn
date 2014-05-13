@@ -1,4 +1,6 @@
+#pragma once
 #include "stdafx.h"
+//#include "pop.h"
 
 struct SortRank{
 	bool operator() (ind& i,ind& j) { return (i.rank<j.rank);} 

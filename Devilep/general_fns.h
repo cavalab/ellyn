@@ -1,6 +1,7 @@
 #pragma once
 #ifndef GENERAL_FNS_H
 #define GENERAL_FNS_H
+#include "stdafx.h"
 #include "pop.h"
 #include "params.h"
 

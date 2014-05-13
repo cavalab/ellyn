@@ -5,7 +5,6 @@
 
 #pragma once
 
-
 #include "targetver.h"
 #include <stdio.h>
 #include <tchar.h>
@@ -33,5 +32,7 @@
 #include "pop.h"
 #include "pareto.h"
 #include "p_archive.h"
-
+#include "data.h"
+#include "pareto.h"
+//#include "general_fns.h"
 // TODO: reference additional headers your program requires here

@@ -21,7 +21,7 @@ Run Develep from the command line. Here is the syntax:
 ```
 Develep sampleparams.txt sampledata.txt
 ```
-As you can see, Develep takes two arguments: a parameter file and a data file. The parameter file includes all of the run=time settings for your search. The data file includes all your experimental data. See the sampleparams.txt and sampledata.txt filesto see how formatting works.   
+As you can see, Develep takes two arguments: a parameter file and a data file. The parameter file includes all of the run-time settings for your search. The data file includes all your experimental data. See the sampleparams.txt and sampledata.txt filesto see how formatting works.   
 
 How to run RunTrials
 ====================

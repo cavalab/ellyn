@@ -1,4 +1,5 @@
 // header file for ind struct
+#pragma once
 #ifndef PARAMS_H
 #define PARAMS_H
 #include <iostream>

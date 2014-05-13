@@ -1,21 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\Devilep\BruteforceAlgo.cc">
-      <Filter>pareto</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Devilep\Datapoint.cc">
-      <Filter>pareto</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Devilep\NondominatedsortAlgo.cc">
-      <Filter>pareto</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Devilep\pareto.cc">
-      <Filter>pareto</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Devilep\StablesortAlgo.cc">
-      <Filter>pareto</Filter>
-    </ClCompile>
     <ClCompile Include="RunTrials.cpp">
       <Filter>RunTrials</Filter>
     </ClCompile>
@@ -38,9 +23,6 @@
       <Filter>Develep</Filter>
     </ClCompile>
     <ClCompile Include="..\Devilep\DC.cpp">
-      <Filter>Develep</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Devilep\Develep.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
     <ClCompile Include="..\Devilep\EpiHC.cpp">
@@ -70,42 +52,30 @@
     <ClCompile Include="..\Devilep\runDevelep.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\stdafx.cpp">
-      <Filter>Develep</Filter>
-    </ClCompile>
     <ClCompile Include="..\Devilep\strdist.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
+    <ClCompile Include="..\Devilep\BruteforceAlgo.cc">
+      <Filter>pareto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Devilep\Datapoint.cc">
+      <Filter>pareto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Devilep\NondominatedsortAlgo.cc">
+      <Filter>pareto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Devilep\pareto.cc">
+      <Filter>pareto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Devilep\StablesortAlgo.cc">
+      <Filter>pareto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Devilep\BruteforceAlgo.h">
-      <Filter>pareto</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Devilep\Datapoint.h">
-      <Filter>pareto</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Devilep\NondominatedsortAlgo.h">
-      <Filter>pareto</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Devilep\pareto.h">
-      <Filter>pareto</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Devilep\ParetoAlgo.h">
-      <Filter>pareto</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Devilep\StablesortAlgo.h">
-      <Filter>pareto</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>RunTrials</Filter>
-    </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>RunTrials</Filter>
     </ClInclude>
     <ClInclude Include="..\Devilep\data.h">
-      <Filter>Develep</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Devilep\Develep.h">
       <Filter>Develep</Filter>
     </ClInclude>
     <ClInclude Include="..\Devilep\exprtk.hpp">
@@ -156,25 +126,43 @@
     <ClInclude Include="..\Devilep\state.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\stdafx.h">
-      <Filter>Develep</Filter>
-    </ClInclude>
     <ClInclude Include="..\Devilep\strdist.h">
       <Filter>Develep</Filter>
     </ClInclude>
     <ClInclude Include="..\Devilep\targetver.h">
       <Filter>Develep</Filter>
     </ClInclude>
+    <ClInclude Include="..\Devilep\BruteforceAlgo.h">
+      <Filter>pareto</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Devilep\Datapoint.h">
+      <Filter>pareto</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Devilep\NondominatedsortAlgo.h">
+      <Filter>pareto</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Devilep\pareto.h">
+      <Filter>pareto</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Devilep\ParetoAlgo.h">
+      <Filter>pareto</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Devilep\StablesortAlgo.h">
+      <Filter>pareto</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>RunTrials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="pareto">
-      <UniqueIdentifier>{86b030be-da99-41b5-b4cf-cdf4c7046dbd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Develep">
       <UniqueIdentifier>{d95539bb-66b8-4221-97fe-ed67c5496309}</UniqueIdentifier>
     </Filter>
     <Filter Include="RunTrials">
       <UniqueIdentifier>{bcb1b8b0-d3ea-4eb7-bce7-ddb268738576}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pareto">
+      <UniqueIdentifier>{0658043a-518a-4331-b2cc-f8c5f161ec17}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

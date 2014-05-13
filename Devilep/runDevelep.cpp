@@ -1,8 +1,8 @@
 #include "stdafx.h"
 // mine
 
-#include "pop.h"
-#include "data.h"
+//#include "pop.h"
+//#include "data.h"
 #include "logger.h"
 #include "state.h"
 #include "InitPop.h"
@@ -14,6 +14,7 @@
 #include <time.h>
 #include <cstring>
 #include "vld.h"
+#include "p_archive.h"
 //#define _CRTDBG_MAP_ALLOC
 //#include <stdlib.h>
 //#include <crtdbg.h>
