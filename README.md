@@ -1,5 +1,6 @@
 Develep
 =======
+
 Develep is a genetic programming tool for symbolic regression that incorporates epigenetic learning.
 It is very much under development! Or you could say, under-develeped...
 
@@ -35,6 +36,17 @@ RunTrials takes one input file. The trials input file contains three columns:
 ```
 These are the simple instructions for running Develep. 
 
+Cite
+===
+@article{William:9824,
+      author        = "William La Cava",
+      title         = "{Develep}",
+      month         = "May",
+      year          = "2014",
+}
+
+FYI
+===
 Develep
 Copyright (C) 2014  William La Cava
 
