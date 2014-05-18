@@ -210,6 +210,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="LexicaseSelect.cpp" />
     <ClCompile Include="Line2Eqn.cpp" />
     <ClCompile Include="Mutate.cpp" />
     <ClCompile Include="NondominatedsortAlgo.cc" />

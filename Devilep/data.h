@@ -26,6 +26,11 @@ struct data {
 	mymap.insert(pair<string,int>("beta",20));
 	mymap.insert(pair<string,int>("G1",30));*/
 
+	// variables for lexicase selection
+	vector<vector<float>> targetlex;
+	vector<vector<vector<float>>> lexvals;
+	//vector<int> lexicase;
+
 	void clear()
 	{
 		label.clear();

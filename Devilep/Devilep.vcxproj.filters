@@ -34,6 +34,7 @@
     <ClCompile Include="NondominatedsortAlgo.cc">
       <Filter>pareto</Filter>
     </ClCompile>
+    <ClCompile Include="LexicaseSelect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="data.h" />

@@ -23,11 +23,11 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		//if (p.loud ) fcout << "     Apply Genetics...";
 		try
 		{
-			ApplyGenetics(pop,parloc,p,r,d);
+			ApplyGenetics(pop,parloc,p,r,d,s);
 		}
 		catch(...)
 				{
-					cout<<"40\n";
+					cout<<"error in ApplyGenetics\n";
 					throw;
 				}
 		//if (p.loud ) fcout << "     Gen 2 Phen...";
@@ -50,15 +50,38 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		}
 	case 2: // deterministic crowding
 		{	
-		DC(pop,p,r,d,s);
-		break;
+			DC(pop,p,r,d,s);
+			break;
 		}
 	case 3: // lexicase
 		{
-		break;
+			vector<unsigned int> parloc(pop.size());
+			LexicaseSelect(pop,parloc,p,r);
+			//if (p.lex_age) vector<ind> tmppop(pop);
+
+			ApplyGenetics(pop,parloc,p,r,d,s);
+			//FitnessLex(pop,parloc,p,r,d);
+			if (!p.lexage)
+			{
+				Fitness(pop,p,d,s);
+				//get mutation/crossover stats
+				s.setCrossPct(pop);
+			}
+			else
+			{
+				// add one new individual
+				vector<ind> tmppop(1);
+				tmppop[0].age=0;
+				InitPop(tmppop,p,r);
+				Fitness(tmppop,p,d,s);
+				pop.push_back(tmppop[0]);
+				// select new population with tournament size 2, based on pareto age-fitness
+				AgeFitSelect(pop,p,r);
+			}
+			break;
 		}
 	case 4: //age-fitness pareto front
-		{//scheme:
+		{   //scheme:
 			// produce a new population equal in size to the old
 			// pool all individuals from both populations
 			

@@ -26,6 +26,7 @@ using namespace std;
 
 void load_params(params &p, std::ifstream& is);
 void load_data(data &d, std::ifstream& is,params&);
+void load_lexdata(data &d, std::ifstream& fs,params& p);
 bool stopcondition(float&);
 void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A);
 void printbestind(tribe& T,params& p,state& s,string& logname);
@@ -64,7 +65,9 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 	load_params(p, fs);
 	// load data file
 	ifstream ds(datafile);
-	load_data(d,ds,p);
+
+	if (p.sel == 3) load_lexdata(d,ds,p);
+	else load_data(d,ds,p);
 	
 	s.out.set(trials);
 	
@@ -443,9 +446,8 @@ s.out << "MAE \t R^2 \t\t Equation \n";
 //vector <ind> besteqns;
 //T.topTen(besteqns);
 for(unsigned int j=0;j<min(10,int(A.pop.size()));j++)
-{
 	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
-}
+
 s.out << "-------------------------------------------------------------------------------" << "\n";
 }
 void printbestind(tribe& T,params& p,state& s,string& logname)
@@ -505,7 +507,7 @@ void printlastpop(tribe& T,params& p,state& s,string& logname,int type)
 		bestname = logname.substr(0,logname.size()-4)+".archive";
 	}
 	else if (type == 2){
-		string gen = to_string(s.genevals.size());
+		string gen = to_string(static_cast<long long>(s.genevals.size()));
 		s.out << "saving pop... \n";
 		bestname = logname.substr(0,logname.size()-4) + "gen" + gen + ".pop";
 	}
@@ -743,6 +745,10 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.eHC_max_prob;
 		else if(varname.compare("eHC_min_prob") == 0)
 			ss>>p.eHC_min_prob;
+		else if(varname.compare("lexpool") == 0)
+			ss>>p.lexpool;
+		else if(varname.compare("lexage") == 0)
+			ss>>p.lexage;
 		else if(varname.compare("prto_arch_on") == 0)
 			ss>>p.prto_arch_on;
 		else if(varname.compare("prto_arch_size") == 0)
@@ -879,12 +885,100 @@ void load_data(data &d, std::ifstream& fs,params& p)
 	//d.dattovar.resize(p.allvars.size());
 	//d.mapdata();
 }
+void load_lexdata(data &d, std::ifstream& fs,params& p)
+{
+	if (!fs.good()) 
+	{
+			cout << "BAD DATA FILE LOCATION" << "\n";
+	}
+
+	string s;
+	string varname;
+	float tmpf;
+	float tarf;
+	//int tmpi;
+	string tmps;
+	//bool tmpb;
+	//int varnum =0;
+	int rownum=0;
+	int lexnum=0;
+	unsigned int index=0;
+	bool pass = 0;
+	// get variable names first line / number of variables
+	getline(fs,s,'\n');
+	istringstream ss(s);
+	ss>>tmps;
+
+	while (ss>>tmps )
+	{
+		while (!pass && index<p.allvars.size())
+		{
+			if(tmps.compare(p.allvars.at(index))==0)
+			{
+				d.label.push_back(p.allvars.at(index)); // populate data labels from all vars based on column location
+				pass=1;
+				
+			}
+			else
+			{
+				index++;
+			}
+		}
+
+		pass=0;
+		index=0;
+	}
+	vector<int> shuffler;
+	int c=0;
+	d.lexvals.push_back(vector<vector<float>>());
+	d.targetlex.push_back(vector<float>());
+    while(!fs.eof())
+    {		
+		getline(fs,s,'\n');
+		istringstream ss2(s);
+
+		if (s.compare("case")==0 ){
+			c++; //YAY!
+			lexnum=0;
+			d.lexvals.push_back(vector<vector<float>>());
+			d.targetlex.push_back(vector<float>());
+		}
+		else{
+			// get target data
+			ss2 >> tarf;
+			d.target.push_back(tarf);
+			d.targetlex[c].push_back(tarf);
+			d.vals.push_back(vector<float>());
+			d.lexvals[c].push_back(vector<float>());
+			// get variable data
+			while(ss2 >> tmpf)
+			{
+				d.vals[rownum].push_back(tmpf);
+				d.lexvals[c][lexnum].push_back(tmpf);
+				//varnum++;
+			}
+			rownum++;
+			lexnum++;
+		}
+    }
+	// set number of cases
+	p.numcases = c+1;
+	// pop end in case of extra blank lines in data file
+	while(d.vals.back().empty())
+	{
+		d.vals.pop_back();
+	}
+
+	//d.dattovar.resize(p.allvars.size());
+	//d.mapdata();
+}
 void shuffle_data(data& d, params& p, vector<Randclass>& r)
 {
 	vector<int> shuffler;
 	vector<float> newtarget;
 	vector<vector<float>> newvals;
-
+	if (p.sel!=3) 
+	{
 	for(int i=0;i<d.vals.size();i++)
 		shuffler.push_back(i);
 
@@ -894,9 +988,42 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r)
 	{
 		newtarget.push_back(d.target.at(shuffler.at(i)));
 		newvals.push_back(d.vals.at(shuffler.at(i)));
+
 	}
 	swap(d.target,newtarget);
 	swap(d.vals,newvals);
+
+	}
+	else // lexicase selection
+	{
+		
+		vector<vector<float>> newtarlex(d.lexvals.size());
+		vector<vector<vector<float>>> newlexvals(d.lexvals.size());
+		for (int h=0; h<d.lexvals.size();h++)
+		{
+			shuffler.clear();
+			for(int i=0;i<d.lexvals[h].size();i++)
+				shuffler.push_back(i);
+
+			std::random_shuffle(shuffler.begin(),shuffler.end(),r[omp_get_thread_num()]);
+			
+			for(int i=0;i<d.lexvals[h].size();i++)
+			{
+				//for (int j =0; j<d.lexvals[h][i].size();j++){
+					newtarlex[h].push_back(d.targetlex[h][shuffler.at(i)]);
+					newlexvals[h].push_back(d.lexvals[h][shuffler.at(i)]);
+
+					newtarget.push_back(newtarlex[h].back());
+					newvals.push_back(newlexvals[h].back());
+				//}
+			}
+		}
+		swap(d.target,newtarget);
+		swap(d.vals,newvals);
+		swap(d.targetlex,newtarlex);
+		swap(d.lexvals,newlexvals);
+	}
+	
 }
 bool stopcondition(float &bestfit)
 {

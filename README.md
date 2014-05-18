@@ -39,7 +39,7 @@ These are the simple instructions for running Develep.
 Cite
 ===
 @article{William:9824,
-      author        = "William La Cava",
+      author        = {La Cava, William},
       title         = "{Develep}",
       month         = "May",
       year          = "2014",

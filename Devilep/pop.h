@@ -35,6 +35,7 @@ struct ind {
 
 	float fitness;
 	float fitness_v; 
+	vector<float> fitlex; // fitnesses for lexicase selection
 
 	float parentfitness;
 	int eff_size;

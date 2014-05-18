@@ -118,6 +118,10 @@ struct params {
 
 	int seed;
 
+	// lexicase selection
+	int numcases;
+	int lexpool;
+	bool lexage;
 	params(){train=0;}
 	~params(){}
 
