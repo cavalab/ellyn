@@ -21,6 +21,7 @@ public:
 };
 void getEqnForm(std::string& eqn,std::string& eqn_form);
 float getCorr(vector<float>& output,vector<float>& target,float meanout,float meantarget,int off);
+int getComplexity(string& eqn);
 
 void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 {
@@ -47,7 +48,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 		ndata_v=0;
 	}
 
-
+	int ptevals=0;
 	//#pragma omp parallel for private(e)
 	for(int count = 0; count<pop.size(); count++)
 	{
@@ -81,20 +82,9 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 					pop.at(count).eff_size++;
 			}
 			// Get Complexity
-			pop.at(count).complexity=0;
-			for(int m=0;m<pop.at(count).line.size();m++){
-				if(pop.at(count).line.at(m)->on)
-				{
-					pop.at(count).complexity++;
-					if (pop.at(count).line.at(m)->type=='/')
-						pop.at(count).complexity++;
-					else if (pop.at(count).line.at(m)->type=='s' || pop.at(count).line.at(m)->type=='c')
-						pop.at(count).eff_size=pop.at(count).eff_size+2;
-					else if (pop.at(count).line.at(m)->type=='e' || pop.at(count).line.at(m)->type=='l')
-						pop.at(count).eff_size=pop.at(count).eff_size+3;
-				}
-			}
-			
+			pop.at(count).complexity= getComplexity(pop.at(count).eqn);
+		
+			// set data table
 			for(int m=0;m<pop.at(count).line.size();m++){
 				if(pop.at(count).line.at(m)->type=='v')
 					{// set pointer to dattovar 
@@ -130,8 +120,9 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 							if (static_pointer_cast<n_sym>(pop.at(count).line.at(k))->valpt==NULL)
 								cout<<"WTF";
 						}*/
-						if (pop.at(count).line.at(k)->on)
+						if (pop.at(count).line.at(k)->on){
 							pop.at(count).line.at(k)->eval(outstack);
+							ptevals++;}
 					}
 
 					if(!outstack.empty()){
@@ -277,19 +268,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 					pop.at(count).eff_size++;
 			}
 			// Get Complexity
-			pop.at(count).complexity=0;
-			for(int m=0;m<pop.at(count).line.size();m++){
-				if(pop.at(count).line.at(m)->on)
-				{
-					pop.at(count).complexity++;
-					if (pop.at(count).line.at(m)->type=='/')
-						pop.at(count).complexity++;
-					else if (pop.at(count).line.at(m)->type=='s' || pop.at(count).line.at(m)->type=='c')
-						pop.at(count).complexity=pop.at(count).complexity+2;
-					else if (pop.at(count).line.at(m)->type=='e' || pop.at(count).line.at(m)->type=='l')
-						pop.at(count).complexity=pop.at(count).complexity+3;
-				}
-			}
+			pop.at(count).complexity= getComplexity(pop.at(count).eqn);
 			
 			// set data pointers
 			for(int m=0;m<pop.at(count).line.size();m++){
@@ -324,6 +303,9 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 				pop.at(count).output.clear();
 				pop.at(count).output_v.clear();
 				
+				vector<float> tarlex; // target data arranged for comparison with output
+				vector<float> tarlex_v; // target data arranged for comparison with output_v
+
 				vector<vector<float>> outlex;
 				vector<float> errorlex;
 				vector<float> corrlex;
@@ -352,7 +334,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 						ndata_v=0;
 					}	
 
-					// calculate error 
+// calculate error 
 					for(unsigned int sim=0;sim<d.lexvals[lex].size();sim++)
 					{
 						//outlex_v.push_back(vector<float>());
@@ -361,17 +343,21 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 							dattovar.at(j)= d.lexvals[lex][sim][j];
 
 						for(int k=0;k<pop.at(count).line.size();k++){
-							if (pop.at(count).line.at(k)->on)
+							if (pop.at(count).line.at(k)->on){
 								pop.at(count).line.at(k)->eval(outstack);
+								ptevals++;}
 						}
 
 						if(!outstack.empty()){
 							if (p.train){
 								if(sim<ndata_t){
 									pop.at(count).output.push_back(outstack.back());
+									tarlex.push_back(d.targetlex[lex][sim]);
 									outlex[lex].push_back(outstack.back());
+
 									pop.at(count).abserror += abs(d.targetlex[lex].at(sim)-pop.at(count).output.back());
 									errorlex[lex]+=abs(d.targetlex[lex].at(sim)-pop.at(count).output.back());
+
 									meantarget += d.targetlex[lex].at(sim);
 									meantargetlex += d.targetlex[lex].at(sim);
 									meanout += pop.at(count).output.back();
@@ -381,10 +367,11 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 								else
 								{
 									pop.at(count).output_v.push_back(outstack.back());
+									tarlex_v.push_back(d.targetlex[lex][sim]);
 									//outlex_v[lex].push_back(outstack.back());
 									pop.at(count).abserror_v += abs(d.targetlex[lex].at(sim)-pop.at(count).output_v.back());
 									//errorlex_v[lex]+=abs(d.targetlex[lex]lex[lex].at(sim)-pop.at(count).output.at(sim-ndata_t));
-									//meantarget_v += d.targetlex[lex].at(sim);
+									meantarget_v += d.targetlex[lex][sim];
 									//meantargetlex += d.targetlex[lex]lex[lex].at(sim);
 									meanout_v += pop.at(count).output_v.back();
 									//meanoutlex_v += pop.at(count).output_v[sim-ndata_t];
@@ -393,6 +380,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 							}
 							else {
 								pop.at(count).output.push_back(outstack.back());
+								tarlex.push_back(d.targetlex[lex][sim]);
 								outlex[lex].push_back(outstack.back());
 								pop.at(count).abserror += abs(d.targetlex[lex].at(sim)-pop.at(count).output.back());
 								errorlex[lex]+=abs(d.targetlex[lex].at(sim)-pop.at(count).output.back());
@@ -417,6 +405,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 						meanoutlex= meanoutlex/outlex[lex].size();
 
 						//calculate correlation coefficient
+						string tmp = pop.at(count).eqn;
 						corrlex[lex] = getCorr(outlex[lex],d.targetlex[lex],meanoutlex,meantargetlex,0);
 
 					}
@@ -450,7 +439,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 						(pop.at(count).fitlex[lex]=p.min_fit);
 
 				} //for (int lex=0; lex<d.lexvals.size(); lex++)
-		// fill in overall fitness information
+	// fill in overall fitness information
 				if (pass){
 					
 						// mean absolute error
@@ -460,16 +449,16 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 						//meanoutlex= meanoutlex/pop.at(count).output.size();
 
 						//calculate correlation coefficient
-						pop.at(count).corr = getCorr(pop.at(count).output,d.target,meanout,meantarget,0);
+						pop.at(count).corr = getCorr(pop.at(count).output,tarlex,meanout,meantarget,0);
 					
 						if (p.train)
 						{
 							// mean absolute error
 							pop.at(count).abserror_v = pop.at(count).abserror_v/pop.at(count).output_v.size();
-							meantarget_v = meantarget_v/pop.at(count).output_v.size();
+							meantarget_v = meantarget_v/tarlex_v.size();
 							meanout_v = meanout_v/pop.at(count).output_v.size();
 							//calculate correlation coefficient
-							pop.at(count).corr_v = getCorr(pop.at(count).output_v,d.target,meanout_v,meantarget_v,pop.at(count).output.size());
+							pop.at(count).corr_v = getCorr(pop.at(count).output_v,tarlex_v,meanout_v,meantarget_v,0);
 						}
 
 					}
@@ -552,6 +541,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 	}//LEXICASE FITNESS
 	}//for(int count = 0; count<pop.size(); count++)
 	s.numevals[omp_get_thread_num()]=s.numevals[omp_get_thread_num()]+pop.size();
+	s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
 	//cout << "\nFitness Time: ";
 }
 
@@ -587,10 +577,57 @@ float getCorr(vector<float>& output,vector<float>& target,float meanout,float me
 	q = q/(ndata-1); //unbiased esimator
 	var_target=var_target/(ndata-1); //unbiased esimator
 	var_ind =var_ind/(ndata-1); //unbiased esimator
-	if(var_target==0 || var_ind==0)
+	if(abs(var_target)<0.0000001 || abs(var_ind)<0.0000001)
 		corr = 0;
 	else
 		corr = pow(q,2)/(var_target*var_ind);
 
 	return corr;
+}
+int getComplexity(string& eqn)
+{
+	int complexity=0;
+	char c;
+	for(int m=0;m<eqn.size();m++){
+		c=eqn[m];
+		
+		if(c=='/')
+			complexity=complexity+2;
+		else if (c=='s'){
+			if(m<eqn.size()-2){
+				if ( eqn[m+1]=='i' && eqn[m+2] == 'n'){
+					complexity=complexity+3;
+					m=m+2;
+				}
+			}
+		}
+		else if (c=='c'){
+			if(m<eqn.size()-2){
+				if ( eqn[m+1]=='o' && eqn[m+2] == 's'){
+					complexity=complexity+3;
+					m=m+2;
+				}
+			}
+		}
+		else if (c=='e'){
+			if(m<eqn.size()-2){
+				if ( eqn[m+1]=='x' && eqn[m+2] == 'p'){
+					complexity=complexity+4;
+					m=m+2;
+				}
+			}
+		}
+		else if (c=='l'){
+			if(m<eqn.size()-2){
+				if ( eqn[m+1]=='o' && eqn[m+2] == 'g'){
+					complexity=complexity+4;
+					m=m+2;
+				}
+			}
+		}
+		else
+			complexity++;
+	}
+
+	return complexity;
 }

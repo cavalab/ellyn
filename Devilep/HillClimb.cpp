@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "state.h"
-#include "pop.h"
+//#include "pop.h"
 #include "params.h"
 #include "Fitness.h"
 

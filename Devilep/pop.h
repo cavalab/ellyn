@@ -11,7 +11,7 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 //#include "RPN_class.h"
 #include "op_node.h"
-//#include "general_fns.h"
+#include "general_fns.h"
 //#include "pareto.h"
 
 struct ind {
@@ -92,9 +92,23 @@ struct ind {
 //private:
 //	string& nominal_model;
 };
-
 struct SortFit{
-	bool operator() (ind& i,ind& j) { return (i.fitness<j.fitness);} 
+	bool operator() (const ind& i,const ind& j) { return (i.fitness<j.fitness);} 
+};
+
+struct SortRank{
+	bool operator() (ind& i,ind& j) { return (i.rank<j.rank);} 
+};
+
+struct revSortRank{
+	bool operator() (ind& i,ind& j) { return (i.rank>j.rank);} 
+};
+
+struct SortEqnSize{
+	bool operator() (const ind& i,const ind& j) { return (i.eqn.size()<j.eqn.size());} 
+};
+
+struct SortComplexity{bool operator() (const ind& i,const ind& j) { return (i.complexity<j.complexity);} 
 };
 struct SortFit_v{
 	bool operator() (ind& i,ind& j) { return (i.fitness_v<j.fitness_v);} 
@@ -102,6 +116,29 @@ struct SortFit_v{
 struct SortSize{
 	bool operator() (ind& i,ind& j) { return (i.line.size()<j.line.size());} 
 };
+
+struct sameEqn{
+	bool operator() (ind& i,ind& j) { return i.eqn==j.eqn;} 
+};
+
+struct sameEqnSize{
+	bool operator() (ind& i,ind& j) { return i.eqn.size()==j.eqn.size();} 
+};
+
+struct sameSizeFit{
+	bool operator() (ind& i,ind& j) { return (i.fitness==j.fitness && i.eqn.size()==j.eqn.size());} 
+};
+
+struct sameFit{
+	bool operator() (ind& i,ind& j) { return (i.fitness==j.fitness);} 
+};
+
+struct sameComplexity{bool operator() (const ind& i,const ind& j) { return (i.complexity==j.complexity);} 
+};
+
+struct sameFitComplexity{bool operator() (const ind& i,const ind& j) { return (i.fitness==j.fitness && i.complexity==j.complexity);} 
+};
+
 
 struct tribe{ 
 
@@ -240,9 +277,14 @@ struct tribe{
 
 	void topTen(vector <ind>& eqns) //returns address to vector of equation strings
 	{
-		//vector<ind> tmppop = pop;
-		sort(pop.begin(),pop.end(),SortFit());
-		vector <float> fitnesses;
+		vector<ind> tmppop = pop;
+		sort(tmppop.begin(),tmppop.end(),SortFit());
+		unique(tmppop.begin(),tmppop.end(),sameFit());
+		
+		for (int i=0;i<10;i++)
+			eqns.push_back(tmppop.at(i));
+
+		/*vector <float> fitnesses;
 		int i=0;
 		bool pass=true;
 		while(eqns.size()<10 && i<pop.size())
@@ -263,7 +305,7 @@ struct tribe{
 			else
 				pass=1;
 			++i;
-		}
+		}*/
 	}
 	void getbestind(ind& bestind)
 	{

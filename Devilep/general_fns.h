@@ -9,4 +9,6 @@ bool is_number(const std::string& s);
 void NewInstruction(ind& newind,int loc,params&,vector<Randclass>& r,data& d);
 void makenewcopy(ind& newind);
 
+
+
 #endif

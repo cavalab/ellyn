@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "pop.h"
+//#include "pop.h"
 #include "params.h"
 
 bool is_number(const std::string& s)
@@ -8,7 +8,6 @@ bool is_number(const std::string& s)
     while (it != s.end() && (std::isdigit(*it) || (*it=='-') || (*it=='.'))) ++it;
     return !s.empty() && it == s.end();
 }
-
 
 void NewInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,data& d)
 {

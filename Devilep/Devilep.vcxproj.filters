@@ -9,7 +9,6 @@
     <ClCompile Include="Develep.cpp" />
     <ClCompile Include="EpiHC.cpp" />
     <ClCompile Include="Fitness.cpp" />
-    <ClCompile Include="general_fns.cpp" />
     <ClCompile Include="Generation.cpp" />
     <ClCompile Include="HillClimb.cpp" />
     <ClCompile Include="InitPop.cpp" />
@@ -35,6 +34,7 @@
       <Filter>pareto</Filter>
     </ClCompile>
     <ClCompile Include="LexicaseSelect.cpp" />
+    <ClCompile Include="general_fns.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="data.h" />

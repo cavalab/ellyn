@@ -1,10 +1,10 @@
 #include "stdafx.h"
-#include "pop.h"
+//#include "pop.h"
 #include "params.h"
 #include "state.h"
 #include "Fitness.h"
 #include "Gen2Phen.h"
-#include "general_fns.h"
+//#include "general_fns.h"
 
 void EpiHC(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
 {

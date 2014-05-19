@@ -1,25 +1,16 @@
 #pragma once
 #include "stdafx.h"
+#include "general_fns.h"
 //#include "pop.h"
 
-struct SortRank{
-	bool operator() (ind& i,ind& j) { return (i.rank<j.rank);} 
-};
-struct revSortRank{
-	bool operator() (ind& i,ind& j) { return (i.rank>j.rank);} 
-};
-struct sameEqn{
-	bool operator() (ind& i,ind& j) { return i.eqn.compare(j.eqn)==0;} 
-};
-struct sameSizeFit{
-	bool operator() (ind& i,ind& j) { return (i.fitness==j.fitness && i.complexity==j.complexity);} 
-};
+
 //struct SortFit{
 //	bool operator() (ind& i,ind& j) { return (i.fitness<j.fitness);} 
 //};
 struct paretoarchive{
 	vector <ind> pop; // population
 	int archsize;
+	int optimal_size;
 	paretoarchive(int size){archsize=size;}
 	~paretoarchive(){}
 
@@ -27,11 +18,13 @@ struct paretoarchive{
 	{
 		vector <ind> tmppop;
 		
-		
 		pop.insert(pop.end(),newpop.begin(),newpop.end());
-		sort(pop.begin(),pop.end(),SortFit());
+		
+		sort(pop.begin(),pop.end(),SortComplexity());
+		stable_sort(pop.begin(),pop.end(),SortFit());
 		vector<ind>::iterator it;
-		it = std::unique (pop.begin(), pop.end(), sameSizeFit());
+		it = std::unique (pop.begin(), pop.end(), sameFitComplexity());
+		//it2 = std::unique (pop.begin(), pop.end(), sameEqn());
 		pop.resize(distance(pop.begin(),it));
 
 		int r = 0;
@@ -45,11 +38,14 @@ struct paretoarchive{
 				tmppop.push_back(pop.back());
 				pop.pop_back();
 			}
+			if (r==0)
+				optimal_size = tmppop.size();
 			r++;
 		}
 
 		pop = tmppop;
-		sort(pop.begin(),pop.end(),SortFit());
+		sort(pop.begin(),pop.end(),SortRank());
+		stable_sort(pop.begin(),pop.end(),SortFit());
 	}
 
 };

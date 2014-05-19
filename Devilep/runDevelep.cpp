@@ -290,7 +290,9 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		 if (p.printeverypop) printlastpop(World,p,s,logname,2);
 		 s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
 		 s.out << "Total Evals: " << s.totalevals() << "\n";
+		 s.out << "Point Evals: " << s.totalptevals() << "\n";
 		 s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
+		 s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
 		//World.pop.clear();
 		gen++;
 		}
@@ -425,7 +427,7 @@ s.out << "Best Fitness: " << T.bestFit_v() <<"\n";
 s.out << "Median Fitness: " << T.medFit_v()<<"\n";
 s.out << "Mean Size: " << T.meanSize() << "\n";
 s.out << "Mean Eff Size: " << T.meanEffSize() << "\n";
-s.out << "Pareto Front Equations: " << A.pop.size() << "\n";
+s.out << "Pareto Front Equations: " << A.optimal_size << "\n";
 if(p.pHC_on)
 	s.out << "Parameter updates: " << s.getpHCupdates() << "\n";
 if(p.eHC_on)
@@ -443,10 +445,12 @@ s.clearCross();
 //}
 //s.out << "Average shared pointer use count: " << totalshares/(c1) << "\n";
 s.out << "MAE \t R^2 \t\t Equation \n";
-//vector <ind> besteqns;
-//T.topTen(besteqns);
-for(unsigned int j=0;j<min(10,int(A.pop.size()));j++)
-	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
+vector <ind> besteqns;
+T.topTen(besteqns);
+//for(unsigned int j=0;j<min(10,int(A.pop.size()));j++)
+//	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
+for(unsigned int j=0;j<besteqns.size();j++)
+	s.out <<besteqns.at(j).abserror_v << "\t" << besteqns.at(j).corr_v << "\t" << besteqns.at(j).eqn <<"\n";
 
 s.out << "-------------------------------------------------------------------------------" << "\n";
 }
@@ -979,19 +983,19 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r)
 	vector<vector<float>> newvals;
 	if (p.sel!=3) 
 	{
-	for(int i=0;i<d.vals.size();i++)
-		shuffler.push_back(i);
+		for(int i=0;i<d.vals.size();i++)
+			shuffler.push_back(i);
 
-	std::random_shuffle(shuffler.begin(),shuffler.end(),r[omp_get_thread_num()]);
+		std::random_shuffle(shuffler.begin(),shuffler.end(),r[omp_get_thread_num()]);
 
-	for(int i=0;i<d.vals.size();i++)
-	{
-		newtarget.push_back(d.target.at(shuffler.at(i)));
-		newvals.push_back(d.vals.at(shuffler.at(i)));
+		for(int i=0;i<d.vals.size();i++)
+		{
+			newtarget.push_back(d.target.at(shuffler.at(i)));
+			newvals.push_back(d.vals.at(shuffler.at(i)));
 
-	}
-	swap(d.target,newtarget);
-	swap(d.vals,newvals);
+		}
+		swap(d.target,newtarget);
+		swap(d.vals,newvals);
 
 	}
 	else // lexicase selection

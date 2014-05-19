@@ -5,7 +5,8 @@
 
 struct state{
 
-	vector<int> numevals; //number of evals on each thread
+	vector<long> ptevals; //number of instruction evals
+	vector<long> numevals; //number of evals on each thread
 	vector<int> genevals; //total evals for each generation
 	vector <int> fit_best;
 	vector <float> fit_mean;
@@ -29,6 +30,7 @@ struct state{
 
 	state()
 	{
+		ptevals.resize(omp_get_max_threads());
 		numevals.resize(omp_get_max_threads());
 		genevals.push_back(0);
 		eHC_updates.assign(omp_get_max_threads(),0);
@@ -56,11 +58,18 @@ struct state{
 		genevals.push_back(gentmp - totalevals());
 
 	}
-	int totalevals()
+	long totalevals()
 	{
-		int te=0;
+		long te=0;
 		for(unsigned int i = 0;i<genevals.size();i++)
 			te+=genevals.at(i);
+		return te;
+	}
+	long totalptevals()
+	{
+		long te=0;
+		for(unsigned int i = 0;i<ptevals.size();i++)
+			te+=ptevals.at(i);
 		return te;
 	}
 	int getpHCupdates()
@@ -191,6 +200,7 @@ struct state{
 	//}
 	void clear()
 	{
+		ptevals.clear();
 		numevals.clear();
 		genevals.clear();
 		fit_best.clear();
@@ -200,6 +210,7 @@ struct state{
 		size_mean.clear();
 		size_med.clear();
 		size_std.clear();
+		ptevals.resize(omp_get_max_threads());
 		numevals.resize(omp_get_max_threads());
 		genevals.push_back(0);
 	}

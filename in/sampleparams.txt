@@ -93,7 +93,4 @@ prto_sel_on			1
 
 // island model
 islands				1  // use islands of populations (parallelizes code)
-island_gens			10 // number of generations of island isolation before mixing populations together
-
-
-lexpool				10
+island_gens			250 // number of generations of island isolation before mixing populations together
