@@ -38,11 +38,12 @@ These are the simple instructions for running Develep.
 
 Cite
 ===
-@article{William:9824,
-      author        = {La Cava, William},
-      title         = "{Develep}",
-      month         = "May",
-      year          = "2014",
+@article{la_cava_develep_2014,
+	title = {Develep},
+	doi = {10.5281/zenodo.9824},
+	author = {La Cava, William},
+	month = may,
+	year = {2014}
 }
 
 FYI
