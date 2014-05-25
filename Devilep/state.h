@@ -5,8 +5,8 @@
 
 struct state{
 
-	vector<long> ptevals; //number of instruction evals
-	vector<long> numevals; //number of evals on each thread
+	vector<long long> ptevals; //number of instruction evals
+	vector<long long> numevals; //number of evals on each thread
 	vector<int> genevals; //total evals for each generation
 	vector <int> fit_best;
 	vector <float> fit_mean;
@@ -58,16 +58,16 @@ struct state{
 		genevals.push_back(gentmp - totalevals());
 
 	}
-	long totalevals()
+	long long totalevals()
 	{
-		long te=0;
+		long long te=0;
 		for(unsigned int i = 0;i<genevals.size();i++)
 			te+=genevals.at(i);
 		return te;
 	}
-	long totalptevals()
+	long long totalptevals()
 	{
-		long te=0;
+		long long te=0;
 		for(unsigned int i = 0;i<ptevals.size();i++)
 			te+=ptevals.at(i);
 		return te;

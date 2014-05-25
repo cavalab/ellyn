@@ -78,13 +78,13 @@ eHC_size			1
 eHC_cluster			1
 eHC_dev				1
 eHC_best			1
-eHC_init			.75 //0: start with true epilines, 1: start with a mix of on/off values
+eHC_init			.75 // percent of active genes in initial population
 eHC_prob_scale		1
 eHC_max_prob		.75
 eHC_min_prob		0.25
 
 // lexicase settings
-lexpool				10
+lexpool				25
 lexage				1 // use age survival
 // Pareto settings
 
