@@ -18,8 +18,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RPN_test", "RPN_test\RPN_te
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FitnessTest", "FitnessTest\FitnessTest.vcxproj", "{2E4A24F9-3EED-45FC-839F-BEAB9543A2F0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GenModelSuite", "..\GenModelSuite\GenModelSuite.vcxproj", "{22CEB279-EFD4-4C07-8FD6-64CF2CD44256}"
-EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Develep.vsmdi
@@ -57,12 +55,6 @@ Global
 		{2E4A24F9-3EED-45FC-839F-BEAB9543A2F0}.Release|Win32.ActiveCfg = Release|Win32
 		{2E4A24F9-3EED-45FC-839F-BEAB9543A2F0}.Release|Win32.Build.0 = Release|Win32
 		{2E4A24F9-3EED-45FC-839F-BEAB9543A2F0}.Release|x64.ActiveCfg = Release|Win32
-		{22CEB279-EFD4-4C07-8FD6-64CF2CD44256}.Debug|Win32.ActiveCfg = Debug|Win32
-		{22CEB279-EFD4-4C07-8FD6-64CF2CD44256}.Debug|Win32.Build.0 = Debug|Win32
-		{22CEB279-EFD4-4C07-8FD6-64CF2CD44256}.Debug|x64.ActiveCfg = Debug|Win32
-		{22CEB279-EFD4-4C07-8FD6-64CF2CD44256}.Release|Win32.ActiveCfg = Release|Win32
-		{22CEB279-EFD4-4C07-8FD6-64CF2CD44256}.Release|Win32.Build.0 = Release|Win32
-		{22CEB279-EFD4-4C07-8FD6-64CF2CD44256}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

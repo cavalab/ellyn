@@ -13,7 +13,6 @@
 #include "strdist.h"
 #include <time.h>
 #include <cstring>
-#include "vld.h"
 #include "p_archive.h"
 //#define _CRTDBG_MAP_ALLOC
 //#include <stdlib.h>
