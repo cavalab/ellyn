@@ -142,9 +142,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Devilep;C:\Boost\boost_1_55_0;C:\Program Files (x86)\Visual Leak Detector\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Devilep;C:\Boost\boost_1_55_0; C:\Boost\include</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
       <OpenMPSupport>true</OpenMPSupport>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -197,6 +198,7 @@
     <ClCompile Include="..\Devilep\Generation.cpp" />
     <ClCompile Include="..\Devilep\HillClimb.cpp" />
     <ClCompile Include="..\Devilep\InitPop.cpp" />
+    <ClCompile Include="..\Devilep\LexicaseSelect.cpp" />
     <ClCompile Include="..\Devilep\Line2Eqn.cpp" />
     <ClCompile Include="..\Devilep\Mutate.cpp" />
     <ClCompile Include="..\Devilep\NondominatedsortAlgo.cc" />

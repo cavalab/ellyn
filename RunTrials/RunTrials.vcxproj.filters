@@ -70,6 +70,9 @@
     <ClCompile Include="..\Devilep\StablesortAlgo.cc">
       <Filter>pareto</Filter>
     </ClCompile>
+    <ClCompile Include="..\Devilep\LexicaseSelect.cpp">
+      <Filter>Develep</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
