@@ -1,9 +1,9 @@
 g					50	// number of generations
-popsize				100	//population size
+popsize				1000	//population size
 numits				1	// number of trials
 printeverypop		0  // save printout of population at every generation
 // Generation Settings 
-sel					3	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
+sel					2	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 tourn_size			2
 rt_rep				0.1
 rt_cross			0.7
@@ -88,7 +88,7 @@ lexpool				25
 lexage				1 // use age survival
 // Pareto settings
 
-prto_arch_size		100
+prto_arch_size		10
 prto_sel_on			1
 
 // island model

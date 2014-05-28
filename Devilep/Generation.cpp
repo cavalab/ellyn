@@ -50,7 +50,8 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		}
 	case 2: // deterministic crowding
 		{	
-			DC(pop,p,r,d,s);
+			for (int j=0; j<p.popsize/omp_get_max_threads();j++) 
+				DC(pop,p,r,d,s);
 			break;
 		}
 	case 3: // lexicase

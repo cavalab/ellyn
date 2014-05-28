@@ -14,7 +14,6 @@
     <ClCompile Include="InitPop.cpp" />
     <ClCompile Include="Line2Eqn.cpp" />
     <ClCompile Include="Mutate.cpp" />
-    <ClCompile Include="runDevelep.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="strdist.cpp" />
     <ClCompile Include="Tournament.cpp" />
@@ -35,6 +34,7 @@
     </ClCompile>
     <ClCompile Include="LexicaseSelect.cpp" />
     <ClCompile Include="general_fns.cpp" />
+    <ClCompile Include="runDevelep.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="data.h" />

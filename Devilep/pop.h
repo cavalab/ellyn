@@ -97,7 +97,7 @@ struct SortFit{
 };
 
 struct SortRank{
-	bool operator() (ind& i,ind& j) { return (i.rank<j.rank);} 
+	bool operator() (const ind& i,const ind& j) { return (i.rank<j.rank);} 
 };
 
 struct revSortRank{

@@ -58,7 +58,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 			{}
 
 		}*/
-		if(!p.sel==3){
+		if(p.sel!=3){
 							
 			pop.at(count).abserror = 0;
 			pop.at(count).abserror_v = 0;

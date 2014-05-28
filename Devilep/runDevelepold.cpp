@@ -29,7 +29,7 @@ void load_lexdata(data &d, std::ifstream& fs,params& p);
 bool stopcondition(float&);
 void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A);
 void printbestind(tribe& T,params& p,state& s,string& logname);
-void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type);
+void printlastpop(tribe& T,params& p,state& s,string& logname,int type);
 void shuffle_data(data& d, params& p, vector<Randclass>& r);
 
 void runDevelep(string& paramfile, string& datafile,bool trials)
@@ -138,9 +138,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 	boost::timer time;
 
 	paretoarchive A(p.prto_arch_size);
-	tribe FinalArchive(p.prto_arch_size,p.max_fit,p.min_fit);
-	FinalArchive.pop = A.pop;
-
+	
 	if (p.islands)
 	{
 		//p.parallel=false;
@@ -213,88 +211,77 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		int gen=0;
 		bool pass=1;
 		int mixtrigger=0;
-		bool migrate=false;
-		// while(gen<=p.g && !stopcondition(World.best))
-		// {
-			int q;
-		#pragma omp parallel private(q)
-		{
-		
-		q = omp_get_thread_num();
-
-		while(gen<=p.g && pass)
+		while(gen<=p.g && !stopcondition(World.best))
 		{
 			
-						
-			Generation(T.at(q).pop,p,r,d,s);	
-
-			if (stopcondition(T.at(q).best))
-				pass=0;
-
-
-			if (pass) {
-				if (p.pHC_on && p.ERC)
-				{
-						for(int k=0; k<T.at(q).pop.size(); k++)
-							HillClimb(T.at(q).pop.at(k),p,r,d,s);
-				}
-				if (p.eHC_on) 
-				{
-						for(int m=0; m<T.at(q).pop.size(); m++)
-							EpiHC(T.at(q).pop.at(m),p,r,d,s);
-				}
-			}
-			if (stopcondition(T.at(q).best))
-				pass=0;
-			
-			if (pass)
+			#pragma omp parallel for 
+			for(int i=0;i<num_islands;i++)
 			{
-				// construct world population
+				if(pass)
+				{
+					Generation(T.at(i).pop,p,r,d,s);	
+
+					if (stopcondition(T.at(i).best))
+					{
+						pass=0;
+					}
+
+					if (pass) {
+						if (p.pHC_on && p.ERC)
+						{
+								for(int k=0; k<T.at(i).pop.size(); k++)
+									HillClimb(T.at(i).pop.at(k),p,r,d,s);
+						}
+						if (p.eHC_on) 
+						{
+								for(int m=0; m<T.at(i).pop.size(); m++)
+									EpiHC(T.at(i).pop.at(m),p,r,d,s);
+						}
+					}
+				}
+
+			// construct world population
 				int cntr=0;
-				for(int k=q*subpops;k<(q+1)*subpops;k++){
-					World.pop.at(k)=T.at(q).pop.at(cntr);
+				for(int k=i*subpops;k<(i+1)*subpops;k++){
+					World.pop.at(k)=T.at(i).pop.at(cntr);
 					cntr++;
 				}
-			
-				#pragma omp barrier
+
 				
-				#pragma omp single
-				{
-					s.setgenevals();
-					if(s.totalevals()>mixtrigger) 
-					{
-						//shuffle population	
-						std::random_shuffle(World.pop.begin(),World.pop.end(),r[omp_get_thread_num()]);
-						//redistribute populations to islands
-						s.out << "Shuffling island populations...\n";
-						migrate = true;
-						mixtrigger+=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
-					}
-					else
-						migrate=false;
-						
-					A.update(World.pop);
-					printpop(A.pop,p,s,logname,1);
-					printstats(World,gen,s,p,A);
-					if (p.printeverypop) printpop(World.pop,p,s,logname,2);
-					s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
-					s.out << "Total Evals: " << s.totalevals() << "\n";
-					s.out << "Point Evals: " << s.totalptevals() << "\n";
-					s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
-					s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
-					gen++;
-				}
-				
-				if (migrate)					
-					T.at(q).pop.assign(World.pop.begin()+q*subpops,World.pop.begin()+(q+1)*subpops);
-								
+				//swap_ranges(World.pop.begin()+i*subpops,World.pop.begin()+(i+1)*subpops,T.at(i).pop.begin());
 			}
+
+				
+		s.setgenevals();
+		if(s.totalevals()>mixtrigger) 
+		{
+			//shuffle population	
+			std::random_shuffle(World.pop.begin(),World.pop.end(),r[omp_get_thread_num()]);
+			//redistribute populations to islands
+			s.out << "Shuffling island populations...\n";
+			#pragma omp parallel for 
+			for(int i=0;i<num_islands;i++)
+			{
+				T.at(i).pop.assign(World.pop.begin()+i*subpops,World.pop.begin()+(i+1)*subpops);
+			}
+			mixtrigger+=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
 		}
+		 A.update(World.pop);
+		 printstats(World,gen,s,p,A);
+		 if (p.printeverypop) printlastpop(World,p,s,logname,2);
+		 s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
+		 s.out << "Total Evals: " << s.totalevals() << "\n";
+		 s.out << "Point Evals: " << s.totalptevals() << "\n";
+		 s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
+		 s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
+		//World.pop.clear();
+		gen++;
 		}
 		printbestind(World,p,s,logname);
-		printpop(World.pop,p,s,logname,0);
-
-		printpop(A.pop,p,s,logname,1);
+		printlastpop(World,p,s,logname,0);
+		tribe FinalArchive(p.prto_arch_size,p.max_fit,p.min_fit);
+		FinalArchive.pop = A.pop;
+		printlastpop(FinalArchive,p,s,logname,1);
 	}
 	else //no islands
 	{
@@ -376,9 +363,8 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 				s.setgenevals();
 				//s.out << "Elapsed time: \n";
 				A.update(T.pop);
-				printpop(A.pop,p,s,logname,1);
 				printstats(T,counter,s,p,A);
-				if (p.printeverypop) printpop(T.pop,p,s,logname,2);
+				if (p.printeverypop) printlastpop(T,p,s,logname,2);
 				s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
 				s.out << "Total Evals: " << s.totalevals() << "\n";
 				s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
@@ -391,13 +377,22 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 			its++;
 		}
 		printbestind(T,p,s,logname);
-		printpop(T.pop,p,s,logname,0);
-		printpop(A.pop,p,s,logname,1);
+		printlastpop(T,p,s,logname,0);
+		tribe FinalArchive(p.prto_arch_size,p.max_fit,p.min_fit);
+		FinalArchive.pop = A.pop;
+		printlastpop(FinalArchive,p,s,logname,1);
 	}
 
-	
-	s.out << "Program finished sucessfully.\n";
-	
+	if(!trials)
+	{
+		char key;
+		s.out << "Program finished. Press return to exit.\n";
+		key = getchar();
+	}
+	else
+	{
+		s.out << "Program finished. \n";
+	}
 	_CrtDumpMemoryLeaks();
 
 
@@ -407,22 +402,22 @@ void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A)
 {
 	
 	//boost::progress_timer timer;
-s.out << "--- Generation " << i << "---------------------------------------------------------------" << "\n";
-s.out << "Number of evals: " << s.genevals.back() << "\n";
-s.out << "Best Fitness: " << T.bestFit_v() <<"\n";
-s.out << "Median Fitness: " << T.medFit_v()<<"\n";
-s.out << "Mean Size: " << T.meanSize() << "\n";
-s.out << "Mean Eff Size: " << T.meanEffSize() << "\n";
-s.out << "Pareto Front Equations: " << A.optimal_size << "\n";
-if(p.pHC_on)
-	s.out << "Parameter updates: " << s.getpHCupdates() << "\n";
-if(p.eHC_on)
-	s.out << "Epigenetic updates: " << s.geteHCupdates() << "\n";
-s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "\%\n";
-s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "\%\n";
-s.out << "Bad Genetics: " << s.getBadCrossPct() << "%\n";
-s.clearCross();
-//float totalshares = 0;
+	s.out << "--- Generation " << i << "---------------------------------------------------------------" << "\n";
+	s.out << "Number of evals: " << s.genevals.back() << "\n";
+	s.out << "Best Fitness: " << T.bestFit_v() <<"\n";
+	s.out << "Median Fitness: " << T.medFit_v()<<"\n";
+	s.out << "Mean Size: " << T.meanSize() << "\n";
+	s.out << "Mean Eff Size: " << T.meanEffSize() << "\n";
+	s.out << "Pareto Front Equations: " << A.optimal_size << "\n";
+	if(p.pHC_on)
+		s.out << "Parameter updates: " << s.getpHCupdates() << "\n";
+	if(p.eHC_on)
+		s.out << "Epigenetic updates: " << s.geteHCupdates() << "\n";
+	s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "\%\n";
+	s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "\%\n";
+	s.out << "Bad Genetics: " << s.getBadCrossPct() << "%\n";
+	s.clearCross();
+								//float totalshares = 0;
 //float c1=0;
 //for (int i = 0; i<T.pop.size();i++)
 //{
@@ -430,15 +425,15 @@ s.clearCross();
 //		totalshares+=float(T.pop.at(i).line.at(j).use_count()); c1++;}
 //}
 //s.out << "Average shared pointer use count: " << totalshares/(c1) << "\n";
-s.out << "MAE \t R^2 \t\t Equation \n";
-vector <ind> besteqns;
-T.topTen(besteqns);
-//for(unsigned int j=0;j<min(10,int(A.pop.size()));j++)
+	s.out << "MAE \t R^2 \t\t Equation \n";
+	vector <ind> besteqns;
+	T.topTen(besteqns);
+		//for(unsigned int j=0;j<min(10,int(A.pop.size()));j++)
 //	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
-for(unsigned int j=0;j<besteqns.size();j++)
-	s.out <<besteqns.at(j).abserror_v << "\t" << besteqns.at(j).corr_v << "\t" << besteqns.at(j).eqn <<"\n";
+	for(unsigned int j=0;j<besteqns.size();j++)
+		s.out <<besteqns.at(j).abserror_v << "\t" << besteqns.at(j).corr_v << "\t" << besteqns.at(j).eqn <<"\n";
 
-s.out << "-------------------------------------------------------------------------------" << "\n";
+	s.out << "-------------------------------------------------------------------------------" << "\n";
 }
 void printbestind(tribe& T,params& p,state& s,string& logname)
 {
@@ -489,27 +484,23 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	}
 	fout<<"\n";*/
 }
-void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
+void printlastpop(tribe& T,params& p,state& s,string& logname,int type)
 {
 	string bestname;
 	if (type==1){
 		s.out << "saving pareto archive... \n";
 		bestname = logname.substr(0,logname.size()-4)+".archive";
-		sort(pop.begin(),pop.end(),SortComplexity());
-		stable_sort(pop.begin(),pop.end(),SortRank());
 	}
 	else if (type == 2){
 		string gen = to_string(static_cast<long long>(s.genevals.size()));
 		s.out << "saving pop... \n";
 		bestname = logname.substr(0,logname.size()-4) + "gen" + gen + ".pop";
-		sort(pop.begin(),pop.end(),SortFit());
 	}
 	else {
 		s.out << "saving last pop... \n";
 		bestname = logname.substr(0,logname.size()-4)+".last_pop";
-		sort(pop.begin(),pop.end(),SortFit());
 	}
-	
+	T.sortpop();
 	std::ofstream fout;
 	fout.open(bestname);
 	//boost::progress_timer timer;
@@ -517,41 +508,41 @@ void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
 	fout << "Corresponding Logfile: " + logname + "\n";
 	fout << "Total Evaluations: " << s.totalevals() << "\n";
 
-	for (int h = 0; h<pop.size(); h++){
+	for (int h = 0; h<T.pop.size(); h++){
 		fout << "--- Individual "<< h << " ------------------------------------------------------------" << "\n";
-		fout << "f = " + pop.at(h).eqn + "\n";
+		fout << "f = " + T.pop.at(h).eqn + "\n";
 		fout << "gline: ";
-		for(unsigned int i =0;i<pop.at(h).line.size();i++)
+		for(unsigned int i =0;i<T.pop.at(h).line.size();i++)
 		{
-			if (pop.at(h).line[i]->type=='n')
-				fout << static_pointer_cast<n_num>(pop.at(h).line[i])->value << "\t";
-			else if (pop.at(h).line[i]->type=='v')
-				fout << static_pointer_cast<n_sym>(pop.at(h).line[i])->varname << "\t";
+			if (T.pop.at(h).line[i]->type=='n')
+				fout << static_pointer_cast<n_num>(T.pop.at(h).line[i])->value << "\t";
+			else if (T.pop.at(h).line[i]->type=='v')
+				fout << static_pointer_cast<n_sym>(T.pop.at(h).line[i])->varname << "\t";
 			else
-				fout << pop.at(h).line[i]->type << "\t";
+				fout << T.pop.at(h).line[i]->type << "\t";
 		}
 		fout << endl;
 		fout << "eline: ";
-		for(unsigned int i =0;i<pop.at(h).line.size();i++){
-			if (pop.at(h).line.at(i)->on)
+		for(unsigned int i =0;i<T.pop.at(h).line.size();i++){
+			if (T.pop.at(h).line.at(i)->on)
 				fout <<"1\t";
 			else
 				fout <<"0\t";
 		}
 		fout << endl;
-		fout << "size: " << pop.at(h).line.size() << "\n";
-		fout << "eff size: " << pop.at(h).eff_size << "\n";
-		fout << "complexity: " << pop.at(h).complexity << "\n";
-		fout << "abs error: " << pop.at(h).abserror<< "\n";;
-		fout << "correlation: " << pop.at(h).corr<< "\n";;
-		fout << "fitness: " << pop.at(h).fitness<< "\n";;
-		fout <<  "rank: " << pop.at(h).rank << "\n";
-		fout << "parent fitness: " << pop.at(h).parentfitness << "\n";;
-		fout << "origin: " << pop.at(h).origin << "\n";
-		fout << "age: " << pop.at(h).age << "\n";
-		fout << "eqn form: " << pop.at(h).eqn_form << "\n";
+		fout << "size: " << T.pop.at(h).line.size() << "\n";
+		fout << "eff size: " << T.pop.at(h).eff_size << "\n";
+		fout << "complexity: " << T.pop.at(h).complexity << "\n";
+		fout << "abs error: " << T.pop.at(h).abserror<< "\n";;
+		fout << "correlation: " << T.pop.at(h).corr<< "\n";;
+		fout << "fitness: " << T.pop.at(h).fitness<< "\n";;
+
+		fout << "parent fitness: " << T.pop.at(h).parentfitness << "\n";;
+		fout << "origin: " << T.pop.at(h).origin << "\n";
+		fout << "age: " << T.pop.at(h).age << "\n";
+		fout << "eqn form: " << T.pop.at(h).eqn_form << "\n";
 		/*fout << "output: ";
-		for(unsigned int i =0;i<pop.at(h).output.size();i++)
+		for(unsigned int i =0;i<T.pop.at(h).output.size();i++)
 		{
 			fout << T.pop.at(h).output.at(i);
 		}
