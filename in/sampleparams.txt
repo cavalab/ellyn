@@ -1,4 +1,4 @@
-g					50	// number of generations
+g					10	// number of generations
 popsize				1000	//population size
 numits				1	// number of trials
 printeverypop		0  // save printout of population at every generation
@@ -93,4 +93,4 @@ prto_sel_on			1
 
 // island model
 islands				1  // use islands of populations (parallelizes code)
-island_gens			250 // number of generations of island isolation before mixing populations together
+island_gens			10 // number of generations of island isolation before mixing populations together

@@ -68,21 +68,21 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 			float meantarget_v=0;
 			//float sumout=0;
 			//float meantarget=0; 
-			//get equation and equation form
+//get equation and equation form
 			pop.at(count).eqn = Line2Eqn(pop.at(count).line);
 			getEqnForm(pop.at(count).eqn,pop.at(count).eqn_form);
 			
 			// set pointer to dattovar in symbolic functions
 
-			//GET EFFECTIVE SIZE
+//effective size
 			pop.at(count).eff_size=0;
 			for(int m=0;m<pop.at(count).line.size();m++){
 
 				if(pop.at(count).line.at(m)->on)
 					pop.at(count).eff_size++;
 			}
-			// Get Complexity
-			pop.at(count).complexity= getComplexity(pop.at(count).eqn);
+// Get Complexity
+			pop.at(count).complexity= getComplexity(pop.at(count).eqn_form);
 		
 			// set data table
 			for(int m=0;m<pop.at(count).line.size();m++){
@@ -268,7 +268,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s)
 					pop.at(count).eff_size++;
 			}
 			// Get Complexity
-			pop.at(count).complexity= getComplexity(pop.at(count).eqn);
+			pop.at(count).complexity= getComplexity(pop.at(count).eqn_form);
 			
 			// set data pointers
 			for(int m=0;m<pop.at(count).line.size();m++){
@@ -624,6 +624,11 @@ int getComplexity(string& eqn)
 					m=m+2;
 				}
 			}
+		}
+		else if (isalpha(c) && m+1<eqn.size()){
+			while (isalpha(eqn[m+1]) && m<eqn.size())
+				m++;
+			complexity++;
 		}
 		else
 			complexity++;

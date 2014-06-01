@@ -1,9 +1,9 @@
 g					1000000	// number of generations
-popsize				1000	//population size
+popsize				2400	//population size
 numits				1	// number of trials
 
 // Generation Settings 
-sel					2	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
+sel					4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 tourn_size			2
 rt_rep				0.1
 rt_cross			0.7
@@ -14,13 +14,15 @@ mut_ar				.1 //mutation alternation rate (ultra only)
 stoperror			0.0001	// stop condition / convergence condition
 
 init_validate_on	1	// initial fitness validation of starting population
+printeverypop		0  // print every generation 
+train				1  // split data into training and validation sets
 
 // Results
-resultspath			D:\Develep\Results\CART
+resultspath			D:\Develep\Results\CART\winddata_MSS3
 loud				1
 
 // Problem information
-intvars				x	dx	AZ	TQ	B	V t
+intvars				B	V	TQ	TSR t
 extvars					
 cons				m	R	H	
 cvals				30436.0	20.0	34.8615
@@ -30,7 +32,7 @@ ERC					1 // ephemeral random constants
 ERCints				0	
 maxERC				10
 minERC				-10
-numERC				6
+numERC				3
 
 fit_type			3	// 1: error, 2: corr, 3: combo
 fit_method			1   //1: algebraic, 2: runge kutta
@@ -40,11 +42,11 @@ min_fit				0.00000000000000000001
 //available operators: n	v	+	-	*	/	sin	cos	
 //index                0	1	2	3	4	5	6	7	
 
-op_list				n	v	+	-	*	/	
-op_weight			4	4	1	1	1	1					
+op_list				n	v	+	-	*	/	sin	cos	exp	log
+op_weight			4	4	1	1	1	1	1	1	1	1	
 weight_ops_on		1
-min_len				30
-max_len				150
+min_len				10
+max_len				500
 
 max_dev_len			128
 
@@ -53,10 +55,6 @@ complex_measure		2	// 1: genotype size 2: symbolic size 3: effective genotype si
 precision			0.0001
 
 // Hill Climbing Settings
-
-// generic line hill climber (Bongard)
-lineHC_on			1
-lineHC_its			1
 
 // parameter Hill Climber
 pHC_on				1
@@ -74,17 +72,21 @@ eHC_size			1
 eHC_cluster			1
 eHC_dev				1
 eHC_best			1
-eHC_init			1 //0: start with true epilines, 1: start with a mix of on/off values
+eHC_init			0.5 //0: start with true epilines, 1: start with a mix of on/off values
 eHC_prob_scale		1
 eHC_max_prob		.75
 eHC_min_prob		0.25
 
+// lexicase settings
+lexpool				10
+lexage				1 // use age survival
+
 // Pareto settings
 
 prto_arch_on		1
-prto_arch_size		425
+prto_arch_size		100
 prto_sel_on			1
 
 // island model
 islands				1
-island_gens			4000
+island_gens			1000

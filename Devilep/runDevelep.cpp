@@ -258,7 +258,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 			
 				#pragma omp barrier
 				
-				#pragma omp single
+				#pragma omp master
 				{
 					s.setgenevals();
 					if(s.totalevals()>mixtrigger) 
@@ -272,7 +272,9 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 					}
 					else
 						migrate=false;
-						
+				}
+				#pragma omp master
+				{
 					A.update(World.pop);
 					printpop(A.pop,p,s,logname,1);
 					printstats(World,gen,s,p,A);
@@ -285,15 +287,18 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 					gen++;
 				}
 				
+				
+
 				if (migrate)					
 					T.at(q).pop.assign(World.pop.begin()+q*subpops,World.pop.begin()+(q+1)*subpops);
+
+				if (gen>p.g) pass=0;
 								
 			}
-		}
-		}
+		} // s.out << "exited while loop...\n";
+		} //s.out << "exited parallel region ...\n";
 		printbestind(World,p,s,logname);
 		printpop(World.pop,p,s,logname,0);
-
 		printpop(A.pop,p,s,logname,1);
 	}
 	else //no islands
@@ -396,7 +401,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 	}
 
 	
-	s.out << "Program finished sucessfully.\n";
+	s.out << "\n Program finished sucessfully.\n";
 	
 	_CrtDumpMemoryLeaks();
 
