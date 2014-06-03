@@ -258,7 +258,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 			
 				#pragma omp barrier
 				
-				#pragma omp master
+				#pragma omp single 
 				{
 					s.setgenevals();
 					if(s.totalevals()>mixtrigger) 
@@ -273,7 +273,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 					else
 						migrate=false;
 				}
-				#pragma omp master
+				#pragma omp single nowait
 				{
 					A.update(World.pop);
 					printpop(A.pop,p,s,logname,1);
@@ -547,11 +547,13 @@ void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
 		fout << "size: " << pop.at(h).line.size() << "\n";
 		fout << "eff size: " << pop.at(h).eff_size << "\n";
 		fout << "complexity: " << pop.at(h).complexity << "\n";
-		fout << "abs error: " << pop.at(h).abserror<< "\n";;
-		fout << "correlation: " << pop.at(h).corr<< "\n";;
-		fout << "fitness: " << pop.at(h).fitness<< "\n";;
+		fout << "MAE: " << pop.at(h).abserror<< "\n";;
+		fout << "MAE_v: " << pop.at(h).abserror_v<< "\n";
+		fout << "correlation: " << pop.at(h).corr<< "\n";
+		fout << "correlation_v: " << pop.at(h).corr_v<< "\n";
+		fout << "fitness: " << pop.at(h).fitness<< "\n";
 		fout <<  "rank: " << pop.at(h).rank << "\n";
-		fout << "parent fitness: " << pop.at(h).parentfitness << "\n";;
+		fout << "parent fitness: " << pop.at(h).parentfitness << "\n";
 		fout << "origin: " << pop.at(h).origin << "\n";
 		fout << "age: " << pop.at(h).age << "\n";
 		fout << "eqn form: " << pop.at(h).eqn_form << "\n";
