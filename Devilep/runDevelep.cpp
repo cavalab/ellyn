@@ -252,9 +252,6 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 			{
 				// construct world population
 				int cntr=0;
-				if (gen>=4999){
-					s.out << "subpops: " << subpops << "\n";
-					}
 				for(int k=q*subpops;k<(q+1)*subpops;k++){
 					World.pop.at(k)=T.at(q).pop.at(cntr);
 					cntr++;
