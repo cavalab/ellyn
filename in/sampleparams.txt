@@ -1,5 +1,5 @@
-g					10	// number of generations
-popsize				8000	//population size
+g					5000	// number of generations
+popsize				100	//population size
 numits				1	// number of trials
 printeverypop		0  // save printout of population at every generation
 // Generation Settings 

@@ -186,6 +186,9 @@ void makenewcopy(ind& newind)
 				break;
 				}
 		}
-
+		else if (newind.line.at(i).use_count()==0)
+		{
+			cerr << "shared pointer use count is zero\n";
+		}
 }
 }

@@ -217,7 +217,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		// while(gen<=p.g && !stopcondition(World.best))
 		// {
 			int q;
-		#pragma omp parallel private(q)
+		#pragma omp parallel private(q) shared(pass)
 		{
 		
 		q = omp_get_thread_num();
@@ -225,12 +225,12 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		while(gen<=p.g && pass)
 		{
 			
-						
-			Generation(T.at(q).pop,p,r,d,s);	
+			if(pass){			
+				Generation(T.at(q).pop,p,r,d,s);	
 
-			if (stopcondition(T.at(q).best))
-				pass=0;
-
+				if (stopcondition(T.at(q).best))
+					pass=0;
+			}
 
 			if (pass) {
 				if (p.pHC_on && p.ERC)
@@ -243,14 +243,18 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 						for(int m=0; m<T.at(q).pop.size(); m++)
 							EpiHC(T.at(q).pop.at(m),p,r,d,s);
 				}
-			}
-			if (stopcondition(T.at(q).best))
-				pass=0;
 			
+				if (stopcondition(T.at(q).best))
+					pass=0;
+			}
+
 			if (pass)
 			{
 				// construct world population
 				int cntr=0;
+				if (gen>=4999){
+					s.out << "subpops: " << subpops << "\n";
+					}
 				for(int k=q*subpops;k<(q+1)*subpops;k++){
 					World.pop.at(k)=T.at(q).pop.at(cntr);
 					cntr++;
@@ -273,7 +277,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 					else
 						migrate=false;
 				}
-				#pragma omp single nowait
+				#pragma omp single 
 				{
 					A.update(World.pop);
 					printpop(A.pop,p,s,logname,1);
@@ -295,8 +299,8 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 				if (gen>p.g) pass=0;
 								
 			}
-		} // s.out << "exited while loop...\n";
-		} //s.out << "exited parallel region ...\n";
+		}  s.out << "exited while loop...\n";
+		} s.out << "exited parallel region ...\n";
 		printbestind(World,p,s,logname);
 		printpop(World.pop,p,s,logname,0);
 		printpop(A.pop,p,s,logname,1);

@@ -594,7 +594,7 @@ int getComplexity(string& eqn)
 		if(c=='/')
 			complexity=complexity+2;
 		else if (c=='s'){
-			if(m<eqn.size()-2){
+			if(m+2<eqn.size()){
 				if ( eqn[m+1]=='i' && eqn[m+2] == 'n'){
 					complexity=complexity+3;
 					m=m+2;
@@ -602,7 +602,7 @@ int getComplexity(string& eqn)
 			}
 		}
 		else if (c=='c'){
-			if(m<eqn.size()-2){
+			if(m+2<eqn.size()){
 				if ( eqn[m+1]=='o' && eqn[m+2] == 's'){
 					complexity=complexity+3;
 					m=m+2;
@@ -610,7 +610,7 @@ int getComplexity(string& eqn)
 			}
 		}
 		else if (c=='e'){
-			if(m<eqn.size()-2){
+			if(m+2<eqn.size()){
 				if ( eqn[m+1]=='x' && eqn[m+2] == 'p'){
 					complexity=complexity+4;
 					m=m+2;
@@ -618,16 +618,19 @@ int getComplexity(string& eqn)
 			}
 		}
 		else if (c=='l'){
-			if(m<eqn.size()-2){
+			if(m+2<eqn.size()){
 				if ( eqn[m+1]=='o' && eqn[m+2] == 'g'){
 					complexity=complexity+4;
 					m=m+2;
 				}
 			}
 		}
-		else if (isalpha(c) && m+1<eqn.size()){
-			while (isalpha(eqn[m+1]) && m<eqn.size())
-				m++;
+		else if (isalpha(c) && (m+1)<eqn.size()){
+			bool pass=true;
+			while ((m+1)<eqn.size() && pass){
+				if (isalpha(eqn[m+1])) m++; 
+				else pass=0;
+			}
 			complexity++;
 		}
 		else
