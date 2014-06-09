@@ -39,7 +39,7 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
 				updated = true;
 				s.eHC_updates[omp_get_thread_num()]++;
 			}
-			else if (tmp_ind[0].fitness == oldind.fitness && tmp_ind[0].eqn.size() < oldind.eqn.size()) // if fitness is same but equation is smaller, replace individual
+			else if (tmp_ind[0].fitness == oldind.fitness && tmp_ind[0].eqn_form.size() < oldind.eqn_form.size()) // if fitness is same but equation is smaller, replace individual
 			{
 				swap(oldind,tmp_ind[0]);
 				tmp_ind.clear();
