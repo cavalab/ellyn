@@ -167,7 +167,7 @@
     <ClInclude Include="data.h" />
     <ClInclude Include="Datapoint.h" />
     <ClInclude Include="Develep.h" />
-    <ClInclude Include="exprtk.hpp" />
+    <ClInclude Include="Eqn2Line.h" />
     <ClInclude Include="Fitness.h" />
     <ClInclude Include="general_fns.h" />
     <ClInclude Include="Generation.h" />
@@ -202,6 +202,7 @@
     <ClCompile Include="DC.cpp" />
     <ClCompile Include="Develep.cpp" />
     <ClCompile Include="EpiHC.cpp" />
+    <ClCompile Include="Eqn2Line.cpp" />
     <ClCompile Include="Fitness.cpp" />
     <ClCompile Include="general_fns.cpp" />
     <ClCompile Include="Generation.cpp" />

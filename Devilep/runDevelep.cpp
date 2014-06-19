@@ -14,6 +14,7 @@
 #include <time.h>
 #include <cstring>
 #include "p_archive.h"
+#include "Eqn2Line.h"
 //#define _CRTDBG_MAP_ALLOC
 //#include <stdlib.h>
 //#include <crtdbg.h>
@@ -26,7 +27,7 @@ using namespace std;
 void load_params(params &p, std::ifstream& is);
 void load_data(data &d, std::ifstream& is,params&);
 void load_lexdata(data &d, std::ifstream& fs,params& p);
-bool stopcondition(float&);
+bool stopcondition(float);
 void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A);
 void printbestind(tribe& T,params& p,state& s,string& logname);
 void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type);
@@ -228,7 +229,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 			if(pass){			
 				Generation(T.at(q).pop,p,r,d,s);	
 
-				if (stopcondition(T.at(q).best))
+				if (stopcondition(T.at(q).bestFit()))
 					pass=0;
 			}
 
@@ -244,12 +245,11 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 							EpiHC(T.at(q).pop.at(m),p,r,d,s);
 				}
 			
-				if (stopcondition(T.at(q).best))
+				if (stopcondition(T.at(q).bestFit()))
 					pass=0;
 			}
 
-			if (pass)
-			{
+			
 				// construct world population
 				int cntr=0;
 				for(int k=q*subpops;k<(q+1)*subpops;k++){
@@ -295,7 +295,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 
 				if (gen>p.g) pass=0;
 								
-			}
+			
 		}  s.out << "exited while loop...\n";
 		} s.out << "exited parallel region ...\n";
 		printbestind(World,p,s,logname);
@@ -354,7 +354,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		}
 		else
 			gen=p.g;
-		while (its<=gen && !stopcondition(T.best))
+		while (its<=gen && !stopcondition(T.bestFit()))
 		{
 			
 			 
@@ -774,14 +774,7 @@ void load_params(params &p, std::ifstream& fs)
 	p.allblocks.insert(p.allblocks.end(),p.seeds.begin(),p.seeds.end());
 
 	p.seed = time(0);
-	//normalize fn weights
-	if (p.weight_ops_on) 
-	{
-		float sumweight = accumulate(p.op_weight.begin(),p.op_weight.end(),0);
-		for(unsigned int i=0;i<p.op_weight.size();i++)
-                        p.op_weight.at(i) = p.op_weight.at(i)/sumweight;
-	}
-
+	
 	for (unsigned int i=0; i<p.op_list.size(); i++)
 	{
 		if (p.op_list.at(i).compare("n")==0 )//&& ( p.ERC || !p.cvals.empty() ) )
@@ -814,6 +807,25 @@ void load_params(params &p, std::ifstream& fs)
 
 	partial_sum(p.rep_wheel.begin(), p.rep_wheel.end(), p.rep_wheel.begin());
 	
+	if(!p.seeds.empty()) // get seed stacks
+	{
+		p.op_choice.push_back(10); // include seeds in operation choices
+		p.op_weight.push_back(1); // include opweight if used
+
+		for (int i=0; i<p.seeds.size();i++)
+		{
+			p.seedstacks.push_back(vector<shared_ptr<node>>());
+
+			Eqn2Line(p.seeds.at(i),p.seedstacks.at(i));
+		}
+	}
+	//normalize fn weights
+	if (p.weight_ops_on) 
+	{
+		float sumweight = accumulate(p.op_weight.begin(),p.op_weight.end(),0);
+		for(unsigned int i=0;i<p.op_weight.size();i++)
+                        p.op_weight.at(i) = p.op_weight.at(i)/sumweight;
+	}
 }
 
 void load_data(data &d, std::ifstream& fs,params& p)
@@ -1027,7 +1039,7 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r)
 	}
 	
 }
-bool stopcondition(float &bestfit)
+bool stopcondition(float bestfit)
 {
 	if (bestfit <= 0.0001)
 		return true;

@@ -57,7 +57,8 @@ void NewInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,data& d)
 		choice = r[omp_get_thread_num()].rnd_int(0,p.op_list.size()-1);
 
 		string varchoice;
-			
+		int seedchoice;
+		vector<shared_ptr<node>> tmpstack;
 		switch (p.op_choice.at(choice))
 		{
 		case 0: //load number
@@ -117,6 +118,19 @@ void NewInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,data& d)
 		case 9: // log
 			newind.line.at(loc)=shared_ptr<node>(new n_log());
 			break;
+		//case 10: // seed
+		//	seedchoice = r[omp_get_thread_num()].rnd_int(0,p.seedstacks.size()-1);
+		//	copystack(p.seedstacks.at(seedchoice),tmpstack);
+
+		//	for(int i=0;i<tmpstack.size(); i++)
+		//	{
+		//		if (x<p.max_len){
+		//			newind.line.push_back(tmpstack[i]);
+		//			x++;
+		//		}
+		//	}
+		//	tmpstack.clear();
+		//	break;
 		}
 		
 
@@ -191,4 +205,68 @@ void makenewcopy(ind& newind)
 			cerr << "shared pointer use count is zero\n";
 		}
 }
+}
+
+void copystack(vector<shared_ptr<node>>& line, vector<shared_ptr<node>>& newline)
+{
+	for (int i=0;i<line.size();i++)
+	{
+		string varname;
+		float value;
+		bool onval;
+		switch (line.at(i)->type){
+		case 'n':
+			value = static_pointer_cast<n_num>(line.at(i))->value;
+			onval = line.at(i)->on;
+			newline.push_back(shared_ptr<node>(new n_num(value)));
+			newline.at(i)->on=onval;
+			break;
+		case 'v':
+			varname = static_pointer_cast<n_sym>(line.at(i))->varname;
+			onval = line.at(i)->on;
+			newline.push_back(shared_ptr<node>(new n_sym(varname)));
+			newline.at(i)->on=onval;
+			break;
+		case '+': // +
+			onval = line.at(i)->on;
+			newline.push_back(shared_ptr<node>(new n_add()));
+			newline.at(i)->on=onval;
+			break;
+		case '-': // -
+			onval = line.at(i)->on;
+			newline.push_back(shared_ptr<node>(new n_sub()));
+			newline.at(i)->on=onval;
+			break;
+		case '*': // *
+			onval = line.at(i)->on;
+			newline.push_back(shared_ptr<node>(new n_mul()));
+			newline.at(i)->on=onval;
+			break;
+		case '/': // /
+			onval = line.at(i)->on;
+			newline.push_back(shared_ptr<node>(new n_div()));
+			newline.at(i)->on=onval;
+			break;
+		case 's': // sin
+			onval = line.at(i)->on;
+			newline.push_back(shared_ptr<node>(new n_sin()));
+			newline.at(i)->on=onval;
+			break;
+		case 'c': // cos
+			onval = line.at(i)->on;
+			newline.push_back(shared_ptr<node>(new n_cos()));
+			newline.at(i)->on=onval;
+			break;
+		case 'e': // exp
+			onval = line.at(i)->on;
+			newline.push_back(shared_ptr<node>(new n_exp()));
+			newline.at(i)->on=onval;
+			break;
+		case 'l': // log
+			onval = line.at(i)->on;
+			newline.push_back(shared_ptr<node>(new n_log()));
+			newline.at(i)->on=onval;
+			break;
+		}
+	}
 }

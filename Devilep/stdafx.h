@@ -32,4 +32,6 @@
 #include "pop.h"
 #include "pareto.h"
 #include "p_archive.h"
+#include "op_node.h"
+
 // TODO: reference additional headers your program requires here

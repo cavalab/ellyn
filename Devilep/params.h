@@ -7,6 +7,7 @@
 #include <vector>
 #include <random>
 #include <array>
+#include "op_node.h"
 using namespace std;
 
 struct params {
@@ -47,7 +48,8 @@ struct params {
 	vector <string> cons;
 	vector <float> cvals;
 	vector <string> seeds;
-	
+	vector <vector <shared_ptr<node>>> seedstacks;
+
 	vector <string> allvars;// = intvars.insert(intvars.end(), extvars.begin(), extvars.end());
 	vector <string> allblocks;// = allvars.insert(allvars.end(),consvals.begin(),convals.end());
 	//allblocks = allblocks.insert(allblocks.end(),seeds.begin(),seeds.end());

@@ -1,5 +1,5 @@
 g					5000	// number of generations
-popsize				100	//population size
+popsize				1000	//population size
 numits				1	// number of trials
 printeverypop		0  // save printout of population at every generation
 // Generation Settings 
@@ -28,7 +28,7 @@ intvars				x	y
 extvars					
 cons				1	
 cvals				1	
-seeds				
+seeds				(1/(1+1/x/x/x/x))+(1/(1+1/y/y/y/y))
 
 ERC					0	// ephemeral random constants
 ERCints				0	// use integers rather than floats

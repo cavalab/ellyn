@@ -35,11 +35,11 @@
     <ClCompile Include="LexicaseSelect.cpp" />
     <ClCompile Include="general_fns.cpp" />
     <ClCompile Include="runDevelep.cpp" />
+    <ClCompile Include="Eqn2Line.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="data.h" />
     <ClInclude Include="Develep.h" />
-    <ClInclude Include="exprtk.hpp" />
     <ClInclude Include="Fitness.h" />
     <ClInclude Include="general_fns.h" />
     <ClInclude Include="Generation.h" />
@@ -77,6 +77,7 @@
     </ClInclude>
     <ClInclude Include="p_archive.h" />
     <ClInclude Include="params.h" />
+    <ClInclude Include="Eqn2Line.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />

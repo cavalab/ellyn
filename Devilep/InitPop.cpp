@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "pop.h"
 #include "params.h"
+#include "general_fns.h"
 //#include "RPN_class.h"
 //extern params p;
 //extern vector<Randclass> r;
@@ -85,6 +86,8 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 			choice = r[omp_get_thread_num()].rnd_int(0,p.op_choice.size()-1);
 
 		string varchoice; 
+		int seedchoice;
+		vector<shared_ptr<node>> tmpstack;
 
 		switch (p.op_choice.at(choice))
 			{
@@ -140,6 +143,19 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 				break;
 			case 9: // log
 				newind.line.push_back(shared_ptr<node>(new n_log()));
+				break;
+			case 10: // seed
+				seedchoice = r[omp_get_thread_num()].rnd_int(0,p.seedstacks.size()-1);
+				copystack(p.seedstacks.at(seedchoice),tmpstack);
+
+				for(int i=0;i<tmpstack.size(); i++)
+				{
+					if (x<p.max_len){
+						newind.line.push_back(tmpstack[i]);
+						x++;
+					}
+				}
+				tmpstack.clear();
 				break;
 			}
 	}
