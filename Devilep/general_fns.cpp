@@ -1,6 +1,8 @@
 #include "stdafx.h"
-//#include "pop.h"
+#include "pop.h"
 #include "params.h"
+#include "rnd.h"
+#include "data.h"
 
 bool is_number(const std::string& s)
 {
@@ -136,12 +138,12 @@ void NewInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,data& d)
 
 }
 
-void makenewcopy(ind& newind)
+void makenew(ind& newind)
 {
 	for (int i=0;i<newind.line.size();i++)
 	{
-		if (newind.line.at(i).use_count()>1)
-		{
+		/*if (newind.line.at(i).use_count()>1)
+		{*/
 			string varname;
 			float value;
 			bool onval;
@@ -199,14 +201,83 @@ void makenewcopy(ind& newind)
 				newind.line.at(i)->on=onval;
 				break;
 				}
-		}
-		else if (newind.line.at(i).use_count()==0)
+		//}
+		if (newind.line.at(i).use_count()==0)
 		{
 			cerr << "shared pointer use count is zero\n";
 		}
 }
 }
-
+void makenewcopy(ind& oldind, ind& newind)
+{
+	for (int i=0;i<oldind.line.size();i++)
+	{
+		/*if (newind.line.at(i).use_count()>1)
+		{*/
+			string varname;
+			float value;
+			bool onval;
+			switch (oldind.line.at(i)->type){
+			case 'n':
+				value = static_pointer_cast<n_num>(oldind.line.at(i))->value;
+				onval = oldind.line.at(i)->on;
+				newind.line.push_back( shared_ptr<node>(new n_num(value)));
+				newind.line.at(i)->on=onval;
+				break;
+			case 'v':
+				varname = static_pointer_cast<n_sym>(oldind.line.at(i))->varname;
+				onval = oldind.line.at(i)->on;
+				newind.line.push_back( shared_ptr<node>(new n_sym(varname)));
+				newind.line.at(i)->on=onval;
+				break;
+			case '+': // +
+				onval = oldind.line.at(i)->on;
+				newind.line.push_back(shared_ptr<node>(new n_add()));
+				newind.line.at(i)->on=onval;
+				break;
+			case '-': // -
+				onval = oldind.line.at(i)->on;
+				newind.line.push_back(shared_ptr<node>(new n_sub()));
+				newind.line.at(i)->on=onval;
+				break;
+			case '*': // *
+				onval = oldind.line.at(i)->on;
+				newind.line.push_back(shared_ptr<node>(new n_mul()));
+				newind.line.at(i)->on=onval;
+				break;
+			case '/': // /
+				onval = oldind.line.at(i)->on;
+				newind.line.push_back(shared_ptr<node>(new n_div()));
+				newind.line.at(i)->on=onval;
+				break;
+			case 's': // sin
+				onval = oldind.line.at(i)->on;
+				newind.line.push_back(shared_ptr<node>(new n_sin()));
+				newind.line.at(i)->on=onval;
+				break;
+			case 'c': // cos
+				onval = oldind.line.at(i)->on;
+				newind.line.push_back(shared_ptr<node>(new n_cos()));
+				newind.line.at(i)->on=onval;
+				break;
+			case 'e': // exp
+				onval = oldind.line.at(i)->on;
+				newind.line.push_back(shared_ptr<node>(new n_exp()));
+				newind.line.at(i)->on=onval;
+				break;
+			case 'l': // log
+				onval = oldind.line.at(i)->on;
+				newind.line.push_back(shared_ptr<node>(new n_log()));
+				newind.line.at(i)->on=onval;
+				break;
+				}
+		//}
+		if (newind.line.at(i).use_count()==0)
+		{
+			cerr << "shared pointer use count is zero\n";
+		}
+}
+}
 void copystack(vector<shared_ptr<node>>& line, vector<shared_ptr<node>>& newline)
 {
 	for (int i=0;i<line.size();i++)

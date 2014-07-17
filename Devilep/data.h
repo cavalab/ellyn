@@ -2,12 +2,6 @@
 #pragma once
 #ifndef DATA_H
 #define DATA_H
-#include <iostream>
-#include <string>
-#include <vector>
-#include <random>
-//#include "exprtk.hpp"
-#include <unordered_map>
 
 using namespace std;
 
@@ -18,6 +12,9 @@ struct data {
 
 	vector<string> label; // variables corresponding to those defined in parameters 
 	vector<vector<float>> vals; //2D vector of all data, can be accessed data[row][column]
+	//vector<vector<float>> FEvals;
+	//fitness estimator vector
+
 	//vector<float> dattovar;
 	vector<float> target;
 	//unordered_map <string,float*> datatable;
@@ -30,6 +27,7 @@ struct data {
 	vector<vector<float>> targetlex;
 	vector<vector<vector<float>>> lexvals;
 	//vector<int> lexicase;
+	
 
 	void clear()
 	{

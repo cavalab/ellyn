@@ -7,10 +7,10 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>RunTrials</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\AgeBreed.cpp">
+    <ClCompile Include="..\Devilep\Tournament.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\Tournament.cpp">
+    <ClCompile Include="..\Devilep\AgeBreed.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
     <ClCompile Include="..\Devilep\AgeFitSelect.cpp">
@@ -28,7 +28,13 @@
     <ClCompile Include="..\Devilep\EpiHC.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
+    <ClCompile Include="..\Devilep\Eqn2Line.cpp">
+      <Filter>Develep</Filter>
+    </ClCompile>
     <ClCompile Include="..\Devilep\Fitness.cpp">
+      <Filter>Develep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Devilep\FitnessEstimator.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
     <ClCompile Include="..\Devilep\general_fns.cpp">
@@ -41,6 +47,9 @@
       <Filter>Develep</Filter>
     </ClCompile>
     <ClCompile Include="..\Devilep\InitPop.cpp">
+      <Filter>Develep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Devilep\LexicaseSelect.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
     <ClCompile Include="..\Devilep\Line2Eqn.cpp">
@@ -70,21 +79,24 @@
     <ClCompile Include="..\Devilep\StablesortAlgo.cc">
       <Filter>pareto</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\LexicaseSelect.cpp">
-      <Filter>Develep</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
       <Filter>RunTrials</Filter>
     </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>RunTrials</Filter>
+    </ClInclude>
     <ClInclude Include="..\Devilep\data.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\exprtk.hpp">
+    <ClInclude Include="..\Devilep\Eqn2Line.h">
       <Filter>Develep</Filter>
     </ClInclude>
     <ClInclude Include="..\Devilep\Fitness.h">
+      <Filter>Develep</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Devilep\FitnessEstimator.h">
       <Filter>Develep</Filter>
     </ClInclude>
     <ClInclude Include="..\Devilep\general_fns.h">
@@ -117,6 +129,9 @@
     <ClInclude Include="..\Devilep\p_archive.h">
       <Filter>Develep</Filter>
     </ClInclude>
+    <ClInclude Include="..\Devilep\params.h">
+      <Filter>Develep</Filter>
+    </ClInclude>
     <ClInclude Include="..\Devilep\pop.h">
       <Filter>Develep</Filter>
     </ClInclude>
@@ -135,6 +150,9 @@
     <ClInclude Include="..\Devilep\targetver.h">
       <Filter>Develep</Filter>
     </ClInclude>
+    <ClInclude Include="..\Devilep\StablesortAlgo.h">
+      <Filter>pareto</Filter>
+    </ClInclude>
     <ClInclude Include="..\Devilep\BruteforceAlgo.h">
       <Filter>pareto</Filter>
     </ClInclude>
@@ -149,12 +167,6 @@
     </ClInclude>
     <ClInclude Include="..\Devilep\ParetoAlgo.h">
       <Filter>pareto</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Devilep\StablesortAlgo.h">
-      <Filter>pareto</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>RunTrials</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

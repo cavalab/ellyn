@@ -2,6 +2,7 @@
 #include "pop.h"
 #include "params.h"
 #include "state.h"
+#include "rnd.h"
 #include "Generationfns.h"
 #include "strdist.h"
 #include "Fitness.h"
@@ -9,7 +10,7 @@
 
 // steady-state deterministic crowding algorithm.
 // update_locs are the indices of the update locations for passage to hill climbing. 
-void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
+void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
 {
 	
 	vector <ind> tmppop;
@@ -40,7 +41,7 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 	}
 	//if (p.loud ) cout << "  Fitness...\n";
 	
-	Fitness(tmppop,p,d,s);
+	Fitness(tmppop,p,d,s,FE);
 	// look at parents and children equations
 	
 	string par1eqn = pop.at(p1).eqn;
@@ -68,7 +69,7 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 			else
 				s.neut_cross[omp_get_thread_num()]=s.neut_cross[omp_get_thread_num()]+1;
 			
-			//makenewcopy(tmppop.at(0));
+			//makenew(tmppop.at(0));
 			swap(tmppop.at(0),pop.at(p1));
 
 		}
@@ -91,7 +92,7 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 				s.good_cross[omp_get_thread_num()]=s.good_cross[omp_get_thread_num()]+1;
 			else
 				s.neut_cross[omp_get_thread_num()]=s.neut_cross[omp_get_thread_num()]+1;
-			//makenewcopy(tmppop.at(0));
+			//makenew(tmppop.at(0));
 			swap(tmppop.at(0),pop.at(p1));
 		}
 		else
@@ -103,7 +104,7 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 				s.good_cross[omp_get_thread_num()]=s.good_cross[omp_get_thread_num()]+1;
 			else
 				s.neut_cross[omp_get_thread_num()]=s.neut_cross[omp_get_thread_num()]+1;
-			//makenewcopy(tmppop.at(0));
+			//makenew(tmppop.at(0));
 			swap(tmppop.at(1),pop.at(p2));
 		}
 		else

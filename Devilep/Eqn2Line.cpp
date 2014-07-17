@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include<exception>
-#include<string>
-#include<unordered_map>
+#include <exception>
+#include <string>
+#include <unordered_map>
 
 using namespace std;
 
@@ -188,8 +188,6 @@ bool is_letter(char c)
 }
 
 
-
-//int main(int argc, char *argv[])
 void Eqn2Line(string& expr,vector<shared_ptr<node>>& eqnstack)
 {
 	string RPN;

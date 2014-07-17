@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "pop.h"
+#include "rnd.h"
 
 void AgeFitSelect(vector<ind>& pop,params& p,vector<Randclass>& r)
 {

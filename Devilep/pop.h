@@ -2,18 +2,14 @@
 #pragma once
 #ifndef POP_H
 #define POP_H
-#include "stdafx.h"
-#include <iostream>
-#include<string>
-#include<vector>
+
 #include "params.h"
 #include "data.h"
-#include <boost/ptr_container/ptr_vector.hpp>
+
 //#include "RPN_class.h"
 #include "op_node.h"
-#include "general_fns.h"
+//#include "general_fns.h"
 //#include "pareto.h"
-
 struct ind {
 	//unsigned int id;
 	vector <shared_ptr<node>> line;
@@ -36,6 +32,7 @@ struct ind {
 	float fitness;
 	float fitness_v; 
 	vector<float> fitlex; // fitnesses for lexicase selection
+	float FEvar; //variance in fitness estimates (for sorting purposes)
 
 	float parentfitness;
 	int eff_size;
@@ -92,6 +89,7 @@ struct ind {
 //private:
 //	string& nominal_model;
 };
+
 struct SortFit{
 	bool operator() (const ind& i,const ind& j) { return (i.fitness<j.fitness);} 
 };
@@ -103,11 +101,12 @@ struct SortRank{
 struct revSortRank{
 	bool operator() (ind& i,ind& j) { return (i.rank>j.rank);} 
 };
-
 struct SortEqnSize{
 	bool operator() (const ind& i,const ind& j) { return (i.eqn.size()<j.eqn.size());} 
 };
-
+struct SortFEVar{
+	bool operator() (const ind& i,const ind& j) { return (i.FEvar>j.FEvar);} 
+};
 struct SortComplexity{bool operator() (const ind& i,const ind& j) { return (i.complexity<j.complexity);} 
 };
 struct SortFit_v{

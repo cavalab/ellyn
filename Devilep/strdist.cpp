@@ -1,4 +1,6 @@
 #include "stdafx.h"
+//#include <vector>
+using namespace std; 
 
 int strdist(std::string s1,std::string s2)
 {

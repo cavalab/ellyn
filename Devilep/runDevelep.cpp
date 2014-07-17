@@ -1,10 +1,10 @@
 #include "stdafx.h"
 // mine
 
-//#include "pop.h"
-//#include "data.h"
+#include "pop.h"
+#include "data.h"
 #include "logger.h"
-#include "state.h"
+#include "rnd.h"
 #include "InitPop.h"
 #include "Fitness.h"
 #include "Generation.h"
@@ -15,6 +15,8 @@
 #include <cstring>
 #include "p_archive.h"
 #include "Eqn2Line.h"
+#include "state.h"
+#include "FitnessEstimator.h"
 //#define _CRTDBG_MAP_ALLOC
 //#include <stdlib.h>
 //#include <crtdbg.h>
@@ -24,390 +26,15 @@ using namespace std;
 // global parameters structure
 
 
-void load_params(params &p, std::ifstream& is);
-void load_data(data &d, std::ifstream& is,params&);
-void load_lexdata(data &d, std::ifstream& fs,params& p);
-bool stopcondition(float);
-void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A);
-void printbestind(tribe& T,params& p,state& s,string& logname);
-void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type);
-void shuffle_data(data& d, params& p, vector<Randclass>& r);
+//void load_params(params &p, std::ifstream& is);
+//void load_data(data &d, std::ifstream& is,params&);
+//void load_lexdata(data &d, std::ifstream& fs,params& p);
+//bool stopcondition(tribe& T,params& p,data& d,state& s,FitnessEstimator& FE);
+//void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A);
+//void printbestind(tribe& T,params& p,state& s,string& logname);
+//void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type);
+//void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s);
 
-void runDevelep(string& paramfile, string& datafile,bool trials)
-{					
-	/* steps:
-	Initialize population
-		make genotypes
-		genotype to phenotype
-		calculate fitness
-		hill climb
-	Next Generation
-		Select Parents
-		Create children genotypes
-		genotype to phenotype
-		calculate fitness
-		hill climb
-	Store Statistics
-	Print Update
-	
-	INPUTS
-	paramfile: parameter file
-	datafile: data set: target in first column, dependent variables in second column
-	*/
-	struct params p; 
-	struct data d;
-	struct state s;
-	//class logger fcout;
-	vector <Randclass> r;
-	
-	// load parameter file
-	ifstream fs(paramfile);
-	load_params(p, fs);
-	// load data file
-	ifstream ds(datafile);
-
-	if (p.sel == 3) load_lexdata(d,ds,p);
-	else load_data(d,ds,p);
-	
-	s.out.set(trials);
-	
-	std::time_t t =  std::time(NULL);
-    std::tm tm;
-	localtime_s(&tm,&t);
-	char tmplog[100];
-	strftime(tmplog,100,"%Y-%m-%d_%H-%M-%S",&tm);
-	const char * c = p.resultspath.c_str();
-	_mkdir(c);
-	 int thrd = omp_get_thread_num();
-	 string thread = std::to_string(static_cast<long long>(thrd));
-	 string pname = paramfile.substr(paramfile.rfind('\\')+1,paramfile.size());
-	 pname = pname.substr(0,pname.size()-4);
-	 string dname = datafile.substr(datafile.rfind('\\')+1,datafile.size());
-	 dname = dname.substr(0,dname.size()-4);
-     string logname = p.resultspath + '\\' + "Develep_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
-	 s.out.open(logname);
-	 s.out << "_______________________________________________________________________________ \n";
-	 s.out << "                                    Develep                                     \n";
-	 s.out << "_______________________________________________________________________________ \n";
-	 s.out << "Time right now is " << std::put_time(&tm, "%c %Z") << '\n';
-	// s.out<< "Results Path: " << logname  << "\n";
-	 s.out << "parameter file: " << paramfile << "\n";
-	 s.out << "data file: " << datafile << "\n";
-	 s.out << "Settings: \n";
-	 // get evolutionary method
-	 s.out << "Evolutionary Method: ";
-	 switch(p.sel){
-	 case 1:
-		 s.out << "Standard Tournament\n";
-		 break;
-	 case 2:
-		 s.out << "Deterministic Crowding\n";
-		 break;
-	 case 3:
-		 s.out << "Lexicase Selection\n";
-		 break;
-	 case 4:
-		 s.out << "Age-Fitness Pareto\n";
-		 break;
-	 }
-	 s.out << "ERC: " << p.ERC << "\n";
-	 s.out << "Parameter Hill Climber: " << p.pHC_on <<"\n";
-	 s.out << "Epigenetic Hill Climber: " << p.eHC_on <<"\n";
-	 if(p.train) s.out << "Data split 50/50 for training and validation.\n";
-	 s.out << "Total Population Size: " << p.popsize << "\n";
-	 s.out << "Max Generations: " << p.g << "\n";
-
-	//initialize random number generator
-	unsigned int seed1 = unsigned int(time(NULL));
-	s.out << "seeds: \n";
-	r.resize(omp_get_max_threads());
-	#pragma omp parallel for 
-	for(int seeder=0;seeder<omp_get_max_threads();seeder++)
-	{
-			//cout << "seeder: " << seeder <<endl;
-			//cout << "seed1: " << seed1*seeder <<endl;
-			if(!trials) s.out << to_string(static_cast<long long>(seed1*(seeder+1))) + "\n";
-			r.at(seeder).SetSeed(seed1*(seeder+1));
-	}
-	if(trials)
-		s.out << (omp_get_thread_num()+1)*seed1 << "\n";
-
-	//shuffle data for training
-	if (p.train)
-		shuffle_data(d,p,r);
-	
-	boost::timer time;
-
-	paretoarchive A(p.prto_arch_size);
-	tribe FinalArchive(p.prto_arch_size,p.max_fit,p.min_fit);
-	FinalArchive.pop = A.pop;
-
-	if (p.islands)
-	{
-		//p.parallel=false;
-		
-		int num_islands=omp_get_max_threads();
-		int subpops = p.popsize/num_islands;
-		vector<tribe> T;
-		tribe World(subpops*num_islands,p.max_fit,p.min_fit); //total population of tribes
-		 s.out << num_islands << " islands of " << subpops << " individuals, total pop " << subpops*num_islands <<"\n";
-
-		for(int i=0;i<num_islands;i++)
-			T.push_back(tribe(subpops,p.max_fit,p.min_fit));
-		// run separate islands 
-		if (p.init_validate_on)
-		{
-			s.out << "Initial validation..."; 
-			#pragma omp parallel for 
-			for(int i=0;i<num_islands;i++)
-			{
-				float worstfit;
-				float bestfit;
-				vector<ind> tmppop;
-				// s.out << "Initialize Population..." << "\n";
-				InitPop(T.at(i).pop,p,r);
-				// s.out << "Fitness..." << "\n";
-				Fitness(T.at(i).pop,p,d,s);
-				worstfit = T.at(i).worstFit();
-				bestfit = T.at(i).bestFit();
-				int counter=0;
-				while(worstfit == p.max_fit && counter<100)
-				{
-					for (vector<ind>::iterator j=T.at(i).pop.begin();j!=T.at(i).pop.end();)
-					{
-						if ( (*j).fitness == p.max_fit)
-						{
-							j=T.at(i).pop.erase(j);
-							tmppop.push_back(ind());
-						}
-						else
-							j++;
-					}
-
-					InitPop(tmppop,p,r);
-					Fitness(tmppop,p,d,s);
-					T.at(i).pop.insert(T.at(i).pop.end(),tmppop.begin(),tmppop.end());
-					tmppop.clear();
-					worstfit = T.at(i).worstFit();
-					counter++;
-					if(counter==100)
-						s.out << "initial population count exceeded. Starting evolution...\n";
-				}
-				
-			}
-			s.setgenevals();
-			 s.out << " number of evals: " << s.getgenevals() << "\n";
-			//totalevals=0;
-			
-		}
-		else
-		{
-			#pragma omp parallel for 
-			for(int i=0;i<num_islands;i++)
-			{
-				InitPop(T.at(i).pop,p,r);
-				// s.out << "Gen 2 Phen..." << "\n";
-				// s.out << "Fitness..." << "\n";
-				Fitness(T.at(i).pop,p,d,s);
-			}
-		}
-		int gen=0;
-		bool pass=1;
-		int mixtrigger=0;
-		bool migrate=false;
-		// while(gen<=p.g && !stopcondition(World.best))
-		// {
-			int q;
-		#pragma omp parallel private(q) shared(pass)
-		{
-		
-		q = omp_get_thread_num();
-
-		while(gen<=p.g && pass)
-		{
-			
-			if(pass){			
-				Generation(T.at(q).pop,p,r,d,s);	
-
-				if (stopcondition(T.at(q).bestFit()))
-					pass=0;
-			}
-
-			if (pass) {
-				if (p.pHC_on && p.ERC)
-				{
-						for(int k=0; k<T.at(q).pop.size(); k++)
-							HillClimb(T.at(q).pop.at(k),p,r,d,s);
-				}
-				if (p.eHC_on) 
-				{
-						for(int m=0; m<T.at(q).pop.size(); m++)
-							EpiHC(T.at(q).pop.at(m),p,r,d,s);
-				}
-			
-				if (stopcondition(T.at(q).bestFit()))
-					pass=0;
-			}
-
-			
-				// construct world population
-				int cntr=0;
-				for(int k=q*subpops;k<(q+1)*subpops;k++){
-					World.pop.at(k)=T.at(q).pop.at(cntr);
-					cntr++;
-				}
-			
-				#pragma omp barrier
-				
-				#pragma omp single 
-				{
-					s.setgenevals();
-					if(s.totalevals()>mixtrigger) 
-					{
-						//shuffle population	
-						std::random_shuffle(World.pop.begin(),World.pop.end(),r[omp_get_thread_num()]);
-						//redistribute populations to islands
-						s.out << "Shuffling island populations...\n";
-						migrate = true;
-						mixtrigger+=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
-					}
-					else
-						migrate=false;
-				}
-				#pragma omp single 
-				{
-					A.update(World.pop);
-					printpop(A.pop,p,s,logname,1);
-					printstats(World,gen,s,p,A);
-					if (p.printeverypop) printpop(World.pop,p,s,logname,2);
-					s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
-					s.out << "Total Evals: " << s.totalevals() << "\n";
-					s.out << "Point Evals: " << s.totalptevals() << "\n";
-					s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
-					s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
-					gen++;
-				}
-				
-				
-
-				if (migrate)					
-					T.at(q).pop.assign(World.pop.begin()+q*subpops,World.pop.begin()+(q+1)*subpops);
-
-				if (gen>p.g) pass=0;
-								
-			
-		}  s.out << "exited while loop...\n";
-		} s.out << "exited parallel region ...\n";
-		printbestind(World,p,s,logname);
-		printpop(World.pop,p,s,logname,0);
-		printpop(A.pop,p,s,logname,1);
-	}
-	else //no islands
-	{
-		tribe T(p.popsize,p.max_fit,p.min_fit);
-		if (p.init_validate_on)
-		{
-			s.out << "Initial validation..."; 
-			float worstfit;
-			int cnt=0;
-			//float bestfit;
-			vector<ind> tmppop;
-			// s.out << "Initialize Population..." << "\n";
-			InitPop(T.pop,p,r);
-			// s.out << "Gen 2 Phen..." << "\n";
-			// s.out << "Fitness..." << "\n";
-			Fitness(T.pop,p,d,s);
-			worstfit = T.worstFit();
-			while(worstfit == p.max_fit && cnt<100)
-			{
-				for (vector<ind>::iterator j=T.pop.begin();j!=T.pop.end();)
-				{
-					if ( (*j).fitness == p.max_fit)
-					{
-						j=T.pop.erase(j);
-						tmppop.push_back(ind());
-					}
-					else
-						j++;
-				}
-				s.out << "\ntmppop size: " << tmppop.size();
-				InitPop(tmppop,p,r);
-				Fitness(tmppop,p,d,s);
-				T.pop.insert(T.pop.end(),tmppop.begin(),tmppop.end());
-				tmppop.clear();
-				worstfit = T.worstFit();
-				cnt++;
-				if(cnt==100)
-					s.out << "initial population count exceeded. Starting evolution...\n";
-			}
-		}
-		s.setgenevals();
-		s.out << " number of evals: " << s.getgenevals() << "\n";
-		int its=1;
-		int trigger=0;
-		int gen=0;
-		int counter=0;
-		if(p.sel==2) // if using deterministic crowding, increase gen size
-		{
-			gen = p.g*(p.popsize*(p.rt_mut+p.rt_rep) + p.popsize*p.rt_cross/2);
-			trigger = p.popsize*(p.rt_mut+p.rt_rep)+p.popsize*p.rt_cross/2;
-		}
-		else
-			gen=p.g;
-		while (its<=gen && !stopcondition(T.bestFit()))
-		{
-			
-			 
-			 Generation(T.pop,p,r,d,s);
-
-
-			 if (its>trigger)
-			 {
-				 if (p.pHC_on && p.ERC)
-				 {
-					//#pragma omp parallel for
-		 			for(int k=0; k<T.pop.size(); k++)
-		 				HillClimb(T.pop.at(k),p,r,d,s);
-
-		 		 }
-				 if (p.eHC_on) 
-				 {
-					// boost::progress_timer tm1;
-					//#pragma omp parallel for
-					for(int m=0; m<T.pop.size(); m++)
-						EpiHC(T.pop.at(m),p,r,d,s);
-
-				 } 
-
-				s.setgenevals();
-				//s.out << "Elapsed time: \n";
-				A.update(T.pop);
-				printpop(A.pop,p,s,logname,1);
-				printstats(T,counter,s,p,A);
-				if (p.printeverypop) printpop(T.pop,p,s,logname,2);
-				s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
-				s.out << "Total Evals: " << s.totalevals() << "\n";
-				s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
-
-				if (p.sel==2)
-					trigger+=p.popsize*(p.rt_mut+p.rt_rep)+p.popsize*p.rt_cross/2;
-				counter++;
-		
-			 }
-			its++;
-		}
-		printbestind(T,p,s,logname);
-		printpop(T.pop,p,s,logname,0);
-		printpop(A.pop,p,s,logname,1);
-	}
-
-	
-	s.out << "\n Program finished sucessfully.\n";
-	
-	_CrtDumpMemoryLeaks();
-
-
-}
 
 void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A)
 {
@@ -765,6 +392,10 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.train;
 		else if(varname.compare("printeverypop") == 0)
 			ss>>p.printeverypop;
+		else if(varname.compare("estimate_fitness") == 0)
+			ss>>p.EstimateFitness;
+		else if(varname.compare("norm_error") == 0)
+			ss>>p.norm_error;
 		else{}
     }
 	p.allvars = p.intvars;
@@ -827,7 +458,6 @@ void load_params(params &p, std::ifstream& fs)
                         p.op_weight.at(i) = p.op_weight.at(i)/sumweight;
 	}
 }
-
 void load_data(data &d, std::ifstream& fs,params& p)
 {
 	if (!fs.good()) 
@@ -986,7 +616,7 @@ void load_lexdata(data &d, std::ifstream& fs,params& p)
 	//d.dattovar.resize(p.allvars.size());
 	//d.mapdata();
 }
-void shuffle_data(data& d, params& p, vector<Randclass>& r)
+void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s)
 {
 	vector<int> shuffler;
 	vector<float> newtarget;
@@ -997,6 +627,11 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r)
 			shuffler.push_back(i);
 
 		std::random_shuffle(shuffler.begin(),shuffler.end(),r[omp_get_thread_num()]);
+		
+		s.out << "data shuffle index: ";
+		for (int i=0; i<shuffler.size(); i++)
+			s.out << shuffler.at(i) << " ";
+		s.out << "\n";
 
 		for(int i=0;i<d.vals.size();i++)
 		{
@@ -1039,10 +674,491 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r)
 	}
 	
 }
-bool stopcondition(float bestfit)
+bool stopcondition(tribe& T,params& p,data& d,state& s,FitnessEstimator& FE)
 {
-	if (bestfit <= 0.0001)
-		return true;
-	else
-		return false;
+	if (!p.EstimateFitness){
+		if (T.bestFit() <= 0.0000001)
+			return true;
+		else
+			return false;
+	}
+	else{
+		vector<ind> best(1);
+		T.getbestind(best[0]);
+		p.EstimateFitness=0;
+		Fitness(best,p,d,s,FE);
+		p.EstimateFitness=1;
+		if (best[0].fitness <= 0.0000001)
+			return true;
+		else
+			return false;
+	}
+}
+void runDevelep(string& paramfile, string& datafile,bool trials)
+{					
+	/* steps:
+	Initialize population
+		make genotypes
+		genotype to phenotype
+		calculate fitness
+		hill climb
+	Next Generation
+		Select Parents
+		Create children genotypes
+		genotype to phenotype
+		calculate fitness
+		hill climb
+	Store Statistics
+	Print Update
+	
+	INPUTS
+	paramfile: parameter file
+	datafile: data set: target in first column, dependent variables in second column
+	*/
+	struct params p; 
+	struct data d;
+	struct state s;
+	//class logger fcout;
+	vector <Randclass> r;
+	
+	// load parameter file
+	ifstream fs(paramfile);
+	load_params(p, fs);
+	// load data file
+	ifstream ds(datafile);
+
+	if (p.sel == 3) load_lexdata(d,ds,p);
+	else load_data(d,ds,p);
+	
+	s.out.set(trials);
+	
+	std::time_t t =  std::time(NULL);
+    std::tm tm;
+	localtime_s(&tm,&t);
+	char tmplog[100];
+	strftime(tmplog,100,"%Y-%m-%d_%H-%M-%S",&tm);
+	const char * c = p.resultspath.c_str();
+	_mkdir(c);
+	 int thrd = omp_get_thread_num();
+	 string thread = std::to_string(static_cast<long long>(thrd));
+	 string pname = paramfile.substr(paramfile.rfind('\\')+1,paramfile.size());
+	 pname = pname.substr(0,pname.size()-4);
+	 string dname = datafile.substr(datafile.rfind('\\')+1,datafile.size());
+	 dname = dname.substr(0,dname.size()-4);
+     string logname = p.resultspath + '\\' + "Develep_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
+	 s.out.open(logname);
+	 s.out << "_______________________________________________________________________________ \n";
+	 s.out << "                                    Develep                                     \n";
+	 s.out << "_______________________________________________________________________________ \n";
+	 s.out << "Time right now is " << std::put_time(&tm, "%c %Z") << '\n';
+	// s.out<< "Results Path: " << logname  << "\n";
+	 s.out << "parameter file: " << paramfile << "\n";
+	 s.out << "data file: " << datafile << "\n";
+	 s.out << "Settings: \n";
+	 // get evolutionary method
+	 s.out << "Evolutionary Method: ";
+	 switch(p.sel){
+	 case 1:
+		 s.out << "Standard Tournament\n";
+		 break;
+	 case 2:
+		 s.out << "Deterministic Crowding\n";
+		 break;
+	 case 3:
+		 s.out << "Lexicase Selection\n";
+		 break;
+	 case 4:
+		 s.out << "Age-Fitness Pareto\n";
+		 break;
+	 }
+	 s.out << "ERC: " << p.ERC << "\n";
+	 s.out << "Parameter Hill Climber: " << p.pHC_on <<"\n";
+	 s.out << "Epigenetic Hill Climber: " << p.eHC_on <<"\n";
+	 if(p.train) s.out << "Data split 50/50 for training and validation.\n";
+	 s.out << "Total Population Size: " << p.popsize << "\n";
+	 s.out << "Max Generations: " << p.g << "\n";
+
+	//initialize random number generator
+	unsigned int seed1 = unsigned int(time(NULL));
+	s.out << "seeds: \n";
+	r.resize(omp_get_max_threads());
+	#pragma omp parallel for 
+	for(int seeder=0;seeder<omp_get_max_threads();seeder++)
+	{
+			//cout << "seeder: " << seeder <<endl;
+			//cout << "seed1: " << seed1*seeder <<endl;
+			if(!trials) s.out << to_string(static_cast<long long>(seed1*(seeder+1))) + "\n";
+			r.at(seeder).SetSeed(seed1*(seeder+1));
+	}
+	if(trials)
+		s.out << (omp_get_thread_num()+1)*seed1 << "\n";
+
+	//shuffle data for training
+	if (p.train)
+		shuffle_data(d,p,r,s);
+	
+	boost::timer time;
+
+	paretoarchive A(p.prto_arch_size);
+	tribe FinalArchive(p.prto_arch_size,p.max_fit,p.min_fit);
+	FinalArchive.pop = A.pop;
+	
+	vector<FitnessEstimator> FE(1);
+	vector<ind> trainers;
+
+	if (p.islands)
+	{
+		//p.parallel=false;
+		
+		int num_islands=omp_get_max_threads();
+		int subpops = p.popsize/num_islands;
+		vector<tribe> T;
+		tribe World(subpops*num_islands,p.max_fit,p.min_fit); //total population of tribes
+		 s.out << num_islands << " islands of " << subpops << " individuals, total pop " << subpops*num_islands <<"\n";
+
+		for(int i=0;i<num_islands;i++)
+			T.push_back(tribe(subpops,p.max_fit,p.min_fit));
+		// run separate islands 
+		if (p.init_validate_on)
+		{
+			bool tmp = p.EstimateFitness;
+			p.EstimateFitness=0;
+			s.out << "Initial validation..."; 
+			#pragma omp parallel for 
+			for(int i=0;i<num_islands;i++)
+			{
+				float worstfit;
+				float bestfit;
+				vector<ind> tmppop;
+				// s.out << "Initialize Population..." << "\n";
+				InitPop(T.at(i).pop,p,r);
+				// s.out << "Fitness..." << "\n";
+				Fitness(T.at(i).pop,p,d,s,FE[0]);
+				worstfit = T.at(i).worstFit();
+				bestfit = T.at(i).bestFit();
+				int counter=0;
+				while(worstfit == p.max_fit && counter<100)
+				{
+					for (vector<ind>::iterator j=T.at(i).pop.begin();j!=T.at(i).pop.end();)
+					{
+						if ( (*j).fitness == p.max_fit)
+						{
+							j=T.at(i).pop.erase(j);
+							tmppop.push_back(ind());
+						}
+						else
+							j++;
+					}
+
+					InitPop(tmppop,p,r);
+					Fitness(tmppop,p,d,s,FE[0]);
+					T.at(i).pop.insert(T.at(i).pop.end(),tmppop.begin(),tmppop.end());
+					tmppop.clear();
+					worstfit = T.at(i).worstFit();
+					counter++;
+					if(counter==100)
+						s.out << "initial population count exceeded. Starting evolution...\n";
+				}
+				
+			}
+			p.EstimateFitness=tmp;
+			s.setgenevals();
+			 s.out << " number of evals: " << s.getgenevals() << "\n";
+			//totalevals=0;
+			
+		}
+		else // normal population initialization
+		{
+			bool tmp = p.EstimateFitness;
+			p.EstimateFitness=0;
+			#pragma omp parallel for 
+			for(int i=0;i<num_islands;i++)
+			{
+				InitPop(T.at(i).pop,p,r);
+				// s.out << "Gen 2 Phen..." << "\n";
+				// s.out << "Fitness..." << "\n";
+				Fitness(T.at(i).pop,p,d,s,FE[0]);
+			}
+			p.EstimateFitness=tmp;
+		}
+		// construct world population
+		for(int j=0;j<T.size();j++){
+			for(int k=0;k<T[0].pop.size();k++){
+				World.pop.at(j*T[0].pop.size()+k)=T.at(j).pop.at(k);
+				makenew(World.pop[j*T[0].pop.size()+k]);	
+			}
+		}
+		if (p.EstimateFitness)
+			InitPopFE(FE,World.pop,trainers,p,r,d,s);
+		vector<FitnessEstimator> tmpFE; 
+
+		int gen=0;
+		bool pass=1;
+		int mixtrigger=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
+		//int trainer_trigger=0;
+		int trainer_trigger=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
+		bool migrate=false;
+		// while(gen<=p.g && !stopcondition(World.best))
+		// {
+			int q;
+		#pragma omp parallel private(q) shared(pass)
+		{
+		
+		q = omp_get_thread_num();
+
+		while(gen<=p.g && pass)
+		{
+			
+
+			if(pass){			
+				Generation(T.at(q).pop,p,r,d,s,FE[0]);	
+
+				if (stopcondition(T.at(q),p,d,s,FE[0]))
+					pass=0;
+			}
+
+			if (pass) {
+				if (p.pHC_on && p.ERC)
+				{
+						for(int k=0; k<T.at(q).pop.size(); k++)
+							HillClimb(T.at(q).pop.at(k),p,r,d,s,FE[0]);
+				}
+				if (p.eHC_on) 
+				{
+						for(int m=0; m<T.at(q).pop.size(); m++)
+							EpiHC(T.at(q).pop.at(m),p,r,d,s,FE[0]);
+				}
+			
+				if (stopcondition(T.at(q),p,d,s,FE[0]))
+					pass=0;
+			}
+
+			
+				// construct world population
+				int cntr=0;
+				for(int k=q*subpops;k<(q+1)*subpops;k++){
+					World.pop.at(k)=T.at(q).pop.at(cntr);
+					makenew(World.pop.at(k));
+					cntr++;
+				}
+			
+				#pragma omp barrier
+				
+				#pragma omp single 
+				{
+					s.setgenevals();
+					if(s.totalevals()>mixtrigger) 
+					{
+						//shuffle population	
+						std::random_shuffle(World.pop.begin(),World.pop.end(),r[q]);
+						//redistribute populations to islands
+						s.out << "Shuffling island populations...\n";
+						migrate = true;
+						mixtrigger+=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
+					}
+					else
+						migrate=false;
+				}
+				#pragma omp single 
+				{
+					A.update(World.pop);
+					printpop(A.pop,p,s,logname,1);
+					printstats(World,gen,s,p,A);
+					if (p.printeverypop) printpop(World.pop,p,s,logname,2);
+					s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
+					s.out << "Total Evals: " << s.totalevals() << "\n";
+					s.out << "Point Evals: " << s.totalptevals() << "\n";
+					s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
+					s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
+					gen++;
+					tmpFE=FE;
+				}
+				#pragma omp single  nowait //coevolve fitness estimators
+				{
+					if (p.EstimateFitness){
+						s.out << "Evolving fitness estimators...\n";
+						
+						EvolveFE(World.pop,tmpFE,trainers,p,d,s,r);
+						s.out << "Best FE fit: " << tmpFE[0].fitness <<"\n";
+						s.out << "Fitness Estimators:\n";
+						for (int a=0;a<tmpFE.size();a++){
+							for (int b=0;b<tmpFE[a].FEpts.size();b++)
+								s.out << tmpFE[a].FEpts[b] << " ";
+						s.out << "\n";
+						}
+					}
+				}
+				#pragma omp single
+				{
+					if (p.EstimateFitness){
+						FE = tmpFE;
+						if(s.totalevals()>trainer_trigger) {
+							s.out << "Picking trainers...\n";
+							PickTrainers(World.pop,FE,trainers,p,d,s);
+							trainer_trigger+=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
+							//trainer_trigger=0;
+						}
+					}
+				}
+
+				if (migrate)					
+					T.at(q).pop.assign(World.pop.begin()+q*subpops,World.pop.begin()+(q+1)*subpops);
+
+				if (gen>p.g) pass=0;
+								
+			
+		}  s.out << "exited while loop...\n";
+		} s.out << "exited parallel region ...\n";
+		printbestind(World,p,s,logname);
+		printpop(World.pop,p,s,logname,0);
+		printpop(A.pop,p,s,logname,1);
+	}
+	else //no islands
+	{
+		tribe T(p.popsize,p.max_fit,p.min_fit);
+		if (p.init_validate_on)
+		{
+			s.out << "Initial validation..."; 
+			bool tmp = p.EstimateFitness;
+			p.EstimateFitness=0;
+			float worstfit;
+			int cnt=0;
+			//float bestfit;
+			vector<ind> tmppop;
+			// s.out << "Initialize Population..." << "\n";
+			InitPop(T.pop,p,r);
+			// s.out << "Gen 2 Phen..." << "\n";
+			// s.out << "Fitness..." << "\n";
+			Fitness(T.pop,p,d,s,FE[0]);
+			worstfit = T.worstFit();
+			while(worstfit == p.max_fit && cnt<100)
+			{
+				for (vector<ind>::iterator j=T.pop.begin();j!=T.pop.end();)
+				{
+					if ( (*j).fitness == p.max_fit)
+					{
+						j=T.pop.erase(j);
+						tmppop.push_back(ind());
+					}
+					else
+						j++;
+				}
+				s.out << "\ntmppop size: " << tmppop.size();
+				InitPop(tmppop,p,r);
+				Fitness(tmppop,p,d,s,FE[0]);
+				T.pop.insert(T.pop.end(),tmppop.begin(),tmppop.end());
+				tmppop.clear();
+				worstfit = T.worstFit();
+				cnt++;
+				if(cnt==100)
+					s.out << "initial population count exceeded. Starting evolution...\n";
+			}
+			p.EstimateFitness=tmp;
+		}
+		else // normal population initialization
+		{
+			InitPop(T.pop,p,r);	
+
+			bool tmp = p.EstimateFitness;
+			p.EstimateFitness=0;
+			Fitness(T.pop,p,d,s,FE[0]);
+			p.EstimateFitness=tmp;
+		}
+		s.setgenevals();
+		s.out << " number of evals: " << s.getgenevals() << "\n";
+		int its=1;
+		int trigger=0;
+		int trainer_trigger=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
+		int gen=0;
+		int counter=0;
+		if(p.sel==2) // if using deterministic crowding, increase gen size
+		{
+			gen = p.g*(p.popsize*(p.rt_mut+p.rt_rep) + p.popsize*p.rt_cross/2);
+			trigger = p.popsize*(p.rt_mut+p.rt_rep)+p.popsize*p.rt_cross/2;
+		}
+		else
+			gen=p.g;
+
+		if (p.EstimateFitness)
+			InitPopFE(FE,T.pop,trainers,p,r,d,s);
+
+		while (its<=gen && !stopcondition(T,p,d,s,FE[0]))
+		{
+			
+			 
+			 Generation(T.pop,p,r,d,s,FE[0]);
+
+
+			 if (its>trigger)
+			 {
+				 if (p.pHC_on && p.ERC)
+				 {
+					//#pragma omp parallel for
+		 			for(int k=0; k<T.pop.size(); k++)
+		 				HillClimb(T.pop.at(k),p,r,d,s,FE[0]);
+
+		 		 }
+				 if (p.eHC_on) 
+				 {
+					// boost::progress_timer tm1;
+					//#pragma omp parallel for
+					for(int m=0; m<T.pop.size(); m++)
+						EpiHC(T.pop.at(m),p,r,d,s,FE[0]);
+
+				 } 
+
+				s.setgenevals();
+				//s.out << "Elapsed time: \n";
+				A.update(T.pop);
+				printpop(A.pop,p,s,logname,1);
+				printstats(T,counter,s,p,A);
+				if (p.printeverypop) printpop(T.pop,p,s,logname,2);
+				s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
+				s.out << "Total Evals: " << s.totalevals() << "\n";
+				s.out << "Point Evals: " << s.totalptevals() << "\n";
+				s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
+				s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
+
+				if (p.sel==2)
+					trigger+=p.popsize*(p.rt_mut+p.rt_rep)+p.popsize*p.rt_cross/2;
+				counter++;
+		
+			 }
+			
+			if (p.EstimateFitness){
+				s.out << "Evolving fitness estimators...\n";
+				EvolveFE(T.pop,FE,trainers,p,d,s,r);
+				s.out << "Best FE fit: " << FE[0].fitness <<"\n";
+				s.out << "Fitness Estimators:\n";
+				for (int a=0;a<FE.size();a++){
+					for (int b=0;b<FE[a].FEpts.size();b++)
+						s.out << FE[a].FEpts[b] << " ";
+					s.out << "\n";
+				}
+			}
+			
+				
+			if (p.EstimateFitness){
+				if(s.totalevals()>trainer_trigger) {
+					s.out << "Picking trainers...\n";
+					PickTrainers(T.pop,FE,trainers,p,d,s);
+					trainer_trigger+=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
+					//trainer_trigger=0;
+				}
+			}
+				
+
+			its++;
+		}
+		printbestind(T,p,s,logname);
+		printpop(T.pop,p,s,logname,0);
+		printpop(A.pop,p,s,logname,1);
+	}
+
+	
+	s.out << "\n Program finished sucessfully.\n";
+	
+	_CrtDumpMemoryLeaks();
+
+
 }

@@ -33,6 +33,7 @@ struct params {
 	// Results
 	string resultspath;
 	bool loud;
+	bool EstimateFitness; // use fitness estimator coevolution
 	// Computer Settings
 	//bool parallel;
 	//int numcores;
@@ -64,6 +65,7 @@ struct params {
 	//vector <float> target;
 	
 	int fit_type; // 1: error, 2: corr, 3: combo
+	bool norm_error; // normalize fitness by the standard deviation of the target output
 	float max_fit;
 	float min_fit;
 

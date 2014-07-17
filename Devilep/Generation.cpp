@@ -3,10 +3,11 @@
 #include "params.h"
 #include "state.h"
 #include "Fitness.h"
+#include "rnd.h"
 #include "Generationfns.h"
 #include "InitPop.h"
 
-void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
+void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
 {
 	
 	//ind (*parloc)[p.popsize-1] = &pop;
@@ -23,7 +24,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		//if (p.loud ) fcout << "     Apply Genetics...";
 		try
 		{
-			ApplyGenetics(pop,parloc,p,r,d,s);
+			ApplyGenetics(pop,parloc,p,r,d,s,FE);
 		}
 		catch(...)
 				{
@@ -32,7 +33,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 				}
 		//if (p.loud ) fcout << "     Gen 2 Phen...";
 		//if (p.loud ) fcout << "     Fitness...";
-		Fitness(pop,p,d,s);
+		Fitness(pop,p,d,s,FE);
 		//get mutation/crossover stats
 		s.setCrossPct(pop);
 
@@ -51,7 +52,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 	case 2: // deterministic crowding
 		{	
 			for (int j=0; j<p.popsize/omp_get_max_threads();j++) 
-				DC(pop,p,r,d,s);
+				DC(pop,p,r,d,s,FE);
 			break;
 		}
 	case 3: // lexicase
@@ -60,11 +61,11 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 			LexicaseSelect(pop,parloc,p,r);
 			//if (p.lex_age) vector<ind> tmppop(pop);
 
-			ApplyGenetics(pop,parloc,p,r,d,s);
+			ApplyGenetics(pop,parloc,p,r,d,s,FE);
 			//FitnessLex(pop,parloc,p,r,d);
 			if (!p.lexage)
 			{
-				Fitness(pop,p,d,s);
+				Fitness(pop,p,d,s,FE);
 				//get mutation/crossover stats
 				s.setCrossPct(pop);
 			}
@@ -74,7 +75,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 				vector<ind> tmppop(1);
 				tmppop[0].age=0;
 				InitPop(tmppop,p,r);
-				Fitness(tmppop,p,d,s);
+				Fitness(tmppop,p,d,s,FE);
 				pop.push_back(tmppop[0]);
 				// select new population with tournament size 2, based on pareto age-fitness
 				AgeFitSelect(pop,p,r);
@@ -86,13 +87,13 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 			// produce a new population equal in size to the old
 			// pool all individuals from both populations
 			
-			AgeBreed(pop,p,r,d,s);
+			AgeBreed(pop,p,r,d,s,FE);
 			// add one new individual
 			vector<ind> tmppop(1);
 			tmppop[0].age=0;
 			InitPop(tmppop,p,r);
 			
-			Fitness(tmppop,p,d,s);
+			Fitness(tmppop,p,d,s,FE);
 			pop.push_back(tmppop[0]);
 			// select new population with tournament size 2, based on pareto age-fitness
 			AgeFitSelect(pop,p,r);

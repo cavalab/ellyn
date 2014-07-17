@@ -160,15 +160,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="BruteforceAlgo.h" />
     <ClInclude Include="data.h" />
     <ClInclude Include="Datapoint.h" />
-    <ClInclude Include="Develep.h" />
     <ClInclude Include="Eqn2Line.h" />
     <ClInclude Include="Fitness.h" />
+    <ClInclude Include="FitnessEstimator.h" />
     <ClInclude Include="general_fns.h" />
     <ClInclude Include="Generation.h" />
     <ClInclude Include="Generationfns.h" />
@@ -204,13 +201,11 @@
     <ClCompile Include="EpiHC.cpp" />
     <ClCompile Include="Eqn2Line.cpp" />
     <ClCompile Include="Fitness.cpp" />
+    <ClCompile Include="FitnessEstimator.cpp" />
     <ClCompile Include="general_fns.cpp" />
     <ClCompile Include="Generation.cpp" />
     <ClCompile Include="HillClimb.cpp" />
-    <ClCompile Include="InitPop.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="InitPop.cpp" />
     <ClCompile Include="LexicaseSelect.cpp" />
     <ClCompile Include="Line2Eqn.cpp" />
     <ClCompile Include="Mutate.cpp" />
@@ -226,6 +221,9 @@
     </ClCompile>
     <ClCompile Include="strdist.cpp" />
     <ClCompile Include="Tournament.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

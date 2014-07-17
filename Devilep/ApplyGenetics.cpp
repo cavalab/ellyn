@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "pop.h"
 #include "state.h"
+#include "rnd.h"
 #include "Generationfns.h"
 #include "Fitness.h"
 
-void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r,data& d,state& s)
+void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
 {
 	//boost::progress_timer timer;
 	float choice;
@@ -82,7 +83,7 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 	if (p.sel==4 || p.lexage) // insert new pop into old pop
 	{
 		//get tmppop fitness 
-		Fitness(tmppop,p,d,s);
+		Fitness(tmppop,p,d,s,FE);
 		// genetic stats
 		s.setCrossPct(tmppop);
 		//add tmppop to pop

@@ -1,22 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="AgeBreed.cpp" />
-    <ClCompile Include="AgeFitSelect.cpp" />
-    <ClCompile Include="ApplyGenetics.cpp" />
-    <ClCompile Include="Crossover.cpp" />
-    <ClCompile Include="DC.cpp" />
-    <ClCompile Include="Develep.cpp" />
-    <ClCompile Include="EpiHC.cpp" />
-    <ClCompile Include="Fitness.cpp" />
-    <ClCompile Include="Generation.cpp" />
-    <ClCompile Include="HillClimb.cpp" />
-    <ClCompile Include="InitPop.cpp" />
-    <ClCompile Include="Line2Eqn.cpp" />
-    <ClCompile Include="Mutate.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="strdist.cpp" />
-    <ClCompile Include="Tournament.cpp" />
     <ClCompile Include="BruteforceAlgo.cc">
       <Filter>pareto</Filter>
     </ClCompile>
@@ -32,31 +17,29 @@
     <ClCompile Include="NondominatedsortAlgo.cc">
       <Filter>pareto</Filter>
     </ClCompile>
-    <ClCompile Include="LexicaseSelect.cpp" />
-    <ClCompile Include="general_fns.cpp" />
-    <ClCompile Include="runDevelep.cpp" />
+    <ClCompile Include="Develep.cpp" />
+    <ClCompile Include="AgeBreed.cpp" />
+    <ClCompile Include="Tournament.cpp" />
+    <ClCompile Include="AgeFitSelect.cpp" />
+    <ClCompile Include="ApplyGenetics.cpp" />
+    <ClCompile Include="Crossover.cpp" />
+    <ClCompile Include="DC.cpp" />
+    <ClCompile Include="EpiHC.cpp" />
     <ClCompile Include="Eqn2Line.cpp" />
+    <ClCompile Include="Fitness.cpp" />
+    <ClCompile Include="FitnessEstimator.cpp" />
+    <ClCompile Include="general_fns.cpp" />
+    <ClCompile Include="Generation.cpp" />
+    <ClCompile Include="HillClimb.cpp" />
+    <ClCompile Include="InitPop.cpp" />
+    <ClCompile Include="LexicaseSelect.cpp" />
+    <ClCompile Include="Line2Eqn.cpp" />
+    <ClCompile Include="Mutate.cpp" />
+    <ClCompile Include="runDevelep.cpp" />
+    <ClCompile Include="strdist.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="data.h" />
-    <ClInclude Include="Develep.h" />
-    <ClInclude Include="Fitness.h" />
-    <ClInclude Include="general_fns.h" />
-    <ClInclude Include="Generation.h" />
-    <ClInclude Include="Generationfns.h" />
-    <ClInclude Include="InitPop.h" />
-    <ClInclude Include="isnan.h" />
-    <ClInclude Include="Line2Eqn.h" />
-    <ClInclude Include="logger.h" />
-    <ClInclude Include="mstream.h" />
-    <ClInclude Include="op_node.h" />
-    <ClInclude Include="pop.h" />
-    <ClInclude Include="rnd.h" />
-    <ClInclude Include="runDevelep.h" />
-    <ClInclude Include="state.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="strdist.h" />
-    <ClInclude Include="targetver.h" />
     <ClInclude Include="BruteforceAlgo.h">
       <Filter>pareto</Filter>
     </ClInclude>
@@ -75,16 +58,34 @@
     <ClInclude Include="NondominatedsortAlgo.h">
       <Filter>pareto</Filter>
     </ClInclude>
+    <ClInclude Include="data.h" />
+    <ClInclude Include="Eqn2Line.h" />
+    <ClInclude Include="Fitness.h" />
+    <ClInclude Include="FitnessEstimator.h" />
+    <ClInclude Include="general_fns.h" />
+    <ClInclude Include="Generation.h" />
+    <ClInclude Include="Generationfns.h" />
+    <ClInclude Include="InitPop.h" />
+    <ClInclude Include="isnan.h" />
+    <ClInclude Include="Line2Eqn.h" />
+    <ClInclude Include="logger.h" />
+    <ClInclude Include="mstream.h" />
+    <ClInclude Include="op_node.h" />
     <ClInclude Include="p_archive.h" />
     <ClInclude Include="params.h" />
-    <ClInclude Include="Eqn2Line.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ReadMe.txt" />
+    <ClInclude Include="pop.h" />
+    <ClInclude Include="rnd.h" />
+    <ClInclude Include="runDevelep.h" />
+    <ClInclude Include="state.h" />
+    <ClInclude Include="strdist.h" />
+    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="pareto">
       <UniqueIdentifier>{383b743d-05a5-4482-a995-a32f97be5120}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
   </ItemGroup>
 </Project>

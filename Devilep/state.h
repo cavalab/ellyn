@@ -2,6 +2,7 @@
 #ifndef STATE_H
 #define STATE_H
 #include "logger.h"
+//#include "pop.h"
 
 struct state{
 
@@ -180,24 +181,6 @@ struct state{
 
 		}
 	}
-	///*void setNeutCrossPct(vector<ind> pop)*/
-	//{
-	//	float total_neut=0;
-	//	float total=0;
-
-	//	for(int i=0;i<pop.size();i++)
-	//	{
-	//		if (pop.at(i).parentfitness == pop.at(i).fitness)
-	//			total_neut++;
-	//		
-	//		total++;
-	//	}
-	//	if (total!=0)
-	//	{
-	//		float pct = total_neut/total*100;
-	//		neut_cross_pct= int(pct);
-	//	}
-	//}
 	void clear()
 	{
 		ptevals.clear();

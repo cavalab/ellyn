@@ -4,17 +4,18 @@
 
 #include "stdafx.h"
 #include "runDevelep.h"
-#include <omp.h>
+#include "pop.h"
+//#include <omp.h>
 using namespace std;
 
 void getTrialSetup(ifstream& fs,int&,vector<int>&,vector<string>&,vector<string>&);
 
 int main(int argc, char** argv)
 {
-	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+	//_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 
-	_CrtMemState s1;
-	_CrtMemCheckpoint( &s1 );
+	//_CrtMemState s1;
+	//_CrtMemCheckpoint( &s1 );
 
 	/* run multiple trials of Develep 
 	   input: trial text file
@@ -41,7 +42,7 @@ int main(int argc, char** argv)
 		{
 			cout << to_string(static_cast<long long>(i)) + ": " + paramfile.at(i).substr(paramfile.at(i).rfind('\\')+1,paramfile.at(i).size()) + ", " + datafile.at(i).substr(datafile.at(i).rfind('\\')+1,datafile.at(i).size())  + "\n";
 			runDevelep(paramfile.at(i),datafile.at(i),1); //run develep
-			_CrtMemDumpStatistics( &s1 );
+			//_CrtMemDumpStatistics( &s1 );
 		}
 	
 		char key;

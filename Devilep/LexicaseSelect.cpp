@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "pop.h"
 #include "state.h"
+#include "rnd.h"
 #include "Generationfns.h"
 #include "Fitness.h"
 

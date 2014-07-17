@@ -3,10 +3,11 @@
 
 #include "stdafx.h"
 // mine
-#include "runDevelep.h"
-#include <exception>
-//#include "logger.h"
 //#include "pop.h"
+#include "runDevelep.h"
+//#include <exception>
+//#include "logger.h"
+
 //#include "data.h"
 //#include "InitPop.h"
 //#include "Fitness.h"
@@ -40,20 +41,20 @@ using namespace std;
 //int _tmain(int argc, _TCHAR *argv[])
 int main(int argc, char** argv)
 {
-	try 
-	{
+	/*try 
+	{*/
 		string paramfile(argv[1]);
 		string datafile(argv[2]);
 		runDevelep(paramfile,datafile,0);
-	}
+	/*}
 	catch(exception& er) 
-	{
-		cout << "Error: " << er.what() << endl;
+	{*/
+	//	cout << "Error: " << er.what() << endl;
 
-	}
+	/*}
 	catch(...)
 	{
 		cout << "Exception Occurred."<<endl;
-	}
+	}*/
 	return 0;
 }

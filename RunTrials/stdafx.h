@@ -26,13 +26,11 @@
 #include <cstdlib>
 #include "ppl.h"
 #include <omp.h>
-#include "general_fns.h"
 #include <direct.h>
-#include<exception>
+#include <exception>
 #include "pop.h"
-#include "pareto.h"
-#include "p_archive.h"
+//#include "pareto.h"
+//#include "p_archive.h"
 #include "data.h"
-#include "pareto.h"
-//#include "general_fns.h"
+#include "general_fns.h"
 // TODO: reference additional headers your program requires here

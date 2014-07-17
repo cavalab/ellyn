@@ -1,16 +1,18 @@
 #include "stdafx.h"
+#include "pop.h"
 #include "state.h"
-//#include "pop.h"
 #include "params.h"
 #include "Fitness.h"
+#include "FitnessEstimator.h"
+#include "general_fns.h"
 
-void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
+void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
 {
 	//#pragma omp parallel for
 	//for (int i=0; i<pop.size(); i++) // for each individual
 	//	{
 			vector<ind> tmp_ind(1,oldind); 
-			makenewcopy(tmp_ind[0]);
+			makenew(tmp_ind[0]);
 			tmp_ind[0].clrPhen(); // clear phenotype
 
 			bool updated=0;
@@ -25,7 +27,7 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
 				if (updated)
 				{
 				    tmp_ind.push_back(oldind);  
-					makenewcopy(tmp_ind[0]);
+					makenew(tmp_ind[0]);
 					tmp_ind[0].clrPhen(); // clear phenotype
 				}
 				for (int h= 0; h<tmp_ind[0].line.size();h++) // for length of genotype
@@ -41,7 +43,7 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s)
 					}
 				}
 				//Gen2Phen(tmp_ind,p);
-				Fitness(tmp_ind,p,d,s); //get fitness 
+				Fitness(tmp_ind,p,d,s,FE); //get fitness 
 				if ( tmp_ind[0].fitness < oldind.fitness) // if fitness is better, replace individual
 				{
 					swap(oldind,tmp_ind[0]);

@@ -1,10 +1,12 @@
 #include "stdafx.h"
 #include "pop.h"
 #include "state.h"
+#include "rnd.h"
 #include "Generationfns.h"
+#include "FitnessEstimator.h"
 #include "Fitness.h"
 
-void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
+void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
 {
 	//boost::progress_timer timer;
 	float choice;
@@ -67,7 +69,7 @@ void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s)
 	while(tmppop.size()>pop.size())
 		tmppop.erase(tmppop.end()-1);
 	//get tmppop fitness 
-	Fitness(tmppop,p,d,s);
+	Fitness(tmppop,p,d,s,FE);
 	// genetic stats
 	s.setCrossPct(tmppop);
 	//add tmppop to pop
