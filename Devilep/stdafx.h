@@ -28,9 +28,9 @@
 #include <omp.h>
 #include <direct.h>
 #include <exception>
-//#include "pop.h"
-//#include "pareto.h"
-//#include "p_archive.h"
-//#include "data.h"
-//#include "general_fns.h"
+#include "pop.h"
+#include "pareto.h"
+#include "p_archive.h"
+#include "data.h"
+#include "general_fns.h"
 // TODO: reference additional headers your program requires here

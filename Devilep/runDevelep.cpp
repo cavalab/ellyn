@@ -394,6 +394,14 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.printeverypop;
 		else if(varname.compare("estimate_fitness") == 0)
 			ss>>p.EstimateFitness;
+		else if(varname.compare("FE_pop_size") == 0)
+			ss>>p.FE_pop_size;
+		else if(varname.compare("FE_ind_size") == 0)
+			ss>>p.FE_ind_size;
+		else if(varname.compare("FE_train_size") == 0)
+			ss>>p.FE_train_size;
+		else if(varname.compare("FE_rank") == 0)
+			ss>>p.FE_rank;
 		else if(varname.compare("norm_error") == 0)
 			ss>>p.norm_error;
 		else{}

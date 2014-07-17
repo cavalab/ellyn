@@ -33,7 +33,13 @@ struct params {
 	// Results
 	string resultspath;
 	bool loud;
-	bool EstimateFitness; // use fitness estimator coevolution
+
+	// use fitness estimator coevolution
+	bool EstimateFitness; 
+	int FE_pop_size;
+	int FE_ind_size;
+	int FE_train_size;
+	bool FE_rank;
 	// Computer Settings
 	//bool parallel;
 	//int numcores;
