@@ -39,7 +39,9 @@ struct params {
 	int FE_pop_size;
 	int FE_ind_size;
 	int FE_train_size;
+	int FE_train_gens;
 	bool FE_rank;
+	
 	// Computer Settings
 	//bool parallel;
 	//int numcores;

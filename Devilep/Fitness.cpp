@@ -191,7 +191,8 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 	//get equation and equation form
 			pop.at(count).eqn = Line2Eqn(pop.at(count).line);
 			getEqnForm(pop.at(count).eqn,pop.at(count).eqn_form);
-			
+			if (pop.at(count).eqn.compare("1")==0)
+				//cout << "caught one\n";
 			// set pointer to dattovar in symbolic functions
 
 	//effective size
@@ -390,6 +391,9 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 				}
 			}
 			
+			if (pop.at(count).eqn.compare("1")==0 && pop.at(count).corr > 0.0001)
+				cout << "caught\n";
+
 			if (!pass)
 				pop.at(count).corr = 0;
 						

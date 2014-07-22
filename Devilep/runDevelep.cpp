@@ -400,6 +400,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.FE_ind_size;
 		else if(varname.compare("FE_train_size") == 0)
 			ss>>p.FE_train_size;
+		else if(varname.compare("FE_train_gens") == 0)
+			ss>>p.FE_train_gens;
 		else if(varname.compare("FE_rank") == 0)
 			ss>>p.FE_rank;
 		else if(varname.compare("norm_error") == 0)
@@ -682,7 +684,7 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s)
 	}
 	
 }
-bool stopcondition(tribe& T,params& p,data& d,state& s,FitnessEstimator& FE)
+bool stopcondition(tribe& T,params p,data& d,state& s,FitnessEstimator& FE)
 {
 	if (!p.EstimateFitness){
 		if (T.bestFit() <= 0.0000001)
@@ -693,9 +695,10 @@ bool stopcondition(tribe& T,params& p,data& d,state& s,FitnessEstimator& FE)
 	else{
 		vector<ind> best(1);
 		T.getbestind(best[0]);
-		p.EstimateFitness=0;
+		/*params ptmp = p;
+		ptmp.EstimateFitness=0;*/
 		Fitness(best,p,d,s,FE);
-		p.EstimateFitness=1;
+		//p.EstimateFitness=1;
 		if (best[0].fitness <= 0.0000001)
 			return true;
 		else
@@ -898,13 +901,13 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		}
 		if (p.EstimateFitness)
 			InitPopFE(FE,World.pop,trainers,p,r,d,s);
-		vector<FitnessEstimator> tmpFE; 
+		vector<FitnessEstimator> tmpFE = FE; 
 
 		int gen=0;
 		bool pass=1;
 		int mixtrigger=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
 		//int trainer_trigger=0;
-		int trainer_trigger=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
+		int trainer_trigger=p.FE_train_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
 		bool migrate=false;
 		// while(gen<=p.g && !stopcondition(World.best))
 		// {
@@ -979,10 +982,12 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 					s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
 					s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
 					gen++;
-					tmpFE=FE;
+
+									
 				}
 				#pragma omp single  nowait //coevolve fitness estimators
 				{
+					
 					if (p.EstimateFitness){
 						s.out << "Evolving fitness estimators...\n";
 						
@@ -999,7 +1004,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 				#pragma omp single
 				{
 					if (p.EstimateFitness){
-						FE = tmpFE;
+						FE.assign(tmpFE.begin(),tmpFE.end());
 						if(s.totalevals()>trainer_trigger) {
 							s.out << "Picking trainers...\n";
 							PickTrainers(World.pop,FE,trainers,p,d,s);
@@ -1076,7 +1081,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		s.out << " number of evals: " << s.getgenevals() << "\n";
 		int its=1;
 		int trigger=0;
-		int trainer_trigger=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
+		int trainer_trigger=p.FE_train_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
 		int gen=0;
 		int counter=0;
 		if(p.sel==2) // if using deterministic crowding, increase gen size
@@ -1150,7 +1155,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 				if(s.totalevals()>trainer_trigger) {
 					s.out << "Picking trainers...\n";
 					PickTrainers(T.pop,FE,trainers,p,d,s);
-					trainer_trigger+=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
+					trainer_trigger+=p.FE_train_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
 					//trainer_trigger=0;
 				}
 			}

@@ -36,13 +36,14 @@ numERC				2
 
 //fitness settings
 fit_type			3	// 1: error, 2: corr, 3: combo
-norm_error			1  // // normalize error by the standard deviation of the target data being u
+norm_error			0  // // normalize error by the standard deviation of the target data being u
 max_fit				100000000000000000000
 min_fit				0.00000000000000000001
 estimate_fitness 	1	// coevolve fitness estimators
-FE_pop_size			10	// fitness estimator population size
-FE_ind_size			16	// number of data cases for FE to use
+FE_pop_size			12	// fitness estimator population size
+FE_ind_size			4	// number of fitness cases for FE to use
 FE_train_size		10	// trainer population size
+FE_train_gens		10 // number of generations between trainer selections
 FE_rank				1	// use rank for FE fitness rather than error  
 
 //available operators: n	v	+	-	*	/	sin	cos	exp	log
@@ -52,7 +53,7 @@ op_list				n	v	+	-	*	/
 op_weight			2	4	1	1	1	1					
 weight_ops_on		1
 min_len				10
-max_len				100
+max_len				10
 
 max_dev_len			128
 

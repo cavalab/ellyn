@@ -13,57 +13,59 @@
   <language name="unknown" pattern=".*" />
   <source_exclude name="*\source_cache\temporary_files\*" />
   <source_ide_project name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Devilep.vcxproj" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\AgeBreed.cpp" modification_bin_time="5384cc96" language="cpp" lines="75" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\AgeFitSelect.cpp" modification_bin_time="5384cc96" language="cpp" lines="51" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\ApplyGenetics.cpp" modification_bin_time="5384cc96" language="cpp" lines="92" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\AgeBreed.cpp" modification_bin_time="53ab93ab" language="cpp" lines="77" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\AgeFitSelect.cpp" modification_bin_time="53ab97df" language="cpp" lines="52" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\ApplyGenetics.cpp" modification_bin_time="53abe204" language="cpp" lines="93" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\BruteforceAlgo.cc" modification_bin_time="5384cc96" language="cpp" lines="28" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\BruteforceAlgo.h" modification_bin_time="5384cc96" language="cpp" lines="17" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Crossover.cpp" modification_bin_time="5384cc96" language="cpp" lines="109" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\data.h" modification_bin_time="5384cc96" language="cpp" lines="60" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Crossover.cpp" modification_bin_time="53bf533e" language="cpp" lines="110" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\data.h" modification_bin_time="53ab9074" language="cpp" lines="58" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Datapoint.cc" modification_bin_time="5384cc96" language="cpp" lines="17" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Datapoint.h" modification_bin_time="5384cc96" language="cpp" lines="92" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\DC.cpp" modification_bin_time="5384cc96" language="cpp" lines="126" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Develep.cpp" modification_bin_time="5385fc80" language="cpp" lines="647" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Develep.h" modification_bin_time="5384cc96" language="cpp" lines="8" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\EpiHC.cpp" modification_bin_time="5384cc96" language="cpp" lines="53" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\exprtk.hpp" modification_bin_time="5384cc96" language="cpp" lines="19793" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Fitness.cpp" modification_bin_time="538e39f2" language="cpp" lines="640" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Fitness.h" modification_bin_time="5384cc96" language="cpp" lines="7" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\general_fns.cpp" modification_bin_time="538e4034" language="cpp" lines="193" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\general_fns.h" modification_bin_time="5384cc96" language="cpp" lines="14" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Generation.cpp" modification_bin_time="53850fa3" language="cpp" lines="107" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Generation.h" modification_bin_time="5384cc96" language="cpp" lines="7" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Generationfns.h" modification_bin_time="5384cc96" language="cpp" lines="18" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\HillClimb.cpp" modification_bin_time="5384cc96" language="cpp" lines="63" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\InitPop.cpp" modification_bin_time="5384cc96" language="cpp" lines="218" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\DC.cpp" modification_bin_time="53bf5346" language="cpp" lines="127" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Develep.cpp" modification_bin_time="53c365cd" language="cpp" lines="60" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\EpiHC.cpp" modification_bin_time="53bf5351" language="cpp" lines="55" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Eqn2Line.cpp" modification_bin_time="53c36748" language="cpp" lines="293" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Eqn2Line.h" modification_bin_time="53ab865c" language="cpp" lines="3" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Fitness.cpp" modification_bin_time="53cd88a8" language="cpp" lines="760" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Fitness.h" modification_bin_time="53c35a72" language="cpp" lines="33" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\FitnessEstimator.cpp" modification_bin_time="53cd90fd" language="cpp" lines="333" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\FitnessEstimator.h" modification_bin_time="53cd89e7" language="cpp" lines="32" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\general_fns.cpp" modification_bin_time="53bf564a" language="cpp" lines="343" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\general_fns.h" modification_bin_time="53c0b2b0" language="cpp" lines="14" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Generation.cpp" modification_bin_time="53abe6db" language="cpp" lines="108" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Generation.h" modification_bin_time="53abe6e7" language="cpp" lines="7" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Generationfns.h" modification_bin_time="53abe6b0" language="cpp" lines="17" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\HillClimb.cpp" modification_bin_time="53bf5341" language="cpp" lines="65" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\InitPop.cpp" modification_bin_time="53abe345" language="cpp" lines="235" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\InitPop.h" modification_bin_time="5384cc96" language="cpp" lines="7" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\isnan.h" modification_bin_time="0" language="cpp" lines="0" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\LexicaseSelect.cpp" modification_bin_time="5384cc96" language="cpp" lines="69" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Line2Eqn.cpp" modification_bin_time="5384cc96" language="cpp" lines="57" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Line2Eqn.h" modification_bin_time="5384cc96" language="cpp" lines="3" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\LexicaseSelect.cpp" modification_bin_time="53ab9170" language="cpp" lines="70" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Line2Eqn.cpp" modification_bin_time="53c363d5" language="cpp" lines="57" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Line2Eqn.h" modification_bin_time="53c366fe" language="cpp" lines="3" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\logger.h" modification_bin_time="5384cc96" language="cpp" lines="30" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\mstream.h" modification_bin_time="5384cc96" language="cpp" lines="30" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Mutate.cpp" modification_bin_time="5384cc96" language="cpp" lines="48" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Mutate.cpp" modification_bin_time="53bf533b" language="cpp" lines="48" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\NondominatedsortAlgo.cc" modification_bin_time="5384cc96" language="cpp" lines="59" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\NondominatedsortAlgo.h" modification_bin_time="5384cc96" language="cpp" lines="23" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\op_node.h" modification_bin_time="5384cc96" language="cpp" lines="261" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\p_archive.h" modification_bin_time="5384cc96" language="cpp" lines="49" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\params.h" modification_bin_time="5384cc96" language="cpp" lines="151" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\pareto.cc" modification_bin_time="5384cc96" language="cpp" lines="99" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\pareto.h" modification_bin_time="5384cc96" language="cpp" lines="10" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\p_archive.h" modification_bin_time="53c387ee" language="cpp" lines="56" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\params.h" modification_bin_time="53cd8a4c" language="cpp" lines="163" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\pareto.cc" modification_bin_time="53c3575b" language="cpp" lines="100" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\pareto.h" modification_bin_time="53c3861a" language="cpp" lines="11" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\ParetoAlgo.h" modification_bin_time="5384cc96" language="cpp" lines="16" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\pop.h" modification_bin_time="5386191a" language="cpp" lines="336" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\pop.h" modification_bin_time="53c38722" language="cpp" lines="335" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\rnd.h" modification_bin_time="5384cc97" language="cpp" lines="68" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\runDevelep.cpp" modification_bin_time="538e44d5" language="cpp" lines="1035" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\runDevelep.cpp" modification_bin_time="53cd974a" language="cpp" lines="1174" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\runDevelep.h" modification_bin_time="5385fc7b" language="cpp" lines="9" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\StablesortAlgo.cc" modification_bin_time="5384cc96" language="cpp" lines="39" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\StablesortAlgo.h" modification_bin_time="5384cc96" language="cpp" lines="17" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\state.h" modification_bin_time="5384cc97" language="cpp" lines="219" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\stdafx.cpp" modification_bin_time="5384cc97" language="cpp" lines="8" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\stdafx.h" modification_bin_time="5384cc97" language="cpp" lines="35" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\strdist.cpp" modification_bin_time="5384cc97" language="cpp" lines="44" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\state.h" modification_bin_time="53ab927c" language="cpp" lines="202" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\stdafx.cpp" modification_bin_time="53ab865a" language="cpp" lines="8" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\stdafx.h" modification_bin_time="53c85158" language="cpp" lines="36" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\strdist.cpp" modification_bin_time="53c359d3" language="cpp" lines="46" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\strdist.h" modification_bin_time="5384cc97" language="cpp" lines="7" />
   <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\targetver.h" modification_bin_time="5384cc97" language="cpp" lines="8" />
-  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Tournament.cpp" modification_bin_time="5384cc96" language="cpp" lines="33" />
-  <statistics files="52" lines="25204" annotations="0" site_annotations="0" task_annotations="0" lock_annotations="0" other_annotations="0" />
+  <file name="C:\Users\TheQuarry\Documents\Work\develep\Devilep\Tournament.cpp" modification_bin_time="53abe657" language="cpp" lines="34" />
+  <statistics files="54" lines="5923" annotations="0" site_annotations="0" task_annotations="0" lock_annotations="0" other_annotations="0" />
 </IntelParallelAdvisorAnnotationDatabase>
