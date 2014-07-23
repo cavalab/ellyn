@@ -45,10 +45,7 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,d
 		exactfit[j]=trainers[j].fitness;*/
 
 	//get trainer exact fitness
-	p.EstimateFitness = 0; // turn fitness estimation off
-	Fitness(trainers,p,d,s,FE[0]); //note: FE[0] does not get used here
-	p.EstimateFitness = 1; // turn fitness estimation back on
-
+	// trainer fitness must be calculated before this function is called
 	vector<vector<float>> FEvals;
 	vector<float> FEtarget;
 	int ndata_t;
@@ -64,6 +61,8 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,d
 		vector<float> FEness(trainers.size()); 
 
 		for (int j=0;j<trainers.size();j++){
+
+		if (!trainers[j].output.empty()){
 
 			float abserror=0;
 			float meantarget = 0;
@@ -118,6 +117,7 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,d
 			FE[i].fitness+=abs(trainers[j].fitness-FEness[j]);
 		
 		}
+		}
 		if (!p.FE_rank)
 			FE[i].fitness=FE[i].fitness/trainers.size();
 		else{
@@ -155,6 +155,10 @@ void InitPopFE(vector <FitnessEstimator>& FE,vector<ind> &pop,vector<ind>& train
 	//Fitness(trainers,p,d,s,FE[0]); //note: FE[0] does not get used here
 	//p.EstimateFitness = 1; // turn fitness estimation back on
 	//evaluate fitness of estimators
+	p.EstimateFitness = 0; // turn fitness estimation off
+	Fitness(trainers,p,d,s,FE[0]); //note: FE[0] does not get used here
+	p.EstimateFitness = 1; // turn fitness estimation back on
+
 	FitnessFE(FE,trainers,p,d,s);
 	//perform selection
 	sort(FE.begin(),FE.end(),SortFE());
@@ -232,14 +236,16 @@ void PickTrainers(vector<ind> pop, vector <FitnessEstimator>& FE,vector <ind>& t
 		q++;
 	}
 	//trainers.assign(tmppop.begin(),tmppop.begin()+p.FE_train_size);
-
+	p.EstimateFitness = 0; // turn fitness estimation off
+	Fitness(trainers,p,d,s,FE[0]); //note: FE[0] does not get used here
+	p.EstimateFitness = 1; // turn fitness estimation back on
 	//evaluate fitness of estimators
 	FitnessFE(FE,trainers,p,d,s);
 	sort(FE.begin(),FE.end(),SortFE());
 };
 void crossFE(vector <FitnessEstimator>& FE,vector<Randclass>& r)
 {
-	// select parents
+	// select parents (tournament)
 	int nt = 2;
 	vector<int> parents;
 	vector<int> choices(2);
