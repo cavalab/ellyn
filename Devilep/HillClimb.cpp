@@ -5,7 +5,7 @@
 #include "Fitness.h"
 #include "FitnessEstimator.h"
 #include "general_fns.h"
-
+// parameter hill climber 
 void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
 {
 	//#pragma omp parallel for

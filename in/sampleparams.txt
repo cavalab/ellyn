@@ -28,7 +28,7 @@ cons				c
 cvals				1.0	
 seeds				
 
-ERC					0 // ephemeral random constants
+ERC					1 // ephemeral random constants
 ERCints				0	
 maxERC				10
 minERC				-10

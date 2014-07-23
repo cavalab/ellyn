@@ -8,9 +8,9 @@ tourn_size			2
 rt_rep				0.1
 rt_cross			0.7
 rt_mut				0.2
-cross				1	// 1: ultra 2: one point1
-cross_ar			.1 //crossover alternation rate (ultra only)
-mut_ar				.1 //mutation alternation rate (ultra only)
+cross				2	// 1: ultra 2: one point1
+cross_ar			.025 //crossover alternation rate (ultra only)
+mut_ar				.025 //mutation alternation rate (ultra only)
 stoperror			0.0001	// stop condition / convergence condition
 
 init_validate_on	0	// initial fitness validation of starting population
@@ -43,7 +43,7 @@ estimate_fitness 	1	// coevolve fitness estimators
 FE_pop_size			10	// fitness estimator population size
 FE_ind_size			200	// number of fitness cases for FE to use
 FE_train_size		10	// trainer population size
-FE_train_gens		100 // number of generations between trainer selections
+FE_train_gens		1000 // number of generations between trainer selections
 FE_rank				1	// use rank for FE fitness rather than error  
 
 //available operators: n	v	+	-	*	/	sin	cos	
@@ -53,7 +53,7 @@ op_list				n	v	+	-	*	/	sin	cos	exp	log
 op_weight			4	4	1	1	1	1	1	1	1	1	
 weight_ops_on		1
 min_len				10
-max_len				500
+max_len				1000
 
 max_dev_len			128
 

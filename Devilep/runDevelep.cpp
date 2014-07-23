@@ -50,9 +50,9 @@ s.out << "Mean Size: " << T.meanSize() << "\n";
 s.out << "Mean Eff Size: " << T.meanEffSize() << "\n";
 s.out << "Pareto Front Equations: " << A.optimal_size << "\n";
 if(p.pHC_on)
-	s.out << "Parameter updates: " << s.getpHCupdates() << "\n";
+	s.out << "Parameter updates: " << float(s.getpHCupdates())/float(p.popsize)*100 << "\%\n";
 if(p.eHC_on)
-	s.out << "Epigenetic updates: " << s.geteHCupdates() << "\n";
+	s.out << "Epigenetic updates: " << float(s.geteHCupdates())/float(p.popsize)*100 << "\%\n";
 s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "\%\n";
 s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "\%\n";
 s.out << "Bad Genetics: " << s.getBadCrossPct() << "%\n";
@@ -1263,7 +1263,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 						//if(gen>trainer_trigger) {
 							s.out << "Picking trainers...\n";
 							PickTrainers(World.pop,FE,trainers,p,d,s);
-							trainer_trigger += p.FE_train_gens; //p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
+							trainer_trigger = gen + p.FE_train_gens; //p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
 							//trainer_trigger=0;
 						}
 					}
@@ -1409,7 +1409,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 				if(counter>trainer_trigger) {
 					s.out << "Picking trainers...\n";
 					PickTrainers(T.pop,FE,trainers,p,d,s);
-					trainer_trigger+=p.FE_train_gens; //*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
+					trainer_trigger= counter + p.FE_train_gens; //*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
 					//trainer_trigger=0;
 				}
 			}
