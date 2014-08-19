@@ -1,22 +1,29 @@
 #include "stdafx.h"
+#include <string>
 // mine
-
 #include "pop.h"
-#include "data.h"
-#include "logger.h"
+#include "params.h"
 #include "rnd.h"
+#include "data.h"
+#include "state.h"
+#include "logger.h"
+
 #include "InitPop.h"
+#include "FitnessEstimator.h"
 #include "Fitness.h"
 #include "Generation.h"
 #include "instructionset.h"
+
 #include "Generationfns.h"
 #include "strdist.h"
 #include <time.h>
 #include <cstring>
 #include "p_archive.h"
 #include "Eqn2Line.h"
-#include "state.h"
-#include "FitnessEstimator.h"
+
+
+#include "general_fns.h"
+
 //#define _CRTDBG_MAP_ALLOC
 //#include <stdlib.h>
 //#include <crtdbg.h>
@@ -448,6 +455,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.FE_rank;
 		else if(varname.compare("norm_error") == 0)
 			ss>>p.norm_error;
+		else if(varname.compare("shuffle_data") == 0)
+			ss>>p.shuffle_data;
 		else{}
     }
 	p.allvars = p.intvars;
@@ -680,10 +689,14 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s)
 
 		std::random_shuffle(shuffler.begin(),shuffler.end(),r[omp_get_thread_num()]);
 		
+		s.out << "Shuffling data...\n";
+		bool tmp = s.out.trials;
+		s.out.trials=1; // keep output from going to console
 		s.out << "data shuffle index: ";
 		for (int i=0; i<shuffler.size(); i++)
 			s.out << shuffler.at(i) << " ";
 		s.out << "\n";
+		s.out.trials=tmp;
 
 		for(int i=0;i<d.vals.size();i++)
 		{
@@ -729,7 +742,7 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s)
 bool stopcondition(tribe& T,params p,data& d,state& s,FitnessEstimator& FE)
 {
 	if (!p.EstimateFitness){
-		if (T.bestFit() <= 0.0000001)
+		if (T.bestFit() <= 0.0001)
 			return true;
 		else
 			return false;
@@ -737,11 +750,11 @@ bool stopcondition(tribe& T,params p,data& d,state& s,FitnessEstimator& FE)
 	else{
 		vector<ind> best(1);
 		T.getbestind(best[0]);
-		/*params ptmp = p;
-		ptmp.EstimateFitness=0;*/
+		
+		p.EstimateFitness=0;
 		Fitness(best,p,d,s,FE);
-		//p.EstimateFitness=1;
-		if (best[0].fitness <= 0.0000001)
+		p.EstimateFitness=1;
+		if (best[0].fitness <= 0.0001)
 			return true;
 		else
 			return false;
@@ -859,7 +872,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 		s.out << (omp_get_thread_num()+1)*seed1 << "\n";
 
 	//shuffle data for training
-	if (p.train && !p.EstimateFitness) // no needle to shuffle if FE is being used
+	if (p.shuffle_data) 
 		shuffle_data(d,p,r,s);
 	
 	boost::timer time;
@@ -1253,13 +1266,13 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 					if (p.EstimateFitness){
 						// assign tmpFE to FE
 						FE.assign(tmpFE.begin(),tmpFE.end());
-						float avefit=0;
+						/*float avefit=0;
 						for (int u=0;u<FE.size();u++)
 							avefit+=FE[u].fitness;
 						avefit /= FE.size();
 						if (avefit>1)
-							cout <<"avefit error\n";
-						if(avefit<0.01 || gen>trainer_trigger) { //pick new trainers when FE pop has converged or when it has been enough generations
+							cout <<"avefit error\n";*/
+						if(gen>trainer_trigger) { //pick new trainers when FE pop has converged or when it has been enough generations
 						//if(gen>trainer_trigger) {
 							s.out << "Picking trainers...\n";
 							PickTrainers(World.pop,FE,trainers,p,d,s);

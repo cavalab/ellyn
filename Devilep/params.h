@@ -2,11 +2,11 @@
 #pragma once
 #ifndef PARAMS_H
 #define PARAMS_H
-#include <iostream>
-#include <string>
-#include <vector>
-#include <random>
-#include <array>
+//#include <iostream>
+//#include <string>
+//#include <vector>
+//#include <random>
+//#include <array>
 #include "op_node.h"
 using namespace std;
 
@@ -30,6 +30,8 @@ struct params {
 
 	bool init_validate_on; // initial fitness validation of individuals
 	bool train; // choice to turn on training for splitting up the data set
+	bool shuffle_data; // shuffle the data
+
 	// Results
 	string resultspath;
 	bool loud;

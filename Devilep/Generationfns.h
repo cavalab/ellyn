@@ -1,7 +1,7 @@
 #pragma once
 #ifndef GENERATIONFNS_H
 #define GENERATIONFNS_H
-#include "FitnessEstimator.h"
+//#include "FitnessEstimator.h"
 void Tournament(vector<ind>&,vector<unsigned int>&,params&,vector<Randclass>& r);
 void DC(vector<ind>&,params&,vector<Randclass>& r,data& d,state&,FitnessEstimator& FE);
 void ApplyGenetics(vector<ind>&,vector<unsigned int>&,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE);

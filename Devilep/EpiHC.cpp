@@ -3,8 +3,9 @@
 #include "params.h"
 #include "rnd.h"
 #include "state.h"
-#include "Fitness.h"
+#include "data.h"
 #include "FitnessEstimator.h"
+#include "Fitness.h"
 #include "Gen2Phen.h"
 #include "general_fns.h"
 

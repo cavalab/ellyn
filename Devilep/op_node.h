@@ -1,7 +1,8 @@
+#pragma once
 #ifndef OP_NODE_H
 #define OP_NODE_H
-#include "stdafx.h"
-#include <vector>
+//#include "stdafx.h"
+//#include <vector>
 using namespace std;
 //#include <boost/ptr_container/ptr_vector.hpp>
 //#include <boost/utility.hpp>

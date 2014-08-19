@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "pop.h"
+#include "params.h"
 #include "state.h"
 #include "rnd.h"
+#include "data.h"
+#include "FitnessEstimator.h"
 #include "Generationfns.h"
 #include "Fitness.h"
 

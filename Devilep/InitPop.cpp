@@ -2,6 +2,7 @@
 #include "pop.h"
 #include "params.h"
 #include "rnd.h"
+#include "data.h"
 #include "general_fns.h"
 //#include "RPN_class.h"
 //extern params p;

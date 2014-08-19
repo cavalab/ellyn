@@ -3,6 +3,8 @@
 #include "params.h"
 #include "state.h"
 #include "rnd.h"
+#include "data.h"
+#include "FitnessEstimator.h"
 #include "Generationfns.h"
 #include "strdist.h"
 #include "Fitness.h"

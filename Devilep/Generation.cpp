@@ -2,8 +2,10 @@
 #include "pop.h"
 #include "params.h"
 #include "state.h"
-#include "Fitness.h"
 #include "rnd.h"
+#include "data.h"
+#include "FitnessEstimator.h"
+#include "Fitness.h"
 #include "Generationfns.h"
 #include "InitPop.h"
 

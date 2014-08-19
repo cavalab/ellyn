@@ -3,13 +3,14 @@
 #ifndef POP_H
 #define POP_H
 
-#include "params.h"
-#include "data.h"
+//#include "params.h"
+//#include "data.h"
 
 //#include "RPN_class.h"
 #include "op_node.h"
 //#include "general_fns.h"
 //#include "pareto.h"
+
 struct ind {
 	//unsigned int id;
 	vector <shared_ptr<node>> line;
@@ -28,6 +29,8 @@ struct ind {
 
 	float corr;
 	float corr_v;
+	float VAF;
+	float VAF_v;
 
 	float fitness;
 	float fitness_v; 

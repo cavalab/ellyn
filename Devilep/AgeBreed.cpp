@@ -1,10 +1,18 @@
 #include "stdafx.h"
+
+#include "data.h"
 #include "pop.h"
-#include "state.h"
+#include "params.h"
 #include "rnd.h"
-#include "Generationfns.h"
+#include "data.h"
+#include "state.h"
+#include "pareto.h"
+#include "general_fns.h"
 #include "FitnessEstimator.h"
+#include "Generationfns.h"
+
 #include "Fitness.h"
+
 
 void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
 {

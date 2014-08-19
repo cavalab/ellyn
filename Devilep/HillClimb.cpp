@@ -1,9 +1,12 @@
 #include "stdafx.h"
 #include "pop.h"
-#include "state.h"
 #include "params.h"
-#include "Fitness.h"
+#include "rnd.h"
+#include "state.h"
+#include "data.h"
 #include "FitnessEstimator.h"
+#include "Fitness.h"
+
 #include "general_fns.h"
 // parameter hill climber 
 void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)

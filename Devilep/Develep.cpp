@@ -3,8 +3,10 @@
 
 #include "stdafx.h"
 // mine
+#include <string.h>
+#include <string>
 //#include "pop.h"
-#include "runDevelep.h"
+
 //#include <exception>
 //#include "logger.h"
 
@@ -20,7 +22,7 @@
 //#include "strdist.h"
 //#include <ctime>
 //#include <cstring>
-
+#include "runDevelep.h"
 using namespace std;
 
 //// global parameters structure

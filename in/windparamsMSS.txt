@@ -16,6 +16,7 @@ stoperror			0.0001	// stop condition / convergence condition
 init_validate_on	0	// initial fitness validation of starting population
 printeverypop		0  // print every generation 
 train				1  // split data into training and validation sets
+shuffle_data		0	// shuffle data
 
 // Results
 resultspath			D:\Develep\Results\CART\SS
@@ -36,7 +37,7 @@ numERC				3
 
 //fitness settings
 fit_type			3	// 1: error, 2: corr, 3: combo
-norm_error			0  // // normalize error by the standard deviation of the target data being u
+norm_error			1  // // normalize error by the standard deviation of the target data being u
 max_fit				100000000000000000000
 min_fit				0.00000000000000000001
 estimate_fitness 	1	// coevolve fitness estimators
@@ -80,9 +81,6 @@ eHC_cluster			1
 eHC_dev				1
 eHC_best			1
 eHC_init			0.5 //0: start with true epilines, 1: start with a mix of on/off values
-eHC_prob_scale		1
-eHC_max_prob		.75
-eHC_min_prob		0.25
 
 // lexicase settings
 lexpool				10

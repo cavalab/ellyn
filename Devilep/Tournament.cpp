@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "pop.h"
+#include "params.h"
 #include "rnd.h"
 
 void Tournament(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r)

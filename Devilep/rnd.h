@@ -1,8 +1,8 @@
 //#include "stadfx.h"
-
+#pragma once
 #ifndef RND_H
 #define RND_H
-#include <math.h>
+//#include <math.h>
 
 class Randclass
 {

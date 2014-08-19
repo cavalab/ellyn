@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "op_node.h"
 #include <exception>
 #include <string>
 #include <unordered_map>

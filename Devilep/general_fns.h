@@ -1,7 +1,7 @@
 #pragma once
 #ifndef GENERAL_FNS_H
 #define GENERAL_FNS_H
-#include "rnd.h"
+//#include "rnd.h"
 
 
 bool is_number(const std::string& s);

@@ -1,7 +1,7 @@
 #pragma once
 #ifndef MSTREAM_H
 #define MSTREAM_H
-#include "stdafx.h"
+//#include "stdafx.h"
 
 class mstream
 {

@@ -2,14 +2,8 @@
 #ifndef P_ARCHIVE
 #define P_ARCHIVE
 using namespace std;
-//#include "stdafx.h"
-
-//#include "pop.h"
 #include "pareto.h"
-//#include "general_fns.h"
-//struct SortFit{
-//	bool operator() (ind& i,ind& j) { return (i.fitness<j.fitness);} 
-//};
+
 struct paretoarchive{
 	vector <ind> pop; // population
 	int archsize;

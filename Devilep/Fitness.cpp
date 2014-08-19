@@ -1,12 +1,10 @@
 #include "stdafx.h"
 #include "pop.h"
-#include "Line2Eqn.h"
 #include "params.h"
 #include "data.h"
-#include <cstdlib>
-#include <math.h>
-//#include "evaluator.h"
+#include "rnd.h"
 #include "state.h"
+#include "Line2Eqn.h"
 #include "EvalEqnStr.h"
 #include <unordered_map>
 
@@ -67,6 +65,39 @@ float getCorr(vector<float>& output,vector<float>& target,float meanout,float me
 	}
 	target_std = sqrt(var_target);
 	return corr;
+}
+float VAF(vector<float>& output,vector<float>& target,float meantarget,int off)
+{
+	float v1,v2;
+	float var_target=0;
+	float var_diff = 0;
+	float q=0;
+	float ndata = float(output.size());
+	float vaf;
+	float diff;
+	float diffmean=0;
+
+	for (unsigned int c = 0; c<output.size(); c++)
+		diffmean += target.at(c+off)-output.at(c);
+	diffmean = diffmean/output.size();
+	//calculate correlation coefficient
+	for (unsigned int c = 0; c<output.size(); c++)
+	{		
+		v1 = target.at(c+off)-meantarget;
+		v2 = (target.at(c+off)-output.at(c))-diffmean;
+		var_target+=pow(v1,2);
+		var_diff+=pow(v2,2);
+	}
+	//q = q/(ndata-1); //unbiased esimator
+	var_target=var_target/(ndata-1); //unbiased esimator
+	var_diff =var_diff/(ndata-1); //unbiased esimator
+	if(abs(var_target)<0.0000001 || abs(var_diff)<0.0000001)
+		vaf = 0;
+	else{
+		float tmp = (1-var_diff/var_target)*100;
+		vaf = std::max(float(0),tmp);
+	}
+	return vaf;
 }
 float std_dev(vector<float>& target,float& meantarget)
 {
@@ -287,7 +318,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 						meanout = meanout/ndata_t;
 						//calculate correlation coefficient
 						pop.at(count).corr = getCorr(pop.at(count).output,d.target,meanout,meantarget,0,target_std);
-						
+						pop.at(count).VAF = VAF(pop.at(count).output,d.target,meantarget,0);
 
 						if (p.train)
 						{
@@ -300,6 +331,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 							meanout_v = meanout_v/ndata_v;
 							//calculate correlation coefficient
 							pop.at(count).corr_v = getCorr(pop.at(count).output_v,d.target,meanout_v,meantarget_v,ndata_t,target_std_v);
+							pop.at(count).VAF_v = VAF(pop.at(count).output_v,d.target,meantarget_v,ndata_t);
 						}
 
 					}
@@ -365,6 +397,8 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 						meanout = meanout/ndata_t;
 						//calculate correlation coefficient
 						pop.at(count).corr = getCorr(pop.at(count).output,FEtarget,meanout,meantarget,0,target_std);
+						pop.at(count).VAF = VAF(pop.at(count).output,FEtarget,meantarget,0);
+
 						if (p.train)
 						{
 							q = 0;
@@ -377,6 +411,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 							//calculate correlation coefficient
 							
 							pop.at(count).corr_v = getCorr(pop.at(count).output_v,FEtarget,meanout_v,meantarget_v,ndata_t,target_std_v);
+							pop.at(count).VAF_v = VAF(pop.at(count).output_v,FEtarget,meantarget_v,0);
 						}
 
 					} // if pass
@@ -385,9 +420,11 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 			else{ // bad equation, assign maximum fitness
 				pop.at(count).abserror=p.max_fit;
 				pop.at(count).corr = p.min_fit;
+				pop.at(count).VAF = p.min_fit;
 				if (p.train){
 					pop.at(count).abserror_v=p.max_fit;
 					pop.at(count).corr_v = p.min_fit;
+					pop.at(count).VAF_v = p.min_fit;
 				}
 			}
 			
@@ -400,6 +437,8 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 
 			if(pop.at(count).corr < p.min_fit)
 				pop.at(count).corr=p.min_fit;
+			if(pop.at(count).VAF < p.min_fit)
+				pop.at(count).VAF=p.min_fit;
 
 		    if(pop.at(count).output.empty())
 				pop.at(count).fitness=p.max_fit;
@@ -414,6 +453,8 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 					pop.at(count).fitness = 1-pop.at(count).corr;
 				else if (p.fit_type==3)
 					pop.at(count).fitness = pop.at(count).abserror/pop.at(count).corr;
+				else if (p.fit_type==4)
+					pop.at(count).fitness = 1-pop.at(count).VAF;
 				if (p.norm_error)
 					pop.at(count).fitness = pop.at(count).fitness/target_std;
 			}
@@ -431,6 +472,8 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 
 				if(pop.at(count).corr_v < p.min_fit)
 					pop.at(count).corr_v=p.min_fit;
+				if(pop.at(count).VAF_v < p.min_fit)
+					pop.at(count).VAF_v=p.min_fit;
 
 				if(pop.at(count).output_v.empty())
 					pop.at(count).fitness_v=p.max_fit;
@@ -445,6 +488,8 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 						pop.at(count).fitness_v = 1-pop.at(count).corr_v;
 					else if (p.fit_type==3)
 						pop.at(count).fitness_v = pop.at(count).abserror_v/pop.at(count).corr_v;
+					else if (p.fit_type==4)
+						pop.at(count).fitness = 1-pop.at(count).VAF;
 					if (p.norm_error)
 						pop.at(count).fitness_v = pop.at(count).fitness_v/target_std_v;
 
@@ -517,7 +562,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 				vector<vector<float>> outlex;
 				vector<float> errorlex;
 				vector<float> corrlex;
-				
+				vector<float> VAFlex;
 				//vector<vector<float>> outlex_v;
 				//vector<float> errorlex_v;
 				//vector<float> corrlex_v;
@@ -531,7 +576,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 					outlex.push_back(vector<float>());
 					errorlex.push_back(0);
 					corrlex.push_back(0);
-					
+					VAFlex.push_back(0);
 
 					if (p.train){
 						ndata_t = d.lexvals[lex].size()/2;
@@ -615,15 +660,20 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 						//calculate correlation coefficient
 						string tmp = pop.at(count).eqn;
 						corrlex[lex] = getCorr(outlex[lex],d.targetlex[lex],meanoutlex,meantargetlex,0,target_std_lex);
+						VAFlex[lex] = VAF(outlex[lex],d.targetlex[lex],meantargetlex,0);
 
 					}
 					else{
 						errorlex[lex]=p.max_fit;
 						corrlex[lex] = p.min_fit;
+						VAFlex[lex] = p.min_fit;
 					}
 			
 					if(corrlex[lex] < p.min_fit)
 						corrlex[lex]=p.min_fit;
+
+					if(VAFlex[lex] < p.min_fit)
+						VAFlex[lex]=p.min_fit;
 
 					if(pop.at(count).output.empty())
 						pop.at(count).fitlex[lex]=p.max_fit;
@@ -638,6 +688,8 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 							pop.at(count).fitlex[lex] = 1-corrlex[lex];
 						else if (p.fit_type==3)
 							pop.at(count).fitlex[lex] = errorlex[lex]/corrlex[lex];
+						else if (p.fit_type==4)
+							pop.at(count).fitlex[lex] = 1-VAFlex[lex];
 						if (p.norm_error)
 							pop.at(count).fitlex[lex] = pop.at(count).fitlex[lex]/target_std_lex;
 					}
@@ -660,6 +712,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 
 						//calculate correlation coefficient
 						pop.at(count).corr = getCorr(pop.at(count).output,tarlex,meanout,meantarget,0,target_std_lex);
+						pop.at(count).VAF = VAF(pop.at(count).output,tarlex,meantarget,0);
 					
 						if (p.train)
 						{
@@ -669,20 +722,26 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 							meanout_v = meanout_v/pop.at(count).output_v.size();
 							//calculate correlation coefficient
 							pop.at(count).corr_v = getCorr(pop.at(count).output_v,tarlex_v,meanout_v,meantarget_v,0,target_std_lex_v);
+							pop.at(count).VAF_v = VAF(pop.at(count).output_v,tarlex_v,meantarget_v,0);
 						}
 
 					}
 					else{
 						pop.at(count).abserror=p.max_fit;
 						pop.at(count).corr = p.min_fit;
+						pop.at(count).VAF = p.min_fit;
+
 						if (p.train){
 							pop.at(count).abserror_v=p.max_fit;
 							pop.at(count).corr_v = p.min_fit;
+							pop.at(count).VAF_v = p.min_fit;
 						}
 					}						
 
 				if(pop.at(count).corr < p.min_fit)
 					pop.at(count).corr=p.min_fit;
+				if(pop.at(count).VAF < p.min_fit)
+					pop.at(count).VAF = p.min_fit;
 
 				if(pop.at(count).output.empty())
 					pop.at(count).fitness=p.max_fit;
@@ -697,6 +756,8 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 						pop.at(count).fitness = 1-pop.at(count).corr;
 					else if (p.fit_type==3)
 						pop.at(count).fitness = pop.at(count).abserror/pop.at(count).corr;
+					else if (p.fit_type==4)
+						pop.at(count).fitness = 1-pop.at(count).VAF;
 					if (p.norm_error)
 						pop.at(count).fitness = pop.at(count).fitness/target_std_lex;
 
@@ -715,6 +776,8 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 
 					if(pop.at(count).corr_v < p.min_fit)
 						pop.at(count).corr_v=p.min_fit;
+					if(pop.at(count).VAF_v < p.min_fit)
+						pop.at(count).VAF_v=p.min_fit;
 
 					if(pop.at(count).output_v.empty())
 						pop.at(count).fitness_v=p.max_fit;
@@ -729,6 +792,8 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 							pop.at(count).fitness_v = 1-pop.at(count).corr_v;
 						else if (p.fit_type==3)
 							pop.at(count).fitness_v = pop.at(count).abserror_v/pop.at(count).corr_v;
+						else if (p.fit_type==4)
+							pop.at(count).fitness = 1-pop.at(count).VAF;
 						if (p.norm_error)
 							pop.at(count).fitness_v = pop.at(count).fitness_v/target_std_lex_v;
 					}

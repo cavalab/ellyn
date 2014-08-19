@@ -2,7 +2,6 @@
 #pragma once
 #ifndef FITNESSESTIMATOR_H
 #define FITNESSESTIMATOR_H
-#include "rnd.h"
 
 class FitnessEstimator{
 public:

@@ -1,5 +1,7 @@
 #include "stdafx.h"
+#include "op_node.h"
 
+using namespace std;
 
 string Line2Eqn(vector<shared_ptr<node>>& line)
 {

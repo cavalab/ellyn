@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "pop.h"
+#include "params.h"
 #include "rnd.h"
+#include "data.h"
 #include "general_fns.h"
 
 void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& r)

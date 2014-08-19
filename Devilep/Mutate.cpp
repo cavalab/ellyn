@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "pop.h"
+#include "params.h"
+#include "rnd.h"
+#include "data.h"
 #include "general_fns.h"
 
 void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)

@@ -3,11 +3,11 @@
 #include "params.h"
 #include "rnd.h"
 #include "data.h"
-#include "Fitness.h"
 #include "state.h"
 #include "FitnessEstimator.h"
+#include "Fitness.h"
 #include "general_fns.h"
-#include <math.h>
+
 //class FitnessEstimator{
 //public:
 //	vector <int> FEpts; // points of fitness estimation (subset from data vals)
@@ -68,7 +68,8 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,d
 			float meantarget = 0;
 			float meanout = 0;
 			float corr;
-			
+			float vaf;
+
 			float target_std;
 			vector<float> tmpoutput;
 			for(unsigned int sim=0;sim<ndata_t;sim++)
@@ -85,6 +86,7 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,d
 				meanout = meanout/ndata_t;
 				//calculate correlation coefficient
 				corr = getCorr(tmpoutput,FEtarget,meanout,meantarget,0,target_std);
+				vaf = VAF(tmpoutput,FEtarget,meantarget,0);
 				tmpoutput.clear();
 
 				if(corr < p.min_fit)
@@ -103,6 +105,8 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,d
 						FEness[j] = 1-corr;
 					else if (p.fit_type==3)
 						FEness[j] = abserror/corr;
+					else if (p.fit_type==4)
+						FEness[j] = 1-vaf;
 					if (p.norm_error)
 						FEness[j] = FEness[j]/target_std;
 				}
@@ -194,10 +198,10 @@ void PickTrainers(vector<ind> pop, vector <FitnessEstimator>& FE,vector <ind>& t
 					tmppop[j].clrPhen();
 			}
 		// convert FEfits to ranks
-		for (int h=0;h<tmppop.size();h++){
+		/*for (int h=0;h<tmppop.size();h++){
 			float maxfit = *max_element(FEfits[i].begin(),FEfits[i].end());
 			FEfits[i][h] = FEfits[i][h]/maxfit*tmppop.size();
-		}
+		}*/
 	}
 
 	// calculate variance in fitness estimates
@@ -213,6 +217,7 @@ void PickTrainers(vector<ind> pop, vector <FitnessEstimator>& FE,vector <ind>& t
 		}
 
 		varfits[j]=varfits[j]/(FE.size()-1); // variance in fitness over predictors
+		if(boost::math::isinf(varfits[j])) varfits[j]=0;
 		tmppop[j].FEvar=varfits[j];
 	}
 	
