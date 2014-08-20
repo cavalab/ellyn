@@ -1246,16 +1246,11 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 					if (p.EstimateFitness){
 						s.out << "Evolving fitness estimators...\n";
 						
-						
+						EvolveFE(World.pop,tmpFE,trainers,p,d,s,r);
 						float aveFEfit=0;
 						for (int u=0;u<FE.size();u++)
 							aveFEfit+=FE[u].fitness;
 						aveFEfit /= FE.size();
-						if (aveFEfit==0)
-							std::random_shuffle(tmpFE.begin(),tmpFE.end(),r[omp_get_thread_num()]);
-						else
-							EvolveFE(World.pop,tmpFE,trainers,p,d,s,r);
-
 						s.out << "Best FE fit: " << FE[0].fitness <<"\n";
 						s.out << "Ave FE fit: " << aveFEfit << "\n";
 						s.out << "Current Fitness Estimator:\n";

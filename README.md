@@ -1,4 +1,4 @@
-Develep
+DevelEp
 =======
 
 Develep is a genetic programming tool for symbolic regression that incorporates epigenetic learning.
