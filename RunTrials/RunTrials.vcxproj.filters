@@ -7,76 +7,76 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>RunTrials</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\Tournament.cpp">
+    <ClCompile Include="..\DevelEp\Tournament.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\AgeBreed.cpp">
+    <ClCompile Include="..\DevelEp\AgeBreed.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\AgeFitSelect.cpp">
+    <ClCompile Include="..\DevelEp\AgeFitSelect.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\ApplyGenetics.cpp">
+    <ClCompile Include="..\DevelEp\ApplyGenetics.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\Crossover.cpp">
+    <ClCompile Include="..\DevelEp\Crossover.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\DC.cpp">
+    <ClCompile Include="..\DevelEp\DC.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\EpiHC.cpp">
+    <ClCompile Include="..\DevelEp\EpiHC.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\Eqn2Line.cpp">
+    <ClCompile Include="..\DevelEp\Eqn2Line.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\Fitness.cpp">
+    <ClCompile Include="..\DevelEp\Fitness.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\FitnessEstimator.cpp">
+    <ClCompile Include="..\DevelEp\FitnessEstimator.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\general_fns.cpp">
+    <ClCompile Include="..\DevelEp\general_fns.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\Generation.cpp">
+    <ClCompile Include="..\DevelEp\Generation.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\HillClimb.cpp">
+    <ClCompile Include="..\DevelEp\HillClimb.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\InitPop.cpp">
+    <ClCompile Include="..\DevelEp\InitPop.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\LexicaseSelect.cpp">
+    <ClCompile Include="..\DevelEp\LexicaseSelect.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\Line2Eqn.cpp">
+    <ClCompile Include="..\DevelEp\Line2Eqn.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\Mutate.cpp">
+    <ClCompile Include="..\DevelEp\Mutate.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\runDevelep.cpp">
+    <ClCompile Include="..\DevelEp\runDevelep.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\strdist.cpp">
+    <ClCompile Include="..\DevelEp\strdist.cpp">
       <Filter>Develep</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\BruteforceAlgo.cc">
+    <ClCompile Include="..\DevelEp\BruteforceAlgo.cc">
       <Filter>pareto</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\Datapoint.cc">
+    <ClCompile Include="..\DevelEp\Datapoint.cc">
       <Filter>pareto</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\NondominatedsortAlgo.cc">
+    <ClCompile Include="..\DevelEp\NondominatedsortAlgo.cc">
       <Filter>pareto</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\pareto.cc">
+    <ClCompile Include="..\DevelEp\pareto.cc">
       <Filter>pareto</Filter>
     </ClCompile>
-    <ClCompile Include="..\Devilep\StablesortAlgo.cc">
+    <ClCompile Include="..\DevelEp\StablesortAlgo.cc">
       <Filter>pareto</Filter>
     </ClCompile>
   </ItemGroup>
@@ -87,85 +87,85 @@
     <ClInclude Include="stdafx.h">
       <Filter>RunTrials</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\data.h">
+    <ClInclude Include="..\DevelEp\data.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\Eqn2Line.h">
+    <ClInclude Include="..\DevelEp\Eqn2Line.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\Fitness.h">
+    <ClInclude Include="..\DevelEp\Fitness.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\FitnessEstimator.h">
+    <ClInclude Include="..\DevelEp\FitnessEstimator.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\general_fns.h">
+    <ClInclude Include="..\DevelEp\general_fns.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\Generation.h">
+    <ClInclude Include="..\DevelEp\Generation.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\Generationfns.h">
+    <ClInclude Include="..\DevelEp\Generationfns.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\InitPop.h">
+    <ClInclude Include="..\DevelEp\InitPop.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\isnan.h">
+    <ClInclude Include="..\DevelEp\isnan.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\Line2Eqn.h">
+    <ClInclude Include="..\DevelEp\Line2Eqn.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\logger.h">
+    <ClInclude Include="..\DevelEp\logger.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\mstream.h">
+    <ClInclude Include="..\DevelEp\mstream.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\op_node.h">
+    <ClInclude Include="..\DevelEp\op_node.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\p_archive.h">
+    <ClInclude Include="..\DevelEp\p_archive.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\params.h">
+    <ClInclude Include="..\DevelEp\params.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\pop.h">
+    <ClInclude Include="..\DevelEp\pop.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\rnd.h">
+    <ClInclude Include="..\DevelEp\rnd.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\runDevelep.h">
+    <ClInclude Include="..\DevelEp\runDevelep.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\state.h">
+    <ClInclude Include="..\DevelEp\state.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\strdist.h">
+    <ClInclude Include="..\DevelEp\strdist.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\targetver.h">
+    <ClInclude Include="..\DevelEp\targetver.h">
       <Filter>Develep</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\StablesortAlgo.h">
+    <ClInclude Include="..\DevelEp\StablesortAlgo.h">
       <Filter>pareto</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\BruteforceAlgo.h">
+    <ClInclude Include="..\DevelEp\BruteforceAlgo.h">
       <Filter>pareto</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\Datapoint.h">
+    <ClInclude Include="..\DevelEp\Datapoint.h">
       <Filter>pareto</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\NondominatedsortAlgo.h">
+    <ClInclude Include="..\DevelEp\NondominatedsortAlgo.h">
       <Filter>pareto</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\pareto.h">
+    <ClInclude Include="..\DevelEp\pareto.h">
       <Filter>pareto</Filter>
     </ClInclude>
-    <ClInclude Include="..\Devilep\ParetoAlgo.h">
+    <ClInclude Include="..\DevelEp\ParetoAlgo.h">
       <Filter>pareto</Filter>
     </ClInclude>
   </ItemGroup>
@@ -181,7 +181,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Devilep\ReadMe.txt">
+    <None Include="..\DevelEp\ReadMe.txt">
       <Filter>Develep</Filter>
     </None>
   </ItemGroup>

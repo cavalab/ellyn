@@ -124,7 +124,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Devilep;C:\Boost\include\boost-1_55;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\DevelEp;C:\Boost\include\boost-1_55;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
@@ -140,7 +140,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Devilep;C:\Boost\include\boost-1_55;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\DevelEp;C:\Boost\include\boost-1_55;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
@@ -158,7 +158,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Devilep;C:\Boost\include\boost-1_55;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\DevelEp;C:\Boost\include\boost-1_55;</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
@@ -178,7 +178,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Devilep;C:\Boost\include\boost-1_55;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\DevelEp;C:\Boost\include\boost-1_55;</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
@@ -198,7 +198,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Devilep;C:\Boost\include\boost-1_55; </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\DevelEp;C:\Boost\include\boost-1_55; </AdditionalIncludeDirectories>
       <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
       <OpenMPSupport>true</OpenMPSupport>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -219,7 +219,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Devilep;C:\Boost\include\boost-1_55; </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\DevelEp;C:\Boost\include\boost-1_55; </AdditionalIncludeDirectories>
       <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
       <OpenMPSupport>true</OpenMPSupport>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -233,61 +233,61 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Devilep\BruteforceAlgo.h" />
-    <ClInclude Include="..\Devilep\data.h" />
-    <ClInclude Include="..\Devilep\Datapoint.h" />
-    <ClInclude Include="..\Devilep\Eqn2Line.h" />
-    <ClInclude Include="..\Devilep\Fitness.h" />
-    <ClInclude Include="..\Devilep\FitnessEstimator.h" />
-    <ClInclude Include="..\Devilep\general_fns.h" />
-    <ClInclude Include="..\Devilep\Generation.h" />
-    <ClInclude Include="..\Devilep\Generationfns.h" />
-    <ClInclude Include="..\Devilep\InitPop.h" />
-    <ClInclude Include="..\Devilep\isnan.h" />
-    <ClInclude Include="..\Devilep\Line2Eqn.h" />
-    <ClInclude Include="..\Devilep\logger.h" />
-    <ClInclude Include="..\Devilep\mstream.h" />
-    <ClInclude Include="..\Devilep\NondominatedsortAlgo.h" />
-    <ClInclude Include="..\Devilep\op_node.h" />
-    <ClInclude Include="..\Devilep\params.h" />
-    <ClInclude Include="..\Devilep\pareto.h" />
-    <ClInclude Include="..\Devilep\ParetoAlgo.h" />
-    <ClInclude Include="..\Devilep\pop.h" />
-    <ClInclude Include="..\Devilep\p_archive.h" />
-    <ClInclude Include="..\Devilep\rnd.h" />
-    <ClInclude Include="..\Devilep\runDevelep.h" />
-    <ClInclude Include="..\Devilep\StablesortAlgo.h" />
-    <ClInclude Include="..\Devilep\state.h" />
-    <ClInclude Include="..\Devilep\strdist.h" />
-    <ClInclude Include="..\Devilep\targetver.h" />
+    <ClInclude Include="..\DevelEp\BruteforceAlgo.h" />
+    <ClInclude Include="..\DevelEp\data.h" />
+    <ClInclude Include="..\DevelEp\Datapoint.h" />
+    <ClInclude Include="..\DevelEp\Eqn2Line.h" />
+    <ClInclude Include="..\DevelEp\Fitness.h" />
+    <ClInclude Include="..\DevelEp\FitnessEstimator.h" />
+    <ClInclude Include="..\DevelEp\general_fns.h" />
+    <ClInclude Include="..\DevelEp\Generation.h" />
+    <ClInclude Include="..\DevelEp\Generationfns.h" />
+    <ClInclude Include="..\DevelEp\InitPop.h" />
+    <ClInclude Include="..\DevelEp\isnan.h" />
+    <ClInclude Include="..\DevelEp\Line2Eqn.h" />
+    <ClInclude Include="..\DevelEp\logger.h" />
+    <ClInclude Include="..\DevelEp\mstream.h" />
+    <ClInclude Include="..\DevelEp\NondominatedsortAlgo.h" />
+    <ClInclude Include="..\DevelEp\op_node.h" />
+    <ClInclude Include="..\DevelEp\params.h" />
+    <ClInclude Include="..\DevelEp\pareto.h" />
+    <ClInclude Include="..\DevelEp\ParetoAlgo.h" />
+    <ClInclude Include="..\DevelEp\pop.h" />
+    <ClInclude Include="..\DevelEp\p_archive.h" />
+    <ClInclude Include="..\DevelEp\rnd.h" />
+    <ClInclude Include="..\DevelEp\runDevelep.h" />
+    <ClInclude Include="..\DevelEp\StablesortAlgo.h" />
+    <ClInclude Include="..\DevelEp\state.h" />
+    <ClInclude Include="..\DevelEp\strdist.h" />
+    <ClInclude Include="..\DevelEp\targetver.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Devilep\AgeBreed.cpp" />
-    <ClCompile Include="..\Devilep\AgeFitSelect.cpp" />
-    <ClCompile Include="..\Devilep\ApplyGenetics.cpp" />
-    <ClCompile Include="..\Devilep\BruteforceAlgo.cc" />
-    <ClCompile Include="..\Devilep\Crossover.cpp" />
-    <ClCompile Include="..\Devilep\Datapoint.cc" />
-    <ClCompile Include="..\Devilep\DC.cpp" />
-    <ClCompile Include="..\Devilep\EpiHC.cpp" />
-    <ClCompile Include="..\Devilep\Eqn2Line.cpp" />
-    <ClCompile Include="..\Devilep\Fitness.cpp" />
-    <ClCompile Include="..\Devilep\FitnessEstimator.cpp" />
-    <ClCompile Include="..\Devilep\general_fns.cpp" />
-    <ClCompile Include="..\Devilep\Generation.cpp" />
-    <ClCompile Include="..\Devilep\HillClimb.cpp" />
-    <ClCompile Include="..\Devilep\InitPop.cpp" />
-    <ClCompile Include="..\Devilep\LexicaseSelect.cpp" />
-    <ClCompile Include="..\Devilep\Line2Eqn.cpp" />
-    <ClCompile Include="..\Devilep\Mutate.cpp" />
-    <ClCompile Include="..\Devilep\NondominatedsortAlgo.cc" />
-    <ClCompile Include="..\Devilep\pareto.cc" />
-    <ClCompile Include="..\Devilep\runDevelep.cpp" />
-    <ClCompile Include="..\Devilep\StablesortAlgo.cc" />
-    <ClCompile Include="..\Devilep\strdist.cpp" />
-    <ClCompile Include="..\Devilep\Tournament.cpp" />
+    <ClCompile Include="..\DevelEp\AgeBreed.cpp" />
+    <ClCompile Include="..\DevelEp\AgeFitSelect.cpp" />
+    <ClCompile Include="..\DevelEp\ApplyGenetics.cpp" />
+    <ClCompile Include="..\DevelEp\BruteforceAlgo.cc" />
+    <ClCompile Include="..\DevelEp\Crossover.cpp" />
+    <ClCompile Include="..\DevelEp\Datapoint.cc" />
+    <ClCompile Include="..\DevelEp\DC.cpp" />
+    <ClCompile Include="..\DevelEp\EpiHC.cpp" />
+    <ClCompile Include="..\DevelEp\Eqn2Line.cpp" />
+    <ClCompile Include="..\DevelEp\Fitness.cpp" />
+    <ClCompile Include="..\DevelEp\FitnessEstimator.cpp" />
+    <ClCompile Include="..\DevelEp\general_fns.cpp" />
+    <ClCompile Include="..\DevelEp\Generation.cpp" />
+    <ClCompile Include="..\DevelEp\HillClimb.cpp" />
+    <ClCompile Include="..\DevelEp\InitPop.cpp" />
+    <ClCompile Include="..\DevelEp\LexicaseSelect.cpp" />
+    <ClCompile Include="..\DevelEp\Line2Eqn.cpp" />
+    <ClCompile Include="..\DevelEp\Mutate.cpp" />
+    <ClCompile Include="..\DevelEp\NondominatedsortAlgo.cc" />
+    <ClCompile Include="..\DevelEp\pareto.cc" />
+    <ClCompile Include="..\DevelEp\runDevelep.cpp" />
+    <ClCompile Include="..\DevelEp\StablesortAlgo.cc" />
+    <ClCompile Include="..\DevelEp\strdist.cpp" />
+    <ClCompile Include="..\DevelEp\Tournament.cpp" />
     <ClCompile Include="RunTrials.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -299,7 +299,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Devilep\ReadMe.txt" />
+    <None Include="..\DevelEp\ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -29,7 +29,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3C2439C5-D10F-4C2D-BF28-E26CC181A5E3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Devilep</RootNamespace>
+    <RootNamespace>DevelEp</RootNamespace>
     <ProjectName>Develep</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
