@@ -11,7 +11,7 @@ using namespace std;
 struct data {
 
 	vector<string> label; // variables corresponding to those defined in parameters 
-	vector<vector<float>> vals; //2D vector of all data, can be accessed data[row][column]
+	vector<vector<float> > vals; //2D vector of all data, can be accessed data[row][column]
 	//vector<vector<float>> FEvals;
 	//fitness estimator vector
 
@@ -24,8 +24,8 @@ struct data {
 	mymap.insert(pair<string,int>("G1",30));*/
 
 	// variables for lexicase selection
-	vector<vector<float>> targetlex;
-	vector<vector<vector<float>>> lexvals;
+	vector<vector<float> > targetlex;
+	vector<vector<vector<float> > > lexvals;
 	//vector<int> lexicase;
 	
 

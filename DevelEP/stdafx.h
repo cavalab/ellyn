@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "targetver.h"
+//#include "targetver.h"
 #include <stdio.h>
-#include <tchar.h>
+//#include <tchar.h>
 #include <numeric>
 #include <iostream>
 #include <sstream>
@@ -26,7 +26,7 @@
 #include <cstdlib>
 //#include "ppl.h"
 #include <omp.h>
-#include <direct.h>
+//#include <direct.h>
 #include <exception>
 /*#include "pop.h"
 #include "pareto.h"
