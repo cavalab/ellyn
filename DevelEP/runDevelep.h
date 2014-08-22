@@ -3,6 +3,6 @@
 #define RUNDEVELEP_H
 
 
-void runDevelep(std::string& paramfile, std::string& datafile,bool trials);
+void runDevelep(const char* param_in, const char* data_in,bool trials);
 
 #endif

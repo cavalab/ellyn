@@ -772,8 +772,12 @@ int get_next_task(int& index,vector<int>& task_assignments)
 		return task_assignments.at(++index);
 	}
 }
-void runDevelep(string& paramfile, string& datafile,bool trials)
-{					
+//void runDevelep(string& paramfile, string& datafile,bool trials)
+//{	
+void runDevelep(const char* param_in, const char* data_in,bool trials)		
+{
+	string paramfile(param_in);
+	string datafile(data_in);
 	/* steps:
 	Initialize population
 		make genotypes
@@ -824,7 +828,7 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 	 string dname = datafile.substr(datafile.rfind('\\')+1,datafile.size());
 	 dname = dname.substr(0,dname.size()-4);
      string logname = p.resultspath + '\\' + "Develep_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
-	 s.out.open(logname);
+	 s.out.open(logname.c_str());
 	 s.out << "_______________________________________________________________________________ \n";
 	 s.out << "                                    Develep                                     \n";
 	 s.out << "_______________________________________________________________________________ \n";
@@ -1246,11 +1250,16 @@ void runDevelep(string& paramfile, string& datafile,bool trials)
 					if (p.EstimateFitness){
 						s.out << "Evolving fitness estimators...\n";
 						
-						EvolveFE(World.pop,tmpFE,trainers,p,d,s,r);
+						
 						float aveFEfit=0;
 						for (int u=0;u<FE.size();u++)
 							aveFEfit+=FE[u].fitness;
 						aveFEfit /= FE.size();
+						if (aveFEfit==0)
+							std::random_shuffle(tmpFE.begin(),tmpFE.end(),r[omp_get_thread_num()]);
+						else
+							EvolveFE(World.pop,tmpFE,trainers,p,d,s,r);
+
 						s.out << "Best FE fit: " << FE[0].fitness <<"\n";
 						s.out << "Ave FE fit: " << aveFEfit << "\n";
 						s.out << "Current Fitness Estimator:\n";

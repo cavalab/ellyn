@@ -47,7 +47,8 @@ int main(int argc, char** argv)
 	{*/
 		string paramfile(argv[1]);
 		string datafile(argv[2]);
-		runDevelep(paramfile,datafile,0);
+		//runDevelep(paramfile.c_str(),datafile.c_str(),0);
+		runDevelep(argv[1],argv[2],0);
 	/*}
 	catch(exception& er) 
 	{*/
