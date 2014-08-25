@@ -1,0 +1,91 @@
+g				50000	// number of generations
+popsize				1000	//population size
+numits				1	// number of trials
+printeverypop			0  // save printout of population at every generation
+
+// Generation Settings 
+sel				4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
+tourn_size			2
+rt_rep				0.1
+rt_cross			0.7
+rt_mut				0.2
+cross				2	// 1: ultra 2: one point1
+cross_ar			.1 //crossover alternation rate (ultra only)
+mut_ar				.1 //mutation alternation rate (ultra only)
+stoperror			0.0001	// stop condition / convergence condition
+
+init_validate_on		1	// initial fitness validation of starting population
+train				0  // split data into training and validation sets
+shuffle_data			0  // shuffle the data 
+
+// Results
+resultspath			Results
+loud				1
+
+// Problem information //
+intvars				x	y
+extvars					
+cons				c	
+cvals				1.0	
+seeds				
+
+ERC					1 // ephemeral random constants
+ERCints				0	
+maxERC				10
+minERC				-10
+numERC				2
+
+// Fitness settings //
+fit_type			3	// 1: error, 2: corr, 3: combo, 4: VAF
+norm_error			0  // // normalize error by the standard deviation of the target data being u
+max_fit				100000000000000000000
+min_fit				0.00000000000000000001
+estimate_fitness 		0	// coevolve fitness estimators
+FE_pop_size			12	// fitness estimator population size
+FE_ind_size			4	// number of fitness cases for FE to use
+FE_train_size			10	// trainer population size
+FE_train_gens			10 // number of generations between trainer selections
+FE_rank				1	// use rank for FE fitness rather than error  
+
+//available operators: n	v	+	-	*	/	sin	cos	exp	log
+//index                0	1	2	3	4	5	6	7	8	9
+
+op_list				n	v	+	-	*	/	
+op_weight			2	4	1	1	1	1					
+weight_ops_on			1
+min_len				10
+max_len				10
+
+max_dev_len			128
+
+complex_measure			2	// 1: genotype size 2: symbolic size 3: effective genotype size
+
+precision			0.0001
+
+// Hill Climbing Settings //
+
+// parameter Hill Climber
+pHC_on				1
+pHC_delay_on			1
+pHC_delay			1
+pHC_size			1
+pHC_its				1
+pHC_gauss			1
+
+// epigenetic Hill Climber
+eHC_on				1
+eHC_its				1
+eHC_prob			0.1
+eHC_size			1
+eHC_init			.50 // percent of expressed genes in initial genotypes
+
+
+// Pareto settings
+
+prto_arch_on			1
+prto_arch_size			100
+prto_sel_on			1
+
+// island model
+islands				1
+island_gens			100

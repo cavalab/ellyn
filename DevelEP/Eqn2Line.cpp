@@ -139,7 +139,7 @@ void shunt_op(struct op_s *op,vector <op_s*>& opstack,vector<float>& numstack,ve
 	opstack.push_back(op);
 	
 }
-string getnum(string &s,unsigned int& i)
+string getnum(const string &s,unsigned int& i)
 {
 	int count=0;
 	std::string::const_iterator it = s.begin();

@@ -20,8 +20,7 @@
 #include <cstring>
 #include "p_archive.h"
 #include "Eqn2Line.h"
-
-
+#include <unistd.h>
 #include "general_fns.h"
 
 //#define _CRTDBG_MAP_ALLOC
@@ -523,7 +522,8 @@ void load_data(data &d, std::ifstream& fs,params& p)
 {
 	if (!fs.good()) 
 	{
-			cout << "BAD DATA FILE LOCATION" << "\n";
+			cerr << "BAD DATA FILE LOCATION" << "\n";
+			exit(1);
 	}
 
 	string s;
@@ -800,7 +800,7 @@ void runDevelep(const char* param_in, const char* data_in,bool trials)
 	struct params p; 
 	struct data d;
 	struct state s;
-	//class logger fcout;
+
 	vector <Randclass> r;
 	
 	// load parameter file
@@ -815,24 +815,51 @@ void runDevelep(const char* param_in, const char* data_in,bool trials)
 	s.out.set(trials);
 	
 	std::time_t t =  std::time(NULL);
-    std::tm tm;
-	localtime_s(&tm,&t);
+    std::tm * tm;
+
+#if defined(_WIN32)
+	localtime_s(tm,&t);
+#else
+	tm = localtime(&t);
+#endif
+
 	char tmplog[100];
-	strftime(tmplog,100,"%Y-%m-%d_%H-%M-%S",&tm);
+	strftime(tmplog,100,"%F_%H-%M-%S",tm);
+   // string tmplog = "777";
 	const char * c = p.resultspath.c_str();
-	_mkdir(c);
+	#if defined(_WIN32)
+		_mkdir(c);
+	#else
+		mkdir(c, 0777); // notice that 777 is different than 0777
+	#endif
 	 int thrd = omp_get_thread_num();
 	 string thread = std::to_string(static_cast<long long>(thrd));
+#if defined(_WIN32)
 	 string pname = paramfile.substr(paramfile.rfind('\\')+1,paramfile.size());
-	 pname = pname.substr(0,pname.size()-4);
 	 string dname = datafile.substr(datafile.rfind('\\')+1,datafile.size());
+	 pname = pname.substr(0,pname.size()-4);
 	 dname = dname.substr(0,dname.size()-4);
-     string logname = p.resultspath + '\\' + "Develep_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
-	 s.out.open(logname.c_str());
+     string logname = p.resultspath + '\\' + "DevelEP_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
+#else
+	 string pname = paramfile.substr(paramfile.rfind('/')+1,paramfile.size());
+	 string dname = datafile.substr(datafile.rfind('/')+1,datafile.size());
+	 pname = pname.substr(0,pname.size()-4);
+	 dname = dname.substr(0,dname.size()-4);
+	 string logname = p.resultspath + '/' + "DevelEP_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
+#endif
+
+
+
+
+	 bool tmp = s.out.open(logname.c_str());
+	 if (!tmp){
+		 cerr << "Write-to File " << logname << " did not open correctly.\n";
+		 exit(1);
+	 }
 	 s.out << "_______________________________________________________________________________ \n";
 	 s.out << "                                    Develep                                     \n";
 	 s.out << "_______________________________________________________________________________ \n";
-	 s.out << "Time right now is " << std::put_time(&tm, "%c %Z") << '\n';
+	 //s.out << "Time right now is " << std::put_time(&tm, "%c %Z") << '\n';
 	// s.out<< "Results Path: " << logname  << "\n";
 	 s.out << "parameter file: " << paramfile << "\n";
 	 s.out << "data file: " << datafile << "\n";
@@ -861,7 +888,7 @@ void runDevelep(const char* param_in, const char* data_in,bool trials)
 	 s.out << "Max Generations: " << p.g << "\n";
 
 	//initialize random number generator
-	unsigned int seed1 = unsigned int(time(NULL));
+	unsigned int seed1 = int(time(NULL));
 	s.out << "seeds: \n";
 	r.resize(omp_get_max_threads());
 	#pragma omp parallel for 
@@ -1447,7 +1474,7 @@ void runDevelep(const char* param_in, const char* data_in,bool trials)
 	
 	s.out << "\n Program finished sucessfully.\n";
 	
-	_CrtDumpMemoryLeaks();
+
 
 
 }

@@ -113,10 +113,10 @@ struct SortFEVar{
 struct SortComplexity{bool operator() (const ind& i,const ind& j) { return (i.complexity<j.complexity);} 
 };
 struct SortFit_v{
-	bool operator() (ind& i,ind& j) { return (i.fitness_v<j.fitness_v);} 
+	bool operator() (const ind& i,const ind& j) { return (i.fitness_v<j.fitness_v);}
 };
 struct SortSize{
-	bool operator() (ind& i,ind& j) { return (i.line.size()<j.line.size());} 
+	bool operator() (const ind& i,const ind& j) { return (i.line.size()<j.line.size());}
 };
 
 struct sameEqn{

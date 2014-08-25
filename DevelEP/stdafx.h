@@ -21,6 +21,9 @@
 #include <boost/regex.hpp>
 #include "time.h"
 #include <math.h>
+#include <memory>
+#include <sys/stat.h>
+
 //#include "rnd.h"
 //#include <stdlib.h>
 #include <cstdlib>
