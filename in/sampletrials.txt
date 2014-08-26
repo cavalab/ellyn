@@ -1,1 +1,1 @@
-8 C:\Users\TheQuarry\Documents\Work\develep\in\sampleparams.txt	C:\Users\TheQuarry\Documents\Work\develep\in\sampledata.txt
+8 ..\in\sampleparams.txt	..\in\sampledata.txt

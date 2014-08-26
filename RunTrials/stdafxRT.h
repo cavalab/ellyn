@@ -5,14 +5,13 @@
 
 #pragma once
 
-#include "targetver.h"
+//#include "targetver.h"
 #include <stdio.h>
-#include <tchar.h>
+//#include <tchar.h>
 #include <numeric>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <string.h>
 #include <fstream>
 #include <boost/random.hpp>
 #include <boost/shared_ptr.hpp>
@@ -22,16 +21,17 @@
 #include <boost/regex.hpp>
 #include "time.h"
 #include <math.h>
-#include "rnd.h"
+#include <memory>
+#include <sys/stat.h>
 //#include <stdlib.h>
 #include <cstdlib>
 //#include "ppl.h"
 #include <omp.h>
-#include <direct.h>
+//#include <direct.h>
 #include <exception>
-//#include "pop.h"
-//#include "pareto.h"
-//#include "p_archive.h"
-//#include "data.h"
-//#include "general_fns.h"
+/*#include "pop.h"
+#include "pareto.h"
+#include "p_archive.h"
+#include "data.h"
+#include "general_fns.h"*/
 // TODO: reference additional headers your program requires here

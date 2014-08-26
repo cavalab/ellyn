@@ -41,19 +41,15 @@ int main(int argc, char** argv)
 		MPI::Init();
 		int size = MPI::COMM_WORLD.Get_size();
 		int rank = MPI::COMM_WORLD.Get_rank();
-		cout << "size: " << size << "\n";
-		cout << "rank: " << size << "\n";
-		#pragma omp parallel for schedule(dynamic)
-		//for(int i=0;i<totaltrials;i++)
-		//{
+
 #if defined(_WIN32)
-			cout << to_string(static_cast<long long>(i)) + ": " + paramfile.at(i).substr(paramfile.at(i).rfind('\\')+1,paramfile.at(i).size()) + ", " + datafile.at(i).substr(datafile.at(i).rfind('\\')+1,datafile.at(i).size())  + "\n";
+			cout << "running process " + to_string(static_cast<long long>(rank)) + "of" + to_string(static_cast<long long>(size)) + ": " + paramfile.at(i).substr(paramfile.at(i).rfind('\\')+1,paramfile.at(i).size()) + ", " + datafile.at(i).substr(datafile.at(i).rfind('\\')+1,datafile.at(i).size())  + "\n";
 #else
-			cout << to_string(static_cast<long long>(i)) + ": " + paramfile.at(i).substr(paramfile.at(i).rfind('/')+1,paramfile.at(i).size()) + ", " + datafile.at(i).substr(datafile.at(i).rfind('/')+1,datafile.at(i).size())  + "\n";
+			cout << "running process " + to_string(static_cast<long long>(rank)) + "of" + to_string(static_cast<long long>(size)) + ": " + paramfile.at(i).substr(paramfile.at(i).rfind('/')+1,paramfile.at(i).size()) + ", " + datafile.at(i).substr(datafile.at(i).rfind('/')+1,datafile.at(i).size())  + "\n";
 #endif
-			runDevelep(paramfile.at(i).c_str(),datafile.at(i).c_str(),1); //run develep
-			//_CrtMemDumpStatistics( &s1 );
-		//}
+
+		runDevelep(paramfile.at(i).c_str(),datafile.at(i).c_str(),1); //run develep
+
 		MPI::Finalize();
 		char key;
 		cout << "All trials completed. Press return to exit." << endl;
@@ -80,8 +76,8 @@ void getTrialSetup(ifstream& fs,int& totaltrials,vector<int>& trialset,vector<st
 {
 	if (!fs.good()) 
 	{
-			cout << "error: can't find input file." << "\n";
-			throw;
+			cerr << "error: can't find input file." << "\n";
+			exit(1);
 	}
 	
 	vector<string> paramset;
