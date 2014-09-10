@@ -505,7 +505,7 @@ void load_params(params &p, std::ifstream& fs)
 
 		for (int i=0; i<p.seeds.size();i++)
 		{
-			p.seedstacks.push_back(vector<shared_ptr<node>>());
+			p.seedstacks.push_back(vector<std::shared_ptr<node>>());
 
 			Eqn2Line(p.seeds.at(i),p.seedstacks.at(i));
 		}
@@ -851,11 +851,11 @@ void runDevelep(const char* param_in, const char* data_in,bool trials)
 
 
 
-	 bool tmp = s.out.open(logname.c_str());
-	 if (!tmp){
+	 s.out.open(logname.c_str());
+	 /*if (!tmp){
 		 cerr << "Write-to File " << logname << " did not open correctly.\n";
 		 exit(1);
-	 }
+	 }*/
 	 s.out << "_______________________________________________________________________________ \n";
 	 s.out << "                                    Develep                                     \n";
 	 s.out << "_______________________________________________________________________________ \n";

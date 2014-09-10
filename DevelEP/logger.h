@@ -8,7 +8,7 @@ public:
 	logger(){trials=false;}	// Opens a file for use with ofstream fout.
 	~logger(){fout.close();}			// Flushes and closes the logging file.
 	void set(bool t) {trials=t;};
-	bool open(const char* filename){
+	void open(const char* filename){
 			fout.open(filename);
 			/*if(fout.is_open()) {
 				std::cout << "opened log file successfully\n";

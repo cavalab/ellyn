@@ -1,0 +1,1 @@
+mpicxx -c -I $TACC_BOOST_INC -I $HOME/DevelEP -std=c++11 -openmp -pch-create pch/stdafxRTMPI.pchi stdafxRTMPI.cpp

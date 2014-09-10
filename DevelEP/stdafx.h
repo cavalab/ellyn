@@ -14,7 +14,7 @@
 #include <string>
 #include <fstream>
 #include <boost/random.hpp>
-#include <boost/shared_ptr.hpp>
+//#include <boost/shared_ptr.hpp>
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/timer.hpp>
 #include <boost/progress.hpp>

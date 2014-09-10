@@ -1,0 +1,2055 @@
+--- Population ---------------------------------------------------------------
+Corresponding Logfile: Results/DevelEP_2014-08-25_16-29-21_sampleparamsL_sampledata_0.log
+Total Evaluations: 867507
+--- Individual 0 ------------------------------------------------------------
+f = 1.790077
+gline: *	y	x	y	-	y	x	1.60582	0.974611	x	-0.805041	1.79008	
+eline: 1	0	1	1	0	0	1	0	1	1	1	1	
+size: 12
+eff size: 8
+complexity: 0
+MAE: 0.379178
+MAE_v: 0.379178
+correlation: 1e-20
+correlation_v: 1e-20
+fitness: 3.79178e+19
+fitness_v: 3.79178e+19
+rank: 1
+parent fitness: 4.71889e+19
+origin: m
+age: 9
+eqn form: c
+------------------------------------------------------------------
+--- Individual 1 ------------------------------------------------------------
+f = x
+gline: y	+	*	y	y	y	5.17212	y	x	+	
+eline: 0	0	1	1	1	0	0	1	1	0	
+size: 10
+eff size: 5
+complexity: 1
+MAE: 2.72841
+MAE_v: 2.72841
+correlation: 4.09694e-16
+correlation_v: 4.09694e-16
+fitness: 6.65964e+15
+fitness_v: 6.65964e+15
+rank: 1
+parent fitness: 6.65964e+15
+origin: m
+age: 7
+eqn form: x
+------------------------------------------------------------------
+--- Individual 2 ------------------------------------------------------------
+f = (6.918835*8.820535)
+gline: y	/	x	6.91883	x	8.82053	y	*	/	*	
+eline: 0	1	0	1	0	1	0	0	0	1	
+size: 10
+eff size: 4
+complexity: 3
+MAE: 59.4541
+MAE_v: 59.4541
+correlation: 1.04535e-13
+correlation_v: 1.04535e-13
+fitness: 5.6875e+14
+fitness_v: 5.6875e+14
+rank: 1
+parent fitness: 8.66236e+13
+origin: c
+age: 32
+eqn form: (c*c)
+------------------------------------------------------------------
+--- Individual 3 ------------------------------------------------------------
+f = (0.739107*x)
+gline: y	0.739107	*	x	-	-	x	*	y	y	
+eline: 0	1	1	0	1	1	1	1	0	0	
+size: 10
+eff size: 6
+complexity: 4
+MAE: 2.15107
+MAE_v: 2.15107
+correlation: 1.10902e-14
+correlation_v: 1.10902e-14
+fitness: 1.93962e+14
+fitness_v: 1.93962e+14
+rank: 1
+parent fitness: 9.91663
+origin: c
+age: 8
+eqn form: (c*x)
+------------------------------------------------------------------
+--- Individual 4 ------------------------------------------------------------
+f = (y*y)
+gline: /	x	x	y	-0.0971197	y	x	y	*	-2.5988	
+eline: 0	0	0	1	0	1	0	1	1	0	
+size: 10
+eff size: 4
+complexity: 5
+MAE: 7.68422
+MAE_v: 7.68422
+correlation: 0.204797
+correlation_v: 0.204797
+fitness: 37.5211
+fitness_v: 37.5211
+rank: 1
+parent fitness: 37.5211
+origin: m
+age: 19
+eqn form: (y*y)
+------------------------------------------------------------------
+--- Individual 5 ------------------------------------------------------------
+f = ((0.109985*x)*x)
+gline: y	0.109985	y	*	x	x	*	0.909347	x	*	
+eline: 0	1	0	1	0	1	1	0	1	1	
+size: 10
+eff size: 6
+complexity: 8
+MAE: 0.863015
+MAE_v: 0.863015
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21397
+fitness_v: 4.21397
+rank: 1
+parent fitness: 4.21397
+origin: m
+age: 49
+eqn form: ((c*x)*x)
+------------------------------------------------------------------
+--- Individual 6 ------------------------------------------------------------
+f = (x*(x/9.093345))
+gline: y	+	y	1	x	x	9.09334	/	*	-2.5988	
+eline: 0	1	0	0	1	1	1	1	1	0	
+size: 10
+eff size: 6
+complexity: 9
+MAE: 0.863014
+MAE_v: 0.863014
+correlation: 0.204799
+correlation_v: 0.204799
+fitness: 4.21397
+fitness_v: 4.21397
+rank: 1
+parent fitness: 4.21397
+origin: c
+age: 45
+eqn form: (x*(x/c))
+------------------------------------------------------------------
+--- Individual 7 ------------------------------------------------------------
+f = (1.472193+((x*x)*0.024494))
+gline: +	*	1.47219	x	x	*	-6.36429	0.0244938	*	+	
+eline: 1	1	1	1	1	1	0	1	1	1	
+size: 10
+eff size: 9
+complexity: 11
+MAE: 0.337336
+MAE_v: 0.337336
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 1.64716
+fitness_v: 1.64716
+rank: 1
+parent fitness: 1.64716
+origin: m
+age: 88
+eqn form: (c+((x*x)*c))
+------------------------------------------------------------------
+--- Individual 8 ------------------------------------------------------------
+f = ((0.000212/(y*y))+1.782418)
+gline: 0.000211715	y	y	*	40.2699	0.294136	/	1.78242	+	/	
+eline: 1	1	1	1	0	0	1	1	1	1	
+size: 10
+eff size: 8
+complexity: 12
+MAE: 0.380101
+MAE_v: 0.380101
+correlation: 0.277341
+correlation_v: 0.277341
+fitness: 1.37052
+fitness_v: 1.37052
+rank: 1
+parent fitness: 1.09677
+origin: m
+age: 98
+eqn form: ((c/(y*y))+c)
+------------------------------------------------------------------
+--- Individual 9 ------------------------------------------------------------
+f = ((-0.037501/(y*y))+1.898098)
+gline: -0.0375008	y	y	*	40.2699	0.27763	/	1.8981	+	x	
+eline: 1	1	1	1	0	0	1	1	1	0	
+size: 10
+eff size: 7
+complexity: 13
+MAE: 0.304171
+MAE_v: 0.304171
+correlation: 0.277346
+correlation_v: 0.277346
+fitness: 1.09672
+fitness_v: 1.09672
+rank: 1
+parent fitness: 1.07129e+17
+origin: c
+age: 133
+eqn form: ((-c/(y*y))+c)
+------------------------------------------------------------------
+--- Individual 10 ------------------------------------------------------------
+f = (1.806962-(0.146276/(1.067683+(y*y))))
+gline: 1.80696	0.146276	1.06768	y	y	*	+	/	/	-	
+eline: 1	1	1	1	1	1	1	0	1	1	
+size: 10
+eff size: 9
+complexity: 15
+MAE: 0.358798
+MAE_v: 0.358798
+correlation: 0.483949
+correlation_v: 0.483949
+fitness: 0.741396
+fitness_v: 0.741396
+rank: 1
+parent fitness: 1.63395
+origin: c
+age: 118
+eqn form: (c-(c/(c+(y*y))))
+------------------------------------------------------------------
+--- Individual 11 ------------------------------------------------------------
+f = (2.040737-(1.041976/((x*x)--0.803471)))
+gline: 2.04074	1.04198	x	x	*	0.268793	-0.803471	-	/	-	
+eline: 1	1	1	1	1	0	1	1	1	1	
+size: 10
+eff size: 9
+complexity: 16
+MAE: 0.221669
+MAE_v: 0.221669
+correlation: 0.48598
+correlation_v: 0.48598
+fitness: 0.456128
+fitness_v: 0.456128
+rank: 1
+parent fitness: 8.13106e+14
+origin: c
+age: 177
+eqn form: (c-(c/((x*x)--c)))
+------------------------------------------------------------------
+--- Individual 12 ------------------------------------------------------------
+f = 1.792856
+gline: *	x	*	+	x	y	0.13558	/	*	x	1.79286	1.07049	
+eline: 1	0	1	1	1	0	1	1	1	0	1	0	
+size: 12
+eff size: 8
+complexity: 0
+MAE: 0.379219
+MAE_v: 0.379219
+correlation: 1e-20
+correlation_v: 1e-20
+fitness: 3.79219e+19
+fitness_v: 3.79219e+19
+rank: 2
+parent fitness: 3.97682e+19
+origin: m
+age: 8
+eqn form: c
+------------------------------------------------------------------
+--- Individual 13 ------------------------------------------------------------
+f = y
+gline: /	x	y	*	*	-	+	1	-	y	
+eline: 1	1	0	1	1	1	1	1	0	1	
+size: 10
+eff size: 8
+complexity: 1
+MAE: 2.72841
+MAE_v: 2.72841
+correlation: 3.7621e-19
+correlation_v: 3.7621e-19
+fitness: 7.25237e+18
+fitness_v: 7.25237e+18
+rank: 2
+parent fitness: 0
+origin: i
+age: 0
+eqn form: y
+------------------------------------------------------------------
+--- Individual 14 ------------------------------------------------------------
+f = (9.091605*8.533147)
+gline: y	0.106148	x	y	*	9.09161	y	+	8.53315	*	
+eline: 1	0	0	1	1	1	0	0	1	1	
+size: 10
+eff size: 6
+complexity: 3
+MAE: 76.0063
+MAE_v: 76.0063
+correlation: 1.13239e-13
+correlation_v: 1.13239e-13
+fitness: 6.71202e+14
+fitness_v: 6.71202e+14
+rank: 2
+parent fitness: 4.21398
+origin: c
+age: 44
+eqn form: (c*c)
+------------------------------------------------------------------
+--- Individual 15 ------------------------------------------------------------
+f = (x*0.110169)
+gline: -	x	x	/	0.257766	x	x	0.110169	*	*	
+eline: 0	0	1	1	0	0	0	1	1	1	
+size: 10
+eff size: 5
+complexity: 4
+MAE: 1.57381
+MAE_v: 1.57381
+correlation: 7.68903e-15
+correlation_v: 7.68903e-15
+fitness: 2.04682e+14
+fitness_v: 2.04682e+14
+rank: 2
+parent fitness: 6.65964e+15
+origin: c
+age: 14
+eqn form: (x*c)
+------------------------------------------------------------------
+--- Individual 16 ------------------------------------------------------------
+f = (x*x)
+gline: -5.69266	/	x	x	-5.75368	y	x	x	-2.07417	*	
+eline: 0	1	0	1	0	0	1	0	0	1	
+size: 10
+eff size: 4
+complexity: 5
+MAE: 7.68422
+MAE_v: 7.68422
+correlation: 0.204797
+correlation_v: 0.204797
+fitness: 37.5211
+fitness_v: 37.5211
+rank: 2
+parent fitness: 37.5211
+origin: m
+age: 20
+eqn form: (x*x)
+------------------------------------------------------------------
+--- Individual 17 ------------------------------------------------------------
+f = ((0.109974*x)*x)
+gline: 0.569612	0.109974	x	x	5.85464	x	y	*	x	*	
+eline: 0	1	0	1	0	0	0	1	1	1	
+size: 10
+eff size: 5
+complexity: 8
+MAE: 0.863014
+MAE_v: 0.863014
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21397
+fitness_v: 4.21397
+rank: 2
+parent fitness: 4.21397
+origin: m
+age: 48
+eqn form: ((c*x)*x)
+------------------------------------------------------------------
+--- Individual 18 ------------------------------------------------------------
+f = (x*(x/9.094305))
+gline: +	x	*	x	x	0.137917	9.09431	/	*	y	
+eline: 0	0	0	1	1	0	1	1	1	0	
+size: 10
+eff size: 5
+complexity: 9
+MAE: 0.863013
+MAE_v: 0.863013
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21397
+fitness_v: 4.21397
+rank: 2
+parent fitness: 4.21397
+origin: m
+age: 43
+eqn form: (x*(x/c))
+------------------------------------------------------------------
+--- Individual 19 ------------------------------------------------------------
+f = (1.472193+((x*x)*0.024523))
+gline: +	x	1.47219	x	x	*	-6.36429	0.0245234	*	+	
+eline: 0	1	1	1	1	1	0	1	1	1	
+size: 10
+eff size: 8
+complexity: 11
+MAE: 0.33734
+MAE_v: 0.33734
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 1.64718
+fitness_v: 1.64718
+rank: 2
+parent fitness: 1.64718
+origin: m
+age: 84
+eqn form: (c+((x*x)*c))
+------------------------------------------------------------------
+--- Individual 20 ------------------------------------------------------------
+f = ((0.001603/(y*y))+1.832127)
+gline: 0.00160263	y	y	*	63.0327	0.810519	/	1.83213	+	+	
+eline: 1	1	1	1	0	0	1	1	1	0	
+size: 10
+eff size: 7
+complexity: 12
+MAE: 0.384483
+MAE_v: 0.384483
+correlation: 0.277345
+correlation_v: 0.277345
+fitness: 1.3863
+fitness_v: 1.3863
+rank: 2
+parent fitness: 1.38762
+origin: m
+age: 100
+eqn form: ((c/(y*y))+c)
+------------------------------------------------------------------
+--- Individual 21 ------------------------------------------------------------
+f = ((-0.037578/(y*y))+1.898881)
+gline: -0.0375776	y	y	*	-4.32162	0.909422	/	1.89888	+	x	
+eline: 1	1	1	1	0	0	1	1	1	0	
+size: 10
+eff size: 7
+complexity: 13
+MAE: 0.304177
+MAE_v: 0.304177
+correlation: 0.277346
+correlation_v: 0.277346
+fitness: 1.09674
+fitness_v: 1.09674
+rank: 2
+parent fitness: 1.09674
+origin: c
+age: 162
+eqn form: ((-c/(y*y))+c)
+------------------------------------------------------------------
+--- Individual 22 ------------------------------------------------------------
+f = (1.804758-(0.126636/(1.075867+(y*y))))
+gline: 1.80476	0.126636	1.07587	y	y	*	+	/	/	-	
+eline: 1	1	1	1	1	1	1	0	1	1	
+size: 10
+eff size: 9
+complexity: 15
+MAE: 0.361593
+MAE_v: 0.361593
+correlation: 0.483811
+correlation_v: 0.483811
+fitness: 0.747384
+fitness_v: 0.747384
+rank: 2
+parent fitness: 1.63395
+origin: c
+age: 117
+eqn form: (c-(c/(c+(y*y))))
+------------------------------------------------------------------
+--- Individual 23 ------------------------------------------------------------
+f = (2.033328-(1.017891/((x*x)--0.783244)))
+gline: 2.03333	1.01789	x	x	*	0.389923	-0.783244	-	/	-	
+eline: 1	1	1	1	1	0	1	1	1	1	
+size: 10
+eff size: 9
+complexity: 16
+MAE: 0.22163
+MAE_v: 0.22163
+correlation: 0.485865
+correlation_v: 0.485865
+fitness: 0.456155
+fitness_v: 0.456155
+rank: 2
+parent fitness: 0.456155
+origin: m
+age: 176
+eqn form: (c-(c/((x*x)--c)))
+------------------------------------------------------------------
+--- Individual 24 ------------------------------------------------------------
+f = 1.792922
+gline: *	x	/	/	+	1.79292	9.0989	/	x	-	
+eline: 0	0	1	0	1	1	0	1	0	0	
+size: 10
+eff size: 4
+complexity: 0
+MAE: 0.379222
+MAE_v: 0.379222
+correlation: 1e-20
+correlation_v: 1e-20
+fitness: 3.79222e+19
+fitness_v: 3.79222e+19
+rank: 3
+parent fitness: 4.33296e+19
+origin: m
+age: 6
+eqn form: c
+------------------------------------------------------------------
+--- Individual 25 ------------------------------------------------------------
+f = (x*1.136582)
+gline: *	x	x	x	y	x	x	-9.67921	1.13658	*	
+eline: 1	1	1	0	1	1	0	0	1	1	
+size: 10
+eff size: 7
+complexity: 4
+MAE: 3.05249
+MAE_v: 3.05249
+correlation: 1.43527e-14
+correlation_v: 1.43527e-14
+fitness: 2.12676e+14
+fitness_v: 2.12676e+14
+rank: 3
+parent fitness: 6.65964e+15
+origin: c
+age: 20
+eqn form: (x*c)
+------------------------------------------------------------------
+--- Individual 26 ------------------------------------------------------------
+f = (1.139506/x)
+gline: x	1	y	-2.19903	7.64535	y	-	1.13951	x	/	
+eline: 1	0	0	0	1	0	0	1	1	1	
+size: 10
+eff size: 5
+complexity: 5
+MAE: 2.03587
+MAE_v: 2.03587
+correlation: 1.25466e-13
+correlation_v: 1.25466e-13
+fitness: 1.62265e+13
+fitness_v: 1.62265e+13
+rank: 3
+parent fitness: 6.65964e+15
+origin: c
+age: 7
+eqn form: (c/x)
+------------------------------------------------------------------
+--- Individual 27 ------------------------------------------------------------
+f = ((x*x)*0.109933)
+gline: y	+	*	x	x	x	*	y	0.109933	*	
+eline: 1	0	0	1	1	1	1	0	1	1	
+size: 10
+eff size: 7
+complexity: 8
+MAE: 0.863013
+MAE_v: 0.863013
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21398
+fitness_v: 4.21398
+rank: 3
+parent fitness: 2.51313
+origin: c
+age: 51
+eqn form: ((x*x)*c)
+------------------------------------------------------------------
+--- Individual 28 ------------------------------------------------------------
+f = (y*(y/9.095751))
+gline: +	y	y	y	9.09575	-	-9.20208	1	/	*	
+eline: 1	0	1	1	1	0	0	0	1	1	
+size: 10
+eff size: 6
+complexity: 9
+MAE: 0.863013
+MAE_v: 0.863013
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21397
+fitness_v: 4.21397
+rank: 3
+parent fitness: 6.65964e+15
+origin: c
+age: 77
+eqn form: (y*(y/c))
+------------------------------------------------------------------
+--- Individual 29 ------------------------------------------------------------
+f = (1.471823+((x*x)*0.024460))
+gline: 0.856139	/	1.47182	x	x	*	-4.36128	0.0244604	*	+	-0.131516	1	
+eline: 1	1	1	1	1	1	0	1	1	1	0	0	
+size: 12
+eff size: 9
+complexity: 11
+MAE: 0.337345
+MAE_v: 0.337345
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 1.64721
+fitness_v: 1.64721
+rank: 3
+parent fitness: 8.37256
+origin: c
+age: 87
+eqn form: (c+((x*x)*c))
+------------------------------------------------------------------
+--- Individual 30 ------------------------------------------------------------
+f = ((0.001669/(y*y))+1.769678)
+gline: 0.00166883	y	y	*	63.0327	0.810519	/	1.76968	+	+	
+eline: 1	1	1	1	0	0	1	1	1	0	
+size: 10
+eff size: 7
+complexity: 12
+MAE: 0.384573
+MAE_v: 0.384573
+correlation: 0.277346
+correlation_v: 0.277346
+fitness: 1.38662
+fitness_v: 1.38662
+rank: 3
+parent fitness: 1.38762
+origin: m
+age: 99
+eqn form: ((c/(y*y))+c)
+------------------------------------------------------------------
+--- Individual 31 ------------------------------------------------------------
+f = ((-0.037558/(y*y))+1.898098)
+gline: -0.0375583	y	y	*	40.2699	0.294136	/	1.8981	+	*	
+eline: 1	1	1	1	0	0	1	1	1	1	
+size: 10
+eff size: 8
+complexity: 13
+MAE: 0.304179
+MAE_v: 0.304179
+correlation: 0.277346
+correlation_v: 0.277346
+fitness: 1.09675
+fitness_v: 1.09675
+rank: 3
+parent fitness: 1.09675
+origin: c
+age: 130
+eqn form: ((-c/(y*y))+c)
+------------------------------------------------------------------
+--- Individual 32 ------------------------------------------------------------
+f = (1.806726-(0.125305/(1.102042+(y*y))))
+gline: 1.80673	0.125305	1.10204	y	y	*	+	/	/	-	
+eline: 1	1	1	1	1	1	1	0	1	1	
+size: 10
+eff size: 9
+complexity: 15
+MAE: 0.362047
+MAE_v: 0.362047
+correlation: 0.483349
+correlation_v: 0.483349
+fitness: 0.749039
+fitness_v: 0.749039
+rank: 3
+parent fitness: 1.45742e+16
+origin: c
+age: 119
+eqn form: (c-(c/(c+(y*y))))
+------------------------------------------------------------------
+--- Individual 33 ------------------------------------------------------------
+f = (2.033328-(1.017891/((x*x)--0.784143)))
+gline: 2.03333	1.01789	x	x	*	0.527404	-0.784143	-	/	-	
+eline: 1	1	1	1	1	0	1	1	1	1	
+size: 10
+eff size: 9
+complexity: 16
+MAE: 0.221636
+MAE_v: 0.221636
+correlation: 0.485871
+correlation_v: 0.485871
+fitness: 0.456162
+fitness_v: 0.456162
+rank: 3
+parent fitness: 0.456162
+origin: c
+age: 121
+eqn form: (c-(c/((x*x)--c)))
+------------------------------------------------------------------
+--- Individual 34 ------------------------------------------------------------
+f = 1.787237
+gline: /	-7.17068	y	-	1.74386	1.0962	-	-	-0.255929	x	1.78724	
+eline: 1	1	1	0	1	1	0	1	0	1	1	
+size: 11
+eff size: 8
+complexity: 0
+MAE: 0.379296
+MAE_v: 0.379296
+correlation: 1e-20
+correlation_v: 1e-20
+fitness: 3.79296e+19
+fitness_v: 3.79296e+19
+rank: 4
+parent fitness: 2.7902e+13
+origin: c
+age: 11
+eqn form: c
+------------------------------------------------------------------
+--- Individual 35 ------------------------------------------------------------
+f = (x*0.659017)
+gline: 1.14563	x	1.04996	1	x	0.659017	1	x	*	x	
+eline: 1	1	1	0	1	1	0	0	1	0	
+size: 10
+eff size: 6
+complexity: 4
+MAE: 1.99085
+MAE_v: 1.99085
+correlation: 9.24355e-15
+correlation_v: 9.24355e-15
+fitness: 2.15377e+14
+fitness_v: 2.15377e+14
+rank: 4
+parent fitness: 7.96977
+origin: c
+age: 8
+eqn form: (x*c)
+------------------------------------------------------------------
+--- Individual 36 ------------------------------------------------------------
+f = (0.726572/x)
+gline: -0.128102	0.726572	/	x	/	y	y	y	-	x	1.02772	
+eline: 0	1	1	1	1	0	0	0	0	0	0	
+size: 11
+eff size: 4
+complexity: 5
+MAE: 1.81829
+MAE_v: 1.81829
+correlation: 1.06928e-13
+correlation_v: 1.06928e-13
+fitness: 1.70048e+13
+fitness_v: 1.70048e+13
+rank: 4
+parent fitness: 2.87561e+13
+origin: m
+age: 22
+eqn form: (c/x)
+------------------------------------------------------------------
+--- Individual 37 ------------------------------------------------------------
+f = (y*(y*0.109935))
+gline: y	y	x	-4.6643	y	y	y	0.109935	*	*	
+eline: 1	1	0	0	0	1	1	1	1	1	
+size: 10
+eff size: 7
+complexity: 8
+MAE: 0.863012
+MAE_v: 0.863012
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21398
+fitness_v: 4.21398
+rank: 4
+parent fitness: 8.68058
+origin: c
+age: 83
+eqn form: (y*(y*c))
+------------------------------------------------------------------
+--- Individual 38 ------------------------------------------------------------
+f = ((x/9.094880)*x)
+gline: -	1.05656	x	9.09488	x	/	y	x	x	*	0.551525	
+eline: 0	1	1	1	0	1	0	0	1	1	0	
+size: 11
+eff size: 6
+complexity: 9
+MAE: 0.863013
+MAE_v: 0.863013
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21397
+fitness_v: 4.21397
+rank: 4
+parent fitness: 6.65964e+15
+origin: c
+age: 54
+eqn form: ((x/c)*x)
+------------------------------------------------------------------
+--- Individual 39 ------------------------------------------------------------
+f = (y/(9.095751/y))
+gline: x	*	0.160891	y	9.09575	1	x	y	/	/	
+eline: 1	0	1	1	1	0	0	1	1	1	
+size: 10
+eff size: 7
+complexity: 10
+MAE: 0.863013
+MAE_v: 0.863013
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21397
+fitness_v: 4.21397
+rank: 4
+parent fitness: 4.21398
+origin: c
+age: 72
+eqn form: (y/(c/y))
+------------------------------------------------------------------
+--- Individual 40 ------------------------------------------------------------
+f = (1.471119+((x*x)*0.024460))
+gline: -	y	1.47112	x	x	*	-6.36429	0.0244604	*	+	-0.131516	1	
+eline: 0	1	1	1	1	1	0	1	1	1	0	0	
+size: 12
+eff size: 8
+complexity: 11
+MAE: 0.337358
+MAE_v: 0.337358
+correlation: 0.204797
+correlation_v: 0.204797
+fitness: 1.64728
+fitness_v: 1.64728
+rank: 4
+parent fitness: 1.64797
+origin: c
+age: 83
+eqn form: (c+((x*x)*c))
+------------------------------------------------------------------
+--- Individual 41 ------------------------------------------------------------
+f = ((0.001665/(y*y))+1.767380)
+gline: 0.00166549	y	y	*	63.0327	0.810519	/	1.76738	+	+	
+eline: 1	1	1	1	0	0	1	1	1	0	
+size: 10
+eff size: 7
+complexity: 12
+MAE: 0.384852
+MAE_v: 0.384852
+correlation: 0.277346
+correlation_v: 0.277346
+fitness: 1.38762
+fitness_v: 1.38762
+rank: 4
+parent fitness: 1.09697
+origin: m
+age: 99
+eqn form: ((c/(y*y))+c)
+------------------------------------------------------------------
+--- Individual 42 ------------------------------------------------------------
+f = ((-0.037578/(y*y))+1.897977)
+gline: -0.0375776	y	y	*	-4.32162	1	/	1.89798	-	+	
+eline: 1	1	1	1	0	0	1	1	0	1	
+size: 10
+eff size: 7
+complexity: 13
+MAE: 0.304182
+MAE_v: 0.304182
+correlation: 0.277345
+correlation_v: 0.277345
+fitness: 1.09676
+fitness_v: 1.09676
+rank: 4
+parent fitness: 3.64669e+16
+origin: c
+age: 157
+eqn form: ((-c/(y*y))+c)
+------------------------------------------------------------------
+--- Individual 43 ------------------------------------------------------------
+f = (1.773905-(0.117196/(0.994429+(y*y))))
+gline: 1.7739	0.117196	0.994429	y	y	*	+	/	/	-	
+eline: 1	1	1	1	1	1	1	0	1	1	
+size: 10
+eff size: 9
+complexity: 15
+MAE: 0.364875
+MAE_v: 0.364875
+correlation: 0.485024
+correlation_v: 0.485024
+fitness: 0.752282
+fitness_v: 0.752282
+rank: 4
+parent fitness: 0.752282
+origin: m
+age: 118
+eqn form: (c-(c/(c+(y*y))))
+------------------------------------------------------------------
+--- Individual 44 ------------------------------------------------------------
+f = (2.033328-(1.017891/((x*x)--0.790035)))
+gline: 2.03333	1.01789	x	x	*	0.18317	-0.790035	-	/	-	
+eline: 1	1	1	1	1	0	1	1	1	1	
+size: 10
+eff size: 9
+complexity: 16
+MAE: 0.221673
+MAE_v: 0.221673
+correlation: 0.485908
+correlation_v: 0.485908
+fitness: 0.456203
+fitness_v: 0.456203
+rank: 4
+parent fitness: 0.456203
+origin: c
+age: 132
+eqn form: (c-(c/((x*x)--c)))
+------------------------------------------------------------------
+--- Individual 45 ------------------------------------------------------------
+f = 1.795335
+gline: -	1.17572	*	-	y	x	y	0.276608	/	1.79534	
+eline: 0	1	0	0	1	0	1	1	0	1	
+size: 10
+eff size: 5
+complexity: 0
+MAE: 0.379322
+MAE_v: 0.379322
+correlation: 1e-20
+correlation_v: 1e-20
+fitness: 3.79322e+19
+fitness_v: 3.79322e+19
+rank: 5
+parent fitness: 4.21401
+origin: c
+age: 14
+eqn form: c
+------------------------------------------------------------------
+--- Individual 46 ------------------------------------------------------------
+f = (0.709967*x)
+gline: *	-1.642	0.709967	+	-	x	y	x	*	y	
+eline: 1	0	1	0	1	1	0	0	1	0	
+size: 10
+eff size: 5
+complexity: 4
+MAE: 2.09244
+MAE_v: 2.09244
+correlation: 8.80262e-15
+correlation_v: 8.80262e-15
+fitness: 2.37707e+14
+fitness_v: 2.37707e+14
+rank: 5
+parent fitness: 1.08518e+15
+origin: m
+age: 8
+eqn form: (c*x)
+------------------------------------------------------------------
+--- Individual 47 ------------------------------------------------------------
+f = (1.010126/x)
+gline: y	+	x	1.01013	x	/	x	/	1	y	
+eline: 1	0	1	1	1	1	0	0	0	0	
+size: 10
+eff size: 5
+complexity: 5
+MAE: 1.96712
+MAE_v: 1.96712
+correlation: 1.14354e-13
+correlation_v: 1.14354e-13
+fitness: 1.7202e+13
+fitness_v: 1.7202e+13
+rank: 5
+parent fitness: 6.17571e+19
+origin: c
+age: 23
+eqn form: (c/x)
+------------------------------------------------------------------
+--- Individual 48 ------------------------------------------------------------
+f = (0.109974*(x*x))
+gline: -6.39495	0.109974	x	x	0.306269	y	y	*	*	*	
+eline: 1	1	1	1	0	0	0	1	1	0	
+size: 10
+eff size: 6
+complexity: 8
+MAE: 0.863014
+MAE_v: 0.863014
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21398
+fitness_v: 4.21398
+rank: 5
+parent fitness: 4.21398
+origin: m
+age: 49
+eqn form: (c*(x*x))
+------------------------------------------------------------------
+--- Individual 49 ------------------------------------------------------------
+f = ((x*x)/9.094906)
+gline: y	0.595434	9.0933	x	x	x	*	9.09491	4.09021	/	
+eline: 1	0	1	1	1	1	1	1	0	1	
+size: 10
+eff size: 8
+complexity: 9
+MAE: 0.863013
+MAE_v: 0.863013
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21397
+fitness_v: 4.21397
+rank: 5
+parent fitness: 4.21398
+origin: c
+age: 57
+eqn form: ((x*x)/c)
+------------------------------------------------------------------
+--- Individual 50 ------------------------------------------------------------
+f = (1.471823+((x*x)*0.024351))
+gline: y	x	1.47182	x	x	*	-8.39477	0.0243509	*	+	
+eline: 1	1	1	1	1	1	0	1	1	1	
+size: 10
+eff size: 9
+complexity: 11
+MAE: 0.337359
+MAE_v: 0.337359
+correlation: 0.204797
+correlation_v: 0.204797
+fitness: 1.64729
+fitness_v: 1.64729
+rank: 5
+parent fitness: 1.64729
+origin: c
+age: 84
+eqn form: (c+((x*x)*c))
+------------------------------------------------------------------
+--- Individual 51 ------------------------------------------------------------
+f = ((0.000207/(y*y))+1.898098)
+gline: 0.000206836	y	y	*	40.2699	0.294136	/	1.8981	+	/	
+eline: 1	1	1	1	0	0	1	1	1	1	
+size: 10
+eff size: 8
+complexity: 12
+MAE: 0.385662
+MAE_v: 0.385662
+correlation: 0.277349
+correlation_v: 0.277349
+fitness: 1.39053
+fitness_v: 1.39053
+rank: 5
+parent fitness: 1.09677
+origin: m
+age: 97
+eqn form: ((c/(y*y))+c)
+------------------------------------------------------------------
+--- Individual 52 ------------------------------------------------------------
+f = ((-0.037411/(y*y))+1.898098)
+gline: -0.037411	y	y	*	40.2699	0.294136	/	1.8981	+	*	
+eline: 1	1	1	1	0	0	1	1	1	1	
+size: 10
+eff size: 8
+complexity: 13
+MAE: 0.304185
+MAE_v: 0.304185
+correlation: 0.277346
+correlation_v: 0.277346
+fitness: 1.09677
+fitness_v: 1.09677
+rank: 5
+parent fitness: 1.09677
+origin: c
+age: 129
+eqn form: ((-c/(y*y))+c)
+------------------------------------------------------------------
+--- Individual 53 ------------------------------------------------------------
+f = (1.798513-(0.095280/(1.034193+(y*y))))
+gline: 1.79851	0.0952798	1.03419	y	y	*	+	/	/	-	
+eline: 1	1	1	1	1	1	1	0	1	1	
+size: 10
+eff size: 9
+complexity: 15
+MAE: 0.365489
+MAE_v: 0.365489
+correlation: 0.484477
+correlation_v: 0.484477
+fitness: 0.754399
+fitness_v: 0.754399
+rank: 5
+parent fitness: 0.831271
+origin: m
+age: 50
+eqn form: (c-(c/(c+(y*y))))
+------------------------------------------------------------------
+--- Individual 54 ------------------------------------------------------------
+f = (2.040737-(1.041976/((x*x)--0.811719)))
+gline: 2.04074	1.04198	x	x	*	0.389923	-0.811719	-	/	-	
+eline: 1	1	1	1	1	0	1	1	1	1	
+size: 10
+eff size: 9
+complexity: 16
+MAE: 0.221725
+MAE_v: 0.221725
+correlation: 0.486014
+correlation_v: 0.486014
+fitness: 0.456211
+fitness_v: 0.456211
+rank: 5
+parent fitness: 0.456128
+origin: c
+age: 176
+eqn form: (c-(c/((x*x)--c)))
+------------------------------------------------------------------
+--- Individual 55 ------------------------------------------------------------
+f = 1.786260
+gline: 1	+	4.21883	+	x	y	y	y	/	1.78626	
+eline: 0	1	1	0	1	1	0	1	0	1	
+size: 10
+eff size: 6
+complexity: 0
+MAE: 0.379348
+MAE_v: 0.379348
+correlation: 1e-20
+correlation_v: 1e-20
+fitness: 3.79348e+19
+fitness_v: 3.79348e+19
+rank: 6
+parent fitness: 0
+origin: i
+age: 2
+eqn form: c
+------------------------------------------------------------------
+--- Individual 56 ------------------------------------------------------------
+f = (x*0.109302)
+gline: y	y	y	y	x	5.4522	y	x	0.109302	*	
+eline: 0	0	0	1	1	1	0	1	1	1	
+size: 10
+eff size: 6
+complexity: 4
+MAE: 1.57381
+MAE_v: 1.57381
+correlation: 6.62074e-15
+correlation_v: 6.62074e-15
+fitness: 2.37709e+14
+fitness_v: 2.37709e+14
+rank: 6
+parent fitness: 6.65964e+15
+origin: c
+age: 52
+eqn form: (x*c)
+------------------------------------------------------------------
+--- Individual 57 ------------------------------------------------------------
+f = (0.112984/x)
+gline: 2.71876	-	y	-	x	x	y	0.112984	x	/	
+eline: 0	1	0	1	1	0	1	1	1	1	
+size: 10
+eff size: 7
+complexity: 5
+MAE: 1.58048
+MAE_v: 1.58048
+correlation: 8.43975e-14
+correlation_v: 8.43975e-14
+fitness: 1.87266e+13
+fitness_v: 1.87266e+13
+rank: 6
+parent fitness: 4.21399
+origin: c
+age: 18
+eqn form: (c/x)
+------------------------------------------------------------------
+--- Individual 58 ------------------------------------------------------------
+f = ((x*x)*0.109975)
+gline: 1	/	x	+	x	x	*	+	0.109975	*	
+eline: 0	0	1	1	1	1	1	0	1	1	
+size: 10
+eff size: 7
+complexity: 8
+MAE: 0.863014
+MAE_v: 0.863014
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21398
+fitness_v: 4.21398
+rank: 6
+parent fitness: 6.65964e+15
+origin: c
+age: 69
+eqn form: ((x*x)*c)
+------------------------------------------------------------------
+--- Individual 59 ------------------------------------------------------------
+f = (1.471683+((x*x)*0.024351))
+gline: *	+	1.47168	x	x	*	-8.41333	0.0243509	*	+	
+eline: 0	0	1	1	1	1	0	1	1	1	
+size: 10
+eff size: 7
+complexity: 11
+MAE: 0.337361
+MAE_v: 0.337361
+correlation: 0.204797
+correlation_v: 0.204797
+fitness: 1.64729
+fitness_v: 1.64729
+rank: 6
+parent fitness: 1.65251
+origin: c
+age: 81
+eqn form: (c+((x*x)*c))
+------------------------------------------------------------------
+--- Individual 60 ------------------------------------------------------------
+f = ((0.000207/(y*y))+1.898964)
+gline: 0.000206836	y	y	*	40.2699	0.294136	/	1.89896	+	+	
+eline: 1	1	1	1	0	0	1	1	1	0	
+size: 10
+eff size: 7
+complexity: 12
+MAE: 0.38575
+MAE_v: 0.38575
+correlation: 0.277349
+correlation_v: 0.277349
+fitness: 1.39085
+fitness_v: 1.39085
+rank: 6
+parent fitness: 1.39053
+origin: c
+age: 116
+eqn form: ((c/(y*y))+c)
+------------------------------------------------------------------
+--- Individual 61 ------------------------------------------------------------
+f = ((-0.037411/(y*y))+1.897892)
+gline: -0.037411	y	y	*	18.7902	1	/	1.89789	+	/	
+eline: 1	1	1	1	0	0	1	1	1	0	
+size: 10
+eff size: 7
+complexity: 13
+MAE: 0.304183
+MAE_v: 0.304183
+correlation: 0.277345
+correlation_v: 0.277345
+fitness: 1.09677
+fitness_v: 1.09677
+rank: 6
+parent fitness: 1.09677
+origin: m
+age: 114
+eqn form: ((-c/(y*y))+c)
+------------------------------------------------------------------
+--- Individual 62 ------------------------------------------------------------
+f = (1.927196-(0.104476/(0.804740+(y*y))))
+gline: 1.9272	0.104476	0.80474	y	y	*	+	/	/	-	
+eline: 1	1	1	1	1	1	1	0	1	1	
+size: 10
+eff size: 9
+complexity: 15
+MAE: 0.366876
+MAE_v: 0.366876
+correlation: 0.485984
+correlation_v: 0.485984
+fitness: 0.754914
+fitness_v: 0.754914
+rank: 6
+parent fitness: 2.79999
+origin: c
+age: 118
+eqn form: (c-(c/(c+(y*y))))
+------------------------------------------------------------------
+--- Individual 63 ------------------------------------------------------------
+f = (2.040737-(1.017891/((x*x)--0.783244)))
+gline: 2.04074	1.01789	x	x	*	0.389923	-0.783244	-	/	-	
+eline: 1	1	1	1	1	0	1	1	1	1	
+size: 10
+eff size: 9
+complexity: 16
+MAE: 0.221661
+MAE_v: 0.221661
+correlation: 0.485862
+correlation_v: 0.485862
+fitness: 0.456221
+fitness_v: 0.456221
+rank: 6
+parent fitness: 0.456221
+origin: c
+age: 175
+eqn form: (c-(c/((x*x)--c)))
+------------------------------------------------------------------
+--- Individual 64 ------------------------------------------------------------
+f = 1.797093
+gline: -	-	1.48513	x	x	+	0.83641	x	x	1.79709	1.09554	
+eline: 0	1	1	1	0	1	1	0	0	1	0	
+size: 11
+eff size: 6
+complexity: 0
+MAE: 0.379394
+MAE_v: 0.379394
+correlation: 1e-20
+correlation_v: 1e-20
+fitness: 3.79394e+19
+fitness_v: 3.79394e+19
+rank: 7
+parent fitness: 1.64739
+origin: c
+age: 85
+eqn form: c
+------------------------------------------------------------------
+--- Individual 65 ------------------------------------------------------------
+f = (x*0.083932)
+gline: 5.41141	/	/	x	-5.09459	x	*	+	0.0839319	*	
+eline: 0	1	0	0	0	1	1	1	1	1	
+size: 10
+eff size: 6
+complexity: 4
+MAE: 1.57378
+MAE_v: 1.57378
+correlation: 5.80401e-15
+correlation_v: 5.80401e-15
+fitness: 2.71154e+14
+fitness_v: 2.71154e+14
+rank: 7
+parent fitness: 5.38703e+16
+origin: c
+age: 47
+eqn form: (x*c)
+------------------------------------------------------------------
+--- Individual 66 ------------------------------------------------------------
+f = (0.337006/x)
+gline: *	*	x	-	0.337006	0.855361	x	y	x	/	
+eline: 1	0	1	0	1	0	0	0	1	1	
+size: 10
+eff size: 5
+complexity: 5
+MAE: 1.64727
+MAE_v: 1.64727
+correlation: 8.64456e-14
+correlation_v: 8.64456e-14
+fitness: 1.90555e+13
+fitness_v: 1.90555e+13
+rank: 7
+parent fitness: 2.08985e+13
+origin: m
+age: 21
+eqn form: (c/x)
+------------------------------------------------------------------
+--- Individual 67 ------------------------------------------------------------
+f = ((y*y)*0.109950)
+gline: *	0.109985	y	y	y	y	*	y	0.10995	*	
+eline: 1	1	0	0	1	1	1	0	1	1	
+size: 10
+eff size: 7
+complexity: 8
+MAE: 0.863013
+MAE_v: 0.863013
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21398
+fitness_v: 4.21398
+rank: 7
+parent fitness: 4.21397
+origin: c
+age: 48
+eqn form: ((y*y)*c)
+------------------------------------------------------------------
+--- Individual 68 ------------------------------------------------------------
+f = (x*(x/9.094264))
+gline: -	x	1.22388	0.72521	x	x	9.09426	/	*	y	
+eline: 0	1	1	0	1	1	1	1	1	0	
+size: 10
+eff size: 7
+complexity: 9
+MAE: 0.863014
+MAE_v: 0.863014
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21398
+fitness_v: 4.21398
+rank: 7
+parent fitness: 4.21398
+origin: m
+age: 44
+eqn form: (x*(x/c))
+------------------------------------------------------------------
+--- Individual 69 ------------------------------------------------------------
+f = (x/(9.092941/x))
+gline: 1.22043	x	/	-	9.09294	x	x	-	/	/	
+eline: 1	1	0	0	1	0	1	0	1	1	
+size: 10
+eff size: 6
+complexity: 10
+MAE: 0.863014
+MAE_v: 0.863014
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21398
+fitness_v: 4.21398
+rank: 7
+parent fitness: 4.25826
+origin: m
+age: 57
+eqn form: (x/(c/x))
+------------------------------------------------------------------
+--- Individual 70 ------------------------------------------------------------
+f = (1.469996+((x*x)*0.024605))
+gline: 0.991763	-	1.47	x	x	*	-6.36429	0.0246049	*	+	
+eline: 1	1	1	1	1	1	0	1	1	1	
+size: 10
+eff size: 9
+complexity: 11
+MAE: 0.33737
+MAE_v: 0.33737
+correlation: 0.204797
+correlation_v: 0.204797
+fitness: 1.64734
+fitness_v: 1.64734
+rank: 7
+parent fitness: 1.89214e+18
+origin: c
+age: 105
+eqn form: (c+((x*x)*c))
+------------------------------------------------------------------
+--- Individual 71 ------------------------------------------------------------
+f = ((0.000889/(y*y))+1.898098)
+gline: 0.000889085	y	y	*	40.2699	0.27763	/	1.8981	+	*	
+eline: 1	1	1	1	0	0	1	1	1	1	
+size: 10
+eff size: 8
+complexity: 12
+MAE: 0.387189
+MAE_v: 0.387189
+correlation: 0.277345
+correlation_v: 0.277345
+fitness: 1.39605
+fitness_v: 1.39605
+rank: 7
+parent fitness: 1.09672
+origin: m
+age: 118
+eqn form: ((c/(y*y))+c)
+------------------------------------------------------------------
+--- Individual 72 ------------------------------------------------------------
+f = ((-0.037411/(x*x))+1.897892)
+gline: -0.037411	x	x	*	15.6565	0.641606	/	1.89789	+	/	
+eline: 1	1	1	1	0	0	1	1	1	1	
+size: 10
+eff size: 8
+complexity: 13
+MAE: 0.304183
+MAE_v: 0.304183
+correlation: 0.277344
+correlation_v: 0.277344
+fitness: 1.09677
+fitness_v: 1.09677
+rank: 7
+parent fitness: 1.09677
+origin: c
+age: 98
+eqn form: ((-c/(x*x))+c)
+------------------------------------------------------------------
+--- Individual 73 ------------------------------------------------------------
+f = (1.895459-(0.110075/(1.032069+(y*y))))
+gline: 1.89546	0.110075	1.03207	y	y	*	+	/	/	-	
+eline: 1	1	1	1	1	1	1	0	1	1	
+size: 10
+eff size: 9
+complexity: 15
+MAE: 0.366038
+MAE_v: 0.366038
+correlation: 0.484509
+correlation_v: 0.484509
+fitness: 0.755482
+fitness_v: 0.755482
+rank: 7
+parent fitness: 1.21292
+origin: c
+age: 120
+eqn form: (c-(c/(c+(y*y))))
+------------------------------------------------------------------
+--- Individual 74 ------------------------------------------------------------
+f = (2.033328-(0.995991/((x*x)--0.783244)))
+gline: 2.03333	0.995991	x	x	*	0.469807	-0.783244	-	/	-	
+eline: 1	1	1	1	1	0	1	1	1	1	
+size: 10
+eff size: 9
+complexity: 16
+MAE: 0.221672
+MAE_v: 0.221672
+correlation: 0.485863
+correlation_v: 0.485863
+fitness: 0.456244
+fitness_v: 0.456244
+rank: 7
+parent fitness: 0.456289
+origin: c
+age: 115
+eqn form: (c-(c/((x*x)--c)))
+------------------------------------------------------------------
+--- Individual 75 ------------------------------------------------------------
+f = 1.800765
+gline: y	/	+	/	1.80076	*	*	-0.616684	/	9.96759	
+eline: 0	0	0	0	1	0	1	0	1	0	
+size: 10
+eff size: 3
+complexity: 0
+MAE: 0.379547
+MAE_v: 0.379547
+correlation: 1e-20
+correlation_v: 1e-20
+fitness: 3.79547e+19
+fitness_v: 3.79547e+19
+rank: 8
+parent fitness: 37.5211
+origin: c
+age: 19
+eqn form: c
+------------------------------------------------------------------
+--- Individual 76 ------------------------------------------------------------
+f = (0.390912*x)
+gline: *	/	0.390912	/	y	+	x	*	x	x	
+eline: 0	1	1	0	0	1	1	1	0	0	
+size: 10
+eff size: 5
+complexity: 4
+MAE: 1.61794
+MAE_v: 1.61794
+correlation: 5.86288e-15
+correlation_v: 5.86288e-15
+fitness: 2.75964e+14
+fitness_v: 2.75964e+14
+rank: 8
+parent fitness: 3.37269e+15
+origin: m
+age: 16
+eqn form: (c*x)
+------------------------------------------------------------------
+--- Individual 77 ------------------------------------------------------------
+f = (0.943922/x)
+gline: /	y	/	-0.59979	0.943922	x	-5.17662	-1.52485	/	/	
+eline: 0	1	0	0	1	1	0	0	0	1	
+size: 10
+eff size: 4
+complexity: 5
+MAE: 1.93232
+MAE_v: 1.93232
+correlation: 9.34476e-14
+correlation_v: 9.34476e-14
+fitness: 2.06781e+13
+fitness_v: 2.06781e+13
+rank: 8
+parent fitness: 1.09538e+15
+origin: m
+age: 11
+eqn form: (c/x)
+------------------------------------------------------------------
+--- Individual 78 ------------------------------------------------------------
+f = (x*(x*0.109965))
+gline: +	x	/	5.16247	x	y	x	0.109965	*	*	
+eline: 1	1	1	1	1	0	1	1	1	1	
+size: 10
+eff size: 9
+complexity: 8
+MAE: 0.863013
+MAE_v: 0.863013
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21398
+fitness_v: 4.21398
+rank: 8
+parent fitness: 7.04799e+14
+origin: c
+age: 30
+eqn form: (x*(x*c))
+------------------------------------------------------------------
+--- Individual 79 ------------------------------------------------------------
+f = ((y*y)/9.097934)
+gline: y	y	y	y	y	y	*	9.09793	y	/	
+eline: 1	0	0	0	1	1	1	1	0	1	
+size: 10
+eff size: 6
+complexity: 9
+MAE: 0.863014
+MAE_v: 0.863014
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21398
+fitness_v: 4.21398
+rank: 8
+parent fitness: 8.69343
+origin: c
+age: 99
+eqn form: ((y*y)/c)
+------------------------------------------------------------------
+--- Individual 80 ------------------------------------------------------------
+f = (1.471119+((x*x)*0.024351))
+gline: -	y	1.47112	x	x	*	-8.39477	0.0243509	*	+	
+eline: 0	1	1	1	1	1	0	1	1	1	
+size: 10
+eff size: 8
+complexity: 11
+MAE: 0.337371
+MAE_v: 0.337371
+correlation: 0.204797
+correlation_v: 0.204797
+fitness: 1.64734
+fitness_v: 1.64734
+rank: 8
+parent fitness: 1.64797
+origin: c
+age: 81
+eqn form: (c+((x*x)*c))
+------------------------------------------------------------------
+--- Individual 81 ------------------------------------------------------------
+f = ((0.001678/(y*y))+1.897977)
+gline: 0.00167791	y	y	*	63.0327	0.810519	/	1.89798	+	+	
+eline: 1	1	1	1	0	0	1	1	1	0	
+size: 10
+eff size: 7
+complexity: 12
+MAE: 0.38894
+MAE_v: 0.38894
+correlation: 0.277345
+correlation_v: 0.277345
+fitness: 1.40237
+fitness_v: 1.40237
+rank: 8
+parent fitness: 1.09697
+origin: m
+age: 98
+eqn form: ((c/(y*y))+c)
+------------------------------------------------------------------
+--- Individual 82 ------------------------------------------------------------
+f = ((-0.037411/(y*y))+1.896087)
+gline: -0.037411	y	y	*	40.2699	0.641606	/	1.89609	+	/	
+eline: 1	1	1	1	0	0	1	1	1	1	
+size: 10
+eff size: 8
+complexity: 13
+MAE: 0.304185
+MAE_v: 0.304185
+correlation: 0.277345
+correlation_v: 0.277345
+fitness: 1.09677
+fitness_v: 1.09677
+rank: 8
+parent fitness: 1.09677
+origin: c
+age: 94
+eqn form: ((-c/(y*y))+c)
+------------------------------------------------------------------
+--- Individual 83 ------------------------------------------------------------
+f = (1.897734-(0.126873/(1.133090+(y*y))))
+gline: 1.89773	0.126873	1.13309	y	y	*	+	/	/	-	
+eline: 1	1	1	1	1	1	1	0	1	1	
+size: 10
+eff size: 9
+complexity: 15
+MAE: 0.364916
+MAE_v: 0.364916
+correlation: 0.482765
+correlation_v: 0.482765
+fitness: 0.755887
+fitness_v: 0.755887
+rank: 8
+parent fitness: 1.63393
+origin: c
+age: 118
+eqn form: (c-(c/(c+(y*y))))
+------------------------------------------------------------------
+--- Individual 84 ------------------------------------------------------------
+f = (2.033328-(0.995991/((x*x)--0.784143)))
+gline: 2.03333	0.995991	x	x	*	0.469807	-0.784143	-	/	-	
+eline: 1	1	1	1	1	0	1	1	1	1	
+size: 10
+eff size: 9
+complexity: 16
+MAE: 0.221677
+MAE_v: 0.221677
+correlation: 0.485869
+correlation_v: 0.485869
+fitness: 0.456249
+fitness_v: 0.456249
+rank: 8
+parent fitness: 1.35478
+origin: c
+age: 114
+eqn form: (c-(c/((x*x)--c)))
+------------------------------------------------------------------
+--- Individual 85 ------------------------------------------------------------
+f = 1.802423
+gline: /	-	3.78838	y	+	x	-5.93954	y	1.80242	*	
+eline: 0	0	1	1	1	1	1	0	1	0	
+size: 10
+eff size: 6
+complexity: 0
+MAE: 0.379616
+MAE_v: 0.379616
+correlation: 1e-20
+correlation_v: 1e-20
+fitness: 3.79616e+19
+fitness_v: 3.79616e+19
+rank: 9
+parent fitness: 3.80993e+19
+origin: m
+age: 10
+eqn form: c
+------------------------------------------------------------------
+--- Individual 86 ------------------------------------------------------------
+f = (x*1.046918)
+gline: y	x	*	0.95081	y	*	/	x	1.04692	*	
+eline: 0	1	1	1	0	1	1	1	1	1	
+size: 10
+eff size: 8
+complexity: 4
+MAE: 2.83729
+MAE_v: 2.83729
+correlation: 9.82665e-15
+correlation_v: 9.82665e-15
+fitness: 2.88734e+14
+fitness_v: 2.88734e+14
+rank: 9
+parent fitness: 8.39291e+14
+origin: c
+age: 31
+eqn form: (x*c)
+------------------------------------------------------------------
+--- Individual 87 ------------------------------------------------------------
+f = (0.944683/x)
+gline: y	y	x	+	0.944683	0.855361	x	y	x	/	
+eline: 1	0	0	0	1	0	0	0	1	1	
+size: 10
+eff size: 4
+complexity: 5
+MAE: 1.93272
+MAE_v: 1.93272
+correlation: 9.24813e-14
+correlation_v: 9.24813e-14
+fitness: 2.08985e+13
+fitness_v: 2.08985e+13
+rank: 9
+parent fitness: 2.08985e+13
+origin: m
+age: 27
+eqn form: (c/x)
+------------------------------------------------------------------
+--- Individual 88 ------------------------------------------------------------
+f = (0.109950*(y*y))
+gline: y	-	0.10995	y	y	y	*	*	*	/	
+eline: 0	1	1	1	1	0	1	1	0	1	
+size: 10
+eff size: 7
+complexity: 8
+MAE: 0.863013
+MAE_v: 0.863013
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21398
+fitness_v: 4.21398
+rank: 9
+parent fitness: 37.5211
+origin: c
+age: 81
+eqn form: (c*(y*y))
+------------------------------------------------------------------
+--- Individual 89 ------------------------------------------------------------
+f = ((x/9.093297)*x)
+gline: x	x	9.0933	/	/	*	8.94266	x	y	*	
+eline: 1	0	1	0	1	1	0	1	0	1	
+size: 10
+eff size: 6
+complexity: 9
+MAE: 0.863014
+MAE_v: 0.863014
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21398
+fitness_v: 4.21398
+rank: 9
+parent fitness: 4.21398
+origin: m
+age: 47
+eqn form: ((x/c)*x)
+------------------------------------------------------------------
+--- Individual 90 ------------------------------------------------------------
+f = (1.473474+((x*x)*0.024613))
+gline: +	-	1.47347	x	x	*	-6.36429	0.0246132	*	+	
+eline: 0	1	1	1	1	1	0	1	1	1	
+size: 10
+eff size: 8
+complexity: 11
+MAE: 0.337378
+MAE_v: 0.337378
+correlation: 0.204797
+correlation_v: 0.204797
+fitness: 1.64737
+fitness_v: 1.64737
+rank: 9
+parent fitness: 1.64737
+origin: c
+age: 107
+eqn form: (c+((x*x)*c))
+------------------------------------------------------------------
+--- Individual 91 ------------------------------------------------------------
+f = (1.818258+(0.003956/(x*x)))
+gline: 1.82514	1.81826	0.00395631	4.69064	x	y	x	*	/	+	
+eline: 1	1	1	0	1	0	1	1	1	1	
+size: 10
+eff size: 8
+complexity: 12
+MAE: 0.389059
+MAE_v: 0.389059
+correlation: 0.277346
+correlation_v: 0.277346
+fitness: 1.40279
+fitness_v: 1.40279
+rank: 9
+parent fitness: 1.40342
+origin: c
+age: 58
+eqn form: (c+(c/(x*x)))
+------------------------------------------------------------------
+--- Individual 92 ------------------------------------------------------------
+f = ((-0.037501/(y*y))+1.896618)
+gline: -0.0375008	y	y	*	40.2699	0.27763	/	1.89662	+	*	
+eline: 1	1	1	1	0	0	1	1	1	1	
+size: 10
+eff size: 8
+complexity: 13
+MAE: 0.304186
+MAE_v: 0.304186
+correlation: 0.277346
+correlation_v: 0.277346
+fitness: 1.09677
+fitness_v: 1.09677
+rank: 9
+parent fitness: 1.09677
+origin: c
+age: 126
+eqn form: ((-c/(y*y))+c)
+------------------------------------------------------------------
+--- Individual 93 ------------------------------------------------------------
+f = (1.784699-(0.081617/(0.448679+(y*y))))
+gline: 1.7847	0.081617	0.448679	y	y	*	+	/	/	-	
+eline: 1	1	1	1	1	1	1	0	1	1	
+size: 10
+eff size: 9
+complexity: 15
+MAE: 0.357296
+MAE_v: 0.357296
+correlation: 0.471396
+correlation_v: 0.471396
+fitness: 0.757953
+fitness_v: 0.757953
+rank: 9
+parent fitness: 1.92624
+origin: c
+age: 120
+eqn form: (c-(c/(c+(y*y))))
+------------------------------------------------------------------
+--- Individual 94 ------------------------------------------------------------
+f = (2.033328-(0.995991/((x*x)--0.790035)))
+gline: 2.03333	0.995991	x	x	*	0.469807	-0.790035	-	/	-	
+eline: 1	1	1	1	1	0	1	1	1	1	
+size: 10
+eff size: 9
+complexity: 16
+MAE: 0.221714
+MAE_v: 0.221714
+correlation: 0.485907
+correlation_v: 0.485907
+fitness: 0.456289
+fitness_v: 0.456289
+rank: 9
+parent fitness: 0.456289
+origin: c
+age: 114
+eqn form: (c-(c/((x*x)--c)))
+------------------------------------------------------------------
+--- Individual 95 ------------------------------------------------------------
+f = 1.802894
+gline: 9.30231	y	-	-	y	x	x	1	-0.255929	x	1.80289	
+eline: 1	0	1	0	1	1	0	0	0	1	1	
+size: 11
+eff size: 6
+complexity: 0
+MAE: 0.379635
+MAE_v: 0.379635
+correlation: 1e-20
+correlation_v: 1e-20
+fitness: 3.79635e+19
+fitness_v: 3.79635e+19
+rank: 10
+parent fitness: 6.65964e+15
+origin: c
+age: 5
+eqn form: c
+------------------------------------------------------------------
+--- Individual 96 ------------------------------------------------------------
+f = (x*0.874294)
+gline: -7.3614	/	1	x	/	0.874294	+	-	*	x	
+eline: 0	0	0	1	0	1	0	0	1	0	
+size: 10
+eff size: 3
+complexity: 4
+MAE: 2.44112
+MAE_v: 2.44112
+correlation: 8.36892e-15
+correlation_v: 8.36892e-15
+fitness: 2.91689e+14
+fitness_v: 2.91689e+14
+rank: 10
+parent fitness: 7.25237e+18
+origin: c
+age: 19
+eqn form: (x*c)
+------------------------------------------------------------------
+--- Individual 97 ------------------------------------------------------------
+f = (0.727542/x)
+gline: *	0.964346	-	-	+	*	x	0.727542	x	/	
+eline: 1	1	0	1	0	0	0	1	1	1	
+size: 10
+eff size: 6
+complexity: 5
+MAE: 1.8188
+MAE_v: 1.8188
+correlation: 7.36756e-14
+correlation_v: 7.36756e-14
+fitness: 2.46866e+13
+fitness_v: 2.46866e+13
+rank: 10
+parent fitness: 7.25237e+18
+origin: c
+age: 25
+eqn form: (c/x)
+------------------------------------------------------------------
+--- Individual 98 ------------------------------------------------------------
+f = (-1.319440/x)
+gline: x	-1.31944	7.22249	x	/	/	1	+	x	*	
+eline: 0	1	0	1	0	1	0	0	0	1	
+size: 10
+eff size: 4
+complexity: 6
+MAE: 2.13246
+MAE_v: 2.13246
+correlation: 9.985e-14
+correlation_v: 9.985e-14
+fitness: 2.13566e+13
+fitness_v: 2.13566e+13
+rank: 10
+parent fitness: 2.13566e+13
+origin: c
+age: 21
+eqn form: (-c/x)
+------------------------------------------------------------------
+--- Individual 99 ------------------------------------------------------------
+f = (y*(y*0.109950))
+gline: -6.66163	y	0.10995	x	y	y	x	0.10995	*	*	
+eline: 0	0	1	0	1	1	0	1	1	1	
+size: 10
+eff size: 6
+complexity: 8
+MAE: 0.863013
+MAE_v: 0.863013
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21398
+fitness_v: 4.21398
+rank: 10
+parent fitness: 5.85052
+origin: c
+age: 70
+eqn form: (y*(y*c))
+------------------------------------------------------------------
+--- Individual 100 ------------------------------------------------------------
+f = ((y*y)/9.094906)
+gline: y	-	-	y	*	0.469807	-6.89625	9.09491	4.09021	/	
+eline: 1	1	0	1	1	0	0	1	0	1	
+size: 10
+eff size: 6
+complexity: 9
+MAE: 0.863013
+MAE_v: 0.863013
+correlation: 0.204797
+correlation_v: 0.204797
+fitness: 4.21398
+fitness_v: 4.21398
+rank: 10
+parent fitness: 4.21398
+origin: c
+age: 38
+eqn form: ((y*y)/c)
+------------------------------------------------------------------
+--- Individual 101 ------------------------------------------------------------
+f = (x/(9.093798/x))
+gline: /	x	*	x	9.0938	0.445504	x	x	/	/	
+eline: 1	0	1	1	1	0	0	1	1	1	
+size: 10
+eff size: 7
+complexity: 10
+MAE: 0.863013
+MAE_v: 0.863013
+correlation: 0.204798
+correlation_v: 0.204798
+fitness: 4.21398
+fitness_v: 4.21398
+rank: 10
+parent fitness: 4.21398
+origin: m
+age: 63
+eqn form: (x/(c/x))
+------------------------------------------------------------------
+--- Individual 102 ------------------------------------------------------------
+f = (1.469996+((x*x)*0.024523))
+gline: -	+	1.47	x	x	*	-6.36429	0.0245234	*	+	
+eline: 0	1	1	1	1	1	0	1	1	1	
+size: 10
+eff size: 8
+complexity: 11
+MAE: 0.337378
+MAE_v: 0.337378
+correlation: 0.204797
+correlation_v: 0.204797
+fitness: 1.64738
+fitness_v: 1.64738
+rank: 10
+parent fitness: 1.64738
+origin: c
+age: 79
+eqn form: (c+((x*x)*c))
+------------------------------------------------------------------
+--- Individual 103 ------------------------------------------------------------
+f = (1.813463+(0.004124/(x*x)))
+gline: 1.89878	1.81346	0.00412353	4.69064	x	y	x	*	/	+	
+eline: 1	1	1	0	1	0	1	1	1	1	
+size: 10
+eff size: 8
+complexity: 12
+MAE: 0.389232
+MAE_v: 0.389232
+correlation: 0.277345
+correlation_v: 0.277345
+fitness: 1.40342
+fitness_v: 1.40342
+rank: 10
+parent fitness: 84.5524
+origin: c
+age: 58
+eqn form: (c+(c/(x*x)))
+------------------------------------------------------------------
+--- Individual 104 ------------------------------------------------------------
+f = (1.896483-((0.037500/x)/x))
+gline: 1.89648	0.0375005	x	/	*	x	y	/	*	-	
+eline: 1	1	1	1	0	1	0	1	0	1	
+size: 10
+eff size: 7
+complexity: 13
+MAE: 0.304188
+MAE_v: 0.304188
+correlation: 0.277346
+correlation_v: 0.277346
+fitness: 1.09678
+fitness_v: 1.09678
+rank: 10
+parent fitness: 1.09678
+origin: c
+age: 70
+eqn form: (c-((c/x)/x))
+------------------------------------------------------------------
+--- Individual 105 ------------------------------------------------------------
+f = (((-0.037434/x)/x)+1.896017)
+gline: -0.0374336	x	/	x	y	/	+	y	1.89602	+	
+eline: 1	1	1	1	0	1	1	0	1	1	
+size: 10
+eff size: 8
+complexity: 14
+MAE: 0.304188
+MAE_v: 0.304188
+correlation: 0.277345
+correlation_v: 0.277345
+fitness: 1.09678
+fitness_v: 1.09678
+rank: 10
+parent fitness: 6.65964e+15
+origin: c
+age: 61
+eqn form: (((-c/x)/x)+c)
+------------------------------------------------------------------
+--- Individual 106 ------------------------------------------------------------
+f = (1.850768-(0.111729/(1.196494+(y*y))))
+gline: 1.85077	0.111729	1.19649	y	y	*	+	/	/	-	
+eline: 1	1	1	1	1	1	1	0	1	1	
+size: 10
+eff size: 9
+complexity: 15
+MAE: 0.365462
+MAE_v: 0.365462
+correlation: 0.481455
+correlation_v: 0.481455
+fitness: 0.759077
+fitness_v: 0.759077
+rank: 10
+parent fitness: 1.63393
+origin: c
+age: 116
+eqn form: (c-(c/(c+(y*y))))
+------------------------------------------------------------------
+--- Individual 107 ------------------------------------------------------------
+f = (2.033328-(1.017891/((x*x)--0.803471)))
+gline: 2.03333	1.01789	x	x	*	0.389923	-0.803471	-	/	-	
+eline: 1	1	1	1	1	0	1	1	1	1	
+size: 10
+eff size: 9
+complexity: 16
+MAE: 0.221758
+MAE_v: 0.221758
+correlation: 0.485979
+correlation_v: 0.485979
+fitness: 0.456311
+fitness_v: 0.456311
+rank: 10
+parent fitness: 0.457936
+origin: c
+age: 168
+eqn form: (c-(c/((x*x)--c)))
+------------------------------------------------------------------
