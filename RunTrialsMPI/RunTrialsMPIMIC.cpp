@@ -3,7 +3,7 @@
 // the settings are passed on to run Develep.  parameter file names and data are then passed on to Develep to run. 
 
 #include "stdafxRTMPI.h"
-#include "runDevelep.h"
+#include "runDevelepMIC.h"
 #include "pop.h"
 #include "mpi.h"
 using namespace std;
@@ -107,7 +107,7 @@ int main(int argc, char** argv)
 							string dfile(dbuff,l2);
 							cout << "running process " + to_string(static_cast<long long>(tag)) + " of " + to_string(static_cast<long long>(totaltrials)) + " on processor " + to_string(static_cast<long long>(myid)) + " : " + pfile.substr(pfile.rfind('/')+1,pfile.size()) + ", " + dfile.substr(dfile.rfind('/')+1,dfile.size())  + "\n";
 							//run develep
-							runDevelep(pfile,dfile,1);
+							runDevelepMIC(pbuff,dbuff,1);
 
 							// send message when finished
 							int tmp = 1;

@@ -8,7 +8,7 @@ public:
 	logger(){trials=false;}	// Opens a file for use with ofstream fout.
 	~logger(){fout.close();}			// Flushes and closes the logging file.
 	void set(bool t) {trials=t;};
-	void open(const char* filename){
+	void open(std::string filename){
 			fout.open(filename);
 			/*if(fout.is_open()) {
 				std::cout << "opened log file successfully\n";
@@ -19,6 +19,7 @@ public:
 				return 0;
 			}*/
 	}
+	bool is_open(){return fout.is_open();}
 	void close(){fout.close();}
 	//logger& operator(); // Allows us to set the mask in the same line as the messages
 

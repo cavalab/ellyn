@@ -520,12 +520,6 @@ void load_params(params &p, std::ifstream& fs)
 }
 void load_data(data &d, std::ifstream& fs,params& p)
 {
-	if (!fs.good()) 
-	{
-			cerr << "BAD DATA FILE LOCATION" << "\n";
-			exit(1);
-	}
-
 	string s;
 	string varname;
 	float tmpf;
@@ -592,10 +586,10 @@ void load_data(data &d, std::ifstream& fs,params& p)
 }
 void load_lexdata(data &d, std::ifstream& fs,params& p)
 {
-	if (!fs.good()) 
+	/*if (!fs.good())
 	{
-			cout << "BAD DATA FILE LOCATION" << "\n";
-	}
+		cout << "BAD DATA FILE LOCATION" << "\n";
+	}*/
 
 	string s;
 	string varname;
@@ -774,10 +768,10 @@ int get_next_task(int& index,vector<int>& task_assignments)
 }
 //void runDevelep(string& paramfile, string& datafile,bool trials)
 //{	
-void runDevelep(const char* param_in, const char* data_in,bool trials)		
+void runDevelep(string paramfile, string datafile,bool trials)
 {
-	string paramfile(param_in);
-	string datafile(data_in);
+	//string paramfile(param_in);
+	//string datafile(data_in);
 	/* steps:
 	Initialize population
 		make genotypes
@@ -805,15 +799,22 @@ void runDevelep(const char* param_in, const char* data_in,bool trials)
 	
 	// load parameter file
 	ifstream fs(paramfile);
+	if (!fs.is_open()){
+		cerr << "Error: couldn't open parameter file: " + paramfile << "\n";
+		exit(1);
+	}
 	load_params(p, fs);
 	// load data file
 	ifstream ds(datafile);
-
+	if (!ds.is_open()){
+			cerr << "Error: couldn't open data file: " + datafile << "\n";
+			exit(1);
+		}
 	if (p.sel == 3) load_lexdata(d,ds,p);
 	else load_data(d,ds,p);
 	
-	s.out.set(trials);
 	
+
 	std::time_t t =  std::time(NULL);
     std::tm * tm;
 
@@ -850,12 +851,12 @@ void runDevelep(const char* param_in, const char* data_in,bool trials)
 
 
 
-
-	 s.out.open(logname.c_str());
-	 /*if (!tmp){
+	 s.out.set(trials);
+	 s.out.open(logname);
+	 if (!s.out.is_open()){
 		 cerr << "Write-to File " << logname << " did not open correctly.\n";
 		 exit(1);
-	 }*/
+	 }
 	 s.out << "_______________________________________________________________________________ \n";
 	 s.out << "                                    Develep                                     \n";
 	 s.out << "_______________________________________________________________________________ \n";
