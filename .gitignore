@@ -23,3 +23,8 @@ Release/
 */output
 *.archive
 *.log
+*.vsmdi
+*.testsettings
+*.ipgset
+*.opensdf
+*.zip
