@@ -3,7 +3,7 @@
 // the settings are passed on to run Develep.  parameter file names and data are then passed on to Develep to run. 
 
 #include "stdafxRTMPI.h"
-#include "runDevelep.h"
+#include "runEllenGP.h"
 #include "pop.h"
 #include "mpi.h"
 using namespace std;
@@ -49,7 +49,8 @@ int main(int argc, char** argv)
         if (myid==master){
         	//cout << "total trials: " + to_string(static_cast<long long>(totaltrials)) + "\n";
         	//cout << "In master loop\n";
-        	cout << "Running Trials: \n";
+        	cout << "Running trials of ellenGP: \n Number of trials: " + to_string(static_cast<long long>(totaltrials)) +"\n Number of processors: " + to_string(static_cast<long long>(numprocs)) + "\n";
+
         	// schedule tasks from master node
         	for (int i=0;i<min(numprocs-1,totaltrials);i++){
         		//cout << "sending " + paramfile.at(i) + " to process " + to_string(static_cast<long long>(i)) + "\n";
@@ -107,7 +108,8 @@ int main(int argc, char** argv)
 							string dfile(dbuff,l2);
 							cout << "running process " + to_string(static_cast<long long>(tag)) + " of " + to_string(static_cast<long long>(totaltrials)) + " on processor " + to_string(static_cast<long long>(myid)) + " : " + pfile.substr(pfile.rfind('/')+1,pfile.size()) + ", " + dfile.substr(dfile.rfind('/')+1,dfile.size())  + "\n";
 							//run develep
-							runDevelep(pfile,dfile,1);
+							runEllenGP(pfile,dfile,1);
+							cout << "process " + to_string(static_cast<long long>(tag)) + " of " + to_string(static_cast<long long>(totaltrials)) + " on processor " + to_string(static_cast<long long>(myid)) + " : " + pfile.substr(pfile.rfind('/')+1,pfile.size()) + ", " + dfile.substr(dfile.rfind('/')+1,dfile.size())  + "finished\n";
 
 							// send message when finished
 							int tmp = 1;

@@ -15,6 +15,12 @@ using namespace std;
 */
 void makeline(ind&,params& p,vector<Randclass>& r);
 
+void makeline_rec(ind&,params& p,vector<Randclass>& r);
+int maketree(vector <shared_ptr<node>>& line, int level, bool exactlevel, int lastnode,params& p,vector<Randclass>& r);
+float round(float d)
+{
+  return floor(d + 0.5);
+}
 void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 {
 	//boost::progress_timer timer;
@@ -22,7 +28,11 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 
 	for(int i=0;i<pop.size();i++)
 	{
-		makeline(pop.at(i),p,r);
+		if (!p.init_trees)
+			makeline(pop.at(i),p,r);
+		else
+			makeline_rec(pop.at(i),p,r);
+			
 		//remove dangling numbers and variables from end
 		/*while((pop.at(i).line.back()->type=='n' || pop.at(i).line.back()->type=='v') && pop.at(i).line.size()>1)
 			pop.at(i).line.pop_back();*/
@@ -49,11 +59,6 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 void makeline(ind& newind,params& p,vector<Randclass>& r)
 {
 	// construct line 
-	// obtain a seed from the system clock:
-	
-	// random number generator
-	//mt19937_64 engine(p.seed);
-	
 	int linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len);
 	
 	int choice=0;
@@ -95,7 +100,7 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 			{
 			case 0: //load number
 				if(p.ERC){ // if ephemeral random constants are on
-					if (!p.cvals.empty()){
+					if (!p.cvals.empty()){ // if there are constants defined by the user
 						if (r[omp_get_thread_num()].rnd_flt(0,1)<.5)
 							newind.line.push_back(shared_ptr<node>(new n_num(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1)))));
 						else{	
@@ -112,7 +117,7 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 								newind.line.push_back(shared_ptr<node>(new n_num(r[omp_get_thread_num()].rnd_flt(p.minERC,p.maxERC))));
 					}
 				}
-				else if (!p.cvals.empty())
+				else if (!p.cvals.empty()) // if ERCs are off, but there are constants defined by the user
 				{
 					newind.line.push_back(shared_ptr<node>(new n_num(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1)))));
 				}
@@ -149,7 +154,6 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 			case 10: // seed
 				seedchoice = r[omp_get_thread_num()].rnd_int(0,p.seedstacks.size()-1);
 				copystack(p.seedstacks.at(seedchoice),tmpstack);
-
 				for(int i=0;i<tmpstack.size(); i++)
 				{
 					if (x<p.max_len){
@@ -163,9 +167,226 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 	}
 	/*while (newind.line.back()->type=='n'||newind.line.back()->type=='v')
 		newind.line.pop_back();*/
+}
+void makeline_rec(ind& newind,params& p,vector<Randclass>& r)
+{
+	// recursive version of makeline that creates lines that are complete with respect to stack operations
+	// in other words the entire line is guaranteed to be a valid syntax tree
+	// construct line 
+	
+	int linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len);
+	
+	int choice=0;
+	
+	int tmp = maketree(newind.line,linelen,1,0,p,r);
 
 }
+void getChoice(int& choice, int min_arity, int max_arity, params& p,vector<Randclass>& r)
+{
+	vector<int> choices;
+	vector<float> op_weight;
+	int tmpchoice;
+	for (int i=0;i<p.op_arity.size();i++)
+	{
+		if (p.op_arity[i] >= min_arity && p.op_arity[i] <= max_arity)
+		{
+			choices.push_back(i);
+			if(p.weight_ops_on)
+				op_weight.push_back(p.op_weight[i]);
+		}
+	}
+	if(!choices.empty()){
+		vector<float> wheel(choices.size());
+		//wheel.resize(p.op_weight.size());
+		if (p.weight_ops_on) //fns are weighted
+			partial_sum(op_weight.begin(), op_weight.end(), wheel.begin());
 
+		if (p.weight_ops_on) //fns are weighted
+		{
+			float tmp = r[omp_get_thread_num()].rnd_flt(0,*std::max_element(wheel.begin(),wheel.end()));
+			if (tmp < wheel.at(0))
+				tmpchoice=0;
+			else
+			{
+				for (unsigned int k=1;k<wheel.size();k++)
+				{
+					if(tmp<wheel.at(k) && tmp>=wheel.at(k-1)){
+						tmpchoice = k;
+						break;
+					}
+				}
+			}
+		}
+		else 
+			tmpchoice =r[omp_get_thread_num()].rnd_int(0,choices.size()-1);
+
+		choice = choices[tmpchoice];
+	}
+	else
+		choice = -1;
+}
+
+void push_back_node(vector <shared_ptr<node>>& line, int choice, params& p,vector<Randclass>& r)
+{
+	string varchoice; 
+
+	switch (p.op_choice.at(choice))
+	{
+		case 0: //load number
+			if(p.ERC){ // if ephemeral random constants are on
+				if (!p.cvals.empty()){ // if there are constants defined by the user
+					if (r[omp_get_thread_num()].rnd_flt(0,1)<.5)
+						line.push_back(shared_ptr<node>(new n_num(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1)))));
+					else{	
+						if(p.ERCints)
+							line.push_back(shared_ptr<node>(new n_num((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC))));
+						else
+							line.push_back(shared_ptr<node>(new n_num(r[omp_get_thread_num()].rnd_flt(p.minERC,p.maxERC))));
+					}
+				}
+				else{
+					if(p.ERCints)
+							line.push_back(shared_ptr<node>(new n_num((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC))));
+						else
+							line.push_back(shared_ptr<node>(new n_num(r[omp_get_thread_num()].rnd_flt(p.minERC,p.maxERC))));
+				}
+			}
+			else if (!p.cvals.empty()) // if ERCs are off, but there are constants defined by the user
+			{
+				line.push_back(shared_ptr<node>(new n_num(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1)))));
+			}
+			break;
+		case 1: //load variable
+			varchoice = p.allvars.at(r[omp_get_thread_num()].rnd_int(0,p.allvars.size()-1));
+			//varchoice = d.label.at(r[omp_get_thread_num()].rnd_int(0,d.label.size()-1));
+			line.push_back(shared_ptr<node>(new n_sym(varchoice)));
+			break;
+		case 2: // +
+			line.push_back(shared_ptr<node>(new n_add()));
+			break;
+		case 3: // -
+			line.push_back(shared_ptr<node>(new n_sub()));
+			break;
+		case 4: // *
+			line.push_back(shared_ptr<node>(new n_mul()));
+			break;
+		case 5: // /
+			line.push_back(shared_ptr<node>(new n_div()));
+			break;
+		case 6: // sin
+			line.push_back(shared_ptr<node>(new n_sin()));
+			break;
+		case 7: // cos
+			line.push_back(shared_ptr<node>(new n_cos()));
+			break;
+		case 8: // exp
+			line.push_back(shared_ptr<node>(new n_exp()));
+			break;
+		case 9: // log
+			line.push_back(shared_ptr<node>(new n_log()));
+			break;
+	}
+}
+void push_front_node(vector <shared_ptr<node>>& line, int choice, params& p,vector<Randclass>& r)
+{
+	string varchoice; 
+
+	switch (p.op_choice.at(choice))
+	{
+		case 0: //load number
+			if(p.ERC){ // if ephemeral random constants are on
+				if (!p.cvals.empty()){ // if there are constants defined by the user
+					if (r[omp_get_thread_num()].rnd_flt(0,1)<.5)
+						line.insert(line.begin(),shared_ptr<node>(new n_num(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1)))));
+					else{	
+						if(p.ERCints)
+							line.insert(line.begin(),shared_ptr<node>(new n_num((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC))));
+						else
+							line.insert(line.begin(),shared_ptr<node>(new n_num(r[omp_get_thread_num()].rnd_flt(p.minERC,p.maxERC))));
+					}
+				}
+				else{
+					if(p.ERCints)
+							line.insert(line.begin(),shared_ptr<node>(new n_num((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC))));
+						else
+							line.insert(line.begin(),shared_ptr<node>(new n_num(r[omp_get_thread_num()].rnd_flt(p.minERC,p.maxERC))));
+				}
+			}
+			else if (!p.cvals.empty()) // if ERCs are off, but there are constants defined by the user
+			{
+				line.insert(line.begin(),shared_ptr<node>(new n_num(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1)))));
+			}
+			break;
+		case 1: //load variable
+			varchoice = p.allvars.at(r[omp_get_thread_num()].rnd_int(0,p.allvars.size()-1));
+			//varchoice = d.label.at(r[omp_get_thread_num()].rnd_int(0,d.label.size()-1));
+			line.insert(line.begin(),shared_ptr<node>(new n_sym(varchoice)));
+			break;
+		case 2: // +
+			line.insert(line.begin(),shared_ptr<node>(new n_add()));
+			break;
+		case 3: // -
+			line.insert(line.begin(),shared_ptr<node>(new n_sub()));
+			break;
+		case 4: // *
+			line.insert(line.begin(),shared_ptr<node>(new n_mul()));
+			break;
+		case 5: // /
+			line.insert(line.begin(),shared_ptr<node>(new n_div()));
+			break;
+		case 6: // sin
+			line.insert(line.begin(),shared_ptr<node>(new n_sin()));
+			break;
+		case 7: // cos
+			line.insert(line.begin(),shared_ptr<node>(new n_cos()));
+			break;
+		case 8: // exp
+			line.insert(line.begin(),shared_ptr<node>(new n_exp()));
+			break;
+		case 9: // log
+			line.insert(line.begin(),shared_ptr<node>(new n_log()));
+			break;
+	}
+}
+int maketree(vector <shared_ptr<node>>& line, int level, bool exactlevel, int lastnode,params& p,vector<Randclass>& r)
+{
+	int choice; 
+	int splitnodes; 
+	int thisnode = lastnode+1;
+	int startsize = line.size();
+	if (level==1) // choose a terminal because of the level limitation
+		getChoice(choice,0,0,p,r); 	
+	else if (exactlevel){
+		getChoice(choice,1,level-1,p,r);
+		if (choice==-1)
+			getChoice(choice,0,0,p,r);
+	}
+	else
+		getChoice(choice,0,level-1,p,r);
+
+	// insert choice into line
+	push_front_node(line,choice,p,r);
+	int a = p.op_arity[choice];
+	int newlevel;
+	int nodes=0;
+	if (a !=0){
+		level = level-1; // change splitnodes so that all trees aren't symmetric
+		//splitnodes = int(round(float(level)/float(a)));
+		//splitnodes = r[omp_get_thread_num()].rnd_int(1,level-1);
+	}
+	for (int i=1;i<=a;i++)
+	{
+		if (i==a)
+			//newlevel = level-(splitnodes*(a-1));
+			//newlevel = r[omp_get_thread_num()].rnd_int(1,level-nodes);
+			newlevel = level-nodes;
+		else
+			//newlevel = splitnodes;
+			newlevel = r[omp_get_thread_num()].rnd_int(1,level-1);
+		nodes += maketree(line,newlevel,exactlevel,thisnode,p,r);
+	}
+	return line.size()-startsize;
+}
 //void makestack(ind& newind,params& p,vector<Randclass>& r)
 //{
 //	// construct line 

@@ -13,14 +13,13 @@
 #include "Fitness.h"
 #include "Generation.h"
 #include "instructionset.h"
-
+//#include "omp.h"
 #include "Generationfns.h"
 #include "strdist.h"
 #include <time.h>
 #include <cstring>
 #include "p_archive.h"
 #include "Eqn2Line.h"
-#include <unistd.h>
 #include "general_fns.h"
 
 //#define _CRTDBG_MAP_ALLOC
@@ -76,8 +75,11 @@ vector <ind> besteqns;
 T.topTen(besteqns);
 //for(unsigned int j=0;j<min(10,int(A.pop.size()));j++)
 //	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
-for(unsigned int j=0;j<besteqns.size();j++)
+for(unsigned int j=0;j<besteqns.size();j++){
 	s.out <<besteqns.at(j).abserror << "\t" << besteqns.at(j).corr << "\t" << besteqns.at(j).fitness << "\t" << besteqns.at(j).eqn <<"\n";
+	if(besteqns.at(j).abserror==0)
+		cout << "caught bad equation.\n";
+}
 
 s.out << "-------------------------------------------------------------------------------" << "\n";
 }
@@ -456,6 +458,12 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.norm_error;
 		else if(varname.compare("shuffle_data") == 0)
 			ss>>p.shuffle_data;
+		else if(varname.compare("init_trees") == 0)
+			ss>>p.init_trees;
+		else if(varname.compare("limit_evals") == 0)
+			ss>>p.limit_evals;
+		else if(varname.compare("max_evals") == 0)
+			ss>>p.max_evals;
 		else{}
     }
 	p.allvars = p.intvars;
@@ -469,25 +477,55 @@ void load_params(params &p, std::ifstream& fs)
 	for (unsigned int i=0; i<p.op_list.size(); i++)
 	{
 		if (p.op_list.at(i).compare("n")==0 )//&& ( p.ERC || !p.cvals.empty() ) )
+		{
 			p.op_choice.push_back(0);
+			p.op_arity.push_back(0);
+		}
 		else if (p.op_list.at(i).compare("v")==0)
+		{
 			p.op_choice.push_back(1);
+			p.op_arity.push_back(0);
+		}
 		else if (p.op_list.at(i).compare("+")==0)
+		{
 			p.op_choice.push_back(2);
+			p.op_arity.push_back(2);
+		}
 		else if (p.op_list.at(i).compare("-")==0)
+		{
 			p.op_choice.push_back(3);
+			p.op_arity.push_back(2);
+		}
 		else if (p.op_list.at(i).compare("*")==0)
+		{
 			p.op_choice.push_back(4);
+			p.op_arity.push_back(2);
+		}
 		else if (p.op_list.at(i).compare("/")==0)
+		{
 			p.op_choice.push_back(5);
+			p.op_arity.push_back(2);
+		}
 		else if (p.op_list.at(i).compare("sin")==0)
+		{
 			p.op_choice.push_back(6);
+			p.op_arity.push_back(1);
+		}
 		else if (p.op_list.at(i).compare("cos")==0)
+		{
 			p.op_choice.push_back(7);
+			p.op_arity.push_back(1);
+		}
 		else if (p.op_list.at(i).compare("exp")==0)
+		{
 			p.op_choice.push_back(8);
+			p.op_arity.push_back(1);
+		}
 		else if (p.op_list.at(i).compare("log")==0)
+		{
 			p.op_choice.push_back(9);
+			p.op_arity.push_back(1);
+		}
 		else 
 			cout << "bad command (load params op_choice)" << "\n";
 	}
@@ -562,6 +600,10 @@ void load_data(data &d, std::ifstream& fs,params& p)
 		istringstream ss2(s);
 		// get target data
 		ss2 >> tarf;
+		/*if(boost::math::isnan(tarf)){
+			cerr << "NaN value in data file. exiting..\n";
+			exit(1);
+		}*/
 		d.target.push_back(tarf);
 		d.vals.push_back(vector<float>());
 		// get variable data
@@ -736,8 +778,10 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s)
 bool stopcondition(tribe& T,params p,data& d,state& s,FitnessEstimator& FE)
 {
 	if (!p.EstimateFitness){
-		if (T.bestFit() <= 0.0001)
+		if (T.bestFit() <= 0.000001){
+			s.out << "best fitness criterion achieved: " << T.bestFit() <<"\n";
 			return true;
+		}
 		else
 			return false;
 	}
@@ -766,9 +810,9 @@ int get_next_task(int& index,vector<int>& task_assignments)
 		return task_assignments.at(++index);
 	}
 }
-//void runDevelep(string& paramfile, string& datafile,bool trials)
+//void runEllenGP(string& paramfile, string& datafile,bool trials)
 //{	
-void runDevelep(string paramfile, string datafile,bool trials)
+void runEllenGP(string paramfile, string datafile,bool trials)
 {
 	//string paramfile(param_in);
 	//string datafile(data_in);
@@ -816,16 +860,20 @@ void runDevelep(string paramfile, string datafile,bool trials)
 	
 
 	std::time_t t =  std::time(NULL);
-    std::tm * tm;
+    
 
 #if defined(_WIN32)
-	localtime_s(tm,&t);
+	std::tm tm;
+	localtime_s(&tm,&t);
+	char tmplog[100];
+	strftime(tmplog,100,"%Y-%m-%d_%H-%M-%S",&tm);
 #else
-	tm = localtime(&t);
-#endif
-
+	std::tm * tm = localtime(&t);
 	char tmplog[100];
 	strftime(tmplog,100,"%F_%H-%M-%S",tm);
+#endif
+
+	
    // string tmplog = "777";
 	const char * c = p.resultspath.c_str();
 	#if defined(_WIN32)
@@ -858,12 +906,13 @@ void runDevelep(string paramfile, string datafile,bool trials)
 		 exit(1);
 	 }
 	 s.out << "_______________________________________________________________________________ \n";
-	 s.out << "                                    Develep                                     \n";
+	 s.out << "                                    ellenGP                                     \n";
 	 s.out << "_______________________________________________________________________________ \n";
 	 //s.out << "Time right now is " << std::put_time(&tm, "%c %Z") << '\n';
-	// s.out<< "Results Path: " << logname  << "\n";
+	 s.out<< "Results Path: " << p.resultspath  << "\n";
 	 s.out << "parameter file: " << paramfile << "\n";
 	 s.out << "data file: " << datafile << "\n";
+	 if(trials) s.out << "Running in Trial Mode\n";
 	 s.out << "Settings: \n";
 	 // get evolutionary method
 	 s.out << "Evolutionary Method: ";
@@ -886,7 +935,8 @@ void runDevelep(string paramfile, string datafile,bool trials)
 	 s.out << "Epigenetic Hill Climber: " << p.eHC_on <<"\n";
 	 if(p.train) s.out << "Data split 50/50 for training and validation.\n";
 	 s.out << "Total Population Size: " << p.popsize << "\n";
-	 s.out << "Max Generations: " << p.g << "\n";
+	 if (p.limit_evals) s.out << "Maximum Point Evals: " << p.max_evals << "\n";
+	 else s.out << "Maximum Generations: " << p.g << "\n";
 
 	//initialize random number generator
 	unsigned int seed1 = int(time(NULL));
@@ -1064,6 +1114,15 @@ void runDevelep(string paramfile, string datafile,bool trials)
 		vector<FitnessEstimator> tmpFE = FE; 
 
 		int gen=0;
+		long long termits,term;
+		if (p.limit_evals){
+			termits = s.totalptevals();
+			term = p.max_evals;
+		}
+		else {
+			termits=1;
+			term = p.g;
+		}
 		bool pass=1;
 		int mixtrigger=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
 		//int trainer_trigger=0;
@@ -1204,7 +1263,7 @@ void runDevelep(string paramfile, string datafile,bool trials)
 		
 		q = omp_get_thread_num();
 
-		while(gen<=p.g && pass)
+		while(termits<=term && pass)
 		{
 			
 
@@ -1269,7 +1328,8 @@ void runDevelep(string paramfile, string datafile,bool trials)
 					s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
 					s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
 					++gen;
-
+					if (p.limit_evals) termits = s.totalptevals();
+					else ++termits;
 									
 				}
 				#pragma omp single  nowait //coevolve fitness estimators
@@ -1384,9 +1444,16 @@ void runDevelep(string paramfile, string datafile,bool trials)
 		}
 		s.setgenevals();
 		s.out << " number of evals: " << s.getgenevals() << "\n";
-		int its=1;
+		int its = 1;
+		long termits;
+		int gits=1;
+		
+		if (p.limit_evals) termits = s.totalptevals();
+		else termits=1;
 		int trigger=0;
 		int trainer_trigger=p.FE_train_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
+		
+
 		int gen=0;
 		int counter=0;
 		if(p.sel==2) // if using deterministic crowding, increase gen size
@@ -1396,11 +1463,14 @@ void runDevelep(string paramfile, string datafile,bool trials)
 		}
 		else
 			gen=p.g;
+		long long term;
+		if (p.limit_evals) term = p.max_evals;
+		else term = gen;
 
 		if (p.EstimateFitness)
 			InitPopFE(FE,T.pop,trainers,p,r,d,s);
 
-		while (its<=gen && !stopcondition(T,p,d,s,FE[0]))
+		while (termits<=term && !stopcondition(T,p,d,s,FE[0]))
 		{
 			
 			 
@@ -1465,6 +1535,8 @@ void runDevelep(string paramfile, string datafile,bool trials)
 			}
 				
 
+			if (p.limit_evals) termits = s.totalptevals(); 
+			else termits++;
 			its++;
 		}
 		printbestind(T,p,s,logname);

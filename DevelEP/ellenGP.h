@@ -3,6 +3,6 @@
 #define DEVELEP_H
 #include <string>
 
-void Develep(string& paramfile, string& datafile);
+void ellenGP(string& paramfile, string& datafile);
 
 #endif

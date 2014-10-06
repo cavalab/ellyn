@@ -2,7 +2,9 @@ g					50000	// number of generations
 popsize				1000	//population size
 numits				1	// number of trials
 printeverypop		0  // save printout of population at every generation
-
+limit_evals			1 // limit evals instead of number of generations
+max_evals			100000000 // max point evaluations
+					  
 // Generation Settings 
 sel					4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 tourn_size			2
@@ -19,7 +21,7 @@ train				0  // split data into training and validation sets
 shuffle_data		0  // shuffle the data 
 
 // Results
-resultspath			D:\Develep\Results\Pagie-1\Age_c1\coevolve
+resultspath			/home/quarrian/runtrialsresults
 loud				1
 
 // Problem information

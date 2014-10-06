@@ -4,30 +4,36 @@
 // DEVELEP
 
 #pragma once
-
-//#include "targetver.h"
 #include <stdio.h>
-//#include <tchar.h>
 #include <numeric>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <fstream>
 #include <boost/random.hpp>
-//#include <boost/shared_ptr.hpp>
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/timer.hpp>
 #include <boost/progress.hpp>
 #include <boost/regex.hpp>
 #include "time.h"
 #include <math.h>
-#include <memory>
-#include <sys/stat.h>
+#if defined(_WIN32)
+	#include "targetver.h"
+	#include <tchar.h>
+	#include <boost/shared_ptr.hpp>
+	#include <direct.h>
+#else
+	#include <memory>
+	#include <sys/stat.h>
+	#include <unistd.h>
+#endif
+
+
 //#include <stdlib.h>
 #include <cstdlib>
 //#include "ppl.h"
 #include <omp.h>
-//#include <direct.h>
+
 #include <exception>
 /*#include "pop.h"
 #include "pareto.h"

@@ -20,7 +20,7 @@
 #include <cstring>
 #include "p_archive.h"
 #include "Eqn2Line.h"
-#include <unistd.h>
+
 #include "general_fns.h"
 
 //#define _CRTDBG_MAP_ALLOC
@@ -772,9 +772,9 @@ int get_next_task(int& index,vector<int>& task_assignments)
 		return task_assignments.at(++index);
 	}
 }
-//void runDevelep(string& paramfile, string& datafile,bool trials)
+//void runEllenGP(string& paramfile, string& datafile,bool trials)
 //{	
-void runDevelepMIC(std::string paramfile, std::string datafile,bool trials)
+void runEllenGPMIC(std::string paramfile, std::string datafile,bool trials)
 {
 	//string paramfile(param_in);
 	//string datafile(data_in);
@@ -846,13 +846,13 @@ void runDevelepMIC(std::string paramfile, std::string datafile,bool trials)
 	 string dname = datafile.substr(datafile.rfind('\\')+1,datafile.size());
 	 pname = pname.substr(0,pname.size()-4);
 	 dname = dname.substr(0,dname.size()-4);
-     string logname = p.resultspath + '\\' + "DevelEP_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
+     string logname = p.resultspath + '\\' + "ellenGP_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
 #else
 	 string pname = paramfile.substr(paramfile.rfind('/')+1,paramfile.size());
 	 string dname = datafile.substr(datafile.rfind('/')+1,datafile.size());
 	 pname = pname.substr(0,pname.size()-4);
 	 dname = dname.substr(0,dname.size()-4);
-	 string logname = p.resultspath + '/' + "DevelEP_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
+	 string logname = p.resultspath + '/' + "ellenGP_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
 #endif
 
 
@@ -864,7 +864,7 @@ void runDevelepMIC(std::string paramfile, std::string datafile,bool trials)
 		 exit(1);
 	 }
 	 s.out << "_______________________________________________________________________________ \n";
-	 s.out << "                                    Develep                                     \n";
+	 s.out << "                                    ellenGP                                     \n";
 	 s.out << "_______________________________________________________________________________ \n";
 	 //s.out << "Time right now is " << std::put_time(&tm, "%c %Z") << '\n';
 	// s.out<< "Results Path: " << logname  << "\n";

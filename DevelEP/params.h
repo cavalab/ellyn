@@ -12,10 +12,12 @@ using namespace std;
 
 struct params {
 	
-	int g; // number of generations
+	int g; // number of generations (limited by default)
 	int popsize; //population size
 	int numits;  // number of trials
-	
+	bool limit_evals; // limit evals instead of generations
+	long long max_evals; // maximum number of evals before termination (only active if limit_evals is true)
+
 	// Generation Settings 
 	int sel; // 1: tournament; 2: deterministic crowding; 3: NSGA
 	int tourn_size;
@@ -65,6 +67,7 @@ struct params {
 	vector <string> allblocks;// = allvars.insert(allvars.end(),consvals.begin(),convals.end());
 	//allblocks = allblocks.insert(allblocks.end(),seeds.begin(),seeds.end());
 
+	bool init_trees; // do tree-like recursive initialization of genotypes
 
 	bool ERC; // ephemeral random constants
 	bool ERCints;
@@ -82,6 +85,7 @@ struct params {
 	vector <string> op_list;
 	vector <int> op_choice; // map op list to pointer location in makeline() pointer function
 	vector <float> op_weight;
+	vector <int> op_arity; // arity list corresponding op_choice for recursive makeline
 	bool weight_ops_on;
 
 	int min_len;

@@ -1,0 +1,10 @@
+#!/bin/bash
+#SBATCH -J gen_eqn_trials_test # job name
+#SBATCH -o output/RunTrialsMPI.o%j       # output and error file name (%j expands to jobID)
+#SBATCH -n 63           # total number of mpi tasks requested
+#SBATCH -p normal    # queue (partition) -- normal, development, etc.
+#SBATCH -t 00:10:00        # run time (hh:mm:ss) - 30 mins
+#SBATCH --mail-user=williamlacava@gmail.com
+#SBATCH --mail-type=begin  # email me when the job starts
+#SBATCH --mail-type=end    # email me when the job finishes
+ibrun ./RunTrialsMPI ../../gen_eqn_trials/gen_eqn_trials.tacc_test # run the MPI executable named a.out

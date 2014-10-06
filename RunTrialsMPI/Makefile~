@@ -1,6 +1,6 @@
 CC=mpicxx
-CFLAGS= -c -I /home/quarrian/boost/boost_1_56_0 -I ../DevelEP -openmp -std=c++11 -O2
-LDFLAGS= -I /home/quarrian/boost/boost_1_56_0 -I ../DevelEP -openmp -std=c++11 -O2
+CFLAGS= -c -I /home/quarrian/boost/boost_1_56_0 -I ../DevelEP -openmp -std=c++11 
+LDFLAGS= -I /home/quarrian/boost/boost_1_56_0 -I ../DevelEP -openmp -std=c++11 
 LDFLAGS2= -Bstatic -L/home/quarrian/boost/boost_1_56_0/stage/lib -lboost_regex 
 SOURCES= stdafxRTMPI.cpp RunTrialsMPI.cpp ../DevelEP/stdafx.cpp ../DevelEP/AgeBreed.cpp ../DevelEP/AgeFitSelect.cpp ../DevelEP/ApplyGenetics.cpp ../DevelEP/BruteforceAlgo.cpp ../DevelEP/Crossover.cpp ../DevelEP/Datapoint.cpp ../DevelEP/DC.cpp ../DevelEP/EpiHC.cpp ../DevelEP/Eqn2Line.cpp ../DevelEP/Fitness.cpp ../DevelEP/FitnessEstimator.cpp ../DevelEP/general_fns.cpp ../DevelEP/Generation.cpp ../DevelEP/HillClimb.cpp ../DevelEP/InitPop.cpp ../DevelEP/LexicaseSelect.cpp ../DevelEP/Line2Eqn.cpp ../DevelEP/Mutate.cpp ../DevelEP/NondominatedsortAlgo.cpp ../DevelEP/pareto.cpp ../DevelEP/runEllenGP.cpp ../DevelEP/StablesortAlgo.cpp ../DevelEP/strdist.cpp ../DevelEP/Tournament.cpp 
 OBJECTS=$(SOURCES:.cpp=.o)

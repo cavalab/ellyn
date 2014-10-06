@@ -3,7 +3,7 @@
 #define GENERATIONFNS_H
 //#include "FitnessEstimator.h"
 void Tournament(vector<ind>&,vector<unsigned int>&,params&,vector<Randclass>& r);
-void DC(vector<ind>&,params&,vector<Randclass>& r,data& d,state&,FitnessEstimator& FE);
+void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE);
 void ApplyGenetics(vector<ind>&,vector<unsigned int>&,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE);
 void Crossover(ind&,ind&,vector<ind>&,params&,vector<Randclass>& r);
 void CrossoverP(ind&,ind&,ind&,ind&,params&,vector<Randclass>& r);

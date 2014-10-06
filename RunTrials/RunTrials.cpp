@@ -1,11 +1,10 @@
-// RunTrials.cpp : Run trials of Develep.
+// RunTrials.cpp : Run trials of EllenGP on openMP threads.
 // input is a file containing the number of trials, the parameter file for those trials, and the data for those trials. 
 // the settings are passed on to run Develep.  parameter file names and data are then passed on to Develep to run. 
 
 #include "stdafxRT.h"
-#include "runDevelep.h"
+#include "runEllenGP.h"
 #include "pop.h"
-#include "mpi.h"
 using namespace std;
 
 void getTrialSetup(ifstream& fs,int&,vector<int>&,vector<string>&,vector<string>&);
@@ -37,32 +36,25 @@ int main(int argc, char** argv)
 		
 
 		cout << "Running Trials: \n";
-		//MPI stuff
-		MPI::Init();
-		int size = MPI::COMM_WORLD.Get_size();
-		int rank = MPI::COMM_WORLD.Get_rank();
-		cout << "size: " << size << "\n";
-		cout << "rank: " << size << "\n";
+
 		#pragma omp parallel for schedule(dynamic)
-		//for(int i=0;i<totaltrials;i++)
-		//{
+		for(int i=0;i<totaltrials;i++)
+		{
 #if defined(_WIN32)
 			cout << to_string(static_cast<long long>(i)) + ": " + paramfile.at(i).substr(paramfile.at(i).rfind('\\')+1,paramfile.at(i).size()) + ", " + datafile.at(i).substr(datafile.at(i).rfind('\\')+1,datafile.at(i).size())  + "\n";
 #else
 			cout << to_string(static_cast<long long>(i)) + ": " + paramfile.at(i).substr(paramfile.at(i).rfind('/')+1,paramfile.at(i).size()) + ", " + datafile.at(i).substr(datafile.at(i).rfind('/')+1,datafile.at(i).size())  + "\n";
 #endif
-			runDevelep(paramfile.at(i).c_str(),datafile.at(i).c_str(),1); //run develep
+			runEllenGP(paramfile.at(i),datafile.at(i),1); //run develep
 			//_CrtMemDumpStatistics( &s1 );
-		//}
-		MPI::Finalize();
-		char key;
-		cout << "All trials completed. Press return to exit." << endl;
-		key = getchar();
+		}
+		cout << "All trials completed. Exiting." << endl;
+		//key = getchar();
 	}
 	catch(const std::bad_alloc&)
 	{
 		cout << "bad allocation error. \n";
-		abort();
+		//abort();
 	}
 	catch(exception& er) 
 	{

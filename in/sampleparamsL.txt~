@@ -1,8 +1,8 @@
-g				50000	// number of generations
+g				100	// number of generations
 popsize				1000	//population size
 numits				1	// number of trials
 printeverypop			0  // save printout of population at every generation
-
+limit_evals			0 
 // Generation Settings 
 sel				4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 tourn_size			2
@@ -19,7 +19,7 @@ train				0  // split data into training and validation sets
 shuffle_data			0  // shuffle the data 
 
 // Results
-resultspath			~/DevelEP_Results/sampleparamsL
+resultspath			/home/quarrian/runtrialsresults
 loud				1
 
 // Problem information //
@@ -87,5 +87,5 @@ prto_arch_size			100
 prto_sel_on			1
 
 // island model
-islands				1
+islands				0
 island_gens			100
