@@ -1,4 +1,4 @@
-CC=icpcc
+CC=icpc
 CFLAGS= -c -I /home/quarrian/boost/boost_1_56_0 -std=c++11 -openmp -O2
 LDFLAGS= -I /home/quarrian/boost/boost_1_56_0 -std=c++11 -openmp -O2
 LDFLAGS2= -Bstatic -L/home/quarrian/boost/boost_1_56_0/stage/lib -lboost_regex 

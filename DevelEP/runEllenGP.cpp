@@ -1445,7 +1445,7 @@ void runEllenGP(string paramfile, string datafile,bool trials)
 		s.setgenevals();
 		s.out << " number of evals: " << s.getgenevals() << "\n";
 		int its = 1;
-		long termits;
+		long long termits;
 		int gits=1;
 		
 		if (p.limit_evals) termits = s.totalptevals();
