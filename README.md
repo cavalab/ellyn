@@ -16,7 +16,7 @@ It is built to include different evolutionary methods for system identification 
 
 How to Build
 ============
-I've built the project in Visual Studio 2010 professional as well as C++ Express (which is free from Microsoft), but hope to have a build with the GNU compiler in the future. The boost libraries (also free) need to be installed. If you use VS 2010 Express, the OpenMP files (which were removed from VS 2010) need to be added to the VS path. 
+I've built the project in Visual Studio 2010 professional as well as C++ Express (which is free from Microsoft), and in linux with g++ and the intel c++ compiler using the make files. The boost libraries (also free) need to be installed. If you use VS 2010 Express, the OpenMP files (which were removed from VS 2010) need to be added to the VS path. 
 
 How to Run ellenGP
 ==================
