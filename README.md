@@ -6,7 +6,7 @@ It is very much under development!
 
 There are some boost library dependencies, including regex. 
 
-The files have been built in Visual Studio C++ Express 2010 and in linux with g++ and the intel compiler. there is also a version 
+The files have been built in Visual Studio C++ 2010 and in linux with g++ and the intel c++ compiler. 
 
 About
 =====
