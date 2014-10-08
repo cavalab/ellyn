@@ -7,7 +7,7 @@
 #include "Line2Eqn.h"
 #include "EvalEqnStr.h"
 #include <unordered_map>
-
+#include <regex>
 #include "FitnessEstimator.h"
 //#include "Fitness.h"
 
@@ -29,9 +29,15 @@ void getEqnForm(std::string& eqn,std::string& eqn_form)
 //replace numbers with the letter c
 	//boost::regex re("\d|[\d\.\d]");
 	//(([0-9]+)(\.)([0-9]+))|([0-9]+)
-	boost::regex re("(([0-9]+)(\.)([0-9]+))|([0-9]+)");
+	std::regex e ("(([0-9]+)(\.)([0-9]+))|([0-9]+)");
 	//(\d+\.\d+)|(\d+)
-	eqn_form=boost::regex_replace(eqn,re,"c");
+	std::basic_string<char> tmp = "c";
+	//eqn_form=std::tr1::regex_replace(eqn,e,tmp.c_str(),std::tr1::regex_constants::match_default);
+	//std::string result;
+    std::regex_replace (eqn_form.begin(), eqn.begin(), eqn.end(), e,tmp);
+	//std::regex_replace(std::back_inserter(eqn_form),eqn.begin(),eqn.end(),e,"c",std::regex_constants::match_default);
+	//std::regex_replace(std::back_inserter(eqn_form),eqn.begin(),eqn.end(),e,"c",std::tr1::regex_constants::match_default
+    //std::cout << result;
 	//std::cout << eqn << "\t" << eqn_form <<"\n";
 }
 float getCorr(vector<float>& output,vector<float>& target,float meanout,float meantarget,int off,float& target_std)
