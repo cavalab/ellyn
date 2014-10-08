@@ -1,5 +1,5 @@
 g					50000	// number of generations
-popsize				1000	//population size
+popsize				100	//population size
 numits				1	// number of trials
 printeverypop		0  // save printout of population at every generation
 limit_evals			1 // limit evals instead of number of generations
@@ -21,7 +21,7 @@ train				0  // split data into training and validation sets
 shuffle_data		0  // shuffle the data 
 
 // Results
-resultspath			/home/quarrian/runtrialsresults
+resultspath			D:\Develep\Results\Sample
 loud				1
 
 // Problem information

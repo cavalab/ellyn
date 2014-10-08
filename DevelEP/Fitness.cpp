@@ -34,7 +34,7 @@ void getEqnForm(std::string& eqn,std::string& eqn_form)
 	std::basic_string<char> tmp = "c";
 	//eqn_form=std::tr1::regex_replace(eqn,e,tmp.c_str(),std::tr1::regex_constants::match_default);
 	//std::string result;
-    std::regex_replace (eqn_form.begin(), eqn.begin(), eqn.end(), e,tmp);
+	std::regex_replace (std::back_inserter(eqn_form), eqn.begin(), eqn.end(), e,tmp);
 	//std::regex_replace(std::back_inserter(eqn_form),eqn.begin(),eqn.end(),e,"c",std::regex_constants::match_default);
 	//std::regex_replace(std::back_inserter(eqn_form),eqn.begin(),eqn.end(),e,"c",std::tr1::regex_constants::match_default
     //std::cout << result;
