@@ -109,6 +109,7 @@ int main(int argc, char** argv)
 							cout << "running process " + to_string(static_cast<long long>(tag)) + " of " + to_string(static_cast<long long>(totaltrials)) + " on processor " + to_string(static_cast<long long>(myid)) + " : " + pfile.substr(pfile.rfind('/')+1,pfile.size()) + ", " + dfile.substr(dfile.rfind('/')+1,dfile.size())  + "\n";
 							//run develep
 							runEllenGP(pfile,dfile,1);
+							cout << "hello\n";
 							cout << "process " + to_string(static_cast<long long>(tag)) + " of " + to_string(static_cast<long long>(totaltrials)) + " on processor " + to_string(static_cast<long long>(myid)) + " : " + pfile.substr(pfile.rfind('/')+1,pfile.size()) + ", " + dfile.substr(dfile.rfind('/')+1,dfile.size())  + "finished\n";
 
 							// send message when finished
@@ -182,7 +183,7 @@ void getTrialSetup(ifstream& fs,int& totaltrials,vector<int>& trialset,vector<st
 	//string trash;
 	//s.erase();
     //s.reserve(is.rdbuf()->in_avail());
-	boost::regex re("~");
+	//boost::regex re("~");
 	int n=0;
 	while(!fs.eof())
 	{

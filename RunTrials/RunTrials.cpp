@@ -45,7 +45,7 @@ int main(int argc, char** argv)
 #else
 			cout << to_string(static_cast<long long>(i)) + ": " + paramfile.at(i).substr(paramfile.at(i).rfind('/')+1,paramfile.at(i).size()) + ", " + datafile.at(i).substr(datafile.at(i).rfind('/')+1,datafile.at(i).size())  + "\n";
 #endif
-			runEllenGP(paramfile.at(i),datafile.at(i),1); //run develep
+			runEllenGP(paramfile.at(i),datafile.at(i),1,i); //run develep
 			//_CrtMemDumpStatistics( &s1 );
 		}
 		cout << "All trials completed. Exiting." << endl;
@@ -72,8 +72,8 @@ void getTrialSetup(ifstream& fs,int& totaltrials,vector<int>& trialset,vector<st
 {
 	if (!fs.good()) 
 	{
-			cout << "error: can't find input file." << "\n";
-			throw;
+			cerr << "error: can't find input file." << "\n";
+			exit(1);
 	}
 	
 	vector<string> paramset;
@@ -89,15 +89,19 @@ void getTrialSetup(ifstream& fs,int& totaltrials,vector<int>& trialset,vector<st
     while(!fs.eof())
     {		
 		getline(fs,s,'\n');
-		istringstream ss(s);
+		// in case of extra blank lines in data file
+		if (!s.empty()){
 		
-		ss >> tmpi;
-		trialset.push_back(tmpi);
-		ss >> tmps;
-		paramset.push_back(boost::regex_replace(tmps,re," "));
-		ss >> tmps;
-		dataset.push_back(boost::regex_replace(tmps,re," "));
-		n++;
+			istringstream ss(s);
+		
+			ss >> tmpi;
+			trialset.push_back(tmpi);
+			ss >> tmps;
+			paramset.push_back(boost::regex_replace(tmps,re," "));
+			ss >> tmps;
+			dataset.push_back(boost::regex_replace(tmps,re," "));
+			n++;
+		}
 	}
 	for(unsigned int i=0;i<trialset.size();i++)
 	{

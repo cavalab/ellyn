@@ -7,7 +7,11 @@
 #include "Line2Eqn.h"
 #include "EvalEqnStr.h"
 #include <unordered_map>
-#include <regex>
+#if defined(_WIN32)
+	#include <regex>
+#else
+	#include <boost/regex.hpp>
+#endif
 #include "FitnessEstimator.h"
 //#include "Fitness.h"
 
@@ -27,14 +31,20 @@ public:
 void getEqnForm(std::string& eqn,std::string& eqn_form)
 {
 //replace numbers with the letter c
-	//boost::regex re("\d|[\d\.\d]");
-	//(([0-9]+)(\.)([0-9]+))|([0-9]+)
+#if defined(_WIN32)
 	std::regex e ("(([0-9]+)(\.)([0-9]+))|([0-9]+)");
-	//(\d+\.\d+)|(\d+)
 	std::basic_string<char> tmp = "c";
+	std::regex_replace (std::back_inserter(eqn_form), eqn.begin(), eqn.end(), e,tmp);
+#else
+	boost::regex e ("(([0-9]+)(\.)([0-9]+))|([0-9]+)");
+	eqn_form = boost::regex_replace(eqn,e,"c");
+#endif 
+	//(\d+\.\d+)|(\d+)
+	//eqn_form = eqn;
 	//eqn_form=std::tr1::regex_replace(eqn,e,tmp.c_str(),std::tr1::regex_constants::match_default);
 	//std::string result;
-	std::regex_replace (std::back_inserter(eqn_form), eqn.begin(), eqn.end(), e,tmp);
+
+
 	//std::regex_replace(std::back_inserter(eqn_form),eqn.begin(),eqn.end(),e,"c",std::regex_constants::match_default);
 	//std::regex_replace(std::back_inserter(eqn_form),eqn.begin(),eqn.end(),e,"c",std::tr1::regex_constants::match_default
     //std::cout << result;

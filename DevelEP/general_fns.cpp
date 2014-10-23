@@ -3,11 +3,12 @@
 #include "params.h"
 #include "rnd.h"
 #include "data.h"
-
+#include <locale>
 bool is_number(const std::string& s)
 {
+	std::locale loc;
     std::string::const_iterator it = s.begin();
-    while (it != s.end() && (std::isdigit(*it) || (*it=='-') || (*it=='.'))) ++it;
+    while (it != s.end() && (std::isdigit(*it,loc) || (*it=='-') || (*it=='.'))) ++it;
     return !s.empty() && it == s.end();
 }
 

@@ -3,6 +3,6 @@
 #define RUNELLENGP_H
 
 
-void runEllenGP(std::string paramfile, std::string datafile,bool trials);
+void runEllenGP(std::string paramfile, std::string datafile,bool trials,int trialnum);
 
 #endif

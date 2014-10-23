@@ -1,16 +1,15 @@
-g					50000	// number of generations
+g					50	// number of generations
 popsize				100	//population size
-numits				1	// number of trials
 printeverypop		0  // save printout of population at every generation
-limit_evals			1 // limit evals instead of number of generations
-max_evals			100000000 // max point evaluations
+limit_evals			0 // limit evals instead of number of generations
+max_evals			10000000 // max point evaluations
 					  
 // Generation Settings 
 sel					4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 tourn_size			2
-rt_rep				0.1
-rt_cross			0.7
-rt_mut				0.2
+rt_rep				0.1 // population rate of replication
+rt_cross			0.7 // pop rate of crossover
+rt_mut				0.2 // pop rate of mutation
 cross				2	// 1: ultra 2: one point1
 cross_ar			.1 //crossover alternation rate (ultra only)
 mut_ar				.1 //mutation alternation rate (ultra only)
@@ -38,7 +37,7 @@ minERC				-10
 numERC				2
 
 //fitness settings
-fit_type			2	// 1: error, 2: corr, 3: combo, 4: VAF
+fit_type			3	// 1: error, 2: corr, 3: combo, 4: VAF
 norm_error			0  // // normalize error by the standard deviation of the target data being u
 max_fit				100000000000000000000
 min_fit				0.00000000000000000001
@@ -98,5 +97,5 @@ prto_arch_size		100
 prto_sel_on			1
 
 // island model
-islands				1
+islands				0
 island_gens			10
