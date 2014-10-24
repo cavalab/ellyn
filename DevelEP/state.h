@@ -19,13 +19,16 @@ struct state{
 	vector <float> eff_size;
 	vector<int> eHC_updates;
 	int total_eHC_updates;
+	float current_eHC_updates;
 	vector<int> pHC_updates;
+	float current_pHC_updates;
 	int total_pHC_updates;
 	vector<int> good_cross;
 	vector<int> bad_cross;
 	vector<int> neut_cross;
-	int good_cross_pct;
-	int neut_cross_pct;
+	float good_cross_pct;
+	float neut_cross_pct;
+	float bad_cross_pct; 
 
 	logger out; 
 
@@ -73,7 +76,7 @@ struct state{
 			te+=ptevals.at(i);
 		return te;
 	}
-	int getpHCupdates()
+	int setPHCupdates()
 	{
 		int updates=0;
 		for(unsigned int i =0;i<pHC_updates.size();i++)
@@ -81,12 +84,12 @@ struct state{
 
 		int val = (updates-total_pHC_updates);
 		total_pHC_updates+=val;
-
+		current_pHC_updates = float(val);
 		return val; 
 
 	
 	}
-	int geteHCupdates()
+	int setEHCupdates()
 	{
 		int updates=0;
 		for(unsigned int i =0;i<eHC_updates.size();i++)
@@ -94,7 +97,7 @@ struct state{
 
 		int val = (updates-total_eHC_updates);
 		total_eHC_updates+=val;
-
+		current_eHC_updates = float(val);
 		return val; 
 	}
 
@@ -109,12 +112,15 @@ struct state{
 			total_good+=good_cross.at(i);
 			total += good_cross.at(i)+bad_cross.at(i)+neut_cross.at(i);
 		}
-		if (total==0)
+		//good_cross.assign(omp_get_max_threads(),0);
+		if (total==0){
+			good_cross_pct=0;
 			return 0;
+		}
 		else
 		{
-			float pct = total_good/total*100;
-			return pct;
+			good_cross_pct = total_good/float(total)*100;	
+			return good_cross_pct;
 		}
 		
 	}
@@ -129,13 +135,15 @@ struct state{
 			total_neut+=neut_cross.at(i);
 			total += neut_cross.at(i)+bad_cross.at(i)+good_cross.at(i);
 		}
-
-		if (total==0)
+		//neut_cross.assign(omp_get_max_threads(),0);
+		if (total==0){
+			neut_cross_pct = 0;
 			return 0;
+		}
 		else
 		{
-			float pct = total_neut/total*100;
-			return pct;
+			neut_cross_pct = total_neut/total*100;			
+			return neut_cross_pct;
 		}
 
 	}
@@ -150,13 +158,16 @@ struct state{
 			total_bad+=bad_cross.at(i);
 			total += neut_cross.at(i)+bad_cross.at(i)+good_cross.at(i);
 		}
-
-		if (total==0)
+		clearCross();
+		if (total==0){
+			bad_cross_pct = 0;
 			return 0;
+		}
 		else
 		{
-			float pct = total_bad/total*100;
-			return pct;
+			bad_cross_pct = total_bad/total*100;
+			
+			return bad_cross_pct;
 		}
 
 	}

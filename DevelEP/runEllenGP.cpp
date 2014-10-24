@@ -55,13 +55,13 @@ s.out << "Mean Size: " << T.meanSize() << "\n";
 s.out << "Mean Eff Size: " << T.meanEffSize() << "\n";
 s.out << "Pareto Front Equations: " << A.optimal_size << "\n";
 if(p.pHC_on)
-	s.out << "Parameter updates: " << float(s.getpHCupdates())/float(p.popsize)*100 << "\%\n";
+	s.out << "Parameter updates: " << float(s.setPHCupdates())/float(p.popsize)*100 << "\%\n";
 if(p.eHC_on)
-	s.out << "Epigenetic updates: " << float(s.geteHCupdates())/float(p.popsize)*100 << "\%\n";
+	s.out << "Epigenetic updates: " << float(s.setEHCupdates())/float(p.popsize)*100 << "\%\n";
 s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "\%\n";
 s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "\%\n";
 s.out << "Bad Genetics: " << s.getBadCrossPct() << "%\n";
-s.clearCross();
+//s.clearCross();
 //float totalshares = 0;
 //float c1=0;
 //for (int i = 0; i<T.pop.size();i++)
@@ -83,45 +83,45 @@ for(unsigned int j=0;j<besteqns.size();j++){
 
 s.out << "-------------------------------------------------------------------------------" << "\n";
 }
-void printstatsP(tribe T,int &i,state s,params& p,paretoarchive A)
-{
-	
-	//boost::progress_timer timer;
-s.out << "--- Generation " << i << "---------------------------------------------------------------" << "\n";
-s.out << "Number of evals: " << s.genevals.back() << "\n";
-s.out << "Best Fitness: " << T.bestFit() <<"\n";
-s.out << "Best Fitness (v): " << T.bestFit_v() <<"\n";
-s.out << "Median Fitness: " << T.medFit_v()<<"\n";
-s.out << "Median Fitness: " << T.medFit()<<"\n";
-s.out << "Mean Size: " << T.meanSize() << "\n";
-s.out << "Mean Eff Size: " << T.meanEffSize() << "\n";
-s.out << "Pareto Front Equations: " << A.optimal_size << "\n";
-if(p.pHC_on)
-	s.out << "Parameter updates: " << s.getpHCupdates() << "\n";
-if(p.eHC_on)
-	s.out << "Epigenetic updates: " << s.geteHCupdates() << "\n";
-s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "\%\n";
-s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "\%\n";
-s.out << "Bad Genetics: " << s.getBadCrossPct() << "%\n";
-
-//float totalshares = 0;
-//float c1=0;
-//for (int i = 0; i<T.pop.size();i++)
+//void printstatsP(tribe T,int &i,state s,params& p,paretoarchive A)
 //{
-//	for (int j=0;j<T.pop.at(i).line.size();j++){
-//		totalshares+=float(T.pop.at(i).line.at(j).use_count()); c1++;}
+//	
+//	//boost::progress_timer timer;
+//s.out << "--- Generation " << i << "---------------------------------------------------------------" << "\n";
+//s.out << "Number of evals: " << s.genevals.back() << "\n";
+//s.out << "Best Fitness: " << T.bestFit() <<"\n";
+//s.out << "Best Fitness (v): " << T.bestFit_v() <<"\n";
+//s.out << "Median Fitness: " << T.medFit_v()<<"\n";
+//s.out << "Median Fitness: " << T.medFit()<<"\n";
+//s.out << "Mean Size: " << T.meanSize() << "\n";
+//s.out << "Mean Eff Size: " << T.meanEffSize() << "\n";
+//s.out << "Pareto Front Equations: " << A.optimal_size << "\n";
+//if(p.pHC_on)
+//	s.out << "Parameter updates: " << s.setpHCupdates() << "\n";
+//if(p.eHC_on)
+//	s.out << "Epigenetic updates: " << s.geteHCupdates() << "\n";
+//s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "\%\n";
+//s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "\%\n";
+//s.out << "Bad Genetics: " << s.getBadCrossPct() << "%\n";
+//
+////float totalshares = 0;
+////float c1=0;
+////for (int i = 0; i<T.pop.size();i++)
+////{
+////	for (int j=0;j<T.pop.at(i).line.size();j++){
+////		totalshares+=float(T.pop.at(i).line.at(j).use_count()); c1++;}
+////}
+////s.out << "Average shared pointer use count: " << totalshares/(c1) << "\n";
+//s.out << "MAE \t R^2 \t Fitness \t Equation \n";
+//vector <ind> besteqns;
+//T.topTen(besteqns);
+////for(unsigned int j=0;j<min(10,int(A.pop.size()));j++)
+////	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
+//for(unsigned int j=0;j<besteqns.size();j++)
+//	s.out <<besteqns.at(j).abserror << "\t" << besteqns.at(j).corr << "\t" << besteqns.at(j).fitness << "\t" << besteqns.at(j).eqn <<"\n";
+//
+//s.out << "-------------------------------------------------------------------------------" << "\n";
 //}
-//s.out << "Average shared pointer use count: " << totalshares/(c1) << "\n";
-s.out << "MAE \t R^2 \t Fitness \t Equation \n";
-vector <ind> besteqns;
-T.topTen(besteqns);
-//for(unsigned int j=0;j<min(10,int(A.pop.size()));j++)
-//	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
-for(unsigned int j=0;j<besteqns.size();j++)
-	s.out <<besteqns.at(j).abserror << "\t" << besteqns.at(j).corr << "\t" << besteqns.at(j).fitness << "\t" << besteqns.at(j).eqn <<"\n";
-
-s.out << "-------------------------------------------------------------------------------" << "\n";
-}
 
 void printbestind(tribe& T,params& p,state& s,string& logname)
 {
@@ -189,8 +189,8 @@ void printdatafile(tribe& T,state& s,params& p, std::ofstream& dfout)
 	ind best_ind;
 	T.getbestind(best_ind);
 
-	dfout << s.totalptevals() << "\t" << best_ind.eqn << "\t" << T.bestFit() << "\t" << T.bestFit_v() << "\t" << T.medFit() << "\t" << T.medFit_v() << "\t" << best_ind.abserror << "\t" << best_ind.abserror_v << "\t" << best_ind.corr << "\t" << best_ind.corr_v << T.meanSize() << "\t" << T.meanEffSize() << "\t" << float(s.getpHCupdates())/float(p.popsize)*100 << "\t" << float(s.geteHCupdates())/float(p.popsize)*100 << "\t" <<  s.getGoodCrossPct() << "\t" << s.getNeutCrossPct() << "\t" << s.getBadCrossPct() << "\n";
-	s.clearCross();
+	dfout << s.totalptevals() << "\t" << best_ind.eqn << "\t" << T.bestFit() << "\t" << T.bestFit_v() << "\t" << T.medFit() << "\t" << T.medFit_v() << "\t" << best_ind.abserror << "\t" << best_ind.abserror_v << "\t" << best_ind.corr << "\t" << best_ind.corr_v << "\t" << T.meanSize() << "\t" << T.meanEffSize() << "\t" << s.current_pHC_updates/float(p.popsize)*100.0 << "\t" << s.current_eHC_updates/float(p.popsize)*100.0 << "\t" <<  s.good_cross_pct << "\t" << s.neut_cross_pct << "\t" << s.bad_cross_pct << "\n";
+	//s.clearCross();
 }
 void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
 {

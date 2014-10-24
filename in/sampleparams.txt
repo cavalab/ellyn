@@ -1,5 +1,5 @@
 g					50	// number of generations
-popsize				100	//population size
+popsize				73	//population size
 printeverypop		0  // save printout of population at every generation
 limit_evals			0 // limit evals instead of number of generations
 max_evals			10000000 // max point evaluations
@@ -54,8 +54,8 @@ FE_rank				1	// use rank for FE fitness rather than error
 op_list				n	v	+	-	*	/	
 op_weight			2	4	1	1	1	1					
 weight_ops_on		1
-min_len				10
-max_len				10
+min_len				3
+max_len				20
 
 max_dev_len			128
 
