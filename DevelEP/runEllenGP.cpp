@@ -445,6 +445,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.eHC_max_prob;
 		else if(varname.compare("eHC_min_prob") == 0)
 			ss>>p.eHC_min_prob;
+		else if(varname.compare("eHC_mut") == 0)
+			ss>>p.eHC_mut;
 		else if(varname.compare("lexpool") == 0)
 			ss>>p.lexpool;
 		else if(varname.compare("lexage") == 0)
@@ -903,13 +905,15 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		mkdir(c, 0777); // notice that 777 is different than 0777
 	#endif
 	 int thrd = omp_get_thread_num();
-	 string thread = std::to_string(static_cast<long long>(thrd));
+	 string thread;
+	 if (trials) thread = std::to_string(static_cast<long long>(trialnum));
+	 else thread = std::to_string(static_cast<long long>(thrd));
 #if defined(_WIN32)
 	 string pname = paramfile.substr(paramfile.rfind('\\')+1,paramfile.size());
 	 string dname = datafile.substr(datafile.rfind('\\')+1,datafile.size());
 	 pname = pname.substr(0,pname.size()-4);
 	 dname = dname.substr(0,dname.size()-4);
-     string logname = p.resultspath + '\\' + "DevelEP_" + tmplog + "_" + pname + "_" + dname + "_" + std::to_string(static_cast<long long>(trialnum)) + ".log";
+     string logname = p.resultspath + '\\' + "DevelEP_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
 #else
 	 string pname = paramfile.substr(paramfile.rfind('/')+1,paramfile.size());
 	 string dname = datafile.substr(datafile.rfind('/')+1,datafile.size());
@@ -935,7 +939,9 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	 s.out<< "Results Path: " << p.resultspath  << "\n";
 	 s.out << "parameter file: " << paramfile << "\n";
 	 s.out << "data file: " << datafile << "\n";
-	 if(trials) s.out << "Running in Trial Mode\n";
+	 if(trials) {s.out << "Running in Trial Mode\n";
+	 s.out << "Trial ID: " << trialnum << "\n";
+	 }
 	 s.out << "Settings: \n";
 	 // get evolutionary method
 	 s.out << "Evolutionary Method: ";
@@ -1303,7 +1309,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 						for(int k=0; k<T.at(q).pop.size(); k++)
 							HillClimb(T.at(q).pop.at(k),p,r,d,s,FE[0]);
 				}
-				if (p.eHC_on) 
+				if (p.eHC_on && !p.eHC_mut) 
 				{
 						for(int m=0; m<T.at(q).pop.size(); m++)
 							EpiHC(T.at(q).pop.at(m),p,r,d,s,FE[0]);
@@ -1510,7 +1516,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		 				HillClimb(T.pop.at(k),p,r,d,s,FE[0]);
 
 		 		 }
-				 if (p.eHC_on) 
+				 if (p.eHC_on&& !p.eHC_mut) 
 				 {
 					// boost::progress_timer tm1;
 					//#pragma omp parallel for

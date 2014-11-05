@@ -79,6 +79,7 @@ pHC_gauss			1
 
 // epigenetic Hill Climber
 eHC_on				1
+eHC_mut				1  // mutate but do not hill climb. still requires eHC_on to be true.
 eHC_its				1
 eHC_prob			0.1
 eHC_size			1
@@ -89,6 +90,7 @@ eHC_init			.50 // percent of expressed genes in initial genotypes
 eHC_prob_scale		1
 eHC_max_prob		.75
 eHC_min_prob		0.25
+
 
 // Pareto settings
 

@@ -11,7 +11,7 @@
 #include "FitnessEstimator.h"
 #include "Generationfns.h"
 #include "Fitness.h"
-
+#include "EpiMut.h"
 
 void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
 {
@@ -75,6 +75,12 @@ void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,F
 
 	while(tmppop.size()>pop.size())
 		tmppop.erase(tmppop.end()-1);
+
+	// epigenetic mutation
+	if (p.eHC_on && p.eHC_mut){ 
+		for (int i = 0; i<tmppop.size(); i++)
+			EpiMut(tmppop.at(i),p,r);
+	}
 	//get tmppop fitness 
 	Fitness(tmppop,p,d,s,FE);
 	// genetic stats

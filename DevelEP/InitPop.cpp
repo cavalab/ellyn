@@ -15,7 +15,7 @@ using namespace std;
 */
 void makeline(ind&,params& p,vector<Randclass>& r);
 
-void makeline_rec(ind&,params& p,vector<Randclass>& r);
+void makeline_rec(ind&,params& p,vector<Randclass>& r,int linelen);
 int maketree(vector <shared_ptr<node>>& line, int level, bool exactlevel, int lastnode,params& p,vector<Randclass>& r);
 float round(float d)
 {
@@ -28,28 +28,42 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 
 	for(int i=0;i<pop.size();i++)
 	{
-		if (!p.init_trees)
+		if (!p.init_trees){
 			makeline(pop.at(i),p,r);
-		else
-			makeline_rec(pop.at(i),p,r);
-			
+			if (p.eHC_on)
+			{
+				for (int j=0;j<pop.at(i).line.size();j++)
+				{
+					float tmp = r[omp_get_thread_num()].rnd_flt(0,1);
+					//cout << "tmp: " << tmp << " p.eHC: " << p.eHC_init; 
+					if (tmp > p.eHC_init)
+					{
+						pop.at(i).line[j]->on=false;
+					}
+				}
+			}
+		}
+		else{
+			int linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len);
+			if (p.eHC_on){
+				int onlen = linelen*p.eHC_init;
+				makeline_rec(pop.at(i),p,r,onlen);
+				int offlen = linelen-onlen;
+				for (int j=0;j<offlen;j++){
+					int loc = r[omp_get_thread_num()].rnd_int(0,pop.at(i).line.size()-1);
+					 InsInstruction(pop.at(i),loc,p,r);
+					pop.at(i).line[loc]->on=false;
+				}
+			}
+			else
+				makeline_rec(pop.at(i),p,r,linelen);
+		}
 		//remove dangling numbers and variables from end
 		/*while((pop.at(i).line.back()->type=='n' || pop.at(i).line.back()->type=='v') && pop.at(i).line.size()>1)
 			pop.at(i).line.pop_back();*/
 			
 		pop.at(i).origin = 'i';
-		if (p.eHC_on)
-		{
-			for (int j=0;j<pop.at(i).line.size();j++)
-			{
-				float tmp = r[omp_get_thread_num()].rnd_flt(0,1);
-				//cout << "tmp: " << tmp << " p.eHC: " << p.eHC_init; 
-				if (tmp > p.eHC_init)
-				{
-					pop.at(i).line[j]->on=false;
-				}
-			}
-		}
+		
 
 
 	}
@@ -168,13 +182,13 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 	/*while (newind.line.back()->type=='n'||newind.line.back()->type=='v')
 		newind.line.pop_back();*/
 }
-void makeline_rec(ind& newind,params& p,vector<Randclass>& r)
+void makeline_rec(ind& newind,params& p,vector<Randclass>& r, int linelen)
 {
 	// recursive version of makeline that creates lines that are complete with respect to stack operations
 	// in other words the entire line is guaranteed to be a valid syntax tree
 	// construct line 
 	
-	int linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len);
+	
 	
 	int choice=0;
 	

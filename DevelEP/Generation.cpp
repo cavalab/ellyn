@@ -8,6 +8,7 @@
 #include "Fitness.h"
 #include "Generationfns.h"
 #include "InitPop.h"
+#include "EpiMut.h"
 
 void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
 {
@@ -35,6 +36,13 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 				}
 		//if (p.loud ) fcout << "     Gen 2 Phen...";
 		//if (p.loud ) fcout << "     Fitness...";
+
+		// epigenetic mutation
+		if (p.eHC_on && p.eHC_mut){ 
+		for (int i = 0; i<pop.size(); i++)
+			EpiMut(pop.at(i),p,r);
+		}
+
 		Fitness(pop,p,d,s,FE);
 		//get mutation/crossover stats
 		s.setCrossPct(pop);
@@ -65,6 +73,13 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 
 			ApplyGenetics(pop,parloc,p,r,d,s,FE);
 			//FitnessLex(pop,parloc,p,r,d);
+			
+			// epigenetic mutation
+			if (p.eHC_on && p.eHC_mut){ 
+				for (int i = 0; i<pop.size(); i++)
+					EpiMut(pop.at(i),p,r);
+			}
+
 			if (!p.lexage)
 			{
 				Fitness(pop,p,d,s,FE);

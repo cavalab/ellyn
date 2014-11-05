@@ -9,6 +9,7 @@
 #include "strdist.h"
 #include "Fitness.h"
 #include "general_fns.h"
+#include "EpiMut.h"
 
 // steady-state deterministic crowding algorithm.
 // update_locs are the indices of the update locations for passage to hill climbing. 
@@ -42,7 +43,12 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,Fitness
 		Mutate(pop.at(p1),tmppop,p,r,d);
 	}
 	//if (p.loud ) cout << "  Fitness...\n";
-	
+
+	if (p.eHC_on && p.eHC_mut){ // epigenetic mutation
+		for (int i = 0; i<tmppop.size(); i++)
+			EpiMut(tmppop.at(i),p,r);
+	}
+
 	Fitness(tmppop,p,d,s,FE);
 	// look at parents and children equations
 	

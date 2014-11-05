@@ -108,9 +108,9 @@ int main(int argc, char** argv)
 							string dfile(dbuff,l2);
 							cout << "running process " + to_string(static_cast<long long>(tag)) + " of " + to_string(static_cast<long long>(totaltrials)) + " on processor " + to_string(static_cast<long long>(myid)) + " : " + pfile.substr(pfile.rfind('/')+1,pfile.size()) + ", " + dfile.substr(dfile.rfind('/')+1,dfile.size())  + "\n";
 							//run develep
-							runEllenGP(pfile,dfile,1);
-							cout << "hello\n";
-							cout << "process " + to_string(static_cast<long long>(tag)) + " of " + to_string(static_cast<long long>(totaltrials)) + " on processor " + to_string(static_cast<long long>(myid)) + " : " + pfile.substr(pfile.rfind('/')+1,pfile.size()) + ", " + dfile.substr(dfile.rfind('/')+1,dfile.size())  + "finished\n";
+							runEllenGP(pfile,dfile,1,myid);
+							//cout << "hello\n";
+							cout << "\nprocess " + to_string(static_cast<long long>(tag)) + " of " + to_string(static_cast<long long>(totaltrials)) + " on processor " + to_string(static_cast<long long>(myid)) + " : " + pfile.substr(pfile.rfind('/')+1,pfile.size()) + ", " + dfile.substr(dfile.rfind('/')+1,dfile.size())  + "finished\n";
 
 							// send message when finished
 							int tmp = 1;

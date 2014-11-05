@@ -123,7 +123,7 @@ struct params {
 	float eHC_max_prob;
 	float eHC_min_prob;
 	float eHC_init;
-
+	bool eHC_mut; // epigenetic mutation rather than hill climbing
 	// Pareto settings
 
 	bool prto_arch_on;
@@ -140,7 +140,7 @@ struct params {
 	int numcases;
 	int lexpool;
 	bool lexage;
-	params(){train=0;}
+	params(){train=0;eHC_mut=0;}
 	~params(){}
 
 	void clear()
