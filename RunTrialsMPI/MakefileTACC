@@ -2,7 +2,7 @@ CC=mpicxx
 CFLAGS= -c -I $(TACC_BOOST_INC) -I /home1/02985/lacava/DevelEP -openmp -O2 -std=c++11 
 LDFLAGS= -I $(TACC_BOOST_INC) -I /home1/02985/lacava/DevelEP -openmp -O2 -std=c++11 
 LDFLAGS2= -L$(TACC_BOOST_LIB) -lboost_regex -L$(LD_LIBRARY_PATH)
-SOURCES= stdafxRTMPI.cpp RunTrialsMPI.cpp ../DevelEP/stdafx.cpp ../DevelEP/AgeBreed.cpp ../DevelEP/AgeFitSelect.cpp ../DevelEP/ApplyGenetics.cpp ../DevelEP/BruteforceAlgo.cpp ../DevelEP/Crossover.cpp ../DevelEP/Datapoint.cpp ../DevelEP/DC.cpp ../DevelEP/EpiHC.cpp ../DevelEP/Eqn2Line.cpp ../DevelEP/Fitness.cpp ../DevelEP/FitnessEstimator.cpp ../DevelEP/general_fns.cpp ../DevelEP/Generation.cpp ../DevelEP/HillClimb.cpp ../DevelEP/InitPop.cpp ../DevelEP/LexicaseSelect.cpp ../DevelEP/Line2Eqn.cpp ../DevelEP/Mutate.cpp ../DevelEP/NondominatedsortAlgo.cpp ../DevelEP/pareto.cpp ../DevelEP/runEllenGP.cpp ../DevelEP/StablesortAlgo.cpp ../DevelEP/strdist.cpp ../DevelEP/Tournament.cpp 
+SOURCES= stdafxRTMPI.cpp RunTrialsMPI.cpp ../DevelEP/stdafx.cpp ../DevelEP/AgeBreed.cpp ../DevelEP/AgeFitSelect.cpp ../DevelEP/ApplyGenetics.cpp ../DevelEP/BruteforceAlgo.cpp ../DevelEP/Crossover.cpp ../DevelEP/Datapoint.cpp ../DevelEP/DC.cpp ../DevelEP/EpiHC.cpp ../DevelEP/EpiMut.cpp ../DevelEP/Eqn2Line.cpp ../DevelEP/Fitness.cpp ../DevelEP/FitnessEstimator.cpp ../DevelEP/general_fns.cpp ../DevelEP/Generation.cpp ../DevelEP/HillClimb.cpp ../DevelEP/InitPop.cpp ../DevelEP/LexicaseSelect.cpp ../DevelEP/Line2Eqn.cpp ../DevelEP/Mutate.cpp ../DevelEP/NondominatedsortAlgo.cpp ../DevelEP/pareto.cpp ../DevelEP/runEllenGP.cpp ../DevelEP/StablesortAlgo.cpp ../DevelEP/strdist.cpp ../DevelEP/Tournament.cpp 
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=RunTrialsMPI
 

@@ -1,5 +1,5 @@
 g					50	// number of generations
-popsize				73	//population size
+popsize				1000 // population size
 printeverypop		0  // save printout of population at every generation
 limit_evals			0 // limit evals instead of number of generations
 max_evals			10000000 // max point evaluations
@@ -99,5 +99,5 @@ prto_arch_size		100
 prto_sel_on			1
 
 // island model
-islands				0
+islands				1
 island_gens			10

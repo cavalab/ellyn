@@ -1,7 +1,7 @@
 #include "stdafx.h"
 //#include <vector>
 using namespace std; 
-
+// levenshtein distance between two strings
 int strdist(std::string s1,std::string s2)
 {
 	//cout<< s1 << endl;
