@@ -980,11 +980,15 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	{
 			//cout << "seeder: " << seeder <<endl;
 			//cout << "seed1: " << seed1*seeder <<endl;
-			if(!trials) s.out << to_string(static_cast<long long>(seed1*(seeder+1))) + "\n";
-			r.at(seeder).SetSeed(seed1*(seeder+1));
+			if(!trials){
+				s.out << to_string(static_cast<long long>(seed1*(seeder+1))) + "\n";
+				r.at(seeder).SetSeed(seed1*(seeder+1));
+			}
+			else
+				r.at(seeder).SetSeed(seed1*(seeder+1)*trialnum);
 	}
 	if(trials)
-		s.out << (omp_get_thread_num()+1)*seed1 << "\n";
+		s.out << (omp_get_thread_num()+1)*seed1*trialnum << "\n";
 
 	//shuffle data for training
 	if (p.shuffle_data) 

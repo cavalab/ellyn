@@ -13,8 +13,7 @@ using namespace std;
 		genotype to phenotype
 		calculate fitness
 */
-//void makeline(ind&,params& p,vector<Randclass>& r);
-
+void makeline(ind&,params& p,vector<Randclass>& r);
 void makeline_rec(ind&,params& p,vector<Randclass>& r,int linelen);
 int maketree(vector <node>& line, int level, bool exactlevel, int lastnode,params& p,vector<Randclass>& r);
 float round(float d)
@@ -145,7 +144,7 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 			case 1: //load variable
 				varchoice = p.allvars.at(r[omp_get_thread_num()].rnd_int(0,p.allvars.size()-1));
 				//varchoice = d.label.at(r[omp_get_thread_num()].rnd_int(0,d.label.size()-1));
-				newind.line.push_back(shared_ptr<node>(new n_sym(varchoice)));
+				newind.line.push_back(node(varchoice));
 				break;
 			case 2: // +
 				//newind.line.push_back(shared_ptr<node>(new n_add()));
