@@ -139,17 +139,17 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	fout << "gline: ";
 	for(unsigned int i =0;i<best.line.size();i++)
 	{
-		if (best.line[i]->type=='n')
-			fout << static_pointer_cast<n_num>(best.line[i])->value << "\t";
-		else if (best.line[i]->type=='v')
-			fout << static_pointer_cast<n_sym>(best.line[i])->varname << "\t";
+		if (best.line[i].type=='n')
+			fout << best.line[i].value << "\t";
+		else if (best.line[i].type=='v')
+			fout << best.line[i].varname << "\t";
 		else
-			fout << best.line[i]->type << "\t";
+			fout << best.line[i].type << "\t";
 	}
 	fout << endl;
 	fout << "eline: ";
 	for(unsigned int i =0;i<best.line.size();i++){
-		if (best.line.at(i)->on)
+		if (best.line.at(i).on)
 			fout <<"1\t";
 		else
 			fout <<"0\t";
@@ -226,17 +226,17 @@ void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
 		fout << "gline: ";
 		for(unsigned int i =0;i<pop.at(h).line.size();i++)
 		{
-			if (pop.at(h).line[i]->type=='n')
-				fout << static_pointer_cast<n_num>(pop.at(h).line[i])->value << "\t";
-			else if (pop.at(h).line[i]->type=='v')
-				fout << static_pointer_cast<n_sym>(pop.at(h).line[i])->varname << "\t";
+			if (pop.at(h).line[i].type=='n')
+				fout <<pop.at(h).line[i].value << "\t";
+			else if (pop.at(h).line[i].type=='v')
+				fout << pop.at(h).line[i].varname << "\t";
 			else
-				fout << pop.at(h).line[i]->type << "\t";
+				fout << pop.at(h).line[i].type << "\t";
 		}
 		fout << endl;
 		fout << "eline: ";
 		for(unsigned int i =0;i<pop.at(h).line.size();i++){
-			if (pop.at(h).line.at(i)->on)
+			if (pop.at(h).line.at(i).on)
 				fout <<"1\t";
 			else
 				fout <<"0\t";
@@ -566,7 +566,7 @@ void load_params(params &p, std::ifstream& fs)
 
 		for (int i=0; i<p.seeds.size();i++)
 		{
-			p.seedstacks.push_back(vector<std::shared_ptr<node>>());
+			p.seedstacks.push_back(vector<node>());
 
 			Eqn2Line(p.seeds.at(i),p.seedstacks.at(i));
 		}
@@ -867,14 +867,14 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	// load parameter file
 	ifstream fs(paramfile);
 	if (!fs.is_open()){
-		cerr << "Error: couldn't open parameter file: " + paramfile << "\n";
+		cerr << "Error: couldn't open parameter file " + paramfile << "\n";
 		exit(1);
 	}
 	load_params(p, fs);
 	// load data file
 	ifstream ds(datafile);
 	if (!ds.is_open()){
-			cerr << "Error: couldn't open data file: " + datafile << "\n";
+			cerr << "Error: couldn't open data file " + datafile << "\n";
 			exit(1);
 		}
 	if (p.sel == 3) load_lexdata(d,ds,p);
@@ -966,6 +966,10 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	 s.out << "Total Population Size: " << p.popsize << "\n";
 	 if (p.limit_evals) s.out << "Maximum Point Evals: " << p.max_evals << "\n";
 	 else s.out << "Maximum Generations: " << p.g << "\n";
+	 if (trials && p.islands){
+		s.out << "WARNING: cannot run island populations in trial mode. This trial will run on one core.\n";
+		p.islands = false;
+	 }
 
 	//initialize random number generator
 	unsigned int seed1 = int(time(NULL));
@@ -1022,7 +1026,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 				for(int j=0;j<T.size();j++){
 					for(int k=0;k<T[0].pop.size();k++){
 						World.pop.at(j*T[0].pop.size()+k)=T.at(j).pop.at(k);
-						makenew(World.pop[j*T[0].pop.size()+k]);	
+						//makenew(World.pop[j*T[0].pop.size()+k]);	
 					}
 				}
 				// initialize fitness estimation pop
@@ -1128,7 +1132,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			for(int j=0;j<T.size();j++){
 				for(int k=0;k<T[0].pop.size();k++){
 					World.pop.at(j*T[0].pop.size()+k)=T.at(j).pop.at(k);
-					makenew(World.pop[j*T[0].pop.size()+k]);	
+					//makenew(World.pop[j*T[0].pop.size()+k]);	
 				}
 			}
 			if (p.EstimateFitness){
@@ -1324,7 +1328,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 				int cntr=0;
 				for(int k=q*subpops;k<(q+1)*subpops;k++){
 					World.pop.at(k)=T.at(q).pop.at(cntr);
-					makenew(World.pop.at(k));
+					//makenew(World.pop.at(k));
 					cntr++;
 				}
 			

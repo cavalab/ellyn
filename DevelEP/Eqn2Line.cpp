@@ -59,29 +59,37 @@ struct op_s *pop_opstack(vector <op_s*>& opstack)
 	opstack.pop_back();
 	return op_tmp;
 }
-void op2node(string& ch,vector<shared_ptr<node>>& eqnstack)
+void op2node(string& ch,vector<node>& eqnstack)
 {
 
 if(ch.compare("+")==0)
-	eqnstack.push_back(shared_ptr<node>(new n_add()));
+	//eqnstack.push_back(shared_ptr<node>(new n_add())); 
+	eqnstack.push_back(node('+'));
 else if (ch.compare("-")==0)
-	eqnstack.push_back(shared_ptr<node>(new n_sub()));
+	//eqnstack.push_back(shared_ptr<node>(new n_sub()));
+	eqnstack.push_back(node('-'));
 else if(ch.compare("/")==0)
-	eqnstack.push_back(shared_ptr<node>(new n_div()));
+	//eqnstack.push_back(shared_ptr<node>(new n_div()));
+	eqnstack.push_back(node('/'));
 else if (ch.compare("*")==0)
-	eqnstack.push_back(shared_ptr<node>(new n_mul()));
+	//eqnstack.push_back(shared_ptr<node>(new n_mul()));
+	eqnstack.push_back(node('*'));
 else if(ch.compare("sin")==0)
-	eqnstack.push_back(shared_ptr<node>(new n_sin()));
+	//eqnstack.push_back(shared_ptr<node>(new n_sin()));
+	eqnstack.push_back(node('s'));
 else if (ch.compare("cos")==0)
-	eqnstack.push_back(shared_ptr<node>(new n_cos()));
+	//eqnstack.push_back(shared_ptr<node>(new n_cos()));
+	eqnstack.push_back(node('c'));
 else if (ch.compare("exp")==0)
-	eqnstack.push_back(shared_ptr<node>(new n_exp()));
+	//eqnstack.push_back(shared_ptr<node>(new n_exp()));
+	eqnstack.push_back(node('e'));
 else if (ch.compare("log")==0)
-	eqnstack.push_back(shared_ptr<node>(new n_log()));
+	//eqnstack.push_back(shared_ptr<node>(new n_log()));
+	eqnstack.push_back(node('l'));
 else 
 	cout << "op2node failed.\n";
 }
-void shunt_op(struct op_s *op,vector <op_s*>& opstack,vector<float>& numstack,vector<shared_ptr<node>>& eqnstack,string& RPN)
+void shunt_op(struct op_s *op,vector <op_s*>& opstack,vector<float>& numstack,vector<node>& eqnstack,string& RPN)
 {
 	struct op_s *pop;
 	float n1, n2;
@@ -189,7 +197,7 @@ bool is_letter(char c)
 }
 
 
-void Eqn2Line(string& expr,vector<shared_ptr<node>>& eqnstack)
+void Eqn2Line(string& expr,vector<node>& eqnstack)
 {
 	string RPN;
 	string tstart;
@@ -249,7 +257,7 @@ void Eqn2Line(string& expr,vector<shared_ptr<node>>& eqnstack)
 			{
 				//numstack.push_back(stof(tstart));
 				RPN+=tstart;
-				eqnstack.push_back(shared_ptr<node>(new n_num(stof(tstart))));
+				eqnstack.push_back(node(stof(tstart)));
 				//push_numstack(atoi(tstart));
 				tstart.clear();
 				lastop=NULL;
@@ -261,9 +269,11 @@ void Eqn2Line(string& expr,vector<shared_ptr<node>>& eqnstack)
 				RPN+=tstart;
 
 				if (isdigit(tstart[0]))
-					eqnstack.push_back(shared_ptr<node>(new n_num(stof(tstart))));
+					//eqnstack.push_back(shared_ptr<node>(new n_num(stof(tstart))));
+					eqnstack.push_back(node(stof(tstart)));
 				else if (is_letter(tstart[0]))
-					eqnstack.push_back(shared_ptr<node>(new n_sym(tstart)));
+					//eqnstack.push_back(shared_ptr<node>(new n_sym(tstart)));
+					eqnstack.push_back(node(tstart));
 				else
 					cout << "oops.\n";
 
@@ -281,7 +291,8 @@ void Eqn2Line(string& expr,vector<shared_ptr<node>>& eqnstack)
 	if(!tstart.empty()) {
 		//numstack.push_back(stof(tstart));
 		RPN+=tstart;
-		eqnstack.push_back(shared_ptr<node>(new n_num(stof(tstart))));
+		/*eqnstack.push_back(shared_ptr<node>(new n_num(stof(tstart))));*/
+		eqnstack.push_back(node(stof(tstart)));
 	}
 
 	while(opstack.size()) {

@@ -16,7 +16,7 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,FitnessEs
 	//{
 		
 		vector<ind> tmp_ind(1,oldind);
-		makenew(tmp_ind[0]);
+		//makenew(tmp_ind[0]);
 		tmp_ind[0].clrPhen();
 		bool updated = false;
 		for (int j=0;j<p.eHC_its; j++) // for number of specified iterations
@@ -25,14 +25,14 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,FitnessEs
 			{
 				//tmp_ind.clear();
 				tmp_ind.push_back(oldind); 
-				makenew(tmp_ind[0]);
+				//makenew(tmp_ind[0]);
 				tmp_ind[0].clrPhen(); // clear phenotype
 			}
 
 			for(unsigned int h = 0;h<tmp_ind[0].line.size();h++)
 			{
 				if(r[omp_get_thread_num()].rnd_flt(0,1)<=p.eHC_prob)
-					tmp_ind[0].line.at(h)->on = !tmp_ind[0].line.at(h)->on;
+					tmp_ind[0].line.at(h).on = !tmp_ind[0].line.at(h).on;
 			}	
 			//Gen2Phen(tmp_ind,p);
 			Fitness(tmp_ind,p,d,s,FE); //get fitness 

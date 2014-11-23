@@ -20,7 +20,7 @@ void EpiMut(ind& x,params& p,vector<Randclass>& r)
 	  for(unsigned int h = 0;h<x.line.size();h++)
 		{
 			if(r[omp_get_thread_num()].rnd_flt(0,1)<=p.eHC_prob)
-				x.line.at(h)->on = !x.line.at(h)->on;
+				x.line.at(h).on = !x.line.at(h).on;
 		}	
 	}
 	//oldind = newind;

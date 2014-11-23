@@ -181,7 +181,82 @@ int getComplexity(string& eqn)
 
 	return complexity;
 }
+void eval(node& n,vector<float>& outstack)
+{
+	switch(n.type) 
+	{
+	case 'n':
+		outstack.push_back(n.value);
+		break;
+	case 'v':
+		if (n.valpt==NULL)
+			cout<<"problem";
+		else
+			outstack.push_back(*n.valpt);
+		break;
+	case '+':
+		if(outstack.size()>=2){
+				float n1 = outstack.back(); outstack.pop_back();
+				float n2 = outstack.back(); outstack.pop_back();
 
+				outstack.push_back(n2+n1);
+		}
+		break;
+	case '-':
+		if(outstack.size()>=2){
+				float n1 = outstack.back(); outstack.pop_back();
+				float n2 = outstack.back(); outstack.pop_back();
+
+				outstack.push_back(n2-n1);
+		}
+		break;
+	case '*':
+		if(outstack.size()>=2){
+				float n1 = outstack.back(); outstack.pop_back();
+				float n2 = outstack.back(); outstack.pop_back();
+
+				outstack.push_back(n2*n1);
+		}
+		break;
+	case '/':
+		if(outstack.size()>=2){
+				float n1 = outstack.back(); outstack.pop_back();
+				float n2 = outstack.back(); outstack.pop_back();
+				if(abs(n1)<0.0001)
+					outstack.push_back(0);
+				else
+					outstack.push_back(n2/n1);
+		}
+		break;
+	case 's':
+		if(outstack.size()>=1){
+				float n1 = outstack.back(); outstack.pop_back();
+				outstack.push_back(sin(n1));
+		}
+		break;
+	case 'c':
+		if(outstack.size()>=1){
+				float n1 = outstack.back(); outstack.pop_back();
+				outstack.push_back(cos(n1));
+		}
+		break;
+	case 'e':
+		if(outstack.size()>=1){
+				float n1 = outstack.back(); outstack.pop_back();
+				outstack.push_back(exp(n1));
+		}
+		break;
+	case 'l':
+		if(outstack.size()>=1){
+				float n1 = outstack.back(); outstack.pop_back();
+				if (abs(n1)<0.0001)
+					outstack.push_back(0);
+				else
+					outstack.push_back(log(n1));
+		}
+		break;
+	}
+}
 void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 {
 	//set up data table for conversion of symbolic variables
@@ -246,7 +321,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 			pop.at(count).eff_size=0;
 			for(int m=0;m<pop.at(count).line.size();m++){
 
-				if(pop.at(count).line.at(m)->on)
+				if(pop.at(count).line.at(m).on)
 					pop.at(count).eff_size++;
 			}
 	// Get Complexity
@@ -254,13 +329,15 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 		
 		// set data table
 			for(int m=0;m<pop.at(count).line.size();m++){
-				if(pop.at(count).line.at(m)->type=='v')
+				if(pop.at(count).line.at(m).type=='v')
 					{// set pointer to dattovar 
-						float* set = datatable.at(static_pointer_cast<n_sym>(pop.at(count).line.at(m))->varname);
+						//float* set = datatable.at(static_pointer_cast<n_sym>(pop.at(count).line.at(m)).varname);
+						float* set = datatable.at(pop.at(count).line.at(m).varname);
 						if(set==NULL)
 							cout<<"hmm";
-						static_pointer_cast<n_sym>(pop.at(count).line.at(m))->setpt(set);
-						/*if (static_pointer_cast<n_sym>(pop.at(count).line.at(m))->valpt==NULL)
+						/*static_pointer_cast<n_sym>(pop.at(count).line.at(m)).setpt(set);*/
+						pop.at(count).line.at(m).setpt(set);
+						/*if (static_pointer_cast<n_sym>(pop.at(count).line.at(m)).valpt==NULL)
 							cout<<"wth";*/
 					}
 			}
@@ -285,12 +362,13 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 							dattovar.at(j)= d.vals[sim][j];
 
 						for(int k=0;k<pop.at(count).line.size();k++){
-							/*if(pop.at(count).line.at(k)->type=='v'){
-								if (static_pointer_cast<n_sym>(pop.at(count).line.at(k))->valpt==NULL)
+							/*if(pop.at(count).line.at(k).type=='v'){
+								if (static_pointer_cast<n_sym>(pop.at(count).line.at(k)).valpt==NULL)
 									cout<<"WTF";
 							}*/
-							if (pop.at(count).line.at(k)->on){
-								pop.at(count).line.at(k)->eval(outstack);
+							if (pop.at(count).line.at(k).on){
+								//pop.at(count).line.at(k).eval(outstack);
+								eval(pop.at(count).line.at(k),outstack);
 								ptevals++;}
 						}
 
@@ -369,8 +447,9 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 								if (static_pointer_cast<n_sym>(pop.at(count).line.at(k))->valpt==NULL)
 									cout<<"WTF";
 							}*/
-							if (pop.at(count).line.at(k)->on){
-								pop.at(count).line.at(k)->eval(outstack);
+							if (pop.at(count).line.at(k).on){
+								//pop.at(count).line.at(k)->eval(outstack);
+								eval(pop.at(count).line.at(k),outstack);
 								ptevals++;}
 						}
 
@@ -533,7 +612,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 			pop.at(count).eff_size=0;
 			for(int m=0;m<pop.at(count).line.size();m++){
 
-				if(pop.at(count).line.at(m)->on)
+				if(pop.at(count).line.at(m).on)
 					pop.at(count).eff_size++;
 			}
 			// Get Complexity
@@ -541,13 +620,15 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 			
 			// set data pointers
 			for(int m=0;m<pop.at(count).line.size();m++){
-				if(pop.at(count).line.at(m)->type=='v')
+				if(pop.at(count).line.at(m).type=='v')
 					{// set pointer to dattovar 
-						float* set = datatable.at(static_pointer_cast<n_sym>(pop.at(count).line.at(m))->varname);
+						/*float* set = datatable.at(static_pointer_cast<n_sym>(pop.at(count).line.at(m)).varname);*/
+						float* set = datatable.at(pop.at(count).line.at(m).varname);
 						if(set==NULL)
 							cout<<"hmm";
-						static_pointer_cast<n_sym>(pop.at(count).line.at(m))->setpt(set);
-						/*if (static_pointer_cast<n_sym>(pop.at(count).line.at(m))->valpt==NULL)
+						/*static_pointer_cast<n_sym>(pop.at(count).line.at(m)).setpt(set);*/
+						pop.at(count).line.at(m).setpt(set);
+						/*if (static_pointer_cast<n_sym>(pop.at(count).line.at(m)).valpt==NULL)
 							cout<<"wth";*/
 					}
 			}
@@ -612,8 +693,9 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 							dattovar.at(j)= d.lexvals[lex][sim][j];
 
 						for(int k=0;k<pop.at(count).line.size();k++){
-							if (pop.at(count).line.at(k)->on){
-								pop.at(count).line.at(k)->eval(outstack);
+							if (pop.at(count).line.at(k).on){
+								//pop.at(count).line.at(k)->eval(outstack);
+								eval(pop.at(count).line.at(k),outstack);
 								ptevals++;}
 						}
 

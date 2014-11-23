@@ -11,8 +11,8 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 	parents.push_back(p1);
 	parents.push_back(p2);
 
-	makenew(parents[0]);
-	makenew(parents[1]);
+	//makenew(parents[0]);
+	//makenew(parents[1]);
 
 	vector<ind> kids(2);
 
@@ -102,8 +102,8 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 	kids[1].origin = 'c';
 	kids[1].parentfitness = parents[1].fitness;
 
-	makenew(kids[0]);
-	makenew(kids[1]);
+	//makenew(kids[0]);
+	//makenew(kids[1]);
 
 	tmppop.push_back(kids[0]);
 	tmppop.push_back(kids[1]);

@@ -181,7 +181,7 @@ void PickTrainers(vector<ind> pop, vector <FitnessEstimator>& FE,vector <ind>& t
 	for (int j=0;j<pop.size();j++){
 		if(pop[j].fitness<p.max_fit){
 			tmppop.push_back(ind());
-			makenewcopy(pop[j],tmppop.back());
+			//makenewcopy(pop[j],tmppop.back());
 			if(tmppop.size()!=pop.size())
 				tmppop.back().clrPhen();
 		}

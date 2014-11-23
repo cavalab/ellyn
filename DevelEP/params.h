@@ -61,7 +61,7 @@ struct params {
 	vector <string> cons;
 	vector <float> cvals;
 	vector <string> seeds;
-	vector <vector <std::shared_ptr<node> > > seedstacks;
+	vector <vector <node>> seedstacks;
 
 	vector <string> allvars;// = intvars.insert(intvars.end(), extvars.begin(), extvars.end());
 	vector <string> allblocks;// = allvars.insert(allvars.end(),consvals.begin(),convals.end());

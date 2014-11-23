@@ -13,7 +13,8 @@
 
 struct ind {
 	//unsigned int id;
-	vector <std::shared_ptr<node> > line;
+	/*vector <std::shared_ptr<node> > line;*/
+	vector <node> line;
 	//std::vector <std::string> args;
 	std::string eqn;
 	std::string eqn_form; // equation form for string distance comparison to other forms

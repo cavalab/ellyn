@@ -15,7 +15,7 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,Fitne
 	//for (int i=0; i<pop.size(); i++) // for each individual
 	//	{
 			vector<ind> tmp_ind(1,oldind); 
-			makenew(tmp_ind[0]);
+			//makenew(tmp_ind[0]);
 			tmp_ind[0].clrPhen(); // clear phenotype
 
 			bool updated=0;
@@ -30,19 +30,20 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,Fitne
 				if (updated)
 				{
 				    tmp_ind.push_back(oldind);  
-					makenew(tmp_ind[0]);
+					//makenew(tmp_ind[0]);
 					tmp_ind[0].clrPhen(); // clear phenotype
 				}
 				for (int h= 0; h<tmp_ind[0].line.size();h++) // for length of genotype
 				{
-					if(tmp_ind[0].line.at(h)->type=='n' && tmp_ind[0].line.at(h)->on) // insert function with true epiline value
+					if(tmp_ind[0].line.at(h).type=='n' && tmp_ind[0].line.at(h).on) // insert function with true epiline value
 					{
-							float num = static_pointer_cast<n_num>(tmp_ind[0].line.at(h))->value;
+							/*float num = static_pointer_cast<n_num>(tmp_ind[0].line.at(h)).value;*/
+							float num = tmp_ind[0].line.at(h).value;
 							num = num + r[omp_get_thread_num()].gasdev()*num/10; // 10% gaussian noise perturbation
 							if (p.ERCints)
-								static_pointer_cast<n_num>(tmp_ind[0].line.at(h))->value = int(num);
+								tmp_ind[0].line.at(h).value = int(num);
 							else
-								static_pointer_cast<n_num>(tmp_ind[0].line.at(h))->value = num;
+								tmp_ind[0].line.at(h).value = num;
 					}
 				}
 				//Gen2Phen(tmp_ind,p);

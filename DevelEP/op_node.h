@@ -13,13 +13,37 @@ public:
 	char type;
 	bool on;
 	int arity;
-	//float value;
-	//float* valpt;
-	//string varname;
+	float value;
+	float* valpt;
+	string varname;
 	node() {type=0; on=1; arity=0;}
-	node(int set) {type=set;on=1;}
-	virtual ~node() {}
-	virtual void eval(vector<float> & outstack)=0;
+	//node(int set) {type=set;on=1;}
+	//operator with specified arity
+	node(char stype,int sarity){type=stype;arity=sarity;on=1;}
+	//operator with arity lookup
+	node(char stype)
+	{
+		type=stype;
+		if (type=='s' || type=='c' || type=='e' || type=='l')
+			arity = 1;
+		else
+			arity = 2;
+
+		on=1;
+	}
+	//number
+	node(float svalue){type='n'; value=svalue; on=1; arity=0;}
+	//variable
+	node(string& vname){type='v';varname=vname;on=1;}
+	//set pointer for variables
+	void setpt(float* set)
+	{
+		if (set==NULL)
+			cout<<"bad set";
+		valpt=set;
+	}
+	~node() {}
+	//void eval(vector<float> & outstack)=0;
 	/*node* clone() const
 	{
 		return do_clone();

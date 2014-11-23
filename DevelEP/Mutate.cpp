@@ -9,7 +9,7 @@ void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)
 {
 	vector<unsigned int> ichange;
 	vector<ind> kid(1,par);
-	makenew(kid[0]);
+	//makenew(kid[0]);
 	kid[0].origin='m';
 	kid[0].parentfitness=par.fitness;
 	kid[0].clrPhen();
@@ -22,25 +22,25 @@ void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)
 	}
 	for(unsigned int j=0;j<ichange.size();j++)
 	{
-		if(kid[0].line.at(ichange.at(j))->type=='n') // insert function
+		if(kid[0].line.at(ichange.at(j)).type=='n') // insert function
 		{
 			if (p.ERC)
 			{
-				    float num = static_pointer_cast<n_num>(kid[0].line.at(ichange.at(j)))->value;
+				    float num = kid[0].line.at(ichange.at(j)).value;
 					num = num/2 + r[omp_get_thread_num()].gasdev()*num/2;
-					static_pointer_cast<n_num>(kid[0].line.at(ichange.at(j)))->value = num;
+					kid[0].line.at(ichange.at(j)).value = num;
 			}
 		}
-		else if (kid[0].line.at(ichange.at(j))->type=='v'){
+		else if (kid[0].line.at(ichange.at(j)).type=='v'){
 				//else if variable, pick random variable replacement
-			static_pointer_cast<n_sym>(kid[0].line.at(ichange.at(j)))->varname = d.label.at(r[omp_get_thread_num()].rnd_int(0,d.label.size()-1));
+			kid[0].line.at(ichange.at(j)).varname = d.label.at(r[omp_get_thread_num()].rnd_int(0,d.label.size()-1));
 		}
 		else
 		{
-			bool onstate = kid[0].line.at(ichange.at(j))->on;
+			bool onstate = kid[0].line.at(ichange.at(j)).on;
 			MutInstruction(kid[0],ichange.at(j),p,r,d);
 			//inherit epigenetic state of gene location
-			kid[0].line.at(ichange.at(j))->on=onstate;
+			kid[0].line.at(ichange.at(j)).on=onstate;
 
 		}
 	}
