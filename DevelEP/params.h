@@ -124,6 +124,7 @@ struct params {
 	float eHC_min_prob;
 	float eHC_init;
 	bool eHC_mut; // epigenetic mutation rather than hill climbing
+	bool eHC_slim; // use SlimFitness
 	// Pareto settings
 
 	bool prto_arch_on;

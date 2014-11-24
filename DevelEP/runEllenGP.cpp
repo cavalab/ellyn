@@ -447,6 +447,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.eHC_min_prob;
 		else if(varname.compare("eHC_mut") == 0)
 			ss>>p.eHC_mut;
+		else if(varname.compare("eHC_slim") == 0)
+			ss>>p.eHC_slim;
 		else if(varname.compare("lexpool") == 0)
 			ss>>p.lexpool;
 		else if(varname.compare("lexage") == 0)

@@ -20,6 +20,9 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,FitnessEs
 		tmp_ind[0].clrPhen();
 		bool updated = false;
 		int numchanges = 0;
+		bool pass = true;
+		int start_pt = 0;
+		vector<float> init_stack;
 		for (int j=0;j<p.eHC_its; j++) // for number of specified iterations
 		{
 			
@@ -44,23 +47,32 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,FitnessEs
 			}
 
 			//Gen2Phen(tmp_ind,p);
-			Fitness(tmp_ind,p,d,s,FE); //get fitness 
-			if ( tmp_ind[0].fitness < oldind.fitness) // if fitness is better, replace individual
-			{
-				oldind = tmp_ind[0];
-				updated = true;
-				tmp_ind.clear();
-				s.eHC_updates[omp_get_thread_num()]++;
-			}
-			else if (tmp_ind[0].fitness == oldind.fitness && tmp_ind[0].complexity < oldind.complexity) // if fitness is same but equation is smaller, replace individual
-			{
-				oldind = tmp_ind[0];
-				updated = true;
-				tmp_ind.clear();
-				s.eHC_updates[omp_get_thread_num()]++;
-			}
+			//get fitness 
+			if (p.eHC_slim)
+				pass = SlimFitness(tmp_ind,p,d,s,FE,start_pt,init_stack,oldind.fitness);
 			else
-				updated = false;
+				Fitness(tmp_ind,p,d,s,FE); 
+			if(pass){
+				if ( tmp_ind[0].fitness < oldind.fitness) // if fitness is better, replace individual
+				{
+					oldind = tmp_ind[0];
+					updated = true;
+					tmp_ind.clear();
+					s.eHC_updates[omp_get_thread_num()]++;
+				}
+				else if (tmp_ind[0].fitness == oldind.fitness && tmp_ind[0].complexity < oldind.complexity) // if fitness is same but equation is smaller, replace individual
+				{
+					oldind = tmp_ind[0];
+					updated = true;
+					tmp_ind.clear();
+					s.eHC_updates[omp_get_thread_num()]++;
+				}
+				else
+					updated = false;
+			}
+			else 
+				pass = 1;
+
 			numchanges=0;
 		}
 		//tmp_ind.clear();
