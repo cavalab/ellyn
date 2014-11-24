@@ -1,5 +1,5 @@
 g					100	// number of generations
-popsize				1000 // population size
+popsize				100 // population size
 printeverypop		0  // save printout of population at every generation
 limit_evals			0 // limit evals instead of number of generations
 max_evals			10000000 // max point evaluations
@@ -80,8 +80,8 @@ pHC_gauss			1
 
 // epigenetic Hill Climber
 eHC_on				1
-eHC_mut				1  // mutate but do not hill climb. still requires eHC_on to be true.
-eHC_its				1
+eHC_mut				0  // mutate but do not hill climb. still requires eHC_on to be true.
+eHC_its				3
 eHC_prob			0.1
 eHC_size			1
 eHC_cluster			1
