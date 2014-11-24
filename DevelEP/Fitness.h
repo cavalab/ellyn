@@ -18,6 +18,6 @@ float getCorr(vector<float>& output,vector<float>& target,float meanout,float me
 float VAF(vector<float>& output,vector<float>& target,float meantarget,int off);
 float std_dev(vector<float>& target,float& meantarget);
 void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE);
-bool SlimFitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE, int start_pt, vector<float> init_stack, float orig_fit);
+bool SlimFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE, int start_pt, vector<vector<float>>& init_stack, float orig_fit);
 
 #endif

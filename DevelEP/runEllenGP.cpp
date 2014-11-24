@@ -1422,7 +1422,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 				if (migrate)					
 					T.at(q).pop.assign(World.pop.begin()+q*subpops,World.pop.begin()+(q+1)*subpops);
 
-				if (gen>p.g) pass=0;
+				//if (gen>p.g) pass=0;
 								
 			
 		}  s.out << "exited while loop...\n";

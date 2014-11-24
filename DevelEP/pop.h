@@ -24,6 +24,7 @@ struct ind {
 
 	std::vector<float> output;
 	std::vector<float> output_v;
+	std::vector<vector<float>> outstack; //optional node-by-node stack tracing
 
 	float abserror;
 	float abserror_v;
@@ -86,6 +87,7 @@ struct ind {
 		eqn_form="";
 		output.clear();
 		output_v.clear();
+		outstack.clear();
 		// nominal model must be encased in set of parenthesis. the pointer points to that which is encased.
 		//ptr[0]= 1;
 		//ptr[1] = nom_mod.size()-2;

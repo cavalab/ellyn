@@ -1,8 +1,8 @@
-g					100	// number of generations
+g					10	// number of generations
 popsize				100 // population size
 printeverypop		0  // save printout of population at every generation
-limit_evals			0 // limit evals instead of number of generations
-max_evals			10000000 // max point evaluations
+limit_evals			1 // limit evals instead of number of generations
+max_evals			2000000000 // max point evaluations
 					  
 // Generation Settings 
 sel					4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
@@ -81,7 +81,7 @@ pHC_gauss			1
 // epigenetic Hill Climber
 eHC_on				1
 eHC_mut				0  // mutate but do not hill climb. still requires eHC_on to be true.
-eHC_its				3
+eHC_its				1
 eHC_prob			0.1
 eHC_size			1
 eHC_cluster			1
@@ -91,7 +91,7 @@ eHC_init			.50 // percent of expressed genes in initial genotypes
 eHC_prob_scale		1
 eHC_max_prob		.75
 eHC_min_prob		0.25
-eHC_slim			0  // minimize point evaluations as much as possible
+eHC_slim			1  // minimize point evaluations as much as possible
 
 // Pareto settings
 
