@@ -178,7 +178,7 @@ struct state{
 		neut_cross.assign(omp_get_max_threads(),0);
 
 	}
-	void setCrossPct(vector<ind> pop)
+	void setCrossPct(vector<ind>& pop)
 	{
 		
 		for(int i=0;i<pop.size();++i)

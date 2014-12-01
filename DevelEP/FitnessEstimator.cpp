@@ -29,8 +29,8 @@ struct SortFE{
 
 void setFEvals(vector<vector<float>>& FEvals, vector<float>& FEtarget,FitnessEstimator& FE, data& d)
 {
-	FEvals.clear();
-	FEtarget.clear();
+	FEvals.resize(0); FEvals.reserve(FE.FEpts.size());
+	FEtarget.resize(0); FEtarget.reserve(FE.FEpts.size());
 	for (int i=0;i<FE.FEpts.size();++i)
 	{
 		FEvals.push_back(d.vals[FE.FEpts[i]]);
@@ -343,3 +343,4 @@ void EvolveFE(vector<ind> &pop, vector <FitnessEstimator>& FE,vector <ind>& trai
 	PickTrainers(pop,FE,trainers,p,d,s);
 	*/
 };
+//void EvolveGE(vector<ind> &pop, vector <FitnessEstimator>& FE,vector <ind>& trainers,params p,data& d,state& s,vector<Randclass>& r)

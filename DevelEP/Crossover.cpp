@@ -7,9 +7,9 @@
 
 void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& r)
 {
-	vector<ind> parents(2);
-	parents[0] = p1;
-	parents[1] = p2;
+	vector<ind> parents; parents.reserve(2);
+	parents.push_back(p1);
+	parents.push_back(p2);
 
 	//makenew(parents[0]);
 	//makenew(parents[1]);
@@ -108,6 +108,6 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 	tmppop.push_back(kids[0]);
 	tmppop.push_back(kids[1]);
 
-	kids.clear();
-	parents.clear();
+	//kids.clear();
+	//parents.clear();
 }

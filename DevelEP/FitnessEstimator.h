@@ -16,6 +16,7 @@ public:
 		int lastpt;
 		if (train) lastpt = int(d.vals.size())/2-1;
 		else lastpt = d.vals.size()-1;
+		FEpts.reserve(length);
 		for (int i=0;i<length;++i){
 			FEpts.push_back(r[omp_get_thread_num()].rnd_int(0,lastpt));
 		}

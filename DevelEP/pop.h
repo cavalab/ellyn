@@ -56,6 +56,10 @@ struct ind {
 		corr = 0;
 		age=1;
 	}
+	/*ind(const ind& x)
+	{
+		*this = x;
+	}*/
 	~ind() {
 		//cout << "ind destructor\n";
 		//if(!line.empty())

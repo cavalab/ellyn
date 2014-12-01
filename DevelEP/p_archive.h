@@ -16,9 +16,12 @@ struct paretoarchive{
 	void update(vector<ind>& newpop)
 	{
 		vector <ind> tmppop;
+
+		
 		
 		pop.insert(pop.end(),newpop.begin(),newpop.end());
-		
+		for (int i=pop.size()-newpop.size();i<pop.size();i++) pop.at(i).outstack.clear();
+
 		sort(pop.begin(),pop.end(),SortComplexity());
 		stable_sort(pop.begin(),pop.end(),SortFit());
 		vector<ind>::iterator it;

@@ -2,7 +2,7 @@ g					1000	// number of generations
 popsize				1000 // population size
 printeverypop		0  // save printout of population at every generation
 limit_evals			1 // limit evals instead of number of generations
-max_evals			2000000000 // max point evaluations
+max_evals			25000000000 // max point evaluations
 					  
 // Generation Settings 
 sel					4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm

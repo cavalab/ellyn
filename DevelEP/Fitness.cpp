@@ -506,8 +506,8 @@ void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s)
 {
 	vector<float> outstack;
-	me.output.clear();
-	me.output_v.clear();
+	me.output.resize(0); 
+	me.output_v.resize(0); 
 	float SStot=0;
 	float SSreg=0;
 	float SSres=0;
@@ -531,8 +531,9 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 		ndata_t = vals.size();
 		ndata_v=0;
 	}
-
-	if (p.eHC_on && p.eHC_slim) me.outstack.resize((me.eff_size)*vals.size());
+	me.output.reserve(ndata_t);
+	me.output_v.reserve(ndata_v);
+	if (p.eHC_on && p.eHC_slim){ me.outstack.resize(0); me.outstack.reserve((me.eff_size)*vals.size());}
 	
 	//outstack.reserve(me.eff_size/2);
 
@@ -555,8 +556,10 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 					++ptevals;
 				if (p.eHC_on && p.eHC_slim) // stack tracing
 				{
-					if(!outstack.empty()) me.outstack[k_eff*vals.size() + sim] = outstack.back();
-					else me.outstack[k_eff*vals.size() + sim] = 0;
+					//if(!outstack.empty()) me.outstack[k_eff*vals.size() + sim] = outstack.back();
+					//else me.outstack[k_eff*vals.size() + sim] = 0;
+					if(!outstack.empty()) me.outstack.push_back(outstack.back());
+					else me.outstack.push_back(0);
 				}
 				++k_eff;
 					/*else
@@ -1092,7 +1095,8 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 			me.outstack[i].push_back(init_stack[i].at(j));
 	}*/
 	int outstart = int(me.outstack.size()/vals.size());
-	me.outstack.resize(me.eff_size*vals.size());
+	// me.outstack.resize(me.eff_size*vals.size());
+	 me.outstack.reserve(me.eff_size*vals.size());
 	//outstack.reserve(me.eff_size/2);
 	for(unsigned int sim=0;sim<vals.size();++sim)
 		{
@@ -1115,8 +1119,10 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 					//me.line.at(k).eval(outstack);
 					eval(me.line.at(k),outstack);
 					++ptevals;
-					if(!outstack.empty()) me.outstack[k_eff*vals.size() + sim] = outstack.back();
-					else me.outstack[k_eff*vals.size() + sim] = 0;
+					//if(!outstack.empty()) me.outstack[k_eff*vals.size() + sim] = outstack.back();
+					//else me.outstack[k_eff*vals.size() + sim] = 0;
+					if(!outstack.empty()) me.outstack.push_back(outstack.back());
+					else me.outstack.push_back(0);
 					++k_eff;
 				}
 					

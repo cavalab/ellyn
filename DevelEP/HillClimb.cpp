@@ -14,7 +14,8 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,Fitne
 	//#pragma omp parallel for
 	//for (int i=0; i<pop.size(); ++i) // for each individual
 	//	{
-			vector<ind> tmp_ind(1,oldind); 
+			vector<ind> tmp_ind(1);
+			tmp_ind[0] = oldind; 
 			//makenew(tmp_ind[0]);
 			tmp_ind[0].clrPhen(); // clear phenotype
 
