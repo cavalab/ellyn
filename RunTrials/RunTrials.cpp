@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 		cout << "Running Trials: \n";
 
 		#pragma omp parallel for schedule(dynamic)
-		for(int i=0;i<totaltrials;i++)
+		for(int i=0;i<totaltrials;++i)
 		{
 #if defined(_WIN32)
 			cout << to_string(static_cast<long long>(i)) + ": " + paramfile.at(i).substr(paramfile.at(i).rfind('\\')+1,paramfile.at(i).size()) + ", " + datafile.at(i).substr(datafile.at(i).rfind('\\')+1,datafile.at(i).size())  + "\n";
@@ -84,7 +84,12 @@ void getTrialSetup(ifstream& fs,int& totaltrials,vector<int>& trialset,vector<st
 	//string trash;
 	//s.erase();
     //s.reserve(is.rdbuf()->in_avail());
-	boost::regex re("~");
+	//#if defined(_WIN32)
+	//	using namespace std;
+	//#else
+	//	using namespace boost;
+	//#endif
+	//regex re("~");
 	int n=0;
     while(!fs.eof())
     {		
@@ -97,15 +102,17 @@ void getTrialSetup(ifstream& fs,int& totaltrials,vector<int>& trialset,vector<st
 			ss >> tmpi;
 			trialset.push_back(tmpi);
 			ss >> tmps;
-			paramset.push_back(boost::regex_replace(tmps,re," "));
+			//paramset.push_back(regex_replace(tmps,re," "));
+			paramset.push_back(tmps);
 			ss >> tmps;
-			dataset.push_back(boost::regex_replace(tmps,re," "));
-			n++;
+			//dataset.push_back(regex_replace(tmps,re," "));
+			dataset.push_back(tmps);
+			++n;
 		}
 	}
-	for(unsigned int i=0;i<trialset.size();i++)
+	for(unsigned int i=0;i<trialset.size();++i)
 	{
-		for (unsigned int j = 0; j<trialset[i];j++)
+		for (unsigned int j = 0; j<trialset[i];++j)
 		{
 			paramfile.push_back(paramset[i]);
 			datafile.push_back(dataset[i]);

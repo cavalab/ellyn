@@ -17,7 +17,7 @@ void AgeFitSelect(vector<ind>& pop,params& p,vector<Randclass>& r)
 	int popsize = (int)floor((float)pop.size()/2);
 	while (pop.size()>popsize && counter<p.popsize*10)
 	{
-		for (int j=0;j<2;j++)
+		for (int j=0;j<2;++j)
 		{
 			fitindex.at(j)=r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
 			fit.at(j) = pop.at(fitindex.at(j)).fitness;
@@ -41,8 +41,12 @@ void AgeFitSelect(vector<ind>& pop,params& p,vector<Randclass>& r)
 		}
 
 		// delete losers from population
-		if(!draw)
-			pop.erase(pop.begin()+loser);
+		if(!draw){
+			pop.at(loser).swap(pop.back());
+			//std::swap(pop.at(loser),pop.back());
+			pop.pop_back();
+			//pop.erase(pop.begin()+loser);
+		}
 
 		//minfit=p.max_fit;
 		//minage=p.g;

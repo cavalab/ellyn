@@ -92,7 +92,7 @@ else
 void shunt_op(struct op_s *op,vector <op_s*>& opstack,vector<float>& numstack,vector<node>& eqnstack,string& RPN)
 {
 	struct op_s *pop;
-	float n1, n2;
+//	float n1, n2;
 	if(op->op.compare("(")==0) {
 		opstack.push_back(op);
 		return;
@@ -167,7 +167,7 @@ string getnum(const string &s,unsigned int& i)
 		}
 
 		++it; 
-		count++;		
+		++count;		
 	}
 	i += count-1;
     return s.substr(0,count);
@@ -178,7 +178,7 @@ string getdata(unordered_map<string,float*>& mymap, string &s,unsigned int& i)
 
 	std::unordered_map<string,float*>::iterator it;
 	
-	for(unsigned int j=0;j<=s.size();j++)
+	for(unsigned int j=0;j<=s.size();++j)
 	{
 		it = mymap.find(s.substr(0,j));
 	 if (it != mymap.end())
@@ -203,7 +203,7 @@ void Eqn2Line(string& expr,vector<node>& eqnstack)
 	string tstart;
 	struct op_s startop={"X", 0, ASSOC_NONE};	/* Dummy operator to mark start */
 	struct op_s *op=NULL;
-	float n1, n2;
+//	float n1, n2;
 	struct op_s *lastop=&startop;
 
 	std::vector <op_s*> opstack; 
@@ -239,7 +239,7 @@ void Eqn2Line(string& expr,vector<node>& eqnstack)
 				while(i+1<expr.size() && tmp){
 					if (is_letter(expr[i+1])){
 						tstart+=expr[i+1];
-						i++;
+						++i;
 					}
 					else tmp=0;
 				}

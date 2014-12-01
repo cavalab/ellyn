@@ -39,7 +39,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 
 		// epigenetic mutation
 		if (p.eHC_on && p.eHC_mut){ 
-		for (int i = 0; i<pop.size(); i++)
+		for (int i = 0; i<pop.size(); ++i)
 			EpiMut(pop.at(i),p,r);
 		}
 
@@ -49,19 +49,19 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 
 		/*if (p.pHC_on && p.ERC)
 		{
-				for(int i=0; i<pop.size(); i++)
+				for(int i=0; i<pop.size(); ++i)
 					HillClimb(pop.at(i),p,r,d,s);
 		}
 		if (p.eHC_on) 
 		{
-				for(int i=0; i<pop.size(); i++)
+				for(int i=0; i<pop.size(); ++i)
 					EpiHC(pop.at(i),p,r,d,s);
 		}*/
 		break;
 		}
 	case 2: // deterministic crowding
 		{	
-			for (int j=0; j<p.popsize/omp_get_max_threads();j++) 
+			for (int j=0; j<p.popsize/omp_get_max_threads();++j) 
 				DC(pop,p,r,d,s,FE);
 			break;
 		}
@@ -76,7 +76,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 			
 			// epigenetic mutation
 			if (p.eHC_on && p.eHC_mut){ 
-				for (int i = 0; i<pop.size(); i++)
+				for (int i = 0; i<pop.size(); ++i)
 					EpiMut(pop.at(i),p,r);
 			}
 

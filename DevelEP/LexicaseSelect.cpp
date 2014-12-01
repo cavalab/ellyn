@@ -14,17 +14,17 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 	vector<float> fitcompare;
 	vector<int> fitindex;
 	vector <int> fitorder;
-	for(int i=0;i<p.numcases;i++){	fitorder.push_back(i);}
+	for(int i=0;i<p.numcases;++i){	fitorder.push_back(i);}
 	float minfit=p.max_fit;
 	vector<int> winner;
 	bool draw=true;
 	bool pass;
 	int h,lexpool;
-	for (int i=0;i<pop.size();i++)
+	for (int i=0;i<pop.size();++i)
 	{
 		std::random_shuffle(fitorder.begin(),fitorder.end(),r[omp_get_thread_num()]);
 		
-		for (int j=0;j<p.lexpool;j++)
+		for (int j=0;j<p.lexpool;++j)
 		{
 			fitindex.push_back(r[omp_get_thread_num()].rnd_int(0,pop.size()-1));
 			fitcompare.push_back(pop.at(fitindex.at(j)).fitlex[fitorder[0]]);
@@ -34,7 +34,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 		lexpool=p.lexpool;
 		while ( pass && h<fitorder.size())
 		{
-			for (int j=0;j<lexpool;j++)
+			for (int j=0;j<lexpool;++j)
 			{
 				
 				if (fitcompare.at(j)<minfit)
@@ -56,7 +56,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 				fitcompare.clear();
 				fitindex=winner;
 				lexpool = fitindex.size();
-				for (int i=0; i<fitindex.size();i++)
+				for (int i=0; i<fitindex.size();++i)
 					fitcompare.push_back(pop.at(fitindex[i]).fitlex[fitorder[h]]);
 			}
 			else pass=false;
@@ -70,6 +70,6 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 		minfit=p.max_fit;
 		fitcompare.clear();
 		fitindex.clear();
-	}//for (int i=0;i<pop.size();i++)
+	}//for (int i=0;i<pop.size();++i)
 
 }

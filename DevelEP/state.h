@@ -55,8 +55,8 @@ struct state{
 	}
 	void setgenevals()
 	{
-		int gentmp=0;
-		for(unsigned int i = 0;i<numevals.size();i++)
+		unsigned long gentmp=0;
+		for(unsigned int i = 0;i<numevals.size();++i)
 			gentmp+=numevals.at(i);
 
 		genevals.push_back(gentmp - totalevals());
@@ -65,21 +65,21 @@ struct state{
 	long long totalevals()
 	{
 		long long te=0;
-		for(unsigned int i = 0;i<genevals.size();i++)
+		for(unsigned int i = 0;i<genevals.size();++i)
 			te+=genevals.at(i);
 		return te;
 	}
 	long long totalptevals()
 	{
 		long long te=0;
-		for(unsigned int i = 0;i<ptevals.size();i++)
+		for(unsigned int i = 0;i<ptevals.size();++i)
 			te+=ptevals.at(i);
 		return te;
 	}
 	int setPHCupdates()
 	{
 		int updates=0;
-		for(unsigned int i =0;i<pHC_updates.size();i++)
+		for(unsigned int i =0;i<pHC_updates.size();++i)
 			updates+=pHC_updates[i];
 
 		int val = (updates-total_pHC_updates);
@@ -92,7 +92,7 @@ struct state{
 	int setEHCupdates()
 	{
 		int updates=0;
-		for(unsigned int i =0;i<eHC_updates.size();i++)
+		for(unsigned int i =0;i<eHC_updates.size();++i)
 			updates+=eHC_updates[i];
 
 		int val = (updates-total_eHC_updates);
@@ -107,7 +107,7 @@ struct state{
 		float total_good=0;
 		float total=0;
 
-		for(unsigned int i=0;i<good_cross.size();i++)
+		for(unsigned int i=0;i<good_cross.size();++i)
 		{
 			total_good+=good_cross.at(i);
 			total += good_cross.at(i)+bad_cross.at(i)+neut_cross.at(i);
@@ -130,7 +130,7 @@ struct state{
 		float total_neut=0;
 		float total=0;
 
-		for(unsigned int i=0;i<neut_cross.size();i++)
+		for(unsigned int i=0;i<neut_cross.size();++i)
 		{
 			total_neut+=neut_cross.at(i);
 			total += neut_cross.at(i)+bad_cross.at(i)+good_cross.at(i);
@@ -153,7 +153,7 @@ struct state{
 		float total_bad=0;
 		float total=0;
 
-		for(unsigned int i=0;i<neut_cross.size();i++)
+		for(unsigned int i=0;i<neut_cross.size();++i)
 		{
 			total_bad+=bad_cross.at(i);
 			total += neut_cross.at(i)+bad_cross.at(i)+good_cross.at(i);
@@ -181,7 +181,7 @@ struct state{
 	void setCrossPct(vector<ind> pop)
 	{
 		
-		for(int i=0;i<pop.size();i++)
+		for(int i=0;i<pop.size();++i)
 		{
 			if (pop.at(i).parentfitness > pop.at(i).fitness)
 				good_cross[omp_get_thread_num()]=good_cross[omp_get_thread_num()]+1;

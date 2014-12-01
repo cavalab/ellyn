@@ -14,18 +14,16 @@
 struct ind {
 	//unsigned int id;
 	/*vector <std::shared_ptr<node> > line;*/
+	std::vector<float> outstack; // linearized outstack
 	vector <node> line;
+	std::vector<float> output;
+	std::vector<float> output_v;
+	vector<float> fitlex; // fitnesses for lexicase selection
+	//std::vector<vector<float>> outstack; //optional node-by-node stack tracing
 	//std::vector <std::string> args;
 	std::string eqn;
 	std::string eqn_form; // equation form for string distance comparison to other forms
-	int complexity;
-	//std::vector <int> ptr;
-	char origin; // x: crossover, m: mutation, i: initialization
-
-	std::vector<float> output;
-	std::vector<float> output_v;
-	std::vector<vector<float>> outstack; //optional node-by-node stack tracing
-
+	
 	float abserror;
 	float abserror_v;
 
@@ -36,13 +34,16 @@ struct ind {
 
 	float fitness;
 	float fitness_v; 
-	vector<float> fitlex; // fitnesses for lexicase selection
+	
 	float FEvar; //variance in fitness estimates (for sorting purposes)
 
 	float parentfitness;
 	int eff_size;
 	int age;
 	int rank;
+	int complexity;
+	//std::vector <int> ptr;
+	char origin; // x: crossover, m: mutation, i: initialization
 	//typedef exprtk::expression<float> expression_t;
 	//expression_t expression;
 	/*ind()
@@ -66,6 +67,47 @@ struct ind {
 		//}
 		//
 	}
+	ind & operator = (ind s)
+    {
+      s.swap (*this); // Non-throwing swap
+      return *this;
+    }// Old resources released when destructor of temp is called.
+ 
+    void swap (ind &s) 
+	{
+		//vectors
+		outstack.swap(s.outstack); 
+		line.swap(s.line);
+		output.swap(s.output);
+		output_v.swap(s.output_v);
+		fitlex.swap(s.fitlex);
+
+		eqn.swap(s.eqn);
+		eqn_form.swap(s.eqn_form);
+
+		using std::swap;
+		//floats
+		swap(this->abserror,s.abserror);
+		swap(this->abserror_v,s.abserror_v);
+		swap(this->corr,s.corr);
+		swap(this->corr_v,s.corr_v);
+		swap(this->VAF,s.VAF);
+		swap(this->VAF_v,s.VAF_v);
+		swap(this->fitness,s.fitness);
+		swap(this->fitness_v,s.fitness_v);
+		swap(this->FEvar,s.FEvar);
+		swap(this->parentfitness,s.parentfitness);
+		//ints
+		swap(this->eff_size,s.eff_size);
+		swap(this->age,s.age);
+		swap(this->rank,s.rank);
+		swap(this->complexity,s.complexity);
+		//chars
+		swap(this->origin,s.origin);
+
+	}//throw (); // Also see the non-throwing swap idiom
+	////swap optimization
+	//void swap(ind&) throw();
 	//void init(string& nom_mod)
 	//{
 	//	eqn = nom_mod;
@@ -87,7 +129,7 @@ struct ind {
 		eqn_form="";
 		output.clear();
 		output_v.clear();
-		outstack.clear();
+		//outstack.clear();
 		// nominal model must be encased in set of parenthesis. the pointer points to that which is encased.
 		//ptr[0]= 1;
 		//ptr[1] = nom_mod.size()-2;
@@ -95,54 +137,56 @@ struct ind {
 //private:
 //	string& nominal_model;
 };
+struct sub_ind
+{
+	float fitness;
+	float abserror;
+	float corr;
+	float abserror_v;
+	float corr_v;
+	string eqn;
+	int age;
+	int complexity;
+	sub_ind(){}
+	void init(ind& x){
+		fitness = x.fitness; 
+		abserror = x.abserror; 
+		abserror_v = x.abserror_v;
+		corr = x.corr; 
+		corr_v = x.corr_v; 
+		eqn = x.eqn; 
+		age=x.age; 
+		complexity = x.complexity;
+	}
+	~sub_ind(){}
+};
+//swap optimization
+inline void swap(ind& lhs, ind& rhs) { lhs.swap(rhs); }
+namespace std { template<> inline void swap<struct ind>(ind& lhs, ind& rhs)	{lhs.swap(rhs);	}}
+////using std::swap;
+struct SortFit{ bool operator() (const ind& i,const ind& j) { return (i.fitness<j.fitness);} };
+struct SortFit2{ bool operator() (const sub_ind& i,const sub_ind& j) { return (i.fitness<j.fitness);} };
+struct SortRank{ bool operator() (const ind& i,const ind& j) { return (i.rank<j.rank);} };
 
-struct SortFit{
-	bool operator() (const ind& i,const ind& j) { return (i.fitness<j.fitness);} 
-};
+struct revSortRank{	bool operator() (ind& i,ind& j) { return (i.rank>j.rank);} };
 
-struct SortRank{
-	bool operator() (const ind& i,const ind& j) { return (i.rank<j.rank);} 
-};
+struct SortEqnSize{	bool operator() (const ind& i,const ind& j) { return (i.eqn.size()<j.eqn.size());} };
+struct SortFEVar{	bool operator() (const ind& i,const ind& j) { return (i.FEvar>j.FEvar);} };
+struct SortComplexity{bool operator() (const ind& i,const ind& j) { return (i.complexity<j.complexity);}};
+struct SortFit_v{	bool operator() (const ind& i,const ind& j) { return (i.fitness_v<j.fitness_v);}};
+struct SortSize{	bool operator() (const ind& i,const ind& j) { return (i.line.size()<j.line.size());}};
 
-struct revSortRank{
-	bool operator() (ind& i,ind& j) { return (i.rank>j.rank);} 
-};
-struct SortEqnSize{
-	bool operator() (const ind& i,const ind& j) { return (i.eqn.size()<j.eqn.size());} 
-};
-struct SortFEVar{
-	bool operator() (const ind& i,const ind& j) { return (i.FEvar>j.FEvar);} 
-};
-struct SortComplexity{bool operator() (const ind& i,const ind& j) { return (i.complexity<j.complexity);} 
-};
-struct SortFit_v{
-	bool operator() (const ind& i,const ind& j) { return (i.fitness_v<j.fitness_v);}
-};
-struct SortSize{
-	bool operator() (const ind& i,const ind& j) { return (i.line.size()<j.line.size());}
-};
+struct sameEqn{	bool operator() (ind& i,ind& j) { return i.eqn==j.eqn;} };
 
-struct sameEqn{
-	bool operator() (ind& i,ind& j) { return i.eqn==j.eqn;} 
-};
+struct sameEqnSize{	bool operator() (ind& i,ind& j) { return i.eqn.size()==j.eqn.size();} };
 
-struct sameEqnSize{
-	bool operator() (ind& i,ind& j) { return i.eqn.size()==j.eqn.size();} 
-};
+struct sameSizeFit{	bool operator() (ind& i,ind& j) { return (i.fitness==j.fitness && i.eqn.size()==j.eqn.size());} };
 
-struct sameSizeFit{
-	bool operator() (ind& i,ind& j) { return (i.fitness==j.fitness && i.eqn.size()==j.eqn.size());} 
-};
+struct sameFit{	bool operator() (ind& i,ind& j) { return (i.fitness==j.fitness);} };
+struct sameFit2{	bool operator() (sub_ind& i,sub_ind& j) { return (i.fitness==j.fitness);} };
+struct sameComplexity{bool operator() (const ind& i,const ind& j) { return (i.complexity==j.complexity);} };
 
-struct sameFit{
-	bool operator() (ind& i,ind& j) { return (i.fitness==j.fitness);} 
-};
-
-struct sameComplexity{bool operator() (const ind& i,const ind& j) { return (i.complexity==j.complexity);} 
-};
-
-struct sameFitComplexity{bool operator() (const ind& i,const ind& j) { return (i.fitness==j.fitness && i.complexity==j.complexity);} 
-};
+struct sameFitComplexity{bool operator() (const ind& i,const ind& j) { return (i.fitness==j.fitness && i.complexity==j.complexity);} };
 
 
 struct tribe{ 
@@ -156,7 +200,7 @@ struct tribe{
 		pop.resize(size);
 		best=max_fit;
 		worst=min_fit;
-		/*for(unsigned int i = 1;i<pop.size();i++)
+		/*for(unsigned int i = 1;i<pop.size();++i)
 			pop.at(i).init(nom_mod);*/
 		maxf=max_fit;
 		minf=min_fit;
@@ -171,7 +215,7 @@ struct tribe{
 		   float localbest = maxf;
 
 		   #pragma omp for schedule(static)
-		   for(int i = 0; i < pop.size(); i++)
+		   for(int i = 0; i < pop.size(); ++i)
 			   localbest = min(localbest, pop.at(i).fitness);
 
 		   #pragma omp critical
@@ -180,7 +224,7 @@ struct tribe{
 		   }
 		}*/
 		best = maxf;
-		for(int i = 0; i < pop.size(); i++)
+		for(int i = 0; i < pop.size(); ++i)
 			   best = min(best, pop.at(i).fitness);
 		return best;
 	}
@@ -192,7 +236,7 @@ struct tribe{
 		   float localbest = maxf;
 
 		   #pragma omp for schedule(static)
-		   for(int i = 0; i < pop.size(); i++)
+		   for(int i = 0; i < pop.size(); ++i)
 			   localbest = min(localbest, pop.at(i).fitness);
 
 		   #pragma omp critical
@@ -201,7 +245,7 @@ struct tribe{
 		   }
 		}*/
 		best = maxf;
-		for(int i = 0; i < pop.size(); i++)
+		for(int i = 0; i < pop.size(); ++i)
 			   best = min(best, pop.at(i).fitness_v);
 		return best;
 	}
@@ -213,7 +257,7 @@ struct tribe{
 		   float localworst = minf;
 
 		   #pragma omp for schedule(static)
-		   for(int i = 0; i < pop.size(); i++)
+		   for(int i = 0; i < pop.size(); ++i)
 			   localworst = max(localworst, pop.at(i).fitness);
 
 		   #pragma omp critical
@@ -221,31 +265,38 @@ struct tribe{
 			  worst = max(localworst, worst);
 		   }
 		}*/
-		 for(int i = 0; i < pop.size(); i++)
+		 for(int i = 0; i < pop.size(); ++i)
 			 worst = max(worst, pop.at(i).fitness);
 		return worst;
 	}	
 	float medFit() //median fitness
 	{
-		//vector<ind> tmppop = pop;
-		sort(pop.begin(),pop.end(),SortFit());
-		int index = (int)floor((float)pop.size()/2);
-		return pop.at(index).fitness; 
-
+		vector<float> fitness(pop.size());
+		for(int i =0; i < pop.size(); i++)
+			fitness.at(i) = pop.at(i).fitness;
+		sort(fitness.begin(),fitness.end());
+		if (pop.size() % 2==0) //even
+			return fitness.at((int)floor((float)pop.size()/2));
+		else
+			return (fitness.at(pop.size()/2)+fitness.at(pop.size()/2-1))/2;
 	} 
 	float medFit_v() //median fitness
 	{
-		//vector<ind> tmppop = pop;
-		sort(pop.begin(),pop.end(),SortFit_v());
-		int index = (int)floor((float)pop.size()/2);
-		return pop.at(index).fitness_v; 
+		vector<float> fitness(pop.size());
+		for(int i =0; i < pop.size(); i++)
+			fitness.at(i) = pop.at(i).fitness_v;
+		sort(fitness.begin(),fitness.end());
+		if (pop.size() % 2==0) //even
+			return fitness.at((int)floor((float)pop.size()/2));
+		else
+			return (fitness.at(pop.size()/2)+fitness.at(pop.size()/2-1))/2;
 
 	}
 	float meanFit() // mean fitness
 	{
 		float answer=0;
 		//#pragma omp parallel for reduction(+ : answer)
-		for(int i=0; i<pop.size(); i++)
+		for(int i=0; i<pop.size(); ++i)
 		{
 			answer+=pop.at(i).fitness;
 		}
@@ -256,7 +307,7 @@ struct tribe{
 	{
 		float answer=0;
 		//#pragma omp parallel for reduction(+ : answer)
-		for(int i=0; i<pop.size(); i++)
+		for(int i=0; i<pop.size(); ++i)
 		{
 			answer+=pop.at(i).line.size();
 		}
@@ -266,7 +317,7 @@ struct tribe{
 	{
 		float answer=0;
 		//#pragma omp parallel for reduction(+ : answer)
-		for(int i=0; i<pop.size(); i++)
+		for(int i=0; i<pop.size(); ++i)
 		{
 			answer+=pop.at(i).eff_size;
 		}
@@ -277,16 +328,18 @@ struct tribe{
 		//vector<ind> tmppop = pop;
 		sort(pop.begin(),pop.end(),SortSize());
 		int index = (int)floor((float)pop.size()/2);
-		return pop.at(index).line.size(); 
+		return int(pop.at(index).line.size()); 
 	}
 
-	void topTen(vector <ind>& eqns) //returns address to vector of equation strings
+	void topTen(vector <sub_ind>& eqns) //returns address to vector of equation strings
 	{
-		vector<ind> tmppop = pop;
-		sort(tmppop.begin(),tmppop.end(),SortFit());
-		unique(tmppop.begin(),tmppop.end(),sameFit());
+		vector<sub_ind> tmppop(pop.size());
+		for (int i = 0;i<pop.size();++i) tmppop[i].init(pop.at(i));
+		//vector<ind> tmppop = pop;
+		sort(tmppop.begin(),tmppop.end(),SortFit2());
+		unique(tmppop.begin(),tmppop.end(),sameFit2());
 		
-		for (int i=0;i<10;i++)
+		for (int i=0;i<10;++i)
 			eqns.push_back(tmppop.at(i));
 
 		/*vector <float> fitnesses;
@@ -295,7 +348,7 @@ struct tribe{
 		while(eqns.size()<10 && i<pop.size())
 		{
 			fitnesses.push_back(pop.at(i).fitness);
-			for(unsigned int j=0;j<fitnesses.size()-1;j++)		 
+			for(unsigned int j=0;j<fitnesses.size()-1;++j)		 
 			{
 				if(fitnesses.at(j)==fitnesses.back())
 				{
@@ -312,6 +365,14 @@ struct tribe{
 			++i;
 		}*/
 	}
+	void getbestsubind(sub_ind& bestind)
+	{
+		vector<sub_ind> subpop(pop.size());
+		for (int i = 0;i<pop.size();++i) subpop[i].init(pop.at(i));
+		//vector<ind> tmppop = pop;
+		sort(subpop.begin(),subpop.end(),SortFit2());
+		bestind = subpop.front();
+	}// address of best individual
 	void getbestind(ind& bestind)
 	{
 		//vector<ind> tmppop = pop;

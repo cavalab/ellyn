@@ -21,8 +21,8 @@ class Datapoint{
   int getParetoStatus() const {return paretoStatus;}; 
   void setParetoStatus(int status) {paretoStatus=status;};
   size_t dim() const {return vec.size();};
-  void incrementDominated() {dominatedCount++;};
-  void decrementDominated() {dominatedCount--;};
+  void incrementDominated() {++dominatedCount;};
+  void decrementDominated() {--dominatedCount;};
   size_t numDominated() const {return dominatedCount;};
   void print() const;
   void addToDominatingSet(size_t id2) {dominatingSet.push_back(id2);}; 
@@ -47,9 +47,9 @@ inline bool operator<(const Datapoint& a, const Datapoint& b){
   size_t dim=a.dim();
   for (size_t k=0; k<dim ; ++k){
     if (a.vec[k] <= b.vec[k]){
-      lte++;
+      ++lte;
       if (a.vec[k] < b.vec[k]){
-	lt++;
+	++lt;
       }
     }
   }
@@ -65,9 +65,9 @@ inline bool operator>(const Datapoint& a, const Datapoint& b){
   size_t dim=a.dim();
   for (size_t k=0; k<dim ; ++k){
     if (a.vec[k] >= b.vec[k]){
-      gte++;
+      ++gte;
       if (a.vec[k] > b.vec[k]){
-	gt++;
+	++gt;
       }
     }
   }

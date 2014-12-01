@@ -1,5 +1,5 @@
-g					10	// number of generations
-popsize				100 // population size
+g					1000	// number of generations
+popsize				1000 // population size
 printeverypop		0  // save printout of population at every generation
 limit_evals			1 // limit evals instead of number of generations
 max_evals			2000000000 // max point evaluations
@@ -66,10 +66,6 @@ precision			0.0001
 
 // Hill Climbing Settings
 
-// generic line hill climber (Bongard)
-lineHC_on			1
-lineHC_its			1
-
 // parameter Hill Climber
 pHC_on				1
 pHC_delay_on		1
@@ -95,10 +91,10 @@ eHC_slim			1  // minimize point evaluations as much as possible
 
 // Pareto settings
 
-prto_arch_on		1
+prto_arch_on		0
 prto_arch_size		100
 prto_sel_on			1
 
 // island model
-islands				0
+islands				1
 island_gens			100

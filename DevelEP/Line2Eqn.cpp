@@ -7,7 +7,7 @@ string Line2Eqn(vector<node>& line)
 {
 	vector<string> eqnstack;
 
-	for(unsigned int i=0;i<line.size();i++)
+	for(unsigned int i=0;i<line.size();++i)
 	{
 		if(line.at(i).on){
 			if(line.at(i).type=='n')

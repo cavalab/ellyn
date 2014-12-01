@@ -11,9 +11,9 @@ void Tournament(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<R
 	float minfit=p.max_fit;
 	int winner;
 	bool draw=true;
-	for (int i=0;i<pop.size();i++)
+	for (int i=0;i<pop.size();++i)
 	{
-		for (int j=0;j<p.tourn_size;j++)
+		for (int j=0;j<p.tourn_size;++j)
 		{
 			fitindex.at(j)=r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
 			fitcompare.at(j) = pop.at(fitindex.at(j)).fitness;

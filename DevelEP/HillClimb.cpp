@@ -12,7 +12,7 @@
 void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
 {
 	//#pragma omp parallel for
-	//for (int i=0; i<pop.size(); i++) // for each individual
+	//for (int i=0; i<pop.size(); ++i) // for each individual
 	//	{
 			vector<ind> tmp_ind(1,oldind); 
 			//makenew(tmp_ind[0]);
@@ -25,15 +25,15 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,Fitne
 			else
 				HCits = p.pHC_its;
 
-			for (int j=0;j<HCits; j++) // for number of specified iterations
+			for (int j=0;j<HCits; ++j) // for number of specified iterations
 			{
 				if (updated)
 				{
-				    tmp_ind.push_back(oldind);  
+				    tmp_ind[0] = oldind;  
 					//makenew(tmp_ind[0]);
 					tmp_ind[0].clrPhen(); // clear phenotype
 				}
-				for (int h= 0; h<tmp_ind[0].line.size();h++) // for length of genotype
+				for (int h= 0; h<tmp_ind[0].line.size();++h) // for length of genotype
 				{
 					if(tmp_ind[0].line.at(h).type=='n' && tmp_ind[0].line.at(h).on) // insert function with true epiline value
 					{
@@ -50,14 +50,16 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,Fitne
 				Fitness(tmp_ind,p,d,s,FE); //get fitness 
 				if ( tmp_ind[0].fitness < oldind.fitness) // if fitness is better, replace individual
 				{
-					swap(oldind,tmp_ind[0]);
-				    tmp_ind.clear();
+					oldind = tmp_ind[0];
+					//swap(oldind,tmp_ind[0]);
+				    //tmp_ind.clear();
 					updated = true;
 					s.pHC_updates[omp_get_thread_num()]++;
 				}
 				//else if (tmp_ind[0].fitness == oldind.fitness && tmp_ind[0].eqn.size() < oldind.eqn.size()) // if fitness is same but equation is smaller, replace individual
 				//{
 				//	oldind = tmp_ind[0];
+				//	//tmp_ind.clear();
 				//	updated = true;
 				//	s.pHC_updates[omp_get_thread_num()]++;
 				//}

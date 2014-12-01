@@ -8,8 +8,10 @@ struct paretoarchive{
 	vector <ind> pop; // population
 	int archsize;
 	int optimal_size;
-	paretoarchive(int size){archsize=size;}
+	paretoarchive(){archsize=0;optimal_size=0;}
+	paretoarchive(int size){archsize=size;optimal_size=0;}
 	~paretoarchive(){}
+	void resize(int size){archsize=size;}
 
 	void update(vector<ind>& newpop)
 	{

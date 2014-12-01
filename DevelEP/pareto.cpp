@@ -94,7 +94,7 @@ void pareto(vector<ind>& pop){
 	  pop.at(d).rank = dataset[d]->getParetoStatus();
   }
 
-  for(std::vector<Datapoint*>::iterator j=dataset.begin();j!=dataset.end();j++)
+  for(std::vector<Datapoint*>::iterator j=dataset.begin();j!=dataset.end();++j)
 	  delete(*j);
   delete(algo);
 }

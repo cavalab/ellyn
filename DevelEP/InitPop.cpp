@@ -25,13 +25,13 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 	//boost::progress_timer timer;
 	//#pragma omp parallel for
 
-	for(int i=0;i<pop.size();i++)
+	for(int i=0;i<pop.size();++i)
 	{
 		if (!p.init_trees){
 			makeline(pop.at(i),p,r);
 			if (p.eHC_on)
 			{
-				for (int j=0;j<pop.at(i).line.size();j++)
+				for (int j=0;j<pop.at(i).line.size();++j)
 				{
 					float tmp = r[omp_get_thread_num()].rnd_flt(0,1);
 					//cout << "tmp: " << tmp << " p.eHC: " << p.eHC_init; 
@@ -45,10 +45,10 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 		else{
 			int linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len);
 			if (p.eHC_on){
-				int onlen = linelen*p.eHC_init;
+				int onlen = int(linelen*p.eHC_init);
 				makeline_rec(pop.at(i),p,r,onlen);
 				int offlen = linelen-onlen;
-				for (int j=0;j<offlen;j++){
+				for (int j=0;j<offlen;++j){
 					int loc = r[omp_get_thread_num()].rnd_int(0,pop.at(i).line.size()-1);
 					 InsInstruction(pop.at(i),loc,p,r);
 					pop.at(i).line[loc].on=false;
@@ -93,7 +93,7 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 				choice=0;
 			else
 			{
-				for (unsigned int k=1;k<wheel.size();k++)
+				for (unsigned int k=1;k<wheel.size();++k)
 				{
 					if(tmp<wheel.at(k) && tmp>=wheel.at(k-1)){
 						choice = k;
@@ -183,7 +183,7 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 				//copystack(p.seedstacks.at(seedchoice),tmpstack);
 				tmpstack = p.seedstacks.at(seedchoice);
 				
-				for(int i=0;i<tmpstack.size(); i++)
+				for(int i=0;i<tmpstack.size(); ++i)
 				{
 					if (x<p.max_len){
 						newind.line.push_back(tmpstack[i]);
@@ -215,7 +215,7 @@ void getChoice(int& choice, int min_arity, int max_arity, params& p,vector<Randc
 	vector<int> choices;
 	vector<float> op_weight;
 	int tmpchoice;
-	for (int i=0;i<p.op_arity.size();i++)
+	for (int i=0;i<p.op_arity.size();++i)
 	{
 		if (p.op_arity[i] >= min_arity && p.op_arity[i] <= max_arity)
 		{
@@ -237,7 +237,7 @@ void getChoice(int& choice, int min_arity, int max_arity, params& p,vector<Randc
 				tmpchoice=0;
 			else
 			{
-				for (unsigned int k=1;k<wheel.size();k++)
+				for (unsigned int k=1;k<wheel.size();++k)
 				{
 					if(tmp<wheel.at(k) && tmp>=wheel.at(k-1)){
 						tmpchoice = k;
@@ -410,7 +410,7 @@ void push_front_node(vector <node>& line, int choice, params& p,vector<Randclass
 int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,params& p,vector<Randclass>& r)
 {
 	int choice; 
-	int splitnodes; 
+//	int splitnodes; 
 	int thisnode = lastnode+1;
 	int startsize = line.size();
 	if (level==1) // choose a terminal because of the level limitation
@@ -433,7 +433,7 @@ int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,params
 		//splitnodes = int(round(float(level)/float(a)));
 		//splitnodes = r[omp_get_thread_num()].rnd_int(1,level-1);
 	}
-	for (int i=1;i<=a;i++)
+	for (int i=1;i<=a;++i)
 	{
 		if (i==a)
 			//newlevel = level-(splitnodes*(a-1));
@@ -464,7 +464,7 @@ int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,params
 //	if (p.ERC)
 //	{
 //		float ERC;
-//		for (int j=0;j<p.numERC;j++)
+//		for (int j=0;j<p.numERC;++j)
 //		{
 //			ERC = r[omp_get_thread_num()].rnd_flt((float)p.minERC,(float)p.maxERC);
 //			if(p.ERCints)
@@ -489,7 +489,7 @@ int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,params
 //				choice=0;
 //			else
 //			{
-//				for (unsigned int k=1;k<wheel.size();k++)
+//				for (unsigned int k=1;k<wheel.size();++k)
 //				{
 //					if(tmp<wheel.at(k) && tmp>=wheel.at(k-1))
 //						choice = k;

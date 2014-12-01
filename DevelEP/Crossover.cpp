@@ -7,16 +7,16 @@
 
 void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& r)
 {
-	vector<ind> parents;
-	parents.push_back(p1);
-	parents.push_back(p2);
+	vector<ind> parents(2);
+	parents[0] = p1;
+	parents[1] = p2;
 
 	//makenew(parents[0]);
 	//makenew(parents[1]);
 
 	vector<ind> kids(2);
 
-	int r2,off1,off2,offset,head,it;
+	int r2,off1,off2,offset,head;
 	//std::vector<int>::iterator it;
 	int tmpinssize = 0;
 	vector<int> psize; 
@@ -52,7 +52,7 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 			// assign beginning of parent to kid if it is longer
 			kids.at(r1).line.insert(kids.at(r1).line.end(),parents[r1].line.begin(),parents[r1].line.begin()+offset);
 
-			for (unsigned int i=0;i<std::min(parents[r1].line.size(),parents[r2].line.size());i++)
+			for (unsigned int i=0;i<std::min(parents[r1].line.size(),parents[r2].line.size());++i)
 			{
 				if (r[omp_get_thread_num()].rnd_flt(0,1)<p.cross_ar)
 				{

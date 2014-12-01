@@ -14,9 +14,9 @@ public:
 	FitnessEstimator(int length,vector<Randclass>& r,data& d,bool train)
 	{
 		int lastpt;
-		if (train) lastpt = d.vals.size()/2-1;
+		if (train) lastpt = int(d.vals.size())/2-1;
 		else lastpt = d.vals.size()-1;
-		for (int i=0;i<length;i++){
+		for (int i=0;i<length;++i){
 			FEpts.push_back(r[omp_get_thread_num()].rnd_int(0,lastpt));
 		}
 		fitness=0;

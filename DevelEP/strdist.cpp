@@ -13,11 +13,11 @@ int strdist(std::string s1,std::string s2)
 	int li1=lima+1;
 	int kr;
 	vector <vector <int>> dl;
-	for (int i=0;i<lu1;i++)
+	for (int i=0;i<lu1;++i)
 	{
 		dl.push_back(vector <int>());
 		dl[i].push_back(i);
-		for (int j=1;j<li1;j++)
+		for (int j=1;j<li1;++j)
 		{
 			if(i==0)
 				dl[i].push_back(j);
@@ -31,7 +31,7 @@ int strdist(std::string s1,std::string s2)
 	for (int i=1; i<lu1; ++i )
 	{
 	   char s2i=s2.at(i-1);
-	   for (int j=1; j<li1; j++ )
+	   for (int j=1; j<li1; ++j )
 	   {
 		  kr=1;
 		  if (s1.at(j-1)==s2i)

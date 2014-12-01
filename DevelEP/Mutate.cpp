@@ -15,12 +15,12 @@ void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)
 	kid[0].clrPhen();
 		
 
-	for(unsigned int i = 0;i<kid[0].line.size();i++)
+	for(unsigned int i = 0;i<kid[0].line.size();++i)
 	{
 		if(r[omp_get_thread_num()].rnd_flt(0,1)<=p.mut_ar)
 			ichange.push_back(i);
 	}
-	for(unsigned int j=0;j<ichange.size();j++)
+	for(unsigned int j=0;j<ichange.size();++j)
 	{
 		if(kid[0].line.at(ichange.at(j)).type=='n') // insert function
 		{

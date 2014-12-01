@@ -39,7 +39,7 @@ struct data {
 	}
 	/*void mapdata()
 	{
-		for (unsigned int i=0;i<label.size(); i++)
+		for (unsigned int i=0;i<label.size(); ++i)
 			datatable.insert(pair<string,float*>(label[i],&dattovar[i]));
 	}*/
 	~data() 
@@ -47,7 +47,7 @@ struct data {
 		//I think the data pointed to by the map should be destroyed
 		//in here (datatable) as well as the pointer, since both are contained within the class.
 		//therefore this deletion is unecessary. also no news are called.
-		/*for (unordered_map<string,float*>::iterator i = datatable.begin(); i != datatable.end();i++)
+		/*for (unordered_map<string,float*>::iterator i = datatable.begin(); i != datatable.end();++i)
 		{
 			delete (*i).second;
 		}

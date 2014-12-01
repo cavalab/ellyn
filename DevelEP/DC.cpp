@@ -13,6 +13,7 @@
 
 // steady-state deterministic crowding algorithm.
 // update_locs are the indices of the update locations for passage to hill climbing. 
+using std::swap;
 void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
 {
 	
@@ -45,7 +46,7 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,Fitness
 	//if (p.loud ) cout << "  Fitness...\n";
 
 	if (p.eHC_on && p.eHC_mut){ // epigenetic mutation
-		for (int i = 0; i<tmppop.size(); i++)
+		for (int i = 0; i<tmppop.size(); ++i)
 			EpiMut(tmppop.at(i),p,r);
 	}
 
@@ -78,8 +79,8 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,Fitness
 				s.neut_cross[omp_get_thread_num()]=s.neut_cross[omp_get_thread_num()]+1;
 			
 			//makenew(tmppop.at(0));
-			swap(tmppop.at(0),pop.at(p1));
-
+			//swap(tmppop.at(0),pop.at(p1));
+			pop.at(p1).swap(tmppop.at(0));
 		}
 		else
 			s.bad_cross[omp_get_thread_num()]=s.bad_cross[omp_get_thread_num()]+1;
@@ -89,7 +90,8 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,Fitness
 	{
 		if (strdist(tmppop.at(0).eqn_form,pop.at(p1).eqn_form) + strdist(tmppop.at(1).eqn_form,pop.at(p2).eqn_form) > strdist(tmppop.at(1).eqn_form,pop.at(p1).eqn_form) + strdist(tmppop.at(0).eqn_form,pop.at(p2).eqn_form))
 		{	
-			swap(tmppop.at(0),tmppop.at(1));
+			//swap(tmppop.at(0),tmppop.at(1));
+			tmppop.at(0).swap(tmppop.at(1));
 			tmppop.at(0).parentfitness = pop.at(p1).fitness;
 			tmppop.at(1).parentfitness = pop.at(p2).fitness;
 		}
@@ -101,7 +103,8 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,Fitness
 			else
 				s.neut_cross[omp_get_thread_num()]=s.neut_cross[omp_get_thread_num()]+1;
 			//makenew(tmppop.at(0));
-			swap(tmppop.at(0),pop.at(p1));
+			//swap(tmppop.at(0),pop.at(p1));
+			pop.at(p1).swap(tmppop.at(0));
 		}
 		else
 			s.bad_cross[omp_get_thread_num()]=s.bad_cross[omp_get_thread_num()]+1;
@@ -113,7 +116,8 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,Fitness
 			else
 				s.neut_cross[omp_get_thread_num()]=s.neut_cross[omp_get_thread_num()]+1;
 			//makenew(tmppop.at(0));
-			swap(tmppop.at(1),pop.at(p2));
+			//swap(tmppop.at(1),pop.at(p2));
+			pop.at(p2).swap(tmppop.at(1));
 		}
 		else
 			s.bad_cross[omp_get_thread_num()]=s.bad_cross[omp_get_thread_num()]+1;
@@ -124,10 +128,10 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,Fitness
 	}
 	tmppop.clear();
 	
-	/*for (int i = 0; i<pop.size();i++)
+	/*for (int i = 0; i<pop.size();++i)
 	{
 		int totalshares = 0;
-		for (int j=0;j<pop.at(i).line.size();j++)
+		for (int j=0;j<pop.at(i).line.size();++j)
 			totalshares+=pop.at(i).line.at(j).use_count();
 
 		if (totalshares>pop.at(i).line.size())

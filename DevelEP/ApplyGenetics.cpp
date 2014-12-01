@@ -7,7 +7,7 @@
 #include "FitnessEstimator.h"
 #include "Generationfns.h"
 #include "Fitness.h"
-
+using std::swap;
 void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
 {
 	//boost::progress_timer timer;
@@ -19,7 +19,7 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 	unsigned int numits=0;
 	if (p.sel==4) //age-fitness pareto
 	{
-		for (unsigned int i=0;i<pop.size();i++)
+		for (unsigned int i=0;i<pop.size();++i)
 			parloc.push_back(i);
 	}
 	std::random_shuffle(parloc.begin(),parloc.end(),r[omp_get_thread_num()]);
@@ -36,8 +36,8 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 			tmppop.push_back(pop.at(parloc[numits]));
 			//update ages
 			tmppop.back().age=pop.at(parloc[numits]).age;
-			pop.at(parloc[numits]).age++;
-			numits++;
+			++pop.at(parloc[numits]).age;
+			++numits;
 		}
 		else if (choice<p.rep_wheel[1] && parloc.size()>numits+1) // crossover, as long as there are at least two parents left
 		{			
@@ -49,8 +49,8 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 				//update ages
 				tmppop.back().age=max(pop.at(parloc[numits]).age,pop.at(parloc[numits+1]).age);
 				tmppop.at(tmppop.size()-2).age=max(pop.at(parloc[numits]).age,pop.at(parloc[numits+1]).age);
-				pop.at(parloc[numits]).age++;
-				pop.at(parloc[numits+1]).age++;
+				++pop.at(parloc[numits]).age;
+				++pop.at(parloc[numits+1]).age;
 				numits+=2;
 				//push kids into tmppop
 			}
@@ -62,8 +62,8 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 				tmppop.at(tmppop.size()-2).age = pop.at(parloc[numits]).age;
 				tmppop.back().age = pop.at(parloc[numits+1]).age;
 				
-				pop.at(parloc[numits]).age++;
-				pop.at(parloc[numits+1]).age++;
+				++pop.at(parloc[numits]).age;
+				++pop.at(parloc[numits+1]).age;
 
 				numits+=2;
 			}
@@ -73,8 +73,8 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 			Mutate(pop.at(parloc[numits]),tmppop,p,r,d);
 			//update ages
 			tmppop.back().age=pop.at(parloc[numits]).age;
-			pop.at(parloc[numits]).age++;
-			numits++;
+			++pop.at(parloc[numits]).age;
+			++numits;
 		}
 
 		

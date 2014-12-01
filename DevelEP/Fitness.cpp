@@ -32,11 +32,11 @@ void getEqnForm(std::string& eqn,std::string& eqn_form)
 {
 //replace numbers with the letter c
 #if defined(_WIN32)
-	std::regex e ("(([0-9]+)(\.)([0-9]+))|([0-9]+)");
+	std::regex e ("(([0-9]+)(\\.)([0-9]+))|([0-9]+)");
 	std::basic_string<char> tmp = "c";
 	std::regex_replace (std::back_inserter(eqn_form), eqn.begin(), eqn.end(), e,tmp);
 #else
-	boost::regex e ("(([0-9]+)(\.)([0-9]+))|([0-9]+)");
+	boost::regex e ("(([0-9]+)(\\.)([0-9]+))|([0-9]+)");
 	eqn_form = boost::regex_replace(eqn,e,"c");
 #endif 
 	//(\d+\.\d+)|(\d+)
@@ -61,7 +61,7 @@ float getCorr(vector<float>& output,vector<float>& target,float meanout,float me
 	float corr;
 	
 	//calculate correlation coefficient
-	for (unsigned int c = 0; c<output.size(); c++)
+	for (unsigned int c = 0; c<output.size(); ++c)
 	{
 
 		v1 = target.at(c+off)-meantarget;
@@ -91,14 +91,14 @@ float VAF(vector<float>& output,vector<float>& target,float meantarget,int off)
 	float q=0;
 	float ndata = float(output.size());
 	float vaf;
-	float diff;
+//	float diff;
 	float diffmean=0;
 
-	for (unsigned int c = 0; c<output.size(); c++)
+	for (unsigned int c = 0; c<output.size(); ++c)
 		diffmean += target.at(c+off)-output.at(c);
 	diffmean = diffmean/output.size();
 	//calculate correlation coefficient
-	for (unsigned int c = 0; c<output.size(); c++)
+	for (unsigned int c = 0; c<output.size(); ++c)
 	{		
 		v1 = target.at(c+off)-meantarget;
 		v2 = (target.at(c+off)-output.at(c))-diffmean;
@@ -120,7 +120,7 @@ float std_dev(vector<float>& target,float& meantarget)
 {
 	float s=0;
 	//calculate correlation coefficient
-	for (unsigned int c = 0; c<target.size(); c++)
+	for (unsigned int c = 0; c<target.size(); ++c)
 	{
 		s+=pow(abs(target[c]-meantarget),2);
 	}
@@ -131,7 +131,7 @@ int getComplexity(string& eqn)
 {
 	int complexity=0;
 	char c;
-	for(int m=0;m<eqn.size();m++){
+	for(int m=0;m<eqn.size();++m){
 		c=eqn[m];
 		
 		if(c=='/')
@@ -171,13 +171,13 @@ int getComplexity(string& eqn)
 		else if (isalpha(c) && (m+1)<eqn.size()){
 			bool pass=true;
 			while ((m+1)<eqn.size() && pass){
-				if (isalpha(eqn[m+1])) m++; 
+				if (isalpha(eqn[m+1])) ++m; 
 				else pass=0;
 			}
-			complexity++;
+			++complexity;
 		}
 		else
-			complexity++;
+			++complexity;
 	}
 
 	return complexity;
@@ -185,9 +185,9 @@ int getComplexity(string& eqn)
 int getEffSize(vector<node>& line)
 {
 	int eff_size=0;
-	for(int m=0;m<line.size();m++){
+	for(int m=0;m<line.size();++m){
 		if(line.at(m).on)
-			eff_size++;
+			++eff_size;
 	}
 	return eff_size;
 }
@@ -199,10 +199,10 @@ void eval(node& n,vector<float>& outstack)
 		outstack.push_back(n.value);
 		break;
 	case 'v':
-		if (n.valpt==NULL)
+		/*if (n.valpt==NULL)
 			cout<<"problem";
-		else
-			outstack.push_back(*n.valpt);
+		else*/
+		outstack.push_back(*n.valpt);
 		break;
 	case '+':
 		if(outstack.size()>=2){
@@ -275,7 +275,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 {
 	
 	//#pragma omp parallel for private(e)
-	for(int count = 0; count<pop.size(); count++)
+	for(int count = 0; count<pop.size(); ++count)
 	{
 		pop.at(count).eqn = Line2Eqn(pop.at(count).line);
 		getEqnForm(pop.at(count).eqn,pop.at(count).eqn_form);
@@ -289,7 +289,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 		{
 			LexicaseFitness(pop.at(count),p,d,s,FE);
 		}//LEXICASE FITNESS
-	}//for(int count = 0; count<pop.size(); count++)
+	}//for(int count = 0; count<pop.size(); ++count)
 	s.numevals[omp_get_thread_num()]=s.numevals[omp_get_thread_num()]+pop.size();
 	
 	//cout << "\nFitness Time: ";
@@ -300,7 +300,7 @@ void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 	unordered_map <string,float*> datatable;
 	vector<float> dattovar(d.label.size());
 
-	for (unsigned int i=0;i<d.label.size(); i++)
+	for (unsigned int i=0;i<d.label.size(); ++i)
 			datatable.insert(pair<string,float*>(d.label[i],&dattovar[i]));
 
 	vector<vector<float>> FEvals;
@@ -311,7 +311,7 @@ void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 	me.abserror_v = 0;
 	
 	// set data table
-	for(int m=0;m<me.line.size();m++){
+	for(int m=0;m<me.line.size();++m){
 		if(me.line.at(m).type=='v')
 			{// set pointer to dattovar 
 				//float* set = datatable.at(static_pointer_cast<n_sym>(me.line.at(m)).varname);
@@ -331,12 +331,12 @@ void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 	// calculate error 
 				if(!p.EstimateFitness){
 					CalcOutput(me,p,d.vals,dattovar,d.target,s);
-					//for(unsigned int sim=0;sim<d.vals.size();sim++)
+					//for(unsigned int sim=0;sim<d.vals.size();++sim)
 					//{
-					//	for (unsigned int j=0; j<p.allvars.size();j++)
+					//	for (unsigned int j=0; j<p.allvars.size();++j)
 					//		dattovar.at(j)= d.vals[sim][j];
 
-					//	for(int k=0;k<me.line.size();k++){
+					//	for(int k=0;k<me.line.size();++k){
 					//		/*if(me.line.at(k).type=='v'){
 					//			if (static_pointer_cast<n_sym>(me.line.at(k)).valpt==NULL)
 					//				cout<<"WTF";
@@ -413,12 +413,12 @@ void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 					int tmp1= me.output.size() ;
 					int tmp2= me.output_v.size();*/
 					CalcOutput(me,p,FEvals,dattovar,FEtarget,s);
-					//for(unsigned int sim=0;sim<FEvals.size();sim++)
+					//for(unsigned int sim=0;sim<FEvals.size();++sim)
 					//{
-					//	for (unsigned int j=0; j<p.allvars.size();j++)
+					//	for (unsigned int j=0; j<p.allvars.size();++j)
 					//		dattovar.at(j)= FEvals[sim][j];
 
-					//	for(int k=0;k<me.line.size();k++){
+					//	for(int k=0;k<me.line.size();++k){
 					//		/*if(me.line.at(k)->type=='v'){
 					//			if (static_pointer_cast<n_sym>(me.line.at(k))->valpt==NULL)
 					//				cout<<"WTF";
@@ -522,7 +522,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 	float target_std=1000;
 	float target_std_v=1000;
 	int ptevals=0;
-	int ndata_t,ndata_v; // training and validation data sizes
+	unsigned int ndata_t,ndata_v; // training and validation data sizes
 	if (p.train){
 		ndata_t = vals.size()/2;
 		ndata_v = vals.size()-ndata_t;
@@ -531,14 +531,20 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 		ndata_t = vals.size();
 		ndata_v=0;
 	}
-	for(unsigned int sim=0;sim<vals.size();sim++)
-		{
-			if (p.eHC_slim) me.outstack.push_back(vector<float>());
 
-			for (unsigned int j=0; j<p.allvars.size();j++)
+	if (p.eHC_on && p.eHC_slim) me.outstack.resize((me.eff_size)*vals.size());
+	
+	//outstack.reserve(me.eff_size/2);
+
+	for(unsigned int sim=0;sim<vals.size();++sim)
+		{
+			//if (p.eHC_slim) me.outstack.push_back(vector<float>());
+			int k_eff=0;
+
+			for (unsigned int j=0; j<p.allvars.size();++j)
 				dattovar.at(j)= vals[sim][j];
 
-			for(int k=0;k<me.line.size();k++){
+			for(int k=0;k<me.line.size();++k){
 				/*if(me.line.at(k).type=='v'){
 					if (static_pointer_cast<n_sym>(me.line.at(k)).valpt==NULL)
 						cout<<"WTF";
@@ -546,11 +552,15 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 				if (me.line.at(k).on){
 					//me.line.at(k).eval(outstack);
 					eval(me.line.at(k),outstack);
-					ptevals++;
-				if (p.eHC_slim) // stack tracing
-					if(!outstack.empty()) me.outstack[sim].push_back(outstack.back());
-					else
-						cout << "hm";
+					++ptevals;
+				if (p.eHC_on && p.eHC_slim) // stack tracing
+				{
+					if(!outstack.empty()) me.outstack[k_eff*vals.size() + sim] = outstack.back();
+					else me.outstack[k_eff*vals.size() + sim] = 0;
+				}
+				++k_eff;
+					/*else
+						cout << "hm";*/
 				}
 			}
 
@@ -698,7 +708,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 	unordered_map <string,float*> datatable;
 	vector<float> dattovar(d.label.size());
 
-	for (unsigned int i=0;i<d.label.size(); i++)
+	for (unsigned int i=0;i<d.label.size(); ++i)
 			datatable.insert(pair<string,float*>(d.label[i],&dattovar[i]));
 
 	int ndata_t,ndata_v; // training and validation data sizes
@@ -735,16 +745,16 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 			getEqnForm(me.eqn,me.eqn_form);
 		//Get effective size and complexity
 			me.eff_size=0;
-			for(int m=0;m<me.line.size();m++){
+			for(int m=0;m<me.line.size();++m){
 
 				if(me.line.at(m).on)
-					me.eff_size++;
+					++me.eff_size;
 			}
 			// Get Complexity
 			me.complexity= getComplexity(me.eqn_form);
 			
 			// set data pointers
-			for(int m=0;m<me.line.size();m++){
+			for(int m=0;m<me.line.size();++m){
 				if(me.line.at(m).type=='v')
 					{// set pointer to dattovar 
 						/*float* set = datatable.at(static_pointer_cast<n_sym>(me.line.at(m)).varname);*/
@@ -790,7 +800,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 				//vector<float> corrlex_v;
 
 		// loop through numcases
-				for (int lex=0; lex<d.lexvals.size(); lex++)
+				for (int lex=0; lex<d.lexvals.size(); ++lex)
 				{
 					
 					meanoutlex=0;
@@ -810,18 +820,18 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 					}	
 
 	// calculate error 
-					for(unsigned int sim=0;sim<d.lexvals[lex].size();sim++)
+					for(unsigned int sim=0;sim<d.lexvals[lex].size();++sim)
 					{
 						//outlex_v.push_back(vector<float>());
 
-						for (unsigned int j=0; j<p.allvars.size();j++)
+						for (unsigned int j=0; j<p.allvars.size();++j)
 							dattovar.at(j)= d.lexvals[lex][sim][j];
 
-						for(int k=0;k<me.line.size();k++){
+						for(int k=0;k<me.line.size();++k){
 							if (me.line.at(k).on){
 								//me.line.at(k)->eval(outstack);
 								eval(me.line.at(k),outstack);
-								ptevals++;}
+								++ptevals;}
 						}
 
 						if(!outstack.empty()){
@@ -871,7 +881,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 							break;
 							}
 						outstack.clear();
-					}//for(unsigned int sim=0;sim<d.lexvals[lex].size();sim++)
+					}//for(unsigned int sim=0;sim<d.lexvals[lex].size();++sim)
 
 					if (pass){
 					
@@ -1035,7 +1045,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 			}//if(!me.eqn.compare("unwriteable")==0)
 	else
 		{
-			for (int i=0;i<p.numcases;i++)
+			for (int i=0;i<p.numcases;++i)
 				me.fitlex[i]=p.max_fit;
 			me.fitness = p.max_fit;
 			me.fitness_v = p.max_fit;
@@ -1046,7 +1056,7 @@ void FitnessEstimate(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 {
 
 }
-bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s,int start_pt, vector<vector<float>> init_stack, float orig_fit)
+bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s,int linestart, float orig_fit)
 {
 	vector<float> outstack;// = init_stack;
 	me.output.clear();
@@ -1074,14 +1084,29 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 		ndata_t = vals.size();
 		ndata_v=0;
 	}
-	me.outstack = init_stack;
-	for(unsigned int sim=0;sim<vals.size();sim++)
+	// initialize stack for new individual from old stack
+	
+	/*for(int i=0;i<vals.size();++i){
+		me.outstack.push_back(vector<float>());
+		for(int j=0;j<outstart;++j)
+			me.outstack[i].push_back(init_stack[i].at(j));
+	}*/
+	int outstart = int(me.outstack.size()/vals.size());
+	me.outstack.resize(me.eff_size*vals.size());
+	//outstack.reserve(me.eff_size/2);
+	for(unsigned int sim=0;sim<vals.size();++sim)
 		{
-			outstack.push_back(init_stack[sim][start_pt]);
-			for (unsigned int j=0; j<p.allvars.size();j++)
-				dattovar.at(j)= vals[sim][j];
+			
+			/*if (outstart>0)
+				outstack.push_back(init_stack[sim][outstart-1]);*/
 
-			for(int k=start_pt+1;k<me.line.size();k++){
+			//me.outstack.push_back(vector<float>());
+
+			for (unsigned int j=0; j<p.allvars.size();++j)
+				dattovar.at(j)= vals[sim][j];
+			
+			int k_eff=outstart;
+			for(int k=linestart;k<me.line.size();++k){
 				/*if(me.line.at(k).type=='v'){
 					if (static_pointer_cast<n_sym>(me.line.at(k)).valpt==NULL)
 						cout<<"WTF";
@@ -1089,8 +1114,10 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 				if (me.line.at(k).on){
 					//me.line.at(k).eval(outstack);
 					eval(me.line.at(k),outstack);
-					ptevals++;
-					me.outstack[sim].push_back(outstack.back());
+					++ptevals;
+					if(!outstack.empty()) me.outstack[k_eff*vals.size() + sim] = outstack.back();
+					else me.outstack[k_eff*vals.size() + sim] = 0;
+					++k_eff;
 				}
 					
 			}
@@ -1235,14 +1262,14 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 		s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
 		return true;
 }
-bool getSlimFit(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,int start_pt, vector<vector<float>>& init_stack, float orig_fit)
+bool getSlimFit(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,int linestart, float orig_fit)
 	
 {
     //set up data table for conversion of symbolic variables
 	unordered_map <string,float*> datatable;
 	vector<float> dattovar(d.label.size());
 
-	for (unsigned int i=0;i<d.label.size(); i++)
+	for (unsigned int i=0;i<d.label.size(); ++i)
 			datatable.insert(pair<string,float*>(d.label[i],&dattovar[i]));
 
 	vector<vector<float>> FEvals;
@@ -1253,7 +1280,7 @@ bool getSlimFit(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,int star
 	me.abserror_v = 0;
 	
 	// set data table
-	for(int m=0;m<me.line.size();m++){
+	for(int m=0;m<me.line.size();++m){
 		if(me.line.at(m).type=='v')
 			{// set pointer to dattovar 
 				//float* set = datatable.at(static_pointer_cast<n_sym>(me.line.at(m)).varname);
@@ -1274,15 +1301,15 @@ bool getSlimFit(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,int star
 			{
 			    // calculate error 
 				if(!p.EstimateFitness){
-					return CalcSlimOutput(me,p,d.vals,dattovar,d.target,s,start_pt,init_stack,orig_fit);
+					return CalcSlimOutput(me,p,d.vals,dattovar,d.target,s,linestart,orig_fit);
 				} // if not estimate fitness 	
 				else{ 
-					return CalcSlimOutput(me,p,FEvals,dattovar,FEtarget,s,start_pt,init_stack,orig_fit);
+					return CalcSlimOutput(me,p,FEvals,dattovar,FEtarget,s,linestart,orig_fit);
 				} // if estimate fitness
 			} // if not unwriteable equation
 			 
 }
-bool SlimFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE, int start_pt, vector<vector<float>>& init_stack, float orig_fit)
+bool SlimFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE, int linestart,  float orig_fit)
 {
 
 	me.eqn = Line2Eqn(me.line);
@@ -1290,7 +1317,7 @@ bool SlimFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE, int st
 	me.complexity= getComplexity(me.eqn_form);
 	me.eff_size = getEffSize(me.line);
 
-	bool pass = getSlimFit(me,p,d,s,FE,start_pt,init_stack,orig_fit);
+	bool pass = getSlimFit(me,p,d,s,FE,linestart,orig_fit);
 		
 	s.numevals[omp_get_thread_num()]=s.numevals[omp_get_thread_num()]+1;
 	return pass;

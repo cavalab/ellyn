@@ -55,27 +55,27 @@ s.out << "Mean Size: " << T.meanSize() << "\n";
 s.out << "Mean Eff Size: " << T.meanEffSize() << "\n";
 s.out << "Pareto Front Equations: " << A.optimal_size << "\n";
 if(p.pHC_on)
-	s.out << "Parameter updates: " << float(s.setPHCupdates())/float(p.popsize)*100 << "\%\n";
+	s.out << "Parameter updates: " << float(s.setPHCupdates())/float(p.popsize)*100 << "%%\n";
 if(p.eHC_on)
-	s.out << "Epigenetic updates: " << float(s.setEHCupdates())/float(p.popsize)*100 << "\%\n";
-s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "\%\n";
-s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "\%\n";
+	s.out << "Epigenetic updates: " << float(s.setEHCupdates())/float(p.popsize)*100 << "%%\n";
+s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "%%\n";
+s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "%%\n";
 s.out << "Bad Genetics: " << s.getBadCrossPct() << "%\n";
 //s.clearCross();
 //float totalshares = 0;
 //float c1=0;
-//for (int i = 0; i<T.pop.size();i++)
+//for (int i = 0; i<T.pop.size();++i)
 //{
-//	for (int j=0;j<T.pop.at(i).line.size();j++){
+//	for (int j=0;j<T.pop.at(i).line.size();++j){
 //		totalshares+=float(T.pop.at(i).line.at(j).use_count()); c1++;}
 //}
 //s.out << "Average shared pointer use count: " << totalshares/(c1) << "\n";
 s.out << "MAE \t R^2 \t Fitness \t Equation \n";
-vector <ind> besteqns;
+vector <sub_ind> besteqns;
 T.topTen(besteqns);
-//for(unsigned int j=0;j<min(10,int(A.pop.size()));j++)
+//for(unsigned int j=0;j<min(10,int(A.pop.size()));++j)
 //	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
-for(unsigned int j=0;j<besteqns.size();j++){
+for(unsigned int j=0;j<besteqns.size();++j){
 	s.out <<besteqns.at(j).abserror << "\t" << besteqns.at(j).corr << "\t" << besteqns.at(j).fitness << "\t" << besteqns.at(j).eqn <<"\n";
 	if(besteqns.at(j).abserror==0)
 		cout << "caught bad equation.\n";
@@ -100,24 +100,24 @@ s.out << "----------------------------------------------------------------------
 //	s.out << "Parameter updates: " << s.setpHCupdates() << "\n";
 //if(p.eHC_on)
 //	s.out << "Epigenetic updates: " << s.geteHCupdates() << "\n";
-//s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "\%\n";
-//s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "\%\n";
+//s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "%%\n";
+//s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "%%\n";
 //s.out << "Bad Genetics: " << s.getBadCrossPct() << "%\n";
 //
 ////float totalshares = 0;
 ////float c1=0;
-////for (int i = 0; i<T.pop.size();i++)
+////for (int i = 0; i<T.pop.size();++i)
 ////{
-////	for (int j=0;j<T.pop.at(i).line.size();j++){
+////	for (int j=0;j<T.pop.at(i).line.size();++j){
 ////		totalshares+=float(T.pop.at(i).line.at(j).use_count()); c1++;}
 ////}
 ////s.out << "Average shared pointer use count: " << totalshares/(c1) << "\n";
 //s.out << "MAE \t R^2 \t Fitness \t Equation \n";
 //vector <ind> besteqns;
 //T.topTen(besteqns);
-////for(unsigned int j=0;j<min(10,int(A.pop.size()));j++)
+////for(unsigned int j=0;j<min(10,int(A.pop.size()));++j)
 ////	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
-//for(unsigned int j=0;j<besteqns.size();j++)
+//for(unsigned int j=0;j<besteqns.size();++j)
 //	s.out <<besteqns.at(j).abserror << "\t" << besteqns.at(j).corr << "\t" << besteqns.at(j).fitness << "\t" << besteqns.at(j).eqn <<"\n";
 //
 //s.out << "-------------------------------------------------------------------------------" << "\n";
@@ -137,7 +137,7 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	fout << "Total Evaluations: " << s.totalevals() << "\n";
 	fout << "f = " + best.eqn + "\n";
 	fout << "gline: ";
-	for(unsigned int i =0;i<best.line.size();i++)
+	for(unsigned int i =0;i<best.line.size();++i)
 	{
 		if (best.line[i].type=='n')
 			fout << best.line[i].value << "\t";
@@ -148,7 +148,7 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	}
 	fout << endl;
 	fout << "eline: ";
-	for(unsigned int i =0;i<best.line.size();i++){
+	for(unsigned int i =0;i<best.line.size();++i){
 		if (best.line.at(i).on)
 			fout <<"1\t";
 		else
@@ -166,7 +166,7 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	fout << "age: " << best.age << "\n";
 	fout << "eqn form: " << best.eqn_form << "\n";
 	/*fout << "output: ";
-	for(unsigned int i =0;i<best.output.size();i++)
+	for(unsigned int i =0;i<best.output.size();++i)
 	{
 		fout << best.output.at(i) << " ";
 	}
@@ -186,8 +186,8 @@ void printdatafile(tribe& T,state& s,params& p, std::ofstream& dfout)
 	//std::ofstream fout;
 	//dfout.open(dataname,std::ofstream::app);
 
-	ind best_ind;
-	T.getbestind(best_ind);
+	sub_ind best_ind;
+	T.getbestsubind(best_ind);
 
 	dfout << s.totalptevals() << "\t" << best_ind.eqn << "\t" << T.bestFit() << "\t" << T.bestFit_v() << "\t" << T.medFit() << "\t" << T.medFit_v() << "\t" << best_ind.abserror << "\t" << best_ind.abserror_v << "\t" << best_ind.corr << "\t" << best_ind.corr_v << "\t" << T.meanSize() << "\t" << T.meanEffSize() << "\t" << s.current_pHC_updates/float(p.popsize)*100.0 << "\t" << s.current_eHC_updates/float(p.popsize)*100.0 << "\t" <<  s.good_cross_pct << "\t" << s.neut_cross_pct << "\t" << s.bad_cross_pct << "\n";
 	//s.clearCross();
@@ -220,11 +220,11 @@ void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
 	fout << "Corresponding Logfile: " + logname + "\n";
 	fout << "Total Evaluations: " << s.totalevals() << "\n";
 
-	for (int h = 0; h<pop.size(); h++){
+	for (int h = 0; h<pop.size(); ++h){
 		fout << "--- Individual "<< h << " ------------------------------------------------------------" << "\n";
 		fout << "f = " + pop.at(h).eqn + "\n";
 		fout << "gline: ";
-		for(unsigned int i =0;i<pop.at(h).line.size();i++)
+		for(unsigned int i =0;i<pop.at(h).line.size();++i)
 		{
 			if (pop.at(h).line[i].type=='n')
 				fout <<pop.at(h).line[i].value << "\t";
@@ -235,7 +235,7 @@ void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
 		}
 		fout << endl;
 		fout << "eline: ";
-		for(unsigned int i =0;i<pop.at(h).line.size();i++){
+		for(unsigned int i =0;i<pop.at(h).line.size();++i){
 			if (pop.at(h).line.at(i).on)
 				fout <<"1\t";
 			else
@@ -257,7 +257,7 @@ void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
 		fout << "age: " << pop.at(h).age << "\n";
 		fout << "eqn form: " << pop.at(h).eqn_form << "\n";
 		/*fout << "output: ";
-		for(unsigned int i =0;i<pop.at(h).output.size();i++)
+		for(unsigned int i =0;i<pop.at(h).output.size();++i)
 		{
 			fout << T.pop.at(h).output.at(i);
 		}
@@ -330,7 +330,7 @@ void load_params(params &p, std::ifstream& fs)
 				if ( q > 0)
 					p.resultspath = p.resultspath + ' ';
 				p.resultspath.insert(p.resultspath.end(),tmps.begin(),tmps.end());
-				q++;
+				++q;
 			}
 		}
 		else if(varname.compare(0,4,"loud") == 0)
@@ -499,7 +499,7 @@ void load_params(params &p, std::ifstream& fs)
 
 	p.seed = time(0);
 	
-	for (unsigned int i=0; i<p.op_list.size(); i++)
+	for (unsigned int i=0; i<p.op_list.size(); ++i)
 	{
 		if (p.op_list.at(i).compare("n")==0 )//&& ( p.ERC || !p.cvals.empty() ) )
 		{
@@ -566,7 +566,7 @@ void load_params(params &p, std::ifstream& fs)
 		p.op_choice.push_back(10); // include seeds in operation choices
 		p.op_weight.push_back(1); // include opweight if used
 
-		for (int i=0; i<p.seeds.size();i++)
+		for (int i=0; i<p.seeds.size();++i)
 		{
 			p.seedstacks.push_back(vector<node>());
 
@@ -577,7 +577,7 @@ void load_params(params &p, std::ifstream& fs)
 	if (p.weight_ops_on) 
 	{
 		float sumweight = accumulate(p.op_weight.begin(),p.op_weight.end(),0);
-		for(unsigned int i=0;i<p.op_weight.size();i++)
+		for(unsigned int i=0;i<p.op_weight.size();++i)
                         p.op_weight.at(i) = p.op_weight.at(i)/sumweight;
 	}
 }
@@ -611,7 +611,7 @@ void load_data(data &d, std::ifstream& fs,params& p)
 			}
 			else
 			{
-				index++;
+				++index;
 			}
 		}
 
@@ -637,7 +637,7 @@ void load_data(data &d, std::ifstream& fs,params& p)
 			d.vals[rownum].push_back(tmpf);
 			//varnum++;
 		}
-		rownum++;
+		++rownum;
     }
 	// pop end in case of extra blank lines in data file
 	while(d.vals.back().empty())
@@ -687,7 +687,7 @@ void load_lexdata(data &d, std::ifstream& fs,params& p)
 			}
 			else
 			{
-				index++;
+				++index;
 			}
 		}
 
@@ -704,7 +704,7 @@ void load_lexdata(data &d, std::ifstream& fs,params& p)
 		istringstream ss2(s);
 
 		if (s.compare("case")==0 ){
-			c++; //YAY!
+			++c; //YAY!
 			lexnum=0;
 			d.lexvals.push_back(vector<vector<float>>());
 			d.targetlex.push_back(vector<float>());
@@ -723,8 +723,8 @@ void load_lexdata(data &d, std::ifstream& fs,params& p)
 				d.lexvals[c][lexnum].push_back(tmpf);
 				//varnum++;
 			}
-			rownum++;
-			lexnum++;
+			++rownum;
+			++lexnum;
 		}
     }
 	// set number of cases
@@ -745,7 +745,7 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s)
 	vector<vector<float>> newvals;
 	if (p.sel!=3) 
 	{
-		for(int i=0;i<d.vals.size();i++)
+		for(int i=0;i<d.vals.size();++i)
 			shuffler.push_back(i);
 
 		std::random_shuffle(shuffler.begin(),shuffler.end(),r[omp_get_thread_num()]);
@@ -754,19 +754,20 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s)
 		bool tmp = s.out.trials;
 		s.out.trials=1; // keep output from going to console
 		s.out << "data shuffle index: ";
-		for (int i=0; i<shuffler.size(); i++)
+		for (int i=0; i<shuffler.size(); ++i)
 			s.out << shuffler.at(i) << " ";
 		s.out << "\n";
 		s.out.trials=tmp;
 
-		for(int i=0;i<d.vals.size();i++)
+		for(int i=0;i<d.vals.size();++i)
 		{
 			newtarget.push_back(d.target.at(shuffler.at(i)));
 			newvals.push_back(d.vals.at(shuffler.at(i)));
 
 		}
-		swap(d.target,newtarget);
-		swap(d.vals,newvals);
+		using std::swap;
+		std::swap(d.target,newtarget);
+		std::swap(d.vals,newvals);
 
 	}
 	else // lexicase selection
@@ -774,17 +775,17 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s)
 		
 		vector<vector<float>> newtarlex(d.lexvals.size());
 		vector<vector<vector<float>>> newlexvals(d.lexvals.size());
-		for (int h=0; h<d.lexvals.size();h++)
+		for (int h=0; h<d.lexvals.size();++h)
 		{
 			shuffler.clear();
-			for(int i=0;i<d.lexvals[h].size();i++)
+			for(int i=0;i<d.lexvals[h].size();++i)
 				shuffler.push_back(i);
 
 			std::random_shuffle(shuffler.begin(),shuffler.end(),r[omp_get_thread_num()]);
 			
-			for(int i=0;i<d.lexvals[h].size();i++)
+			for(int i=0;i<d.lexvals[h].size();++i)
 			{
-				//for (int j =0; j<d.lexvals[h][i].size();j++){
+				//for (int j =0; j<d.lexvals[h][i].size();++j){
 					newtarlex[h].push_back(d.targetlex[h][shuffler.at(i)]);
 					newlexvals[h].push_back(d.lexvals[h][shuffler.at(i)]);
 
@@ -793,6 +794,7 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s)
 				//}
 			}
 		}
+		using std::swap;
 		swap(d.target,newtarget);
 		swap(d.vals,newvals);
 		swap(d.targetlex,newtarlex);
@@ -997,11 +999,13 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		shuffle_data(d,p,r,s);
 	
 	boost::timer time;
+	paretoarchive A;
+	if (p.prto_arch_on){
+		A.resize(p.prto_arch_size);
+		tribe FinalArchive(p.prto_arch_size,p.max_fit,p.min_fit);
+		FinalArchive.pop = A.pop;
+	}
 
-	paretoarchive A(p.prto_arch_size);
-	tribe FinalArchive(p.prto_arch_size,p.max_fit,p.min_fit);
-	FinalArchive.pop = A.pop;
-	
 	vector<FitnessEstimator> FE(1);
 	vector<ind> trainers;
 
@@ -1015,7 +1019,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		tribe World(subpops*num_islands,p.max_fit,p.min_fit); //total population of tribes
 		 s.out << num_islands << " islands of " << subpops << " individuals, total pop " << subpops*num_islands <<"\n";
 
-		for(int i=0;i<num_islands;i++)
+		for(int i=0;i<num_islands;++i)
 			T.push_back(tribe(subpops,p.max_fit,p.min_fit));
 		// run separate islands 
 		if (p.init_validate_on)
@@ -1025,12 +1029,12 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			if (p.EstimateFitness)
 			{
 				#pragma omp parallel for
-				for(int i=0;i<num_islands;i++)
+				for(int i=0;i<num_islands;++i)
 					InitPop(T.at(i).pop,p,r);
 				
 				// construct world population
-				for(int j=0;j<T.size();j++){
-					for(int k=0;k<T[0].pop.size();k++){
+				for(int j=0;j<T.size();++j){
+					for(int k=0;k<T[0].pop.size();++k){
 						World.pop.at(j*T[0].pop.size()+k)=T.at(j).pop.at(k);
 						//makenew(World.pop[j*T[0].pop.size()+k]);	
 					}
@@ -1040,7 +1044,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 
 				//discard invalid individuals
 				#pragma omp parallel for
-				for(int i=0;i<num_islands;i++){
+				for(int i=0;i<num_islands;++i){
 					float worstfit;
 					float bestfit;
 					vector<ind> tmppop;
@@ -1061,7 +1065,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 								tmppop.push_back(ind());
 							}
 							else
-								j++;
+								++j;
 						}
 
 						InitPop(tmppop,p,r);
@@ -1080,7 +1084,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			else{
 				
 				#pragma omp parallel for 
-				for(int i=0;i<num_islands;i++)
+				for(int i=0;i<num_islands;++i)
 				{
 					float worstfit;
 					float bestfit;
@@ -1102,7 +1106,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 								tmppop.push_back(ind());
 							}
 							else
-								j++;
+								++j;
 						}
 
 						InitPop(tmppop,p,r);
@@ -1126,7 +1130,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			/*bool tmp = p.EstimateFitness;
 			p.EstimateFitness=0;*/
 			#pragma omp parallel for 
-			for(int i=0;i<num_islands;i++)
+			for(int i=0;i<num_islands;++i)
 			{
 				InitPop(T.at(i).pop,p,r);
 				// s.out << "Gen 2 Phen..." << "\n";
@@ -1135,8 +1139,8 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					Fitness(T.at(i).pop,p,d,s,FE[0]);
 			}
 			// construct world population
-			for(int j=0;j<T.size();j++){
-				for(int k=0;k<T[0].pop.size();k++){
+			for(int j=0;j<T.size();++j){
+				for(int k=0;k<T[0].pop.size();++k){
 					World.pop.at(j*T[0].pop.size()+k)=T.at(j).pop.at(k);
 					//makenew(World.pop[j*T[0].pop.size()+k]);	
 				}
@@ -1144,7 +1148,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			if (p.EstimateFitness){
 				InitPopFE(FE,World.pop,trainers,p,r,d,s);
 				#pragma omp parallel for 
-				for(int i=0;i<num_islands;i++)
+				for(int i=0;i<num_islands;++i)
 					Fitness(T.at(i).pop,p,d,s,FE[0]);
 			}
 		}
@@ -1171,9 +1175,9 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		// while(gen<=p.g && !stopcondition(World.best))
 		// {
 			int q;
-			int task_num;
+//			int task_num;
 			int index=-1;
-			int cntr;
+//			int cntr;
 			
 			vector<int> task_status;
 			vector<int> task_assignments(num_islands,0);
@@ -1201,7 +1205,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 
 		//				if (pass) {
 		//					if (p.pHC_on && p.ERC){
-		//						for(int k=0; k<T.at(q).pop.size(); k++)
+		//						for(int k=0; k<T.at(q).pop.size(); ++k)
 		//							HillClimb(T.at(q).pop.at(k),p,r,d,s,FE[0]);
 		//					}
 		//					if (p.eHC_on){
@@ -1215,7 +1219,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 
 		//				// construct world population
 		//				cntr=0;
-		//				for(int k=q*subpops;k<(q+1)*subpops;k++){
+		//				for(int k=q*subpops;k<(q+1)*subpops;++k){
 		//					World.pop.at(k)=T.at(q).pop.at(cntr);
 		//					makenew(World.pop.at(k));
 		//					cntr++;
@@ -1276,7 +1280,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		//			A.update(World.pop); 
 		//			printpop(A.pop,p,s,logname,1);
 		//			
-		//			gen++;
+		//			ge++n;
 		//			if (p.EstimateFitness)
 		//			{
 		//				s.out << "Best FE fit: " << tmpFE[0].fitness <<"\n";
@@ -1316,7 +1320,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			if (pass) {
 				if (p.pHC_on && p.ERC)
 				{
-						for(int k=0; k<T.at(q).pop.size(); k++)
+						for(int k=0; k<T.at(q).pop.size(); ++k)
 							HillClimb(T.at(q).pop.at(k),p,r,d,s,FE[0]);
 				}
 				if (p.eHC_on && !p.eHC_mut) 
@@ -1332,7 +1336,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			
 				// construct world population
 				int cntr=0;
-				for(int k=q*subpops;k<(q+1)*subpops;k++){
+				for(int k=q*subpops;k<(q+1)*subpops;++k){
 					World.pop.at(k)=T.at(q).pop.at(cntr);
 					//makenew(World.pop.at(k));
 					cntr++;
@@ -1357,8 +1361,10 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 				}
 				#pragma omp single 
 				{
-					A.update(World.pop);
-					printpop(A.pop,p,s,logname,1);
+					if(p.prto_arch_on){
+						A.update(World.pop);
+						printpop(A.pop,p,s,logname,1);
+					}
 					printstats(World,gen,s,p,A);
 					printdatafile(World,s,p,dfout);
 					if (p.printeverypop) printpop(World.pop,p,s,logname,2);
@@ -1429,7 +1435,8 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		} s.out << "exited parallel region ...\n";
 		printbestind(World,p,s,logname);
 		printpop(World.pop,p,s,logname,0);
-		printpop(A.pop,p,s,logname,1);
+		if (p.prto_arch_on)
+			printpop(A.pop,p,s,logname,1);
 	}
 	else //no islands
 	{
@@ -1459,7 +1466,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 						tmppop.push_back(ind());
 					}
 					else
-						j++;
+						++j;
 				}
 				s.out << "\ntmppop size: " << tmppop.size();
 				InitPop(tmppop,p,r);
@@ -1522,7 +1529,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 				 if (p.pHC_on && p.ERC)
 				 {
 					//#pragma omp parallel for
-		 			for(int k=0; k<T.pop.size(); k++)
+		 			for(int k=0; k<T.pop.size(); ++k)
 		 				HillClimb(T.pop.at(k),p,r,d,s,FE[0]);
 
 		 		 }
@@ -1537,8 +1544,10 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 
 				s.setgenevals();
 				//s.out << "Elapsed time: \n";
-				A.update(T.pop);
-				printpop(A.pop,p,s,logname,1);
+				if (p.prto_arch_on){
+					A.update(T.pop);
+					printpop(A.pop,p,s,logname,1);
+				}
 				printstats(T,counter,s,p,A);
 				printdatafile(T,s,p,dfout);
 				if (p.printeverypop) printpop(T.pop,p,s,logname,2);
@@ -1582,7 +1591,8 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		}
 		printbestind(T,p,s,logname);
 		printpop(T.pop,p,s,logname,0);
-		printpop(A.pop,p,s,logname,1);
+		if (p.prto_arch_on)
+			printpop(A.pop,p,s,logname,1);
 	}
 
 	

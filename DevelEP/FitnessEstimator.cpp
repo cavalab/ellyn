@@ -16,7 +16,7 @@
 //
 //	FitnessEstimator(int length,vector<Randclass>& r,data& d)
 //	{
-//		for (int i=0;i<length;i++){
+//		for (int i=0;i<length;++i){
 //			FEpts.push_back(r[omp_get_thread_num()].rnd_int(0,d.vals.size()));
 //		}
 //	}
@@ -31,7 +31,7 @@ void setFEvals(vector<vector<float>>& FEvals, vector<float>& FEtarget,FitnessEst
 {
 	FEvals.clear();
 	FEtarget.clear();
-	for (int i=0;i<FE.FEpts.size();i++)
+	for (int i=0;i<FE.FEpts.size();++i)
 	{
 		FEvals.push_back(d.vals[FE.FEpts[i]]);
 		FEtarget.push_back(d.target[FE.FEpts[i]]);
@@ -41,7 +41,7 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,d
 {
 	// calculate fitness of each Fitness Estimator on each trainer. 
 	/*vector<float> exactfit(trainers.size());
-		for (int j=0;j<trainers.size();j++)
+		for (int j=0;j<trainers.size();++j)
 		exactfit[j]=trainers[j].fitness;*/
 
 	//get trainer exact fitness
@@ -49,7 +49,7 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,d
 	vector<vector<float>> FEvals;
 	vector<float> FEtarget;
 	int ndata_t;
-	for (int i=0;i<FE.size();i++){
+	for (int i=0;i<FE.size();++i){
 		
 		setFEvals(FEvals,FEtarget,FE[i],d);
 
@@ -60,7 +60,7 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,d
 
 		vector<float> FEness(trainers.size()); 
 
-		for (int j=0;j<trainers.size();j++){
+		for (int j=0;j<trainers.size();++j){
 
 		if (!trainers[j].output.empty()){
 
@@ -72,7 +72,7 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,d
 
 			float target_std;
 			vector<float> tmpoutput;
-			for(unsigned int sim=0;sim<ndata_t;sim++)
+			for(unsigned int sim=0;sim<ndata_t;++sim)
 			{	
 				abserror += abs(FEtarget[sim]-trainers[j].output[FE[i].FEpts[sim]]);
 				meantarget += FEtarget.at(sim);
@@ -129,8 +129,8 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,d
 			FE[i].fitness=0;
 			
 			float nsq = float(trainers.size()*trainers.size());
-			for (int h=0;h<trainers.size();h++){
-				for (int k=0;k<trainers.size();k++){
+			for (int h=0;h<trainers.size();++h){
+				for (int k=0;k<trainers.size();++k){
 					if ((FEness[h] < FEness[k] && trainers[h].fitness > trainers[k].fitness) || 
 						(FEness[h] > FEness[k] && trainers[h].fitness < trainers[k].fitness) )
 						FE[i].fitness+=1;
@@ -146,13 +146,13 @@ void InitPopFE(vector <FitnessEstimator>& FE,vector<ind> &pop,vector<ind>& train
 	//vector <FitnessEstimator> FE; //fitness estimator population 
 	//initialize estimator population
 	FE.resize(p.FE_pop_size);
-	for (int i=0;i<p.FE_pop_size;i++){
+	for (int i=0;i<p.FE_pop_size;++i){
 		FE[i]= FitnessEstimator(p.FE_ind_size,r,d,p.train);			
 	}
 	
 	//initialize trainer population
 	trainers.resize(p.FE_train_size);
-	for (int i=0;i<p.FE_train_size;i++){
+	for (int i=0;i<p.FE_train_size;++i){
 		trainers[i] = pop[r[omp_get_thread_num()].rnd_int(0,pop.size()-1)];
 	}
 	//p.EstimateFitness = 0; // turn fitness estimation off (all data points used)
@@ -178,7 +178,7 @@ void PickTrainers(vector<ind> pop, vector <FitnessEstimator>& FE,vector <ind>& t
 	// get FE fitness on each individual in population
 	vector<ind> tmppop;
 
-	for (int j=0;j<pop.size();j++){
+	for (int j=0;j<pop.size();++j){
 		if(pop[j].fitness<p.max_fit){
 			tmppop.push_back(ind());
 			//makenewcopy(pop[j],tmppop.back());
@@ -188,30 +188,30 @@ void PickTrainers(vector<ind> pop, vector <FitnessEstimator>& FE,vector <ind>& t
 	}
 	//i: fitness predictors
 	//j: solution population 
-	for (int i=0;i<FE.size();i++){
+	for (int i=0;i<FE.size();++i){
 
 		Fitness(tmppop,p,d,s,FE[i]);	
 		FEfits.push_back(vector<float>(tmppop.size()));
-		for (int j=0;j<tmppop.size();j++){
+		for (int j=0;j<tmppop.size();++j){
 				FEfits[i][j]=tmppop[j].fitness;	
 				if(i!=FE.size()-1)
 					tmppop[j].clrPhen();
 			}
 		// convert FEfits to ranks
-		/*for (int h=0;h<tmppop.size();h++){
+		/*for (int h=0;h<tmppop.size();++h){
 			float maxfit = *max_element(FEfits[i].begin(),FEfits[i].end());
 			FEfits[i][h] = FEfits[i][h]/maxfit*tmppop.size();
 		}*/
 	}
 
 	// calculate variance in fitness estimates
-	for (int j=0;j<tmppop.size();j++){
-		for (int i=0;i<FE.size();i++)
+	for (int j=0;j<tmppop.size();++j){
+		for (int i=0;i<FE.size();++i)
 			meanfits[j]+=FEfits[i][j];
 
 		meanfits[j]=meanfits[j]/FE.size(); // mean fitness over predictors
 
-		for (int h=0;h<FE.size();h++){
+		for (int h=0;h<FE.size();++h){
 			float tmp = FEfits[h][j]-meanfits[j];
 			varfits[j]+=pow(FEfits[h][j]-meanfits[j],2);
 		}
@@ -257,9 +257,9 @@ void crossFE(vector <FitnessEstimator>& FE,vector<Randclass>& r)
 	vector <FitnessEstimator> newFE;
 	float bestfit; 
 	int bestchoice;
-	for (int i=0; i < FE.size(); i++){
+	for (int i=0; i < FE.size(); ++i){
 		
-		for (int j=0; j<nt; j++){
+		for (int j=0; j<nt; ++j){
 			
 			choices[j] = r[omp_get_thread_num()].rnd_int(0,FE.size()-1);
 			if (j==0) {
@@ -277,14 +277,14 @@ void crossFE(vector <FitnessEstimator>& FE,vector<Randclass>& r)
 
 	//// new pop
 	newFE.resize(FE.size());
-	for (int i=0;i<parents.size();i++){
+	for (int i=0;i<parents.size();++i){
 		//newFE[i]= FE[parents[i]];	
 		newFE[i].FEpts.resize(FE[i].FEpts.size());
 	}
 	//cross parents
-	int p1,p2;
-	int crosspt;
-	for (int i=0; i < FE.size()-1; i++){
+//	int p1,p2;
+//	int crosspt;
+	for (int i=0; i < FE.size()-1; ++i){
 		int point1 = r[omp_get_thread_num()].rnd_int(0,FE[0].FEpts.size()-1);
 		
 		newFE[i].FEpts.assign(FE[parents[i]].FEpts.begin(),FE[parents[i]].FEpts.begin()+point1);
@@ -293,7 +293,7 @@ void crossFE(vector <FitnessEstimator>& FE,vector<Randclass>& r)
 		newFE[i+1].FEpts.assign(FE[parents[i+1]].FEpts.begin(),FE[parents[i+1]].FEpts.begin()+point1);
 		newFE[i+1].FEpts.insert(newFE[i+1].FEpts.end(),FE[parents[i]].FEpts.begin()+point1,FE[parents[i]].FEpts.end());
 
-		i++;
+		++i;
 	}
 	FE = newFE;
 	// keep strictly the best predictors	
@@ -308,7 +308,7 @@ void mutateFE(vector <FitnessEstimator>& FE,params p,data& d,vector<Randclass>& 
 	if (p.train) lastpt = d.vals.size()/2-1;
 	else lastpt = d.vals.size()-1;
 
-	for (int i=0; i < FE.size(); i++){
+	for (int i=0; i < FE.size(); ++i){
 		pt = r[omp_get_thread_num()].rnd_int(0,FE[i].FEpts.size()-1);
 		FE[i].FEpts[pt] = r[omp_get_thread_num()].rnd_int(0,lastpt);
 	}

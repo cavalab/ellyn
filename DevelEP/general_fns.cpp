@@ -26,7 +26,7 @@ void MutInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,data& d)
 	if (p.ERC)
 	{
 		float ERC;
-		for (int j=0;j<p.numERC;j++)
+		for (int j=0;j<p.numERC;++j)
 		{
 			ERC = r[omp_get_thread_num()].rnd_flt((float)p.minERC,(float)p.maxERC);
 			if(p.ERCints)
@@ -49,7 +49,7 @@ void MutInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,data& d)
 			choice=0;
 		else
 		{
-			for (unsigned int k=1;k<wheel.size();k++)
+			for (unsigned int k=1;k<wheel.size();++k)
 			{
 				if(tmp<wheel.at(k) && tmp>=wheel.at(k-1))
 					choice = k;
@@ -60,7 +60,7 @@ void MutInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,data& d)
 		choice = r[omp_get_thread_num()].rnd_int(0,p.op_list.size()-1);
 
 		string varchoice;
-		int seedchoice;
+//		int seedchoice;
 		vector<node> tmpstack;
 		switch (p.op_choice.at(choice))
 		{
@@ -139,7 +139,7 @@ void MutInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,data& d)
 		//	seedchoice = r[omp_get_thread_num()].rnd_int(0,p.seedstacks.size()-1);
 		//	copystack(p.seedstacks.at(seedchoice),tmpstack);
 
-		//	for(int i=0;i<tmpstack.size(); i++)
+		//	for(int i=0;i<tmpstack.size(); ++i)
 		//	{
 		//		if (x<p.max_len){
 		//			newind.line.push_back(tmpstack[i]);
@@ -168,7 +168,7 @@ void InsInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 	if (p.ERC)
 	{
 		float ERC;
-		for (int j=0;j<p.numERC;j++)
+		for (int j=0;j<p.numERC;++j)
 		{
 			ERC = r[omp_get_thread_num()].rnd_flt((float)p.minERC,(float)p.maxERC);
 			if(p.ERCints)
@@ -191,7 +191,7 @@ void InsInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 			choice=0;
 		else
 		{
-			for (unsigned int k=1;k<wheel.size();k++)
+			for (unsigned int k=1;k<wheel.size();++k)
 			{
 				if(tmp<wheel.at(k) && tmp>=wheel.at(k-1))
 					choice = k;
@@ -202,7 +202,7 @@ void InsInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 		choice = r[omp_get_thread_num()].rnd_int(0,p.op_list.size()-1);
 
 		string varchoice;
-		int seedchoice;
+//		int seedchoice;
 		vector<node> tmpstack;
 		switch (p.op_choice.at(choice))
 		{
@@ -282,7 +282,7 @@ void InsInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 		//	seedchoice = r[omp_get_thread_num()].rnd_int(0,p.seedstacks.size()-1);
 		//	copystack(p.seedstacks.at(seedchoice),tmpstack);
 
-		//	for(int i=0;i<tmpstack.size(); i++)
+		//	for(int i=0;i<tmpstack.size(); ++i)
 		//	{
 		//		if (x<p.max_len){
 		//			newind.line.push_back(tmpstack[i]);
@@ -297,7 +297,7 @@ void InsInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 }
 //void makenew(ind& newind)
 //{
-//	for (int i=0;i<newind.line.size();i++)
+//	for (int i=0;i<newind.line.size();++i)
 //	{
 //		/*if (newind.line.at(i).use_count()>1)
 //		{*/
@@ -367,7 +367,7 @@ void InsInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 //}
 //void makenewcopy(ind& oldind, ind& newind)
 //{
-//	for (int i=0;i<oldind.line.size();i++)
+//	for (int i=0;i<oldind.line.size();++i)
 //	{
 //		/*if (newind.line.at(i).use_count()>1)
 //		{*/
@@ -437,7 +437,7 @@ void InsInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 //}
 //void copystack(vector<shared_ptr<node>>& line, vector<shared_ptr<node>>& newline)
 //{
-//	for (int i=0;i<line.size();i++)
+//	for (int i=0;i<line.size();++i)
 //	{
 //		string varname;
 //		float value;
