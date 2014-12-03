@@ -77,8 +77,10 @@ T.topTen(besteqns);
 //	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
 for(unsigned int j=0;j<besteqns.size();++j){
 	s.out <<besteqns.at(j).abserror << "\t" << besteqns.at(j).corr << "\t" << besteqns.at(j).fitness << "\t" << besteqns.at(j).eqn <<"\n";
-	if(besteqns.at(j).abserror==0)
-		cout << "caught bad equation.\n";
+	if(boost::math::isnan(besteqns.at(j).abserror))
+	{
+		cout << "equation with NaN error: " + besteqns.at(j).eqn + "\n";	
+	}
 }
 
 s.out << "-------------------------------------------------------------------------------" << "\n";

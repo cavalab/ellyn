@@ -60,6 +60,7 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,FitnessEs
 			//get fitness 
 			if (p.eHC_slim){
 				tmp_ind[0].outstack.resize(outstart*d.vals.size());
+				tmp_ind[0].outstacklen.resize(outstart);
 				pass = SlimFitness(tmp_ind[0],p,d,s,FE,linestart,oldind.fitness);
 			}
 			else

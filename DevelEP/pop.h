@@ -19,6 +19,7 @@ struct ind {
 	std::vector<float> output;
 	std::vector<float> output_v;
 	vector<float> fitlex; // fitnesses for lexicase selection
+	std::vector<unsigned int> outstacklen;
 	//std::vector<vector<float>> outstack; //optional node-by-node stack tracing
 	//std::vector <std::string> args;
 	std::string eqn;
@@ -85,6 +86,7 @@ struct ind {
 		output.swap(s.output);
 		output_v.swap(s.output_v);
 		fitlex.swap(s.fitlex);
+		outstacklen.swap(s.outstacklen);
 
 		eqn.swap(s.eqn);
 		eqn_form.swap(s.eqn_form);

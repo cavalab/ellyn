@@ -58,8 +58,6 @@ min_len				3
 max_len				20
 init_trees			1
 
-max_dev_len			128
-
 complex_measure		2	// 1: genotype size 2: symbolic size 3: effective genotype size
 
 precision			0.0001
