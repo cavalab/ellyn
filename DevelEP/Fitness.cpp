@@ -291,7 +291,6 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 		}//LEXICASE FITNESS
 	}//for(int count = 0; count<pop.size(); ++count)
 	s.numevals[omp_get_thread_num()]=s.numevals[omp_get_thread_num()]+pop.size();
-	
 	//cout << "\nFitness Time: ";
 }
 void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)

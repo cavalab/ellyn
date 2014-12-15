@@ -21,9 +21,9 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,Fitne
 
 			bool updated=0;
 			int HCits; 
-			if (oldind.corr >= 0.999)
-				HCits = 10;
-			else
+			//if (oldind.corr >= 0.999)
+			//	HCits = 10;
+			//else
 				HCits = p.pHC_its;
 
 			for (int j=0;j<HCits; ++j) // for number of specified iterations

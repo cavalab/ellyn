@@ -61,7 +61,7 @@ struct params {
 	vector <string> cons;
 	vector <float> cvals;
 	vector <string> seeds;
-	vector <vector <node>> seedstacks;
+	vector <vector <node> > seedstacks;
 
 	vector <string> allvars;// = intvars.insert(intvars.end(), extvars.begin(), extvars.end());
 	vector <string> allblocks;// = allvars.insert(allvars.end(),consvals.begin(),convals.end());
@@ -141,7 +141,7 @@ struct params {
 	int numcases;
 	int lexpool;
 	bool lexage;
-	params(){train=0;eHC_mut=0;}
+	params(){train=0;eHC_mut=0;eHC_slim=0;}
 	~params(){}
 
 	void clear()

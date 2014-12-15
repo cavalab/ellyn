@@ -46,6 +46,7 @@ void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A)
 	
 	//boost::progress_timer timer;
 s.out << "--- Generation " << i << "---------------------------------------------------------------" << "\n";
+s.out << "population size: " << T.pop.size() << "\n";
 s.out << "Number of evals: " << s.genevals.back() << "\n";
 s.out << "Best Fitness: " << T.bestFit() <<"\n";
 s.out << "Best Fitness (v): " << T.bestFit_v() <<"\n";
@@ -77,10 +78,10 @@ T.topTen(besteqns);
 //	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
 for(unsigned int j=0;j<besteqns.size();++j){
 	s.out <<besteqns.at(j).abserror << "\t" << besteqns.at(j).corr << "\t" << besteqns.at(j).fitness << "\t" << besteqns.at(j).eqn <<"\n";
-	if(boost::math::isnan(besteqns.at(j).abserror))
+	/*if(boost::math::isnan(besteqns.at(j).abserror))
 	{
 		cout << "equation with NaN error: " + besteqns.at(j).eqn + "\n";	
-	}
+	}*/
 }
 
 s.out << "-------------------------------------------------------------------------------" << "\n";
@@ -839,8 +840,6 @@ int get_next_task(int& index,vector<int>& task_assignments)
 		return task_assignments.at(++index);
 	}
 }
-//void runEllenGP(string& paramfile, string& datafile,bool trials)
-//{	
 void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 {
 	//string paramfile(param_in);
@@ -1518,29 +1517,35 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 
 		if (p.EstimateFitness)
 			InitPopFE(FE,T.pop,trainers,p,r,d,s);
+		float etmp;
 
 		while (termits<=term && !stopcondition(T,p,d,s,FE[0]))
 		{
 			
-			 
-			 Generation(T.pop,p,r,d,s,FE[0]);
+			 etmp = s.numevals[omp_get_thread_num()];
 
+			 Generation(T.pop,p,r,d,s,FE[0]);
+			 s.out << "Generation evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
 
 			 if (its>trigger)
 			 {
 				 if (p.pHC_on && p.ERC)
 				 {
+					 etmp = s.numevals[omp_get_thread_num()];
 					//#pragma omp parallel for
 		 			for(int k=0; k<T.pop.size(); ++k)
 		 				HillClimb(T.pop.at(k),p,r,d,s,FE[0]);
+		 			 s.out << "Hill climb evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
 
 		 		 }
 				 if (p.eHC_on&& !p.eHC_mut) 
 				 {
+					 etmp = s.numevals[omp_get_thread_num()];
 					// boost::progress_timer tm1;
 					//#pragma omp parallel for
 					for(int m=0; m<T.pop.size(); m++)
 						EpiHC(T.pop.at(m),p,r,d,s,FE[0]);
+					 s.out << "EHC evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
 
 				 } 
 
