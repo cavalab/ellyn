@@ -2,8 +2,9 @@ g					1000	// number of generations
 popsize				1000 // population size
 printeverypop		0  // save printout of population at every generation
 limit_evals			1 // limit evals instead of number of generations
-max_evals			25000000000 // max point evaluations
-					  
+max_evals			1000000000 // max point evaluations
+
+
 // Generation Settings 
 sel					4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 tourn_size			2
@@ -22,6 +23,9 @@ shuffle_data		0  // shuffle the data
 // Results
 resultspath			D:\Develep\Results\Sample
 loud				1
+print_homology		1
+print_log			1
+num_log_pts			100 
 
 // Problem information
 intvars				x	y
@@ -43,7 +47,7 @@ max_fit				100000000000000000000
 min_fit				0.00000000000000000001
 estimate_fitness 	0	// coevolve fitness estimators
 FE_pop_size			12	// fitness estimator population size
-FE_ind_size			4	// number of fitness cases for FE to use
+FE_ind_size			10	// number of fitness cases for FE to use
 FE_train_size		10	// trainer population size
 FE_train_gens		10 // number of generations between trainer selections
 FE_rank				1	// use rank for FE fitness rather than error  
@@ -54,8 +58,8 @@ FE_rank				1	// use rank for FE fitness rather than error
 op_list				n	v	+	-	*	/	
 op_weight			2	4	1	1	1	1					
 weight_ops_on		1
-min_len				3
-max_len				20
+min_len				6
+max_len				10
 init_trees			1
 
 complex_measure		2	// 1: genotype size 2: symbolic size 3: effective genotype size
@@ -85,7 +89,7 @@ eHC_init			.50 // percent of expressed genes in initial genotypes
 eHC_prob_scale		1
 eHC_max_prob		.75
 eHC_min_prob		0.25
-eHC_slim			1  // minimize point evaluations as much as possible
+eHC_slim			0  // minimize point evaluations as much as possible
 
 // Pareto settings
 
@@ -94,5 +98,5 @@ prto_arch_size		100
 prto_sel_on			1
 
 // island model
-islands				1
+islands				0
 island_gens			100

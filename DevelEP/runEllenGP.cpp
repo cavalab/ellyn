@@ -180,10 +180,10 @@ void initdatafile(std::ofstream& dfout,string & logname)
 	string dataname = logname.substr(0,logname.size()-4)+".data";
 	dfout.open(dataname,std::ofstream::out | std::ofstream::app);
 	//dfout.open(dataname,std::ofstream::app);
-	dfout << "pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t best_R2 \t best_R2_v \t size \t eff_size \t pHC_pct \t eHC_pct \t good_g_pct \t neut_g_pct \t bad_g_pct\n";
+	dfout << "pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t best_R2 \t best_R2_v \t size \t eff_size \t pHC_pct \t eHC_pct \t good_g_pct \t neut_g_pct \t bad_g_pct \t tot_hom \t on_hom \t off_hom\n";
 	//fout.close(dataname);
 }
-void printdatafile(tribe& T,state& s,params& p, std::ofstream& dfout)
+void printdatafile(tribe& T,state& s,params& p, vector<Randclass>& r,std::ofstream& dfout)
 {
 	//string dataname = logname.substr(0,logname.size()-4)+".data";
 	//std::ofstream fout;
@@ -192,7 +192,14 @@ void printdatafile(tribe& T,state& s,params& p, std::ofstream& dfout)
 	sub_ind best_ind;
 	T.getbestsubind(best_ind);
 
-	dfout << s.totalptevals() << "\t" << best_ind.eqn << "\t" << T.bestFit() << "\t" << T.bestFit_v() << "\t" << T.medFit() << "\t" << T.medFit_v() << "\t" << best_ind.abserror << "\t" << best_ind.abserror_v << "\t" << best_ind.corr << "\t" << best_ind.corr_v << "\t" << T.meanSize() << "\t" << T.meanEffSize() << "\t" << s.current_pHC_updates/float(p.popsize)*100.0 << "\t" << s.current_eHC_updates/float(p.popsize)*100.0 << "\t" <<  s.good_cross_pct << "\t" << s.neut_cross_pct << "\t" << s.bad_cross_pct << "\n";
+	dfout << s.totalptevals() << "\t" << best_ind.eqn << "\t" << T.bestFit() << "\t" << T.bestFit_v() << "\t" << T.medFit() << "\t" << T.medFit_v() << "\t" << best_ind.abserror << "\t" << best_ind.abserror_v << "\t" << best_ind.corr << "\t" << best_ind.corr_v << "\t" << T.meanSize() << "\t" << T.meanEffSize() << "\t" << s.current_pHC_updates/float(p.popsize)*100.0 << "\t" << s.current_eHC_updates/float(p.popsize)*100.0 << "\t" <<  s.good_cross_pct << "\t" << s.neut_cross_pct << "\t" << s.bad_cross_pct;
+	if (p.print_homology){
+		float tot_hom, on_hom, off_hom;
+		T.hom(r,tot_hom,on_hom,off_hom);
+		dfout << "\t" << tot_hom << "\t" << on_hom << "\t" << off_hom;
+	}
+	dfout <<"\n";
+
 	//s.clearCross();
 }
 void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
@@ -208,6 +215,12 @@ void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
 		string gen = to_string(static_cast<long long>(s.genevals.size()));
 		s.out << "saving pop... \n";
 		bestname = logname.substr(0,logname.size()-4) + "gen" + gen + ".pop";
+		sort(pop.begin(),pop.end(),SortFit());
+	}
+	else if (type == 3){
+		string gen = to_string(static_cast<long long>(s.genevals.size()));
+		s.out << "saving initial pop... \n";
+		bestname = logname.substr(0,logname.size()-4) + ".init_pop";
 		sort(pop.begin(),pop.end(),SortFit());
 	}
 	else {
@@ -492,6 +505,12 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.limit_evals;
 		else if(varname.compare("max_evals") == 0)
 			ss>>p.max_evals;
+		else if(varname.compare("print_homology") == 0)
+			ss>>p.print_homology;
+		else if(varname.compare("print_log") == 0)
+			ss>>p.print_log;
+		else if(varname.compare("num_log_pts") == 0)
+			ss>>p.num_log_pts;
 		else{}
     }
 	p.allvars = p.intvars;
@@ -885,8 +904,6 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	if (p.sel == 3) load_lexdata(d,ds,p);
 	else load_data(d,ds,p);
 	
-	
-
 	std::time_t t =  std::time(NULL);
     
 
@@ -1158,10 +1175,12 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		vector<FitnessEstimator> tmpFE = FE; 
 
 		int gen=0;
-		long long termits,term;
+		long long termits,term, print_trigger;
 		if (p.limit_evals){
 			termits = s.totalptevals();
 			term = p.max_evals;
+			print_trigger = p.max_evals/p.num_log_pts;
+		
 		}
 		else {
 			termits=1;
@@ -1301,7 +1320,18 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		//		if (gen>p.g) pass=0;
 		//	} // while gen<=p.g
 		//} // pragma omp parallel
-
+		//print initial population
+		// construct world population
+		int cntr=0;
+		for (int q0 = 0; q0<omp_get_max_threads();++q0){
+			for(int k=q0*subpops;k<(q0+1)*subpops;++k){
+				World.pop.at(k)=T.at(q0).pop.at(cntr);
+				//makenew(World.pop.at(k));
+				++cntr;
+			}
+			cntr=0;
+		}
+		printpop(World.pop,p,s,logname,3);
 		#pragma omp parallel private(q) shared(pass)
 		{
 		
@@ -1366,17 +1396,22 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 						A.update(World.pop);
 						printpop(A.pop,p,s,logname,1);
 					}
-					printstats(World,gen,s,p,A);
-					printdatafile(World,s,p,dfout);
+					if (!p.limit_evals || s.totalptevals() <= print_trigger){
+					printdatafile(World,s,p,r,dfout);
 					if (p.printeverypop) printpop(World.pop,p,s,logname,2);
-					s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
-					s.out << "Total Evals: " << s.totalevals() << "\n";
-					s.out << "Point Evals: " << s.totalptevals() << "\n";
-					s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
-					s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
+					if (p.print_log) {
+						printstats(World,gen,s,p,A);
+						s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
+						s.out << "Total Evals: " << s.totalevals() << "\n";
+						s.out << "Point Evals: " << s.totalptevals() << "\n";
+						s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
+						s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
+					}
 					++gen;
 					if (p.limit_evals) termits = s.totalptevals();
 					else ++termits;
+					print_trigger += p.max_evals/p.num_log_pts;
+					}
 									
 				}
 				#pragma omp single  nowait //coevolve fitness estimators
@@ -1511,21 +1546,25 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		}
 		else
 			gen=p.g;
-		long long term;
-		if (p.limit_evals) term = p.max_evals;
+		long long term, print_trigger;
+		if (p.limit_evals) {
+			term = p.max_evals;
+			print_trigger = p.max_evals/p.num_log_pts;
+		}
 		else term = gen;
 
 		if (p.EstimateFitness)
 			InitPopFE(FE,T.pop,trainers,p,r,d,s);
 		float etmp;
-
+		//print initial population
+		printpop(T.pop,p,s,logname,3);
 		while (termits<=term && !stopcondition(T,p,d,s,FE[0]))
 		{
 			
 			 etmp = s.numevals[omp_get_thread_num()];
 
 			 Generation(T.pop,p,r,d,s,FE[0]);
-			 s.out << "Generation evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
+			 //s.out << "Generation evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
 
 			 if (its>trigger)
 			 {
@@ -1535,7 +1574,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					//#pragma omp parallel for
 		 			for(int k=0; k<T.pop.size(); ++k)
 		 				HillClimb(T.pop.at(k),p,r,d,s,FE[0]);
-		 			 s.out << "Hill climb evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
+		 			 //s.out << "Hill climb evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
 
 		 		 }
 				 if (p.eHC_on&& !p.eHC_mut) 
@@ -1545,7 +1584,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					//#pragma omp parallel for
 					for(int m=0; m<T.pop.size(); m++)
 						EpiHC(T.pop.at(m),p,r,d,s,FE[0]);
-					 s.out << "EHC evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
+					 //s.out << "EHC evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
 
 				 } 
 
@@ -1555,14 +1594,19 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					A.update(T.pop);
 					printpop(A.pop,p,s,logname,1);
 				}
-				printstats(T,counter,s,p,A);
-				printdatafile(T,s,p,dfout);
-				if (p.printeverypop) printpop(T.pop,p,s,logname,2);
-				s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
-				s.out << "Total Evals: " << s.totalevals() << "\n";
-				s.out << "Point Evals: " << s.totalptevals() << "\n";
-				s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
-				s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
+				if (!p.limit_evals || s.totalptevals() >= print_trigger){ 
+					printdatafile(T,s,p,r,dfout);
+					if (p.printeverypop) printpop(T.pop,p,s,logname,2);
+					if (p.print_log){
+						printstats(T,counter,s,p,A);
+						s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
+						s.out << "Total Evals: " << s.totalevals() << "\n";
+						s.out << "Point Evals: " << s.totalptevals() << "\n";
+						s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
+						s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
+					}
+					print_trigger += p.max_evals/p.num_log_pts;
+				}
 
 				if (p.sel==2)
 					trigger+=p.popsize*(p.rt_mut+p.rt_rep)+p.popsize*p.rt_cross/2;

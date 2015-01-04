@@ -8,6 +8,8 @@
 
 //#include "RPN_class.h"
 #include "op_node.h"
+#include "rnd.h"
+#include "strdist.h"
 //#include "general_fns.h"
 //#include "pareto.h"
 
@@ -389,6 +391,123 @@ struct tribe{
 	{
 		sort(pop.begin(),pop.end(),SortFit());
 	}
+	void hom(vector<Randclass>& r, float& tot_hom, float& on_hom, float& off_hom)
+	{
+		tot_hom = 0; on_hom=0; off_hom=0;
+		//float sum_strdist=0;
+		int c1, c2, on_size=0, s_tot,s_on,s_off;
+		int samplesize=200;
+		std::string tmp1, tmp2, tmp1on, tmp2on, tmp1off, tmp2off;
+		//std::string tmp2;
+		for (int i=0; i<samplesize; ++i)
+		{
+			//reset temporary strings
+			tmp1.resize(0); tmp2.resize(0); 
+			tmp1on.resize(0); tmp2on.resize(0); 
+			tmp1off.resize(0); tmp2off.resize(0);
+			
+			c1 = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
+			c2 = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
+
+			for (int j=pop.at(c1).line.size()-1; j>=0;--j){
+				tmp1 += pop.at(c1).line.at(j).type;
+
+				if(pop.at(c1).line.at(j).on)
+					tmp1on += pop.at(c1).line.at(j).type;
+				/*else
+					tmp1on += ' ';*/
+
+				if(!pop.at(c1).line.at(j).on)
+					tmp1off += pop.at(c1).line.at(j).type;
+				/*else
+					tmp1off += ' ';*/
+			}
+
+			for (int j=pop.at(c2).line.size()-1; j>=0;--j){
+				tmp2 += pop.at(c2).line.at(j).type;
+
+				if(pop.at(c2).line.at(j).on)
+					tmp2on += pop.at(c2).line.at(j).type;
+				/*else
+					tmp2on += ' ';*/
+
+				if(!pop.at(c2).line.at(j).on)
+					tmp2off += pop.at(c2).line.at(j).type;
+				/*else
+					tmp2off += ' ';*/
+			}
+
+			s_tot = strdist(tmp1,tmp2);
+			s_on = strdist(tmp1on,tmp2on);
+			//s_off = s_tot-s_on;
+			s_off = strdist(tmp1off,tmp2off);
+
+			tot_hom += float(s_tot)/float(std::max(tmp1.size(),tmp2.size()));
+			on_hom += float(s_on)/float(std::max(tmp1on.size(),tmp2on.size()));
+			off_hom +=float(s_off)/float(std::max(tmp1off.size(),tmp2off.size()));
+		}
+
+		tot_hom = 1-tot_hom/samplesize;
+		on_hom = 1-on_hom/samplesize;
+		off_hom = 1-off_hom/samplesize;
+		
+	}
+	/*float on_hom(vector<Randclass>& r){
+		float sum_strdist=0;
+		int c1, c2;
+		int samplesize = 100;
+		std::string tmp1;
+		std::string tmp2;
+		for (int i=0; i<samplesize; ++i)
+		{
+			c1 = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
+			c2 = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
+
+			for(int j=pop.at(c1).line.size()-1; j>=0;--j){
+				if(pop.at(c1).line.at(j).on)
+					tmp1 += pop.at(c1).line.at(j).type;
+				else
+					tmp1 += ' ';
+			}
+			for (int j=pop.at(c2).line.size()-1; j>=0;--j){
+				if(pop.at(c2).line.at(j).on)
+					tmp2 += pop.at(c2).line.at(j).type;
+				else
+					tmp2 += ' ';
+			}
+			sum_strdist += strdist(tmp1,tmp2)/float(std::max(tmp1.size(),tmp2.size()));
+		}
+
+		return 1-sum_strdist/samplesize;
+	}
+	float off_hom(vector<Randclass>& r){
+		float sum_strdist=0;
+		int c1, c2;
+		int samplesize=100;
+		std::string tmp1;
+		std::string tmp2;
+		for (int i=0; i<samplesize; ++i)
+		{
+			c1 = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
+			c2 = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
+
+			for(int j=pop.at(c1).line.size(); j>0;--j){
+				if(!pop.at(c1).line.at(j-1).on)
+					tmp1 += pop.at(c1).line.at(j-1).type;
+				else
+					tmp1 += ' ';
+			}
+			for (int j=pop.at(c2).line.size(); j>0;--j){
+				if(!pop.at(c2).line.at(j-1).on)
+					tmp2 += pop.at(c2).line.at(j-1).type;
+				else
+					tmp2 += ' ';
+			}
+			sum_strdist += strdist(tmp1,tmp2)/float(std::max(tmp1.size(),tmp2.size()));
+		}
+
+		return 1-sum_strdist/samplesize;
+	}*/
 	/*
 private:
 	

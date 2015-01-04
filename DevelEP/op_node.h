@@ -34,7 +34,7 @@ public:
 	//number
 	node(float svalue){type='n'; value=svalue; on=1; arity=0;}
 	//variable
-	node(string& vname){type='v';varname=vname;on=1;}
+	node(string& vname){type='v';varname=vname;on=1;arity=0;}
 	//set pointer for variables
 	void setpt(float* set)
 	{
