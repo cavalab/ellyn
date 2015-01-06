@@ -1469,7 +1469,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			
 		}  s.out << "exited while loop...\n";
 		} s.out << "exited parallel region ...\n";
-		if (p.limit_evals) printdatafile(World.pop,s,p,r,dfout);
+		if (p.limit_evals) printdatafile(World,s,p,r,dfout);
 		printbestind(World,p,s,logname);
 		printpop(World.pop,p,s,logname,0);
 		if (p.prto_arch_on)
