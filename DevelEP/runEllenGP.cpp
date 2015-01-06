@@ -206,7 +206,7 @@ void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
 {
 	string bestname;
 	if (type==1){
-		s.out << "saving pareto archive... \n";
+		//s.out << "saving pareto archive... \n";
 		bestname = logname.substr(0,logname.size()-4)+".archive";
 		sort(pop.begin(),pop.end(),SortComplexity());
 		stable_sort(pop.begin(),pop.end(),SortRank());
@@ -1615,11 +1615,12 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			 }
 			
 			if (p.EstimateFitness){
-				s.out << "Evolving fitness estimators...\n";
 				EvolveFE(T.pop,FE,trainers,p,d,s,r);
-				s.out << "Best FE fit: " << FE[0].fitness <<"\n";
-				s.out << "Current Fitness Estimator:\n";
-						
+				if (!p.limit_evals || s.totalptevals() >= print_trigger){ 
+					s.out << "Evolving fitness estimators...\n";
+					s.out << "Best FE fit: " << FE[0].fitness <<"\n";
+					s.out << "Current Fitness Estimator:\n";
+				}	
 				for (int b=0;b<FE[0].FEpts.size();b++)
 					s.out << FE[0].FEpts[b] << " ";
 				s.out << "\n";

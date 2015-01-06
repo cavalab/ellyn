@@ -395,7 +395,8 @@ struct tribe{
 	{
 		tot_hom = 0; on_hom=0; off_hom=0;
 		//float sum_strdist=0;
-		int c1, c2, on_size=0, s_tot,s_on,s_off;
+		int c1, c2, s_tot,s_on,s_off;
+		float tot_tmp=0,on_tmp=0,off_tmp=0;
 		int samplesize=200;
 		std::string tmp1, tmp2, tmp1on, tmp2on, tmp1off, tmp2off;
 		//std::string tmp2;
@@ -410,29 +411,39 @@ struct tribe{
 			c2 = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
 
 			for (int j=pop.at(c1).line.size()-1; j>=0;--j){
-				tmp1 += pop.at(c1).line.at(j).type;
+				if (pop.at(c1).line.at(j).type=='v') tmp1 += pop.at(c1).line.at(j).varname;
+				else tmp1 += pop.at(c1).line.at(j).type;
 
-				if(pop.at(c1).line.at(j).on)
-					tmp1on += pop.at(c1).line.at(j).type;
+				if(pop.at(c1).line.at(j).on){
+					if (pop.at(c1).line.at(j).type=='v') tmp1on += pop.at(c1).line.at(j).varname;
+					else tmp1on += pop.at(c1).line.at(j).type;
+				}
 				/*else
 					tmp1on += ' ';*/
 
-				if(!pop.at(c1).line.at(j).on)
-					tmp1off += pop.at(c1).line.at(j).type;
+				if(!pop.at(c1).line.at(j).on){
+					if (pop.at(c1).line.at(j).type=='v') tmp1off += pop.at(c1).line.at(j).varname;
+					else tmp1off += pop.at(c1).line.at(j).type;
+				}
 				/*else
 					tmp1off += ' ';*/
 			}
 
 			for (int j=pop.at(c2).line.size()-1; j>=0;--j){
-				tmp2 += pop.at(c2).line.at(j).type;
+				if (pop.at(c2).line.at(j).type=='v') tmp2 += pop.at(c2).line.at(j).varname;
+				else tmp2 += pop.at(c2).line.at(j).type;
 
-				if(pop.at(c2).line.at(j).on)
-					tmp2on += pop.at(c2).line.at(j).type;
+				if(pop.at(c2).line.at(j).on){
+					if (pop.at(c2).line.at(j).type=='v') tmp2on += pop.at(c2).line.at(j).varname;
+					else tmp2on += pop.at(c2).line.at(j).type;
+				}
 				/*else
 					tmp2on += ' ';*/
 
-				if(!pop.at(c2).line.at(j).on)
-					tmp2off += pop.at(c2).line.at(j).type;
+				if(!pop.at(c2).line.at(j).on){
+					if (pop.at(c2).line.at(j).type=='v') tmp2off += pop.at(c2).line.at(j).varname;
+					else tmp2off += pop.at(c2).line.at(j).type;
+				}
 				/*else
 					tmp2off += ' ';*/
 			}
@@ -441,6 +452,11 @@ struct tribe{
 			s_on = strdist(tmp1on,tmp2on);
 			//s_off = s_tot-s_on;
 			s_off = strdist(tmp1off,tmp2off);
+			
+
+			tot_tmp = float(s_tot)/float(std::max(tmp1.size(),tmp2.size()));
+			on_tmp  = float(s_on)/float(std::max(tmp1on.size(),tmp2on.size()));
+			off_tmp = float(s_off)/float(std::max(tmp1off.size(),tmp2off.size()));
 
 			tot_hom += float(s_tot)/float(std::max(tmp1.size(),tmp2.size()));
 			on_hom += float(s_on)/float(std::max(tmp1on.size(),tmp2on.size()));

@@ -1,5 +1,5 @@
 g					1000	// number of generations
-popsize				1000 // population size
+popsize				100 // population size
 printeverypop		0  // save printout of population at every generation
 limit_evals			1 // limit evals instead of number of generations
 max_evals			1000000000 // max point evaluations
