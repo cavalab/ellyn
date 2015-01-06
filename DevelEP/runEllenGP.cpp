@@ -1469,6 +1469,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			
 		}  s.out << "exited while loop...\n";
 		} s.out << "exited parallel region ...\n";
+		if (p.limit_evals) printdatafile(World.pop,s,p,r,dfout);
 		printbestind(World,p,s,logname);
 		printpop(World.pop,p,s,logname,0);
 		if (p.prto_arch_on)
@@ -1641,6 +1642,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			else termits++;
 			its++;
 		}
+		if (p.limit_evals) printdatafile(T,s,p,r,dfout);
 		printbestind(T,p,s,logname);
 		printpop(T.pop,p,s,logname,0);
 		if (p.prto_arch_on)

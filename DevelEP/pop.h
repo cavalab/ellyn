@@ -406,7 +406,7 @@ struct tribe{
 			tmp1.resize(0); tmp2.resize(0); 
 			tmp1on.resize(0); tmp2on.resize(0); 
 			tmp1off.resize(0); tmp2off.resize(0);
-			
+			tot_tmp = 0; on_tmp = 0; off_tmp = 0;
 			c1 = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
 			c2 = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
 
@@ -451,16 +451,17 @@ struct tribe{
 			s_tot = strdist(tmp1,tmp2);
 			s_on = strdist(tmp1on,tmp2on);
 			//s_off = s_tot-s_on;
-			s_off = strdist(tmp1off,tmp2off);
-			
+			if (tmp1off.size()>0 && tmp2off.size()>0) s_off = strdist(tmp1off,tmp2off);
+			else s_off = 13785;
 
 			tot_tmp = float(s_tot)/float(std::max(tmp1.size(),tmp2.size()));
 			on_tmp  = float(s_on)/float(std::max(tmp1on.size(),tmp2on.size()));
-			off_tmp = float(s_off)/float(std::max(tmp1off.size(),tmp2off.size()));
+			if (s_off!= 13785) off_tmp = float(s_off)/float(std::max(tmp1off.size(),tmp2off.size()));
+			else off_tmp = 1;
 
-			tot_hom += float(s_tot)/float(std::max(tmp1.size(),tmp2.size()));
-			on_hom += float(s_on)/float(std::max(tmp1on.size(),tmp2on.size()));
-			off_hom +=float(s_off)/float(std::max(tmp1off.size(),tmp2off.size()));
+			tot_hom += tot_tmp;
+			on_hom += on_tmp;
+			off_hom += off_tmp;
 		}
 
 		tot_hom = 1-tot_hom/samplesize;

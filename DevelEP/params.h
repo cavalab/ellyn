@@ -141,7 +141,7 @@ struct params {
 	int numcases;
 	int lexpool;
 	bool lexage;
-	params(){train=0;eHC_mut=0;eHC_slim=0;print_log=1;print_homology=0;}
+	params(){train=0;eHC_mut=0;eHC_slim=0;print_log=1;print_homology=0;num_log_pts=1;}
 	~params(){}
 
 	// print homology 
