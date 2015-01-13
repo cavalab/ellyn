@@ -1397,28 +1397,31 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 						printpop(A.pop,p,s,logname,1);
 					}
 					if (!p.limit_evals || s.totalptevals() <= print_trigger){
-					printdatafile(World,s,p,r,dfout);
-					if (p.printeverypop) printpop(World.pop,p,s,logname,2);
-					if (p.print_log) {
-						printstats(World,gen,s,p,A);
-						s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
-						s.out << "Total Evals: " << s.totalevals() << "\n";
-						s.out << "Point Evals: " << s.totalptevals() << "\n";
-						s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
-						s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
+						printdatafile(World,s,p,r,dfout);
+						if (p.printeverypop) printpop(World.pop,p,s,logname,2);
+						if (p.print_log) {
+							printstats(World,gen,s,p,A);
+							s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
+							s.out << "Total Evals: " << s.totalevals() << "\n";
+							s.out << "Point Evals: " << s.totalptevals() << "\n";
+							s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
+							s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
+						}
+						print_trigger += p.max_evals/p.num_log_pts;
 					}
 					++gen;
 					if (p.limit_evals) termits = s.totalptevals();
 					else ++termits;
-					print_trigger += p.max_evals/p.num_log_pts;
-					}
+					
+					
 									
 				}
 				#pragma omp single  nowait //coevolve fitness estimators
 				{
 					
 					if (p.EstimateFitness){
-						s.out << "Evolving fitness estimators...\n";
+
+						
 						
 						
 						float aveFEfit=0;
@@ -1429,14 +1432,16 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 							std::random_shuffle(tmpFE.begin(),tmpFE.end(),r[omp_get_thread_num()]);
 						else
 							EvolveFE(World.pop,tmpFE,trainers,p,d,s,r);
-
-						s.out << "Best FE fit: " << FE[0].fitness <<"\n";
-						s.out << "Ave FE fit: " << aveFEfit << "\n";
-						s.out << "Current Fitness Estimator:\n";
+						if (!p.limit_evals || s.totalptevals() <= print_trigger){
+							s.out << "Evolving fitness estimators...\n";
+							s.out << "Best FE fit: " << FE[0].fitness <<"\n";
+							s.out << "Ave FE fit: " << aveFEfit << "\n";
+							s.out << "Current Fitness Estimator:\n";
 						
-						for (int b=0;b<FE[0].FEpts.size();b++)
-							s.out << FE[0].FEpts[b] << " ";
-						s.out << "\n";
+							for (int b=0;b<FE[0].FEpts.size();b++)
+								s.out << FE[0].FEpts[b] << " ";
+							s.out << "\n";
+						}
 						
 					}
 				}
@@ -1621,10 +1626,11 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					s.out << "Evolving fitness estimators...\n";
 					s.out << "Best FE fit: " << FE[0].fitness <<"\n";
 					s.out << "Current Fitness Estimator:\n";
-				}	
-				for (int b=0;b<FE[0].FEpts.size();b++)
-					s.out << FE[0].FEpts[b] << " ";
-				s.out << "\n";
+					
+					for (int b=0;b<FE[0].FEpts.size();b++)
+						s.out << FE[0].FEpts[b] << " ";
+					s.out << "\n";
+				}
 			}
 			
 				
