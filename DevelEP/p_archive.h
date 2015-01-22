@@ -35,7 +35,7 @@ struct paretoarchive{
 		int r = 0;
 		while (tmppop.size()<archsize && !pop.empty())
 		{
-			pareto(pop);
+			pareto_fc(pop);
 			sort(pop.begin(),pop.end(),SortRank());
 			while(!pop.empty() && pop.back().rank==1)
 			{

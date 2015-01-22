@@ -40,7 +40,16 @@ using namespace std;
 //void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type);
 //void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s);
 
-
+bool check_genty(vector<ind>& pop,params& p){
+	
+	for(int count = 0; count<pop.size(); ++count)
+	{
+		float tmp = abs(pop[count].fitness-pop[count].fitness_v)/pop[count].fitness;
+		if (pop.at(count).genty != tmp && pop.at(count).genty != p.max_fit) 
+			return 0;
+	}
+	return 1;
+}
 void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A)
 {
 	
@@ -495,6 +504,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.FE_train_gens;
 		else if(varname.compare("FE_rank") == 0)
 			ss>>p.FE_rank;
+		else if(varname.compare("estimate_generality") == 0)
+			ss>>p.estimate_generality;
 		else if(varname.compare("norm_error") == 0)
 			ss>>p.norm_error;
 		else if(varname.compare("shuffle_data") == 0)
@@ -509,8 +520,12 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.print_homology;
 		else if(varname.compare("print_log") == 0)
 			ss>>p.print_log;
+		else if(varname.compare("print_init_pop") == 0)
+			ss>>p.print_init_pop;
 		else if(varname.compare("num_log_pts") == 0)
 			ss>>p.num_log_pts;
+		else if(varname.compare("PS_sel") == 0)
+			ss>>p.PS_sel;
 		else{}
     }
 	p.allvars = p.intvars;
@@ -841,8 +856,10 @@ bool stopcondition(tribe& T,params p,data& d,state& s,FitnessEstimator& FE)
 		p.EstimateFitness=0;
 		Fitness(best,p,d,s,FE);
 		p.EstimateFitness=1;
-		if (best[0].fitness <= 0.0001)
+		if (best[0].fitness <= 0.000001){
+			s.out << "best fitness criterion achieved: " << best[0].fitness <<"\n";
 			return true;
+		}
 		else
 			return false;
 	}
@@ -988,6 +1005,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	 s.out << "Total Population Size: " << p.popsize << "\n";
 	 if (p.limit_evals) s.out << "Maximum Point Evals: " << p.max_evals << "\n";
 	 else s.out << "Maximum Generations: " << p.g << "\n";
+	 s.out << "Number of log points: " << p.num_log_pts << " (0 means log all points)\n";
 	 if (trials && p.islands){
 		s.out << "WARNING: cannot run island populations in trial mode. This trial will run on one core.\n";
 		p.islands = false;
@@ -1179,7 +1197,8 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		if (p.limit_evals){
 			termits = s.totalptevals();
 			term = p.max_evals;
-			print_trigger = p.max_evals/p.num_log_pts;
+			if (p.num_log_pts ==0) print_trigger=0;
+			else print_trigger = p.max_evals/p.num_log_pts;
 		
 		}
 		else {
@@ -1396,7 +1415,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 						A.update(World.pop);
 						printpop(A.pop,p,s,logname,1);
 					}
-					if (!p.limit_evals || s.totalptevals() <= print_trigger){
+					if (!p.limit_evals || s.totalptevals() >= print_trigger){
 						printdatafile(World,s,p,r,dfout);
 						if (p.printeverypop) printpop(World.pop,p,s,logname,2);
 						if (p.print_log) {
@@ -1407,7 +1426,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 							s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
 							s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
 						}
-						print_trigger += p.max_evals/p.num_log_pts;
+						if (print_trigger!=0) print_trigger += p.max_evals/p.num_log_pts;
 					}
 					++gen;
 					if (p.limit_evals) termits = s.totalptevals();
@@ -1432,9 +1451,10 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 							std::random_shuffle(tmpFE.begin(),tmpFE.end(),r[omp_get_thread_num()]);
 						else
 							EvolveFE(World.pop,tmpFE,trainers,p,d,s,r);
-						if (!p.limit_evals || s.totalptevals() <= print_trigger){
+						if (!p.limit_evals || s.totalptevals() >= print_trigger){
 							s.out << "Evolving fitness estimators...\n";
 							s.out << "Best FE fit: " << FE[0].fitness <<"\n";
+							if (p.estimate_generality) s.out << "Best FE genty: " << FE[0].genty <<"\n";
 							s.out << "Ave FE fit: " << aveFEfit << "\n";
 							s.out << "Current Fitness Estimator:\n";
 						
@@ -1474,7 +1494,15 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			
 		}  s.out << "exited while loop...\n";
 		} s.out << "exited parallel region ...\n";
-		if (p.limit_evals) printdatafile(World,s,p,r,dfout);
+		
+
+		if (p.EstimateFitness){// assign real fitness values to final population and archive
+			p.EstimateFitness=0;
+			Fitness(World.pop,p,d,s,FE[0]);
+			if (p.prto_arch_on) Fitness(A.pop,p,d,s,FE[0]);
+			p.EstimateFitness=1;
+		}
+		printdatafile(World,s,p,r,dfout);
 		printbestind(World,p,s,logname);
 		printpop(World.pop,p,s,logname,0);
 		if (p.prto_arch_on)
@@ -1497,6 +1525,8 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			// s.out << "Gen 2 Phen..." << "\n";
 			// s.out << "Fitness..." << "\n";
 			Fitness(T.pop,p,d,s,FE[0]);
+			if (p.estimate_generality && !check_genty(T.pop,p))
+						std::cerr << "genty error, line 1529 runEllenGP.cpp\n";
 			worstfit = T.worstFit();
 			while(worstfit == p.max_fit && cnt<100)
 			{
@@ -1510,9 +1540,13 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					else
 						++j;
 				}
+				if (p.estimate_generality && !check_genty(T.pop,p))
+						std::cerr << "genty error, line 1544 runEllenGP.cpp\n";
 				s.out << "\ntmppop size: " << tmppop.size();
 				InitPop(tmppop,p,r);
 				Fitness(tmppop,p,d,s,FE[0]);
+				if (p.estimate_generality && !check_genty(T.pop,p))
+						std::cerr << "genty error, line 1549 runEllenGP.cpp\n";
 				T.pop.insert(T.pop.end(),tmppop.begin(),tmppop.end());
 				tmppop.clear();
 				worstfit = T.worstFit();
@@ -1540,7 +1574,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		if (p.limit_evals) termits = s.totalptevals();
 		else termits=1;
 		int trigger=0;
-		int trainer_trigger=p.FE_train_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
+		int trainer_trigger=p.FE_train_gens;//*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
 		
 
 		int gen=0;
@@ -1553,9 +1587,11 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		else
 			gen=p.g;
 		long long term, print_trigger;
+		bool printed=false;
 		if (p.limit_evals) {
 			term = p.max_evals;
-			print_trigger = p.max_evals/p.num_log_pts;
+			if (p.num_log_pts ==0) print_trigger=0;
+			else print_trigger = p.max_evals/p.num_log_pts;
 		}
 		else term = gen;
 
@@ -1563,14 +1599,16 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			InitPopFE(FE,T.pop,trainers,p,r,d,s);
 		float etmp;
 		//print initial population
-		printpop(T.pop,p,s,logname,3);
+		if (p.print_init_pop) printpop(T.pop,p,s,logname,3);
 		while (termits<=term && !stopcondition(T,p,d,s,FE[0]))
 		{
 			
 			 etmp = s.numevals[omp_get_thread_num()];
-
+			 
 			 Generation(T.pop,p,r,d,s,FE[0]);
 			 //s.out << "Generation evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
+			 if (p.estimate_generality && !check_genty(T.pop,p))
+					std::cerr << "genty error, line 1617 runEllenGP.cpp\n";
 
 			 if (its>trigger)
 			 {
@@ -1580,9 +1618,12 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					//#pragma omp parallel for
 		 			for(int k=0; k<T.pop.size(); ++k)
 		 				HillClimb(T.pop.at(k),p,r,d,s,FE[0]);
-		 			 //s.out << "Hill climb evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
+		 			 //s.out << "Hill climb evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";	
+					if (p.estimate_generality && !check_genty(T.pop,p))
+						std::cerr << "genty error, line 1629 runEllenGP.cpp\n";
 
 		 		 }
+				
 				 if (p.eHC_on&& !p.eHC_mut) 
 				 {
 					 etmp = s.numevals[omp_get_thread_num()];
@@ -1591,7 +1632,6 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					for(int m=0; m<T.pop.size(); m++)
 						EpiHC(T.pop.at(m),p,r,d,s,FE[0]);
 					 //s.out << "EHC evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
-
 				 } 
 
 				s.setgenevals();
@@ -1611,7 +1651,8 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 						s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
 						s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
 					}
-					print_trigger += p.max_evals/p.num_log_pts;
+					if (print_trigger!=0) print_trigger += p.max_evals/p.num_log_pts;
+					printed=true;
 				}
 
 				if (p.sel==2)
@@ -1622,9 +1663,10 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			
 			if (p.EstimateFitness){
 				EvolveFE(T.pop,FE,trainers,p,d,s,r);
-				if (!p.limit_evals || s.totalptevals() >= print_trigger){ 
+				if (!p.limit_evals || printed){ 
 					s.out << "Evolving fitness estimators...\n";
 					s.out << "Best FE fit: " << FE[0].fitness <<"\n";
+					if (p.estimate_generality) s.out << "Best FE genty: " << FE[0].genty <<"\n";
 					s.out << "Current Fitness Estimator:\n";
 					
 					for (int b=0;b<FE[0].FEpts.size();b++)
@@ -1647,8 +1689,18 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			if (p.limit_evals) termits = s.totalptevals(); 
 			else termits++;
 			its++;
+			printed=false;
 		}
-		if (p.limit_evals) printdatafile(T,s,p,r,dfout);
+		
+
+		if (p.EstimateFitness){// assign real fitness values to final population and archive
+			p.EstimateFitness=0;
+			Fitness(T.pop,p,d,s,FE[0]);
+			if (p.prto_arch_on) Fitness(A.pop,p,d,s,FE[0]);
+			p.EstimateFitness=1;
+		}
+
+		printdatafile(T,s,p,r,dfout);
 		printbestind(T,p,s,logname);
 		printpop(T.pop,p,s,logname,0);
 		if (p.prto_arch_on)

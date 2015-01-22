@@ -8,8 +8,9 @@ public:
 	vector <int> FEpts; // points of fitness estimation (subset from data vals)
 	//vector <float> TrainerFit; // fitness on trainer population
 	float fitness; // self fitness across trainers
+	float genty; // own generality estimate across trainers
 
-	FitnessEstimator(){fitness=0;}
+	FitnessEstimator(){fitness=0; genty=0;}
 
 	FitnessEstimator(int length,vector<Randclass>& r,data& d,bool train)
 	{
@@ -21,6 +22,7 @@ public:
 			FEpts.push_back(r[omp_get_thread_num()].rnd_int(0,lastpt));
 		}
 		fitness=0;
+		genty = 0;
 	}
 	~FitnessEstimator(){}
 	

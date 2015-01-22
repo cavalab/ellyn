@@ -14,6 +14,11 @@
 //#include "pareto.h"
 
 struct ind {
+	/* 
+	===================================================================
+	BE SURE TO ADD ANY NEW VARIABLES TO THE SWAP FUNCTION FOR COPYING!!
+	===================================================================
+	*/
 	//unsigned int id;
 	/*vector <std::shared_ptr<node> > line;*/
 	std::vector<float> outstack; // linearized outstack
@@ -39,6 +44,9 @@ struct ind {
 	float fitness_v; 
 	
 	float FEvar; //variance in fitness estimates (for sorting purposes)
+	float GEvar; //variance in generality estimates (for sorting purposes)
+
+	float genty; //generality
 
 	float parentfitness;
 	int eff_size;
@@ -47,17 +55,19 @@ struct ind {
 	int complexity;
 	//std::vector <int> ptr;
 	char origin; // x: crossover, m: mutation, i: initialization
-	//typedef exprtk::expression<float> expression_t;
-	//expression_t expression;
-	/*ind()
-	{
-		eqn=nominal_model;
-	}*/
+
+	/* 
+	===================================================================
+	BE SURE TO ADD ANY NEW VARIABLES TO THE SWAP FUNCTION FOR COPYING!!
+	===================================================================
+	*/
+
 	ind()
 	{
 		abserror = 0;
 		corr = 0;
 		age=1;
+		genty=1;
 	}
 	/*ind(const ind& x)
 	{
@@ -105,6 +115,8 @@ struct ind {
 		swap(this->fitness_v,s.fitness_v);
 		swap(this->FEvar,s.FEvar);
 		swap(this->parentfitness,s.parentfitness);
+		swap(this->GEvar,s.GEvar);
+		swap(this->genty,s.genty);
 		//ints
 		swap(this->eff_size,s.eff_size);
 		swap(this->age,s.age);
@@ -112,6 +124,7 @@ struct ind {
 		swap(this->complexity,s.complexity);
 		//chars
 		swap(this->origin,s.origin);
+		
 
 	}//throw (); // Also see the non-throwing swap idiom
 	////swap optimization
@@ -137,6 +150,7 @@ struct ind {
 		eqn_form="";
 		output.clear();
 		output_v.clear();
+		genty = 1;
 		//outstack.clear();
 		// nominal model must be encased in set of parenthesis. the pointer points to that which is encased.
 		//ptr[0]= 1;
@@ -175,14 +189,16 @@ namespace std { template<> inline void swap<struct ind>(ind& lhs, ind& rhs)	{lhs
 struct SortFit{ bool operator() (const ind& i,const ind& j) { return (i.fitness<j.fitness);} };
 struct SortFit2{ bool operator() (const sub_ind& i,const sub_ind& j) { return (i.fitness<j.fitness);} };
 struct SortRank{ bool operator() (const ind& i,const ind& j) { return (i.rank<j.rank);} };
-
+struct SortGenty{ bool operator() (const ind& i,const ind& j) { return (i.genty<j.genty);} };
 struct revSortRank{	bool operator() (ind& i,ind& j) { return (i.rank>j.rank);} };
 
 struct SortEqnSize{	bool operator() (const ind& i,const ind& j) { return (i.eqn.size()<j.eqn.size());} };
 struct SortFEVar{	bool operator() (const ind& i,const ind& j) { return (i.FEvar>j.FEvar);} };
+struct SortGEVar{	bool operator() (const ind& i,const ind& j) { return (i.GEvar>j.GEvar);} };
 struct SortComplexity{bool operator() (const ind& i,const ind& j) { return (i.complexity<j.complexity);}};
 struct SortFit_v{	bool operator() (const ind& i,const ind& j) { return (i.fitness_v<j.fitness_v);}};
 struct SortSize{	bool operator() (const ind& i,const ind& j) { return (i.line.size()<j.line.size());}};
+struct SortAge{	bool operator() (const ind& i,const ind& j) { return (i.age < j.age );}};
 
 struct sameEqn{	bool operator() (ind& i,ind& j) { return i.eqn==j.eqn;} };
 

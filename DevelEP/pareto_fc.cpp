@@ -16,7 +16,24 @@
 //#include "pop.h"
 using namespace std;
 
-void pareto(vector<ind>& pop,std::vector<float>& data){
+void usage(){
+  std::cerr << "[usage] pareto (-a algorithmName) -l file1 -l file2 ... -l fileK \n \
+  Computes pareto frontier given N K-dimensional datapoints. \n \
+  There are K>1 files, each consisting of a column of N numbers. \n \
+  The flag -l indicates larger number is better (maximize); \n \
+  alternatively, the -s flag means smaller is better (minimize). \n \
+  The output consists of N labels, where 1=pareto and 0=not. \n\n \
+  Flag -a specifies the algorithm to use. \n \
+  Supported algorithms: \n \
+    -a bruteforce (default for K>2) \n \
+    -a stablesort (default for K=2) \n \
+    -a nondominatedsort (generates ranking, with higher number meaning higher level of pareto front)\n \
+  " << std::endl;
+
+  exit(1);
+}
+
+void pareto_fc(vector<ind>& pop){
 
   /////////////////////////////////
   // Command line parameters
@@ -25,28 +42,34 @@ void pareto(vector<ind>& pop,std::vector<float>& data){
 
   ////////////////////////////////////
   // Read data
+  //int K = files.size(); // # of files, i.e. K-dimensional problem
+  int K = 2;
+  if (K<2){
+    std::cerr << "[error] Insufficient dimension (2 or more input files needed). " << std::endl;
+    usage();
+  }
 
   std::vector<Datapoint*> dataset; //dataset will contain N K-dim datapoints
   //size_t idmax_file1; // for sanity check to ensure equal file lengths
   for (size_t f=0; f<pop.size(); ++f){
 		Datapoint *d = new Datapoint(f);
 		dataset.push_back(d);
-		for (size_t i=0; i<data.size()/pop.size(); ++i)
-			dataset[f]->addNumber(-data.at(f*(data.size()/pop.size())+i)); 
+		dataset[f]->addNumber(-pop.at(f).fitness); 
+		dataset[f]->addNumber(-pop.at(f).complexity);
   }
 
 
   //////////////////////////////////////
   // Choose the Pareto Algorithm to use
-  if (algoName.empty()){
-    if (data.size()/pop.size()==2){
+  /*if (algoName.empty()){
+    if (K==2){
       algoName="stablesort";
     }
     else {
       algoName="bruteforce";
     }
-  }
-  //algoName="bruteforce";
+  }*/
+  algoName="stablesort";
   ParetoAlgo* algo = NULL;
   if (algoName == "stablesort"){
     algo = new StablesortAlgo();

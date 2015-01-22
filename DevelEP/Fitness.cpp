@@ -28,28 +28,28 @@ public:
 //float getCorr(vector<float>& output,vector<float>& target,float meanout,float meantarget,int off);
 //int getComplexity(string& eqn);
 
-void getEqnForm(std::string& eqn,std::string& eqn_form)
-{
-//replace numbers with the letter c
-#if defined(_WIN32)
-	std::regex e ("(([0-9]+)(\\.)([0-9]+))|([0-9]+)");
-	std::basic_string<char> tmp = "c";
-	std::regex_replace (std::back_inserter(eqn_form), eqn.begin(), eqn.end(), e,tmp);
-#else
-	boost::regex e ("(([0-9]+)(\\.)([0-9]+))|([0-9]+)");
-	eqn_form = boost::regex_replace(eqn,e,"c");
-#endif 
-	//(\d+\.\d+)|(\d+)
-	//eqn_form = eqn;
-	//eqn_form=std::tr1::regex_replace(eqn,e,tmp.c_str(),std::tr1::regex_constants::match_default);
-	//std::string result;
-
-
-	//std::regex_replace(std::back_inserter(eqn_form),eqn.begin(),eqn.end(),e,"c",std::regex_constants::match_default);
-	//std::regex_replace(std::back_inserter(eqn_form),eqn.begin(),eqn.end(),e,"c",std::tr1::regex_constants::match_default
-    //std::cout << result;
-	//std::cout << eqn << "\t" << eqn_form <<"\n";
-}
+//void getEqnForm(std::string& eqn,std::string& eqn_form)
+//{
+////replace numbers with the letter c
+//#if defined(_WIN32)
+//	std::regex e ("(([0-9]+)(\\.)([0-9]+))|([0-9]+)");
+//	std::basic_string<char> tmp = "c";
+//	std::regex_replace (std::back_inserter(eqn_form), eqn.begin(), eqn.end(), e,tmp);
+//#else
+//	boost::regex e ("(([0-9]+)(\\.)([0-9]+))|([0-9]+)");
+//	eqn_form = boost::regex_replace(eqn,e,"c");
+//#endif 
+//	//(\d+\.\d+)|(\d+)
+//	//eqn_form = eqn;
+//	//eqn_form=std::tr1::regex_replace(eqn,e,tmp.c_str(),std::tr1::regex_constants::match_default);
+//	//std::string result;
+//
+//
+//	//std::regex_replace(std::back_inserter(eqn_form),eqn.begin(),eqn.end(),e,"c",std::regex_constants::match_default);
+//	//std::regex_replace(std::back_inserter(eqn_form),eqn.begin(),eqn.end(),e,"c",std::tr1::regex_constants::match_default
+//    //std::cout << result;
+//	//std::cout << eqn << "\t" << eqn_form <<"\n";
+//}
 void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s);
 float getCorr(vector<float>& output,vector<float>& target,float meanout,float meantarget,int off,float& target_std)
 {
@@ -268,44 +268,45 @@ void eval(node& n,vector<float>& outstack)
 	}
 }
 void FitnessEstimate(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE);
-void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE);
+void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE, unordered_map<string,float*>& datatable, vector<float>& dattovar);
 void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE);
 
 void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 {
-	
-	//#pragma omp parallel for private(e)
-	for(int count = 0; count<pop.size(); ++count)
-	{
-		pop.at(count).eqn = Line2Eqn(pop.at(count).line);
-		getEqnForm(pop.at(count).eqn,pop.at(count).eqn_form);
-		pop.at(count).complexity= getComplexity(pop.at(count).eqn_form);
-		pop.at(count).eff_size = getEffSize(pop.at(count).line);
-
-		if(p.sel!=3){
-			StandardFitness(pop.at(count),p,d,s,FE);		
-		} // if p.sel!=3
-		else //LEXICASE FITNESS ==================================================================
-		{
-			LexicaseFitness(pop.at(count),p,d,s,FE);
-		}//LEXICASE FITNESS
-	}//for(int count = 0; count<pop.size(); ++count)
-	s.numevals[omp_get_thread_num()]=s.numevals[omp_get_thread_num()]+pop.size();
-	//cout << "\nFitness Time: ";
-}
-void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
-{
-    //set up data table for conversion of symbolic variables
+	//set up data table for conversion of symbolic variables
 	unordered_map <string,float*> datatable;
 	vector<float> dattovar(d.label.size());
 
 	for (unsigned int i=0;i<d.label.size(); ++i)
 			datatable.insert(pair<string,float*>(d.label[i],&dattovar[i]));
 
-	vector<vector<float>> FEvals;
-	vector<float> FEtarget;
-	setFEvals(FEvals,FEtarget,FE,d);
-		
+	//#pragma omp parallel for private(e)
+	for(int count = 0; count<pop.size(); ++count)
+	{
+		pop.at(count).eqn = Line2Eqn(pop.at(count).line,pop.at(count).eqn_form);
+		//getEqnForm(pop.at(count).eqn,pop.at(count).eqn_form);
+		pop.at(count).complexity= getComplexity(pop.at(count).eqn_form);
+		pop.at(count).eff_size = getEffSize(pop.at(count).line);
+
+		if(p.sel!=3){
+			StandardFitness(pop.at(count),p,d,s,FE,datatable,dattovar);		
+		} // if p.sel!=3
+		else //LEXICASE FITNESS 
+		{
+			LexicaseFitness(pop.at(count),p,d,s,FE);
+		}//LEXICASE FITNESS
+
+		if (p.estimate_generality && pop.at(count).genty != abs(pop[count].fitness-pop[count].fitness_v)/pop[count].fitness && pop.at(count).genty != p.max_fit) 
+			std::cerr << "genty error, line 300 Fitness.cpp\n";
+	}//for(int count = 0; count<pop.size(); ++count)
+	s.numevals[omp_get_thread_num()]=s.numevals[omp_get_thread_num()]+pop.size();
+	//cout << "\nFitness Time: ";
+}
+void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,unordered_map<string,float*>& datatable, vector<float>& dattovar)
+{
+    
+
+	
 	me.abserror = 0;
 	me.abserror_v = 0;
 	
@@ -325,180 +326,33 @@ void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 	}
 	//cout << "Equation" << count << ": f=" << me.eqn << "\n";
 	bool pass=true;
-			if(!me.eqn.compare("unwriteable")==0){
+	if(!me.eqn.compare("unwriteable")==0){
 							
-	// calculate error 
-				if(!p.EstimateFitness){
-					CalcOutput(me,p,d.vals,dattovar,d.target,s);
-					//for(unsigned int sim=0;sim<d.vals.size();++sim)
-					//{
-					//	for (unsigned int j=0; j<p.allvars.size();++j)
-					//		dattovar.at(j)= d.vals[sim][j];
-
-					//	for(int k=0;k<me.line.size();++k){
-					//		/*if(me.line.at(k).type=='v'){
-					//			if (static_pointer_cast<n_sym>(me.line.at(k)).valpt==NULL)
-					//				cout<<"WTF";
-					//		}*/
-					//		if (me.line.at(k).on){
-					//			//me.line.at(k).eval(outstack);
-					//			eval(me.line.at(k),outstack);
-					//			ptevals++;}
-					//	}
-
-					//	if(!outstack.empty()){
-					//		if (p.train){
-					//			if(sim<ndata_t){
-					//				me.output.push_back(outstack.back());
-					//				me.abserror += abs(d.target.at(sim)-me.output.at(sim));
-					//				meantarget += d.target.at(sim);
-					//				meanout += me.output[sim];
-
-					//			}
-					//			else
-					//			{
-					//				me.output_v.push_back(outstack.back());
-					//				me.abserror_v += abs(d.target.at(sim)-me.output_v.at(sim-ndata_t));
-					//				meantarget_v += d.target.at(sim);
-					//				meanout_v += me.output_v[sim-ndata_t];
-
-					//			}
-
-					//		}
-					//		else {
-					//			me.output.push_back(outstack.back());
-					//			me.abserror += abs(d.target.at(sim)-me.output.at(sim));
-					//			meantarget += d.target.at(sim);
-					//			meanout += me.output[sim];
-					//		}
-					//	}
-					//	else{
-					//		pass=false;
-					//		break;
-					//		}
-					//	outstack.clear();
-					//}
-					//if (pass){
-					//	
-					//	// mean absolute error
-					//	me.abserror = me.abserror/ndata_t;
-					//	meantarget = meantarget/ndata_t;
-					//	meanout = meanout/ndata_t;
-					//	//calculate correlation coefficient
-					//	me.corr = getCorr(me.output,d.target,meanout,meantarget,0,target_std);
-					//	me.VAF = VAF(me.output,d.target,meantarget,0);
-
-					//	if (p.train)
-					//	{
-					//		q = 0;
-					//		var_target = 0;
-					//		var_ind = 0;
-					//			// mean absolute error
-					//		me.abserror_v = me.abserror_v/ndata_v;
-					//		meantarget_v = meantarget_v/ndata_v;
-					//		meanout_v = meanout_v/ndata_v;
-					//		//calculate correlation coefficient
-					//		me.corr_v = getCorr(me.output_v,d.target,meanout_v,meantarget_v,ndata_t,target_std_v);
-					//		me.VAF_v = VAF(me.output_v,d.target,meantarget_v,ndata_t);
-					//	}
-
-					//}
-				} // if not estimate fitness 
-	
-				else{ 
-	// use fitness estimator subset of d.vals ===========================================================		
-					/*me.output.clear();
-					me.output_v.clear();
-					int tmp1= me.output.size() ;
-					int tmp2= me.output_v.size();*/
-					CalcOutput(me,p,FEvals,dattovar,FEtarget,s);
-					//for(unsigned int sim=0;sim<FEvals.size();++sim)
-					//{
-					//	for (unsigned int j=0; j<p.allvars.size();++j)
-					//		dattovar.at(j)= FEvals[sim][j];
-
-					//	for(int k=0;k<me.line.size();++k){
-					//		/*if(me.line.at(k)->type=='v'){
-					//			if (static_pointer_cast<n_sym>(me.line.at(k))->valpt==NULL)
-					//				cout<<"WTF";
-					//		}*/
-					//		if (me.line.at(k).on){
-					//			//me.line.at(k)->eval(outstack);
-					//			eval(me.line.at(k),outstack);
-					//			ptevals++;}
-					//	}
-
-					//	if(!outstack.empty()){
-					//		if (p.train){
-					//			if(sim<ndata_t){
-					//				if (me.output.size() != sim)
-					//					cout << "hold up\n";
-
-					//				me.output.push_back(outstack.back());
-					//				me.abserror += abs(FEtarget.at(sim)-me.output.at(sim));
-					//				meantarget += FEtarget.at(sim);
-					//				meanout += me.output[sim];
-					//				}
-					//				else
-					//				{
-					//					me.output_v.push_back(outstack.back());
-					//					me.abserror_v += abs(FEtarget.at(sim)-me.output_v.at(sim-ndata_t));
-					//					meantarget_v += FEtarget.at(sim);
-					//					meanout_v += me.output_v[sim-ndata_t];
-					//			}
-					//		} // if p.train
-					//		else {
-					//			me.output.push_back(outstack.back());
-					//			me.abserror += abs(FEtarget.at(sim)-me.output.at(sim));
-					//			meantarget += FEtarget.at(sim);
-					//			meanout += me.output[sim];
-					//		}
-					//	}
-					//	else{
-					//		pass=false;
-					//		break;
-					//		}
-					//	outstack.clear();
-					//}
-					//if (pass){
-					//	// mean absolute error
-					//	me.abserror = me.abserror/ndata_t;
-					//	meantarget = meantarget/ndata_t;
-					//	meanout = meanout/ndata_t;
-					//	//calculate correlation coefficient
-					//	me.corr = getCorr(me.output,FEtarget,meanout,meantarget,0,target_std);
-					//	me.VAF = VAF(me.output,FEtarget,meantarget,0);
-
-					//	if (p.train)
-					//	{
-					//		q = 0;
-					//		var_target = 0;
-					//		var_ind = 0;
-					//			// mean absolute error
-					//		me.abserror_v = me.abserror_v/ndata_v;
-					//		meantarget_v = meantarget_v/ndata_v;
-					//		meanout_v = meanout_v/ndata_v;
-					//		//calculate correlation coefficient
-					//		
-					//		me.corr_v = getCorr(me.output_v,FEtarget,meanout_v,meantarget_v,ndata_t,target_std_v);
-					//		me.VAF_v = VAF(me.output_v,FEtarget,meantarget_v,0);
-					//	}
-
-					//} // if pass
-				} // if estimate fitness
-			} // if not unwriteable equation
-			else{ // bad equation, assign maximum fitness
-				me.abserror=p.max_fit;
-				me.corr = p.min_fit;
-				me.VAF = p.min_fit;
-				me.fitness = p.max_fit;
-				me.fitness_v = p.max_fit;
-				if (p.train){
-					me.abserror_v=p.max_fit;
-					me.corr_v = p.min_fit;
-					me.VAF_v = p.min_fit;
-				}
-			}
+// calculate error 
+		if(!p.EstimateFitness){
+			CalcOutput(me,p,d.vals,dattovar,d.target,s);
+		} // if not estimate fitness 
+		else{ 
+// use fitness estimator subset of d.vals ===========================================================	
+			vector<vector<float>> FEvals;
+			vector<float> FEtarget;
+			setFEvals(FEvals,FEtarget,FE,d);
+			CalcOutput(me,p,FEvals,dattovar,FEtarget,s);
+		} // if estimate fitness
+	} // if not unwriteable equation
+	else{ // bad equation, assign maximum fitness
+		me.abserror=p.max_fit;
+		me.corr = p.min_fit;
+		me.VAF = p.min_fit;
+		me.fitness = p.max_fit;
+		me.fitness_v = p.max_fit;
+		me.genty = p.max_fit;
+		if (p.train){
+			me.abserror_v=p.max_fit;
+			me.corr_v = p.min_fit;
+			me.VAF_v = p.min_fit;
+		}
+	}
 			
 			 
 }
@@ -708,6 +562,13 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 				me.abserror_v=me.abserror;
 				me.fitness_v=me.fitness;
 			}
+			if (p.estimate_generality || p.PS_sel==2){
+				if (me.fitness == p.max_fit || me.fitness_v== p.max_fit)
+					me.genty = p.max_fit;
+				else
+					me.genty = abs(me.fitness-me.fitness_v)/me.fitness;
+			}
+
 		s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
 }
 
@@ -930,6 +791,12 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 				me.abserror_v=me.abserror;
 				me.fitness_v=me.fitness;
 			}
+			if (p.estimate_generality || p.PS_sel==2){
+				if (me.fitness == p.max_fit || me.fitness_v== p.max_fit)
+					me.genty = p.max_fit;
+				else
+					me.genty = abs(me.fitness-me.fitness_v)/me.fitness;
+			}
 		s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
 		return true;
 }
@@ -983,8 +850,8 @@ bool getSlimFit(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,int line
 bool SlimFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE, int linestart,  float orig_fit)
 {
 
-	me.eqn = Line2Eqn(me.line);
-	getEqnForm(me.eqn,me.eqn_form);
+	me.eqn = Line2Eqn(me.line,me.eqn_form);
+	//getEqnForm(me.eqn,me.eqn_form);
 	me.complexity= getComplexity(me.eqn_form);
 	me.eff_size = getEffSize(me.line);
 
@@ -1032,8 +899,8 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 
 	int ptevals=0;
 	//get equation and equation form
-			me.eqn = Line2Eqn(me.line);
-			getEqnForm(me.eqn,me.eqn_form);
+			me.eqn = Line2Eqn(me.line,me.eqn_form);
+			//getEqnForm(me.eqn,me.eqn_form);
 		//Get effective size and complexity
 			me.eff_size=0;
 			for(int m=0;m<me.line.size();++m){

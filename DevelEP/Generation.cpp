@@ -9,6 +9,7 @@
 #include "Generationfns.h"
 #include "InitPop.h"
 #include "EpiMut.h"
+#include "ParetoSurvival.hpp"
 
 void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
 {
@@ -95,7 +96,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 				Fitness(tmppop,p,d,s,FE);
 				pop.push_back(tmppop[0]);
 				// select new population with tournament size 2, based on pareto age-fitness
-				AgeFitSelect(pop,p,r);
+				AgeFitSurvival(pop,p,r);
 			}
 			break;
 		}
@@ -103,8 +104,15 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		{   //scheme:
 			// produce a new population equal in size to the old
 			// pool all individuals from both populations
-			
+			for(int count = 0; count<pop.size(); ++count)
+			{
+				float tmp = abs(pop[count].fitness-pop[count].fitness_v)/pop[count].fitness;
+				if (p.estimate_generality && pop.at(count).genty != tmp && pop.at(count).genty != p.max_fit) 
+					std::cerr << "genty error, line 111 Generation.cpp\n";
+			}
+
 			AgeBreed(pop,p,r,d,s,FE);
+			
 			// add one new individual
 			vector<ind> tmppop(1);
 			tmppop[0].age=0;
@@ -113,7 +121,11 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 			Fitness(tmppop,p,d,s,FE);
 			pop.push_back(tmppop[0]);
 			// select new population with tournament size 2, based on pareto age-fitness
-			AgeFitSelect(pop,p,r);
+			if (p.PS_sel==1)
+				AgeFitSurvival(pop,p,r);
+			else if (p.PS_sel==2)
+				AgeFitGenSurvival(pop,p,r);
+			//ParetoSurvival(pop,p,r,s);
 		break;
 
 		}

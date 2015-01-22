@@ -54,18 +54,18 @@ int main(int argc, char** argv)
 	catch(const std::bad_alloc&)
 	{
 		cout << "bad allocation error. \n";
-		return 0;
+		exit(1);
 	}
 	catch(exception& er) 
 	{
 		cout << "Error: " << er.what() << endl;
-		return 0;
+		exit(1);
 
 	}
 	catch(...)
 	{
 		cout << "Exception Occurred. Ending..."<<endl;
-		return 0;
+		exit(1);
 	}
 	return 0;
 }

@@ -45,7 +45,9 @@ struct params {
 	int FE_train_size;
 	int FE_train_gens;
 	bool FE_rank;
-	
+
+	bool estimate_generality;
+
 	// Computer Settings
 	//bool parallel;
 	//int numcores;
@@ -141,16 +143,36 @@ struct params {
 	int numcases;
 	int lexpool;
 	bool lexage;
-	params(){train=0;eHC_mut=0;eHC_slim=0;print_log=1;print_homology=0;num_log_pts=1;}
+	params(){ //default values
+		train=0;
+		eHC_mut=0;
+		eHC_slim=0;
+		print_log=1;
+		print_init_pop=0;
+		print_homology=0;
+		num_log_pts=0;
+		PS_sel=1;
+		EstimateFitness=0; 
+		FE_pop_size=0;
+		FE_ind_size=0;
+		FE_train_size=0;
+		FE_train_gens=0;
+		FE_rank=0;
+
+		estimate_generality=0;
+	}
 	~params(){}
 
+	//print initial population
+	bool print_init_pop;
 	// print homology 
 	bool print_homology;
 	//print log
 	bool print_log;
 	// number of log points to print (with eval limitation)
 	int num_log_pts;
-
+	//pareto survival setting
+	int PS_sel;
 	void clear()
 	{
 		

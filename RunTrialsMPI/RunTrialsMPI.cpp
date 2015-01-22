@@ -23,8 +23,7 @@ int main(int argc, char** argv)
 	   second column: parameter file for trials
 	   third column: data for trials
 	*/
-	try
-	{
+	
 		string trialsetup(argv[1]);
        // cout << "trialsetup: " + trialsetup + "\n";
 		int totaltrials = 0;
@@ -46,7 +45,9 @@ int main(int argc, char** argv)
 		//cout << "I am process " + to_string(static_cast<long long>(myid)) + " of " + to_string(static_cast<long long>(numprocs)) + "\n";
 		MPI::Status status;
 		//const char * pbuff,dbuff;
-        if (myid==master){
+     try
+	 {   
+		if (myid==master){
         	//cout << "total trials: " + to_string(static_cast<long long>(totaltrials)) + "\n";
         	//cout << "In master loop\n";
         	cout << "Running trials of ellenGP: \n Number of trials: " + to_string(static_cast<long long>(totaltrials)) +"\n Number of processors: " + to_string(static_cast<long long>(numprocs)) + "\n";
@@ -86,7 +87,7 @@ int main(int argc, char** argv)
         	//cout << "in slave task. myid is " + to_string(static_cast<long long>(myid)) + " and totaltrials is " + to_string(static_cast<long long>(totaltrials)) + "\n";
         	bool cont = true;
         	while (cont){
-				if (myid < totaltrials){
+				if (myid <= totaltrials){
 					//char * pbuff,dbuff;
 					//cout << "probe master status\n";
 					MPI::COMM_WORLD.Probe(master, MPI::ANY_TAG, status);
@@ -116,19 +117,19 @@ int main(int argc, char** argv)
 							int tmp = 1;
 							MPI::COMM_WORLD.Send(&tmp,1,MPI::INT,master,myid);
 						}
-						else{
+						/*else{
 							cout << "status tag is zero on process " + to_string(static_cast<long long>(myid)) + "\n";
 							cont=false;
 
-						}
+						}*/
 
 
 						delete [] dbuff;
 					}
-					else{
+					/*else{
 						cout << "status tag is zero on process " + to_string(static_cast<long long>(myid)) + "\n";
 						cont=false;
-					}
+					}*/
 
 					delete [] pbuff;
 
@@ -150,7 +151,7 @@ int main(int argc, char** argv)
 	}
 	catch(const std::bad_alloc&)
 	{
-		cout << "bad allocation error. \n";
+		cout << "bad allocation error from processor " << to_string(static_cast<long long>(myid)) << "\n";
 		exit(1);
 	}
 	catch(exception& er) 

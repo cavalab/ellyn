@@ -26,7 +26,9 @@
 struct SortFE{
 	bool operator() (const FitnessEstimator& i,const FitnessEstimator& j) { return (i.fitness<j.fitness);} 
 };
-
+struct SortGE{
+	bool operator() (const FitnessEstimator& i,const FitnessEstimator& j) { return (i.genty<j.genty);} 
+};
 void setFEvals(vector<vector<float>>& FEvals, vector<float>& FEtarget,FitnessEstimator& FE, data& d)
 {
 	FEvals.resize(0); FEvals.reserve(FE.FEpts.size());
@@ -53,7 +55,7 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,d
 		
 		setFEvals(FEvals,FEtarget,FE[i],d);
 
-		if(p.train)
+		if(p.train || p.estimate_generality)
 			ndata_t = FEvals.size()/2;
 		else
 			ndata_t = FEvals.size();
@@ -138,6 +140,97 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,d
 			}
 			FE[i].fitness /= nsq;
 		}
+		/*==========================================================================
+		                                    Generality Estimator
+		==========================================================================*/
+
+		if (p.estimate_generality){ // get generality using the second half of FEpts
+			
+			int ndata = FEvals.size();
+			int ndata_v = ndata - ndata_t;
+
+			vector<float> FEness_v(trainers.size()); 
+
+			for (int j=0;j<trainers.size();++j){
+
+			if (!trainers[j].output.empty()){
+
+				float abserror_v=0;
+				float meantarget_v = 0;
+				float meanout_v = 0;
+				float corr_v;
+				float vaf_v;
+
+				float target_std_v;
+				vector<float> tmpoutput_v;
+				for(unsigned int sim=ndata_t;sim<ndata;++sim)
+				{	
+					abserror_v += abs(FEtarget[sim]-trainers[j].output[FE[i].FEpts[sim]]);
+					meantarget_v += FEtarget.at(sim);
+					meanout_v += trainers[j].output[FE[i].FEpts[sim]];
+					tmpoutput_v.push_back(trainers[j].output[FE[i].FEpts[sim]]);
+				}
+				
+					// mean absolute error
+					abserror_v = abserror_v/ndata_v;
+					meantarget_v = meantarget_v/ndata_v;
+					meanout_v = meanout_v/ndata_v;
+					//calculate correlation coefficient
+					corr_v = getCorr(tmpoutput_v,FEtarget,meanout_v,meantarget_v,ndata_t,target_std_v);
+					vaf_v = VAF(tmpoutput_v,FEtarget,meantarget_v,ndata_t);
+					tmpoutput_v.clear();
+
+					if(corr_v < p.min_fit)
+						corr_v=p.min_fit;
+
+					if(trainers[j].output.empty()) 
+						FEness_v[j]=p.max_fit;
+					else if ( boost::math::isnan(abserror_v) || boost::math::isinf(abserror_v) || boost::math::isnan(corr_v) || boost::math::isinf(corr_v))
+						FEness_v[j]=p.max_fit;
+					else{
+						if (p.fit_type==1)
+							FEness_v[j] = abserror_v;
+						else if (p.fit_type==2)
+							FEness_v[j] = 1-corr_v;
+						else if (p.fit_type==3)
+							FEness_v[j] = abserror_v/corr_v;
+						else if (p.fit_type==4)
+							FEness_v[j] = 1-vaf_v;
+						if (p.norm_error)
+							FEness_v[j] = FEness_v[j]/target_std_v;
+					}
+
+					if(FEness_v[j]>p.max_fit)
+						FEness_v[j]=p.max_fit;
+					else if(FEness_v[j]<p.min_fit)
+						(FEness_v[j]=p.min_fit); 
+
+			//Fitness(trainers,p,d,s,FE[i]); //note: FE[0] does not get used here
+			if (!p.FE_rank)
+				FE[i].genty+=abs(trainers[j].genty - abs(FEness[j]-FEness_v[j])/FEness[j]);
+		
+			}
+			}
+			if (!p.FE_rank)
+				FE[i].genty=FE[i].fitness/trainers.size();
+			else{
+				// use FE ranking ability to assign fitness
+				FE[i].genty=0;
+				float FE1_genty=0, FE2_genty=0; 
+				float nsq = float(trainers.size()*trainers.size());
+				for (int h=0;h<trainers.size();++h){
+					FE1_genty = abs(FEness[h]-FEness_v[h])/FEness[h];
+					for (int k=0;k<trainers.size();++k){
+						FE2_genty = abs(FEness[k]-FEness_v[k])/FEness[k];
+						if ((FE1_genty < FE2_genty && trainers[h].genty > trainers[k].genty) || 
+							(FE1_genty > FE2_genty && trainers[h].genty < trainers[k].genty) )
+							FE[i].genty+=1;
+					}
+				}
+				FE[i].genty /= nsq;
+			}
+
+		}
 	}
 	
 };
@@ -145,15 +238,17 @@ void InitPopFE(vector <FitnessEstimator>& FE,vector<ind> &pop,vector<ind>& train
 {
 	//vector <FitnessEstimator> FE; //fitness estimator population 
 	//initialize estimator population
-	FE.resize(p.FE_pop_size);
+	FE.resize(0);
+	FE.reserve(p.FE_pop_size);
+	bool train = p.train;// || p.estimate_generality;
 	for (int i=0;i<p.FE_pop_size;++i){
-		FE[i]= FitnessEstimator(p.FE_ind_size,r,d,p.train);			
+		FE.push_back(FitnessEstimator(p.FE_ind_size,r,d,train));			
 	}
 	
 	//initialize trainer population
-	trainers.resize(p.FE_train_size);
+	trainers.reserve(p.FE_train_size);
 	for (int i=0;i<p.FE_train_size;++i){
-		trainers[i] = pop[r[omp_get_thread_num()].rnd_int(0,pop.size()-1)];
+		trainers.push_back(pop[r[omp_get_thread_num()].rnd_int(0,pop.size()-1)]);
 	}
 	//p.EstimateFitness = 0; // turn fitness estimation off (all data points used)
 	//Fitness(trainers,p,d,s,FE[0]); //note: FE[0] does not get used here
@@ -165,7 +260,12 @@ void InitPopFE(vector <FitnessEstimator>& FE,vector<ind> &pop,vector<ind>& train
 
 	FitnessFE(FE,trainers,p,d,s);
 	//perform selection
-	sort(FE.begin(),FE.end(),SortFE());
+	if (p.estimate_generality){
+		sort(FE.begin(),FE.end(),SortGE());
+		stable_sort(FE.begin(),FE.end(),SortFE());
+	}
+	else
+		sort(FE.begin(),FE.end(),SortFE());
 };
 
 
@@ -174,70 +274,122 @@ void PickTrainers(vector<ind> pop, vector <FitnessEstimator>& FE,vector <ind>& t
 	vector <vector<float>> FEfits; //rows: predictors, cols: population
 	vector<float> meanfits(pop.size());
 	vector <float> varfits(pop.size());
+
+	vector <vector<float>> FEgenty; //rows: predictors, cols: population
+	vector<float> meangenty(pop.size());
+	vector <float> vargenty(pop.size());
 	//vector <ind> tmppop(1);
 	// get FE fitness on each individual in population
-	vector<ind> tmppop;
+	//vector<ind> tmppop;
 
-	for (int j=0;j<pop.size();++j){
-		if(pop[j].fitness<p.max_fit){
-			tmppop.push_back(ind());
-			//makenewcopy(pop[j],tmppop.back());
-			if(tmppop.size()!=pop.size())
-				tmppop.back().clrPhen();
-		}
-	}
+	//for (int j=0;j<pop.size();++j){
+	//	if(pop[j].fitness<p.max_fit){
+	//		tmppop.push_back(pop[j]);
+	//		//makenewcopy(pop[j],tmppop.back());
+	//		if(tmppop.size()!=pop.size())
+	//			tmppop.back().clrPhen();
+	//	}
+	//}
 	//i: fitness predictors
 	//j: solution population 
 	for (int i=0;i<FE.size();++i){
 
-		Fitness(tmppop,p,d,s,FE[i]);	
-		FEfits.push_back(vector<float>(tmppop.size()));
-		for (int j=0;j<tmppop.size();++j){
-				FEfits[i][j]=tmppop[j].fitness;	
-				if(i!=FE.size()-1)
-					tmppop[j].clrPhen();
+		Fitness(pop,p,d,s,FE[i]);	
+
+		if (p.estimate_generality){
+			FEgenty.push_back(vector<float>(pop.size()));
+			for (int j=0;j<pop.size();++j){
+				FEgenty[i][j]=pop[j].genty;	
+				/*if(i!=FE.size()-1)
+					pop[j].clrPhen();*/
 			}
+		}
+
+		FEfits.push_back(vector<float>(pop.size()));
+		for (int j=0;j<pop.size();++j){
+				FEfits[i][j]=pop[j].fitness;	
+				if(i!=FE.size()-1)
+					pop[j].clrPhen();
+		}
+		
+
 		// convert FEfits to ranks
-		/*for (int h=0;h<tmppop.size();++h){
+		/*for (int h=0;h<pop.size();++h){
 			float maxfit = *max_element(FEfits[i].begin(),FEfits[i].end());
-			FEfits[i][h] = FEfits[i][h]/maxfit*tmppop.size();
+			FEfits[i][h] = FEfits[i][h]/maxfit*pop.size();
 		}*/
 	}
-
+	float tmp;
 	// calculate variance in fitness estimates
-	for (int j=0;j<tmppop.size();++j){
+	for (int j=0;j<pop.size();++j){
 		for (int i=0;i<FE.size();++i)
 			meanfits[j]+=FEfits[i][j];
 
 		meanfits[j]=meanfits[j]/FE.size(); // mean fitness over predictors
-
+		
 		for (int h=0;h<FE.size();++h){
-			float tmp = FEfits[h][j]-meanfits[j];
+			tmp = FEfits[h][j]-meanfits[j];
 			varfits[j]+=pow(FEfits[h][j]-meanfits[j],2);
 		}
-
+		
 		varfits[j]=varfits[j]/(FE.size()-1); // variance in fitness over predictors
+		
 		if(boost::math::isinf(varfits[j])) varfits[j]=0;
-		tmppop[j].FEvar=varfits[j];
+		
+		pop[j].FEvar=varfits[j];
+
 	}
-	
-	sort(tmppop.begin(),tmppop.end(),SortFEVar());
+	// calculate variance in generality estimates
+	if(p.estimate_generality){
+		for (int j=0;j<pop.size();++j){
+			for (int i=0;i<FE.size();++i)
+				meangenty[j]+=FEgenty[i][j];
+			
+			meangenty[j]=meangenty[j]/FE.size(); // mean generality over predictors
+
+			for (int h=0;h<FE.size();++h){
+				tmp = FEgenty[h][j]-meangenty[j];
+				vargenty[j]+=pow(FEgenty[h][j]-meangenty[j],2);
+			}
+			
+			vargenty[j]=vargenty[j]/(FE.size()-1); // variance in generality over predictors
+
+			if(boost::math::isinf(vargenty[j])) vargenty[j]=0;
+
+			pop[j].GEvar=vargenty[j];
+		}
+	}
+
+	sort(pop.begin(),pop.end(),SortFEVar());
 
 	//vector<ind>::iterator it = pop.begin();
 	trainers.clear();
 	int q=0;
-	while(trainers.size()<p.FE_train_size && q<tmppop.size()){
+	int train_size;
+	
+	if (p.estimate_generality) train_size = ceil(float(p.FE_train_size/2));
+	else train_size = p.FE_train_size;
+
+	while(trainers.size()<train_size && q<pop.size()){
 		if(q==0){
-			trainers.push_back(tmppop.at(q));
+			trainers.push_back(pop.at(q));
 		}
-		else if (tmppop.at(q).eqn.compare(trainers.back().eqn)!=0){
-			trainers.push_back(tmppop.at(q));
+		else if (pop.at(q).eqn.compare(trainers.back().eqn)!=0){
+			trainers.push_back(pop.at(q));
 		}
 		q++;
 	}
 	q=0;
+	if (p.estimate_generality){ //pick the second half of trainers based on generality variance
+		sort(pop.begin(),pop.end(),SortGEVar());
+		while(trainers.size()<p.FE_train_size && q<pop.size()){
+			if (pop.at(q).eqn.compare(trainers.back().eqn)!=0)
+				trainers.push_back(pop.at(q));
+			q++;
+		}
+	}
 	while(trainers.size()<p.FE_train_size){
-		trainers.push_back(tmppop.at(q));
+		trainers.push_back(pop.at(q));
 		q++;
 	}
 	//trainers.assign(tmppop.begin(),tmppop.begin()+p.FE_train_size);
@@ -246,16 +398,22 @@ void PickTrainers(vector<ind> pop, vector <FitnessEstimator>& FE,vector <ind>& t
 	p.EstimateFitness = 1; // turn fitness estimation back on
 	//evaluate fitness of estimators
 	FitnessFE(FE,trainers,p,d,s);
-	sort(FE.begin(),FE.end(),SortFE());
+	// sort estimators
+	if (p.estimate_generality){
+		sort(FE.begin(),FE.end(),SortGE());
+		stable_sort(FE.begin(),FE.end(),SortFE());
+	}
+	else
+		sort(FE.begin(),FE.end(),SortFE());
 };
-void crossFE(vector <FitnessEstimator>& FE,vector<Randclass>& r)
+void crossFE(vector <FitnessEstimator>& FE,params& p, vector<Randclass>& r)
 {
 	// select parents (tournament)
 	int nt = 2;
 	vector<int> parents;
 	vector<int> choices(2);
 	vector <FitnessEstimator> newFE;
-	float bestfit; 
+	float bestfit, bestgenty; 
 	int bestchoice;
 	for (int i=0; i < FE.size(); ++i){
 		
@@ -264,7 +422,26 @@ void crossFE(vector <FitnessEstimator>& FE,vector<Randclass>& r)
 			choices[j] = r[omp_get_thread_num()].rnd_int(0,FE.size()-1);
 			if (j==0) {
 				bestfit = FE[choices[0]].fitness;
+				bestgenty = FE[choices[0]].genty;
 				bestchoice = choices[0];
+			}
+			else if(p.estimate_generality){
+				if (r[omp_get_thread_num()].rnd_flt(0,1) < 0.5){
+					if(FE[choices[j]].fitness<bestfit)
+					{
+						bestfit = FE[choices[j]].fitness;
+						bestgenty = FE[choices[0]].genty;
+						bestchoice = choices[j];
+					}
+				}
+				else{
+					if(FE[choices[j]].genty<bestgenty)
+					{
+						bestfit = FE[choices[j]].fitness;
+						bestgenty = FE[choices[j]].genty;
+						bestchoice = choices[j];
+					}
+				}
 			}
 			else if(FE[choices[j]].fitness<bestfit)
 			{
@@ -319,7 +496,7 @@ void EvolveFE(vector<ind> &pop, vector <FitnessEstimator>& FE,vector <ind>& trai
 	
 	vector <FitnessEstimator> newFE = FE;
 	//cross estimators
-	crossFE(newFE,r);
+	crossFE(newFE,p,r);
 
 	//mutate estimators
 	mutateFE(newFE,p,d,r);
@@ -334,7 +511,13 @@ void EvolveFE(vector<ind> &pop, vector <FitnessEstimator>& FE,vector <ind>& trai
 
 	//keep the elite predictor and the new predictors
 	newFE.insert(newFE.end(),FE[0]);
-	sort(newFE.begin(),newFE.end(),SortFE());
+	if (p.estimate_generality){
+		sort(newFE.begin(),newFE.end(),SortGE());
+		stable_sort(newFE.begin(),newFE.end(),SortFE());
+	}
+	else
+		sort(newFE.begin(),newFE.end(),SortFE());
+
 	FE.assign(newFE.begin(),newFE.end()-1);
 	////perform selection
 	//sort(FE.begin(),FE.end(),SortFE());

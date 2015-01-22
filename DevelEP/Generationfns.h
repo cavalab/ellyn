@@ -12,6 +12,7 @@ void MutateP(ind&,ind& tmpind,params&,vector<Randclass>& r);
 void HillClimb(ind&,params&,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE);
 void EpiHC(ind&,params&,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE);
 void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state&,FitnessEstimator& FE);
-void AgeFitSelect(vector<ind>& pop,params& p,vector<Randclass>& r);
+void AgeFitSurvival(vector<ind>& pop,params& p,vector<Randclass>& r);
+void AgeFitGenSurvival(vector<ind>& pop,params& p,vector<Randclass>& r);
 void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r);
 #endif

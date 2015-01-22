@@ -3,7 +3,7 @@
 #include "params.h"
 #include "rnd.h"
 
-void AgeFitSelect(vector<ind>& pop,params& p,vector<Randclass>& r)
+void AgeFitSurvival(vector<ind>& pop,params& p,vector<Randclass>& r)
 {
 	//boost::progress_timer timer;
 	vector<float> fit(p.tourn_size);
@@ -53,8 +53,14 @@ void AgeFitSelect(vector<ind>& pop,params& p,vector<Randclass>& r)
 		draw=true;
 		counter++;
 	}
-	while(pop.size()>popsize)
-		pop.erase(pop.end()-1);
+	if (pop.size()>popsize)	{
+		sort(pop.begin(),pop.end(),SortAge());
+		stable_sort(pop.begin(),pop.end(),SortFit());
+	}
+	while(pop.size()>popsize){
+		//pop.erase(pop.end()-1);
+		pop.pop_back();
+	}
 	
 
 }
