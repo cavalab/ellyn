@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 					++numsent;
         		}
         		else{
-        			cout << "sending stop command to process " + to_string(static_cast<long long>(sender)) + "\n";
+        			//cout << "sending stop command to process " + to_string(static_cast<long long>(sender)) + "\n";
         			MPI::COMM_WORLD.Send(MPI::BOTTOM,0,MPI::CHAR,sender,0);
         			++stops;
         		}
@@ -111,25 +111,25 @@ int main(int argc, char** argv)
 							//run develep
 							runEllenGP(pfile,dfile,1,myid);
 							//cout << "hello\n";
-							cout << "\nprocess " + to_string(static_cast<long long>(tag)) + " of " + to_string(static_cast<long long>(totaltrials)) + " on processor " + to_string(static_cast<long long>(myid)) + " : " + pfile.substr(pfile.rfind('/')+1,pfile.size()) + ", " + dfile.substr(dfile.rfind('/')+1,dfile.size())  + "finished\n";
+							cout << "\nfinished process " + to_string(static_cast<long long>(tag)) + " of " + to_string(static_cast<long long>(totaltrials)) + " on processor " + to_string(static_cast<long long>(myid)) + " : " + pfile.substr(pfile.rfind('/')+1,pfile.size()) + ", " + dfile.substr(dfile.rfind('/')+1,dfile.size())  + "\n";
 
 							// send message when finished
 							int tmp = 1;
 							MPI::COMM_WORLD.Send(&tmp,1,MPI::INT,master,myid);
 						}
-						/*else{
-							cout << "status tag is zero on process " + to_string(static_cast<long long>(myid)) + "\n";
+						else{
+							//cout << "status tag is zero on process " + to_string(static_cast<long long>(myid)) + "\n";
 							cont=false;
 
-						}*/
+						}
 
 
 						delete [] dbuff;
 					}
-					/*else{
-						cout << "status tag is zero on process " + to_string(static_cast<long long>(myid)) + "\n";
+					else{
+						//cout << "status tag is zero on process " + to_string(static_cast<long long>(myid)) + "\n";
 						cont=false;
-					}*/
+					}
 
 					delete [] pbuff;
 

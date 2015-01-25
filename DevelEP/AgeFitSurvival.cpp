@@ -15,7 +15,7 @@ void AgeFitSurvival(vector<ind>& pop,params& p,vector<Randclass>& r)
 	int counter =0;
 	bool draw=true;
 	int popsize = (int)floor((float)pop.size()/2);
-	while (pop.size()>popsize && counter<p.popsize*10)
+	while (pop.size()>popsize && counter<std::pow(float(p.popsize),2))
 	{
 		for (int j=0;j<2;++j)
 		{

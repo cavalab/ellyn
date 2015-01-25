@@ -235,7 +235,8 @@ void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
 	else {
 		s.out << "saving last pop... \n";
 		bestname = logname.substr(0,logname.size()-4)+".last_pop";
-		sort(pop.begin(),pop.end(),SortFit());
+		sort(pop.begin(),pop.end(),SortComplexity());
+		stable_sort(pop.begin(),pop.end(),SortFit());
 	}
 	
 	std::ofstream fout;
