@@ -37,7 +37,7 @@ public:
 		fitness_bucket_mod.resize(size,0);
 		copies.resize(size,1);
 		for(int i=0;i<size;++i){
-			dist.push_back(vector<double>(size));	
+			dist.push_back(vector<double>(size,-1));	
 			NN.push_back(vector<int>(size,-1));
 		}
 		dim = d;
@@ -75,8 +75,8 @@ void calcFitnesses(vector<ind>& pop, SPEA2& S);
 double calcDistance(ind& p_ind_a, ind& p_ind_b);
 void calcDistances(vector<ind>& pop, SPEA2& S);
 void environmentalSelection(vector<ind>& pop, int alpha, SPEA2& S);
-int getNN(int index, int k, int size, SPEA2& S);
-double getNNd(int index, int k, int size, SPEA2& S);
+int getNN(int index, int k, int size, SPEA2& S,vector<ind>& pop);
+double getNNd(int index, int k, int size, SPEA2& S,vector<ind>& pop);
 int irand(int range);
 void truncate_nondominated(vector<int>& marked_inds, vector<ind>& pop, int& alpha, SPEA2& S);
 void truncate_dominated(vector<int>& marked_inds, vector<ind>& pop, int& alpha, SPEA2& S);
@@ -117,7 +117,7 @@ void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
 	}
 	SPEA2 S(pop.size(),pop[0].f.size());
 	calcFitnesses(pop,S);
-	//calcDistances(pop,S);
+	//calcDistances(pop,S); //distances are calculated on a case-by-case basis to keep costs down
 	environmentalSelection(pop,(pop.size()-1)/2,S);
 	
 
@@ -353,7 +353,7 @@ void environmentalSelection(vector<ind>& pop, int alpha, SPEA2& S)
 	
     return;
 }
-int getNN(int index, int k, int size, SPEA2& S)
+int getNN(int index, int k, int size, SPEA2& S,vector<ind>& pop)
 /* lazy evaluation of the k-th nearest neighbor
    pre-condition: (k-1)-th nearest neigbor is known already */
 {
@@ -363,46 +363,60 @@ int getNN(int index, int k, int size, SPEA2& S)
     
     if (S.NN[index][k] < 0)
     {
-	int i;
-	double min_dist = MAX_DOUBLE;
-	int min_index = -1;
-	int prev_min_index = S.NN[index][k-1];
-	double prev_min_dist = S.dist[index][prev_min_index];
-	assert(prev_min_dist >= 0);
-	
-	for (i = 0; i < size; i++)
-	{
-	    double my_dist = S.dist[index][i];
-	    
-	    if (my_dist < min_dist && index != i)
-	    {
-		if (my_dist > prev_min_dist ||
-		    (my_dist == prev_min_dist && i > prev_min_index))
-		{
-		    min_dist = my_dist;
-		    min_index = i;
+		int i;
+		double min_dist = MAX_DOUBLE;
+		int min_index = -1;
+		int prev_min_index = S.NN[index][k-1];
+		//double prev_min_dist = S.dist[index][prev_min_index];
+		double prev_min_dist;
+		if (S.dist[index][prev_min_index]!=-1) 
+			prev_min_dist = S.dist[index][prev_min_index];
+		else{
+			prev_min_dist = calcDistance(pop[index],pop[prev_min_index]);
+			S.dist[index][prev_min_index] = prev_min_dist;
 		}
-	    }
-	}
-	if (min_index==-1)
-		cout << "\n";
+		assert(prev_min_dist >= 0);
+		double my_dist;
 
-	S.NN[index][k] = min_index;
+		for (i = 0; i < size; i++)
+		{
+			//double my_dist = S.dist[index][i];
+			//my_dist = calcDistance(pop[index],pop[i]);
+			if (S.dist[index][i]!=-1) 
+				my_dist = S.dist[index][i];
+			else{
+				my_dist = calcDistance(pop[index],pop[i]);
+				S.dist[index][i] = my_dist;
+			}
+			if (my_dist < min_dist && index != i)
+			{
+			if (my_dist > prev_min_dist ||
+				(my_dist == prev_min_dist && i > prev_min_index))
+			{
+				min_dist = my_dist;
+				min_index = i;
+			}
+			}
+		}
+		if (min_index==-1)
+			cout << "\n";
+
+		S.NN[index][k] = min_index;
     }
 
     return (S.NN[index][k]);
 }
-double getNNd(int index, int k, int dim, SPEA2& S)
+double getNNd(int index, int k, int dim, SPEA2& S, vector<ind>& pop)
 /* Returns the distance to the k-th nearest neigbor
    if this individual is still in the population.
    For for already deleted individuals, returns -1 */
 {
-    int neighbor_index = getNN(index, k, dim, S);
+    int neighbor_index = getNN(index, k, dim, S,pop);
     
     if (S.copies[neighbor_index] == 0)
-	return (-1);
+		return (-1);
     else
-	return (S.dist[index][neighbor_index]);
+		return (S.dist[index][neighbor_index]);
 }
 int irand(int range)
 /* Generate a random integer. */
@@ -458,7 +472,7 @@ void truncate_nondominated(vector<int>& marked_inds, vector<ind>& pop, int& alph
 		if (count > max_copies)
 		{    
 			if (!dist_calc){
-				calcDistances(pop,S);
+				//calcDistances(pop,S);
 				dist_calc=true;
 			}
 			//int *neighbor;
@@ -479,7 +493,7 @@ void truncate_nondominated(vector<int>& marked_inds, vector<ind>& pop, int& alph
 					double my_dist = -1;
 					while (my_dist == -1 && neighbor[i] < pop.size())
 					{
-						my_dist = getNNd(marked[i],neighbor[i],pop.size(),S);
+						my_dist = getNNd(marked[i],neighbor[i],pop.size(),S,pop);
 						neighbor[i]++;
 					}
 		    
@@ -516,6 +530,12 @@ void truncate_nondominated(vector<int>& marked_inds, vector<ind>& pop, int& alph
 			{
 				S.copies[marked[i]]--;
 			}
+			else if (S.dist[delete_index][marked[i]] == -1 && calcDistance(pop[delete_index],pop[marked[i]])==0)
+			{
+				S.dist[delete_index][marked[i]] =0;
+				S.copies[marked[i]]--;
+			}
+
 		}
 		S.copies[delete_index] = 0; /* Indicates that this index is empty */
 		S.fitness_bucket[0]--;
@@ -558,7 +578,7 @@ void truncate_dominated(vector<int>& marked_inds, vector<ind>& pop, int& alpha, 
     }
     else /* if not all fit into the next generation */
     {
-		calcDistances(pop,S);
+		//calcDistances(pop,S);
 		int k;
 		int free_spaces;
 		int fill_level = 0;
@@ -586,7 +606,7 @@ void truncate_dominated(vector<int>& marked_inds, vector<ind>& pop, int& alpha, 
 					for (k = fill_level - 1; k > 0; k--)
 					{
 					int temp;
-					if (getNNd(best[k], 1,pop.size(),S) <= getNNd(best[k - 1], 1,pop.size(),S))
+					if (getNNd(best[k], 1,pop.size(),S,pop) <= getNNd(best[k - 1], 1,pop.size(),S,pop))
 					{
 						break;
 					}
@@ -597,7 +617,7 @@ void truncate_dominated(vector<int>& marked_inds, vector<ind>& pop, int& alpha, 
 			}
 				else
 				{
-					if (getNNd(i, 1,pop.size(),S) <= getNNd(best[free_spaces - 1], 1,pop.size(),S))
+					if (getNNd(i, 1,pop.size(),S,pop) <= getNNd(best[free_spaces - 1], 1,pop.size(),S,pop))
 					{
 						marked_inds.push_back(i);
 						//pop[i].spea_fit=-1;
@@ -614,7 +634,7 @@ void truncate_dominated(vector<int>& marked_inds, vector<ind>& pop, int& alpha, 
 						for (k = fill_level - 1; k > 0; k--)
 						{
 							int temp;
-							if (getNNd(best[k], 1,pop.size(),S) <= getNNd(best[k - 1], 1,pop.size(),S))
+							if (getNNd(best[k], 1,pop.size(),S,pop) <= getNNd(best[k - 1], 1,pop.size(),S,pop))
 							{
 							break;
 							}

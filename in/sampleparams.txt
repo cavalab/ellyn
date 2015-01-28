@@ -1,5 +1,5 @@
 g					100000	// number of generations
-popsize				100	//population size
+popsize				1000	//population size
 numits				1	// number of trials
 printeverypop		0  // save printout of population at every generation
 limit_evals			1 // limit evals instead of number of generations
