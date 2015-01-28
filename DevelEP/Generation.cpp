@@ -121,11 +121,11 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 			Fitness(tmppop,p,d,s,FE);
 			pop.push_back(tmppop[0]);
 			// select new population with tournament size 2, based on pareto age-fitness
-			if (p.PS_sel==1)
+			/*if (p.PS_sel==1)
 				AgeFitSurvival(pop,p,r);
 			else if (p.PS_sel==2)
-				AgeFitGenSurvival(pop,p,r);
-			//ParetoSurvival(pop,p,r,s);
+				AgeFitGenSurvival(pop,p,r);*/
+			ParetoSurvival(pop,p,r,s);
 		break;
 
 		}

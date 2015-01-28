@@ -21,12 +21,15 @@ struct ind {
 	*/
 	//unsigned int id;
 	/*vector <std::shared_ptr<node> > line;*/
-	std::vector<float> outstack; // linearized outstack
+	
 	vector <node> line;
 	std::vector<float> output;
 	std::vector<float> output_v;
 	vector<float> fitlex; // fitnesses for lexicase selection
+	vector<float> f; // vector of objectives for multi-objective implementations (PS_sel)
 	std::vector<unsigned int> outstacklen;
+	std::vector<float> outstack; // linearized outstack
+	std::vector<int> dominated; //for spea2 strength
 	//std::vector<vector<float>> outstack; //optional node-by-node stack tracing
 	//std::vector <std::string> args;
 	std::string eqn;
@@ -47,6 +50,7 @@ struct ind {
 	float GEvar; //variance in generality estimates (for sorting purposes)
 
 	float genty; //generality
+	float spea_fit;
 
 	float parentfitness;
 	int eff_size;

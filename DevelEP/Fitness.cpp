@@ -510,7 +510,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 				else if (p.fit_type==3)
 					me.fitness = me.abserror/me.corr;
 				else if (p.fit_type==4)
-					me.fitness = 1-me.VAF;
+					me.fitness = 1-me.VAF/100;
 				if (p.norm_error)
 					me.fitness = me.fitness/target_std;
 			}
@@ -545,7 +545,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 					else if (p.fit_type==3)
 						me.fitness_v = me.abserror_v/me.corr_v;
 					else if (p.fit_type==4)
-						me.fitness = 1-me.VAF;
+						me.fitness_v = 1-me.VAF_v/100;
 					if (p.norm_error)
 						me.fitness_v = me.fitness_v/target_std_v;
 
@@ -560,6 +560,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 			else{ // if not training, assign copy of regular fitness to the validation fitness variables
 				me.corr_v=me.corr;
 				me.abserror_v=me.abserror;
+				me.VAF_v = me.VAF;
 				me.fitness_v=me.fitness;
 			}
 			if (p.estimate_generality || p.PS_sel==2){

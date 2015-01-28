@@ -1,5 +1,5 @@
 g					100000	// number of generations
-popsize				100	//population size
+popsize				1000	//population size
 numits				1	// number of trials
 printeverypop		0  // save printout of population at every generation
 limit_evals			1 // limit evals instead of number of generations
@@ -17,35 +17,35 @@ mut_ar				.025 //mutation alternation rate
 stoperror			0.0001	// stop condition / convergence condition
 
 init_validate_on	1	// initial fitness validation of starting population
-train				1  // split data into training and validation sets
+train				0  // split data into training and validation sets
 shuffle_data		0  // shuffle the data 
 
 // Results
-resultspath			D:\Develep\Results\Sample
+resultspath			/home/wl90a/results/tower/efg20_vaf
 loud				1
-num_log_pts			250
+num_log_pts			100
 
 // Problem information
-intvars				x	y
+intvars				X1	X2	X3	X4	X5	X6	X7	X8	X9	X10	X11	X12	X13	X14	X15	X16	X17	X18	X19	X20	X21	X22	X23	X24	X25
 extvars					
-cons     			k					
-cvals				1.0						
+cons     								
+cvals										
 seeds				
 
-ERC					0 // ephemeral random constants
+ERC					1 // ephemeral random constants
 ERCints				0	
 maxERC				10
 minERC				-10
 numERC				2
 
 //fitness settings
-fit_type			3	// 1: error, 2: corr, 3: combo, 4: VAF
+fit_type			4	// 1: error, 2: corr, 3: combo, 4: VAF
 norm_error			1  // // normalize error by the standard deviation of the target data being u
 max_fit				100000000000000000000
 min_fit				0.00000000000000000001
-estimate_fitness 	0	// coevolve fitness estimators
+estimate_fitness      1	// coevolve fitness estimators
 FE_pop_size			10	// fitness estimator population size
-FE_ind_size			10	// number of fitness cases for FE to use
+FE_ind_size			20	// number of fitness cases for FE to use
 FE_train_size		10	// trainer population size
 FE_train_gens		1000 // number of generations between trainer selections
 FE_rank				1	// use rank for FE fitness rather than error  
@@ -54,8 +54,8 @@ estimate_generality 	1	// coevolve generality estimators
 //available operators: n	v	+	-	*	/
 //index                0	1	2	3	4	5	6	7	8	9
 
-op_list				n	v	+	-	*	/
-op_weight			4	4	1	1	1	1				
+op_list				n	v	+	-	*	/	sin	cos	exp	log
+op_weight			4	4	1	1	1	1	1	1	1	1		
 weight_ops_on		1
 min_len				3
 max_len				50
@@ -91,16 +91,14 @@ eHC_init			.50 // percent of expressed genes in initial genotypes
 eHC_prob_scale		1
 eHC_max_prob		.75
 eHC_min_prob		0.25
-eHC_slim			0  // minimize point evaluations as much as possible
+eHC_slim			0
 
 // Pareto settings
 
-prto_arch_on		0
+prto_arch_on		1
 prto_arch_size		100
 prto_sel_on			1
 
 // island model
-islands				1
-island_gens			1000
-
-PS_sel 				2
+islands				0
+island_gens			10
