@@ -47,7 +47,8 @@ struct params {
 	bool FE_rank;
 
 	bool estimate_generality;
-
+	int G_sel; 
+	bool G_shuffle;
 	// Computer Settings
 	//bool parallel;
 	//int numcores;
@@ -160,6 +161,8 @@ struct params {
 		FE_rank=0;
 
 		estimate_generality=0;
+		G_sel=1;
+		G_shuffle=0;
 	}
 	~params(){}
 

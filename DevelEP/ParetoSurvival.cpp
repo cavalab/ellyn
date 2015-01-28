@@ -325,6 +325,16 @@ void calcDistances(vector<ind>& pop, SPEA2& S)
 		S.dist[i][i] = 0;
     }
 }
+//int calcNN(SPEA2& S, int i, int j)
+//{
+//	//return S.NN[i][j] given S.dist[i][j]
+//	if (j==0)
+//		return i;
+//	else if (S.dist[i][j] ==0){
+//		S.NN[i][S.copies[i]] = j;
+//		S.NN[j][S.copies[j]] = i;
+//
+//}
 void environmentalSelection(vector<ind>& pop, int alpha, SPEA2& S)
 {
     int i;
@@ -360,34 +370,37 @@ int getNN(int index, int k, int size, SPEA2& S,vector<ind>& pop)
     assert(index >= 0);
     assert(k >= 0);
     assert(S.copies[index] > 0);
-    
+    /*if (S.dist[index][k]==-1){
+		S.dist[index][k] = calcDistance(pop[index],pop[k]);
+		S.NN[index][k] = calcNN(S,index,k);
+	}*/
     if (S.NN[index][k] < 0)
     {
 		int i;
 		double min_dist = MAX_DOUBLE;
 		int min_index = -1;
 		int prev_min_index = S.NN[index][k-1];
-		//double prev_min_dist = S.dist[index][prev_min_index];
-		double prev_min_dist;
+		double prev_min_dist = S.dist[index][prev_min_index];
+		/*double prev_min_dist;
 		if (S.dist[index][prev_min_index]!=-1) 
 			prev_min_dist = S.dist[index][prev_min_index];
 		else{
 			prev_min_dist = calcDistance(pop[index],pop[prev_min_index]);
 			S.dist[index][prev_min_index] = prev_min_dist;
-		}
+		}*/
 		assert(prev_min_dist >= 0);
 		double my_dist;
 
 		for (i = 0; i < size; i++)
 		{
-			//double my_dist = S.dist[index][i];
-			//my_dist = calcDistance(pop[index],pop[i]);
-			if (S.dist[index][i]!=-1) 
+			double my_dist = S.dist[index][i];
+			my_dist = calcDistance(pop[index],pop[i]);
+			/*if (S.dist[index][i]!=-1) 
 				my_dist = S.dist[index][i];
 			else{
 				my_dist = calcDistance(pop[index],pop[i]);
 				S.dist[index][i] = my_dist;
-			}
+			}*/
 			if (my_dist < min_dist && index != i)
 			{
 			if (my_dist > prev_min_dist ||
@@ -398,8 +411,8 @@ int getNN(int index, int k, int size, SPEA2& S,vector<ind>& pop)
 			}
 			}
 		}
-		if (min_index==-1)
-			cout << "\n";
+		/*if (min_index==-1)
+			cout << "\n";*/
 
 		S.NN[index][k] = min_index;
     }
@@ -472,7 +485,7 @@ void truncate_nondominated(vector<int>& marked_inds, vector<ind>& pop, int& alph
 		if (count > max_copies)
 		{    
 			if (!dist_calc){
-				//calcDistances(pop,S);
+				calcDistances(pop,S);
 				dist_calc=true;
 			}
 			//int *neighbor;
@@ -578,7 +591,7 @@ void truncate_dominated(vector<int>& marked_inds, vector<ind>& pop, int& alpha, 
     }
     else /* if not all fit into the next generation */
     {
-		//calcDistances(pop,S);
+		calcDistances(pop,S);
 		int k;
 		int free_spaces;
 		int fill_level = 0;

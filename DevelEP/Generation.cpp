@@ -104,13 +104,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		{   //scheme:
 			// produce a new population equal in size to the old
 			// pool all individuals from both populations
-			for(int count = 0; count<pop.size(); ++count)
-			{
-				float tmp = abs(pop[count].fitness-pop[count].fitness_v)/pop[count].fitness;
-				if (p.estimate_generality && pop.at(count).genty != tmp && pop.at(count).genty != p.max_fit) 
-					std::cerr << "genty error, line 111 Generation.cpp\n";
-			}
-
+			
 			AgeBreed(pop,p,r,d,s,FE);
 			
 			// add one new individual

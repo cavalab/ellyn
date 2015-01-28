@@ -507,6 +507,10 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.FE_rank;
 		else if(varname.compare("estimate_generality") == 0)
 			ss>>p.estimate_generality;
+		else if(varname.compare("G_sel") == 0)
+			ss>>p.G_sel;
+		else if(varname.compare("G_shuffle") == 0)
+			ss>>p.G_shuffle;
 		else if(varname.compare("norm_error") == 0)
 			ss>>p.norm_error;
 		else if(varname.compare("shuffle_data") == 0)
@@ -1433,7 +1437,8 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					if (p.limit_evals) termits = s.totalptevals();
 					else ++termits;
 					
-					
+					if (!p.EstimateFitness && p.estimate_generality && p.G_shuffle)
+						shuffle_data(d,p,r,s);	
 									
 				}
 				#pragma omp single  nowait //coevolve fitness estimators
@@ -1526,8 +1531,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			// s.out << "Gen 2 Phen..." << "\n";
 			// s.out << "Fitness..." << "\n";
 			Fitness(T.pop,p,d,s,FE[0]);
-			if (p.estimate_generality && !check_genty(T.pop,p))
-						std::cerr << "genty error, line 1529 runEllenGP.cpp\n";
+			
 			worstfit = T.worstFit();
 			while(worstfit == p.max_fit && cnt<100)
 			{
@@ -1541,13 +1545,11 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					else
 						++j;
 				}
-				if (p.estimate_generality && !check_genty(T.pop,p))
-						std::cerr << "genty error, line 1544 runEllenGP.cpp\n";
+				
 				s.out << "\ntmppop size: " << tmppop.size();
 				InitPop(tmppop,p,r);
 				Fitness(tmppop,p,d,s,FE[0]);
-				if (p.estimate_generality && !check_genty(T.pop,p))
-						std::cerr << "genty error, line 1549 runEllenGP.cpp\n";
+				
 				T.pop.insert(T.pop.end(),tmppop.begin(),tmppop.end());
 				tmppop.clear();
 				worstfit = T.worstFit();
@@ -1605,11 +1607,13 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		{
 			
 			 etmp = s.numevals[omp_get_thread_num()];
-			 
+
+			 if (!p.EstimateFitness && p.estimate_generality && p.G_shuffle)
+				shuffle_data(d,p,r,s);
+
 			 Generation(T.pop,p,r,d,s,FE[0]);
 			 //s.out << "Generation evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
-			 if (p.estimate_generality && !check_genty(T.pop,p))
-					std::cerr << "genty error, line 1617 runEllenGP.cpp\n";
+			 
 
 			 if (its>trigger)
 			 {
@@ -1620,8 +1624,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		 			for(int k=0; k<T.pop.size(); ++k)
 		 				HillClimb(T.pop.at(k),p,r,d,s,FE[0]);
 		 			 //s.out << "Hill climb evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";	
-					if (p.estimate_generality && !check_genty(T.pop,p))
-						std::cerr << "genty error, line 1629 runEllenGP.cpp\n";
+					
 
 		 		 }
 				

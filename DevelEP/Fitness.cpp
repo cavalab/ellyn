@@ -7,6 +7,8 @@
 #include "Line2Eqn.h"
 #include "EvalEqnStr.h"
 #include <unordered_map>
+//#include "runEllenGP.h"
+
 #if defined(_WIN32)
 	#include <regex>
 #else
@@ -273,6 +275,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE);
 
 void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 {
+	
 	//set up data table for conversion of symbolic variables
 	unordered_map <string,float*> datatable;
 	vector<float> dattovar(d.label.size());
@@ -296,8 +299,8 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 			LexicaseFitness(pop.at(count),p,d,s,FE);
 		}//LEXICASE FITNESS
 
-		if (p.estimate_generality && pop.at(count).genty != abs(pop[count].fitness-pop[count].fitness_v)/pop[count].fitness && pop.at(count).genty != p.max_fit) 
-			std::cerr << "genty error, line 300 Fitness.cpp\n";
+		/*if (p.estimate_generality && pop.at(count).genty != abs(pop[count].fitness-pop[count].fitness_v)/pop[count].fitness && pop.at(count).genty != p.max_fit) 
+			std::cerr << "genty error, line 300 Fitness.cpp\n";*/
 	}//for(int count = 0; count<pop.size(); ++count)
 	s.numevals[omp_get_thread_num()]=s.numevals[omp_get_thread_num()]+pop.size();
 	//cout << "\nFitness Time: ";
@@ -339,6 +342,20 @@ void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,uno
 			setFEvals(FEvals,FEtarget,FE,d);
 			CalcOutput(me,p,FEvals,dattovar,FEtarget,s);
 		} // if estimate fitness
+		if (p.estimate_generality || p.PS_sel==2){
+				if (me.fitness == p.max_fit || me.fitness_v== p.max_fit)
+					me.genty = p.max_fit;
+				else{
+					if (p.G_sel==1) // MAE
+						me.genty = abs(me.abserror-me.abserror_v)/me.abserror;
+					else if (p.G_sel==2) // R2
+						me.genty = abs(me.corr-me.corr_v)/me.corr;
+					else if (p.G_sel==3) // MAE R2 combo
+						me.genty = abs(me.abserror/me.corr-me.abserror_v/me.corr_v)/(me.abserror/me.corr);
+					else if (p.G_sel==3) // VAF
+						me.genty = abs(me.VAF-me.VAF_v)/me.VAF;
+				}
+		}
 	} // if not unwriteable equation
 	else{ // bad equation, assign maximum fitness
 		me.abserror=p.max_fit;
@@ -563,12 +580,20 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 				me.VAF_v = me.VAF;
 				me.fitness_v=me.fitness;
 			}
-			if (p.estimate_generality || p.PS_sel==2){
-				if (me.fitness == p.max_fit || me.fitness_v== p.max_fit)
-					me.genty = p.max_fit;
-				else
-					me.genty = abs(me.fitness-me.fitness_v)/me.fitness;
-			}
+			//if (p.estimate_generality || p.PS_sel==2){
+			//	if (me.fitness == p.max_fit || me.fitness_v== p.max_fit)
+			//		me.genty = p.max_fit;
+			//	else{
+			//		if (p.G_sel==1) // MAE
+			//			me.genty = abs(me.abserror-me.abserror_v)/me.abserror;
+			//		else if (p.G_sel==2) // R2
+			//			me.genty = abs(me.corr-me.corr_v)/me.corr;
+			//		else if (p.G_sel==3) // MAE R2 combo
+			//			me.genty = abs(me.abserror/me.corr-me.abserror_v/me.corr_v)/(me.abserror/me.corr);
+			//		else if (p.G_sel==3) // VAF
+			//			me.genty = abs(me.VAF-me.VAF_v)/me.VAF;
+			//	}
+			//}
 
 		s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
 }
@@ -792,12 +817,12 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 				me.abserror_v=me.abserror;
 				me.fitness_v=me.fitness;
 			}
-			if (p.estimate_generality || p.PS_sel==2){
+			/*if (p.estimate_generality || p.PS_sel==2){
 				if (me.fitness == p.max_fit || me.fitness_v== p.max_fit)
 					me.genty = p.max_fit;
 				else
 					me.genty = abs(me.fitness-me.fitness_v)/me.fitness;
-			}
+			}*/
 		s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
 		return true;
 }
