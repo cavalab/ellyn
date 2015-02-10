@@ -235,7 +235,7 @@ void eval(node& n,vector<float>& outstack)
 				float n1 = outstack.back(); outstack.pop_back();
 				float n2 = outstack.back(); outstack.pop_back();
 				if(abs(n1)<0.000001)
-					outstack.push_back(0);
+					outstack.push_back(1);
 				else
 					outstack.push_back(n2/n1);
 		}
@@ -263,8 +263,8 @@ void eval(node& n,vector<float>& outstack)
 				float n1 = outstack.back(); outstack.pop_back();
 				if (abs(n1)<0.000001)
 					outstack.push_back(0);
-				else
-					outstack.push_back(log(n1));
+				else // safe log of absolute value of n1
+					outstack.push_back(log(abs(n1)));
 		}
 		break;
 	}
