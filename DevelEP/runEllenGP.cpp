@@ -344,8 +344,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.cross_ar;
 		else if(varname.compare("mut_ar") == 0)
 			ss>>p.mut_ar;
-		else if(varname.compare("stoperror") == 0)
-			ss>>p.stoperror;
+		//~ else if(varname.compare("stoperror") == 0)
+			//~ ss>>p.stoperror;
 		else if(varname.compare("init_validate_on") == 0)
 			ss>>p.init_validate_on;
 		else if(varname.compare(0,11,"resultspath") == 0)
@@ -359,16 +359,16 @@ void load_params(params &p, std::ifstream& fs)
 				++q;
 			}
 		}
-		else if(varname.compare(0,4,"loud") == 0)
-			ss>>p.loud;
+		//~ else if(varname.compare(0,4,"loud") == 0)
+			//~ ss>>p.loud;
 		/*else if(varname.compare(0,8,"parallel") == 0)
 			ss>>p.parallel;
 		else if(varname.compare(0,8,"numcores") == 0)
 			ss>>p.numcores;*/
-		else if(varname.compare(0,11,"sim_nom_mod") == 0)
-			ss>>p.sim_nom_mod;
-		else if(varname.compare(0,7,"nstates") == 0)
-			ss>>p.nstates;
+		//~ else if(varname.compare(0,11,"sim_nom_mod") == 0)
+			//~ ss>>p.sim_nom_mod;
+		//~ else if(varname.compare(0,7,"nstates") == 0)
+			//~ ss>>p.nstates;
 		else if(varname.compare(0,7,"intvars") == 0)
 		{
 			while (ss>>tmps)
@@ -429,12 +429,12 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.min_len;
 		else if(varname.compare("max_len") == 0)
 			ss>>p.max_len;
-		else if(varname.compare("max_dev_len") == 0)
-			ss>>p.max_dev_len;
+		//~ else if(varname.compare("max_dev_len") == 0)
+			//~ ss>>p.max_dev_len;
 		else if(varname.compare("complex_measure") == 0)
 			ss>>p.complex_measure;
-		else if(varname.compare("precision") == 0)
-			ss>>p.precision;
+		//~ else if(varname.compare("precision") == 0)
+			//~ ss>>p.precision;
 		else if(varname.compare("lineHC_on") == 0)
 			ss>>p.lineHC_on;
 		else if(varname.compare("lineHC_its") == 0)
@@ -455,22 +455,22 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.eHC_its;
 		else if(varname.compare("eHC_prob") == 0)
 			ss>>p.eHC_prob;
-		else if(varname.compare("eHC_size") == 0)
-			ss>>p.eHC_size;
-		else if(varname.compare("eHC_cluster") == 0)
-			ss>>p.eHC_cluster;
-		else if(varname.compare("eHC_dev") == 0)
-			ss>>p.eHC_dev;
-		else if(varname.compare("eHC_best") == 0)
-			ss>>p.eHC_best;
+		//~ else if(varname.compare("eHC_size") == 0)
+			//~ ss>>p.eHC_size;
+		//~ else if(varname.compare("eHC_cluster") == 0)
+			//~ ss>>p.eHC_cluster;
+		//~ else if(varname.compare("eHC_dev") == 0)
+			//~ ss>>p.eHC_dev;
+		//~ else if(varname.compare("eHC_best") == 0)
+			//~ ss>>p.eHC_best;
 		else if(varname.compare("eHC_init")==0)
 			ss>>p.eHC_init;
-		else if(varname.compare("eHC_prob_scale") == 0)
-			ss>>p.eHC_prob_scale;
-		else if(varname.compare("eHC_max_prob") == 0)
-			ss>>p.eHC_max_prob;
-		else if(varname.compare("eHC_min_prob") == 0)
-			ss>>p.eHC_min_prob;
+		//~ else if(varname.compare("eHC_prob_scale") == 0)
+			//~ ss>>p.eHC_prob_scale;
+		//~ else if(varname.compare("eHC_max_prob") == 0)
+			//~ ss>>p.eHC_max_prob;
+		//~ else if(varname.compare("eHC_min_prob") == 0)
+			//~ ss>>p.eHC_min_prob;
 		else if(varname.compare("eHC_mut") == 0)
 			ss>>p.eHC_mut;
 		else if(varname.compare("eHC_slim") == 0)
@@ -531,6 +531,10 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.num_log_pts;
 		else if(varname.compare("PS_sel") == 0)
 			ss>>p.PS_sel;
+		else if(varname.compare("pop_restart") == 0)
+			ss>>p.pop_restart;
+		else if(varname.compare("pop_restart_path") == 0)
+			ss>>p.pop_restart_path;
 		else{}
     }
 	p.allvars = p.intvars;
@@ -780,6 +784,64 @@ void load_lexdata(data &d, std::ifstream& fs,params& p)
 	//d.dattovar.resize(p.allvars.size());
 	//d.mapdata();
 }
+int load_pop(vector<ind>& pop,params& p,state& s)
+{
+	// load population from file filename. 
+	ifstream fs(p.pop_restart_path);
+	if(!fs.is_open())
+	{
+		std::cerr << "Error: couldn't open population file " + p.pop_restart_path + ".\n";
+		exit(1);
+	}
+	
+	string s0;
+	string varname;
+	float tmpf;
+	//int tmpi;
+	string tmps;
+	bool tmpb;
+
+	//string trash;
+	//s.erase();
+    //s.reserve(is.rdbuf()->in_avail());
+	int i=0;
+	int j=0;
+	while(!fs.eof() && i<p.popsize)
+    {		
+		getline(fs,s0,'\n');
+		istringstream ss(s0);
+		ss >> varname;
+
+		if(varname.compare(0,6,"gline:") == 0)
+		{
+			//pop.push_back(ind());
+			
+			while (ss>>tmps){
+				if (tmps.compare("+")==0 || tmps.compare("-")==0 || tmps.compare("*")==0 || tmps.compare("/")==0 || tmps.compare("s")==0 || tmps.compare("c")==0 || tmps.compare("e")==0 || tmps.compare("l")==0) // operator node
+					pop[i].line.push_back(node(char(tmps[0])));
+				else if (isdigit(tmps[0])) // constant node
+					pop[i].line.push_back(node(std::stof(tmps)));
+				else //variable node
+					pop[i].line.push_back(node(tmps));
+
+			}
+			++i;
+		}
+		else if(p.eHC_on && varname.compare(0,6,"eline:") == 0)
+		{
+			while (ss>>tmpb){
+				pop[i-1].line[j].on = tmpb;
+				++j;
+			}
+			j=0;
+		}
+		/*else if(varname.compare(0,4,"age:") == 0)
+			ss>>pop[i-1].age;*/
+	}
+	if (!fs.eof()) s.out << "WARNING: truncating population from file to first " + to_string(static_cast<long long>(p.popsize)) + " individuals...\n";
+	return i; // size of loaded population
+}
+
 void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s)
 {
 	vector<int> shuffler;
@@ -792,15 +854,16 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s)
 
 		std::random_shuffle(shuffler.begin(),shuffler.end(),r[omp_get_thread_num()]);
 		
-		s.out << "Shuffling data...\n";
-		bool tmp = s.out.trials;
-		s.out.trials=1; // keep output from going to console
-		s.out << "data shuffle index: ";
-		for (int i=0; i<shuffler.size(); ++i)
-			s.out << shuffler.at(i) << " ";
-		s.out << "\n";
-		s.out.trials=tmp;
-
+		
+		if (p.EstimateFitness){
+			bool tmp = s.out.trials;
+			s.out.trials=1; // keep output from going to console
+			s.out << "data shuffle index: ";
+			for (int i=0; i<shuffler.size(); ++i)
+				s.out << shuffler.at(i) << " ";
+			s.out << "\n";
+			s.out.trials=tmp;
+		}
 		for(int i=0;i<d.vals.size();++i)
 		{
 			newtarget.push_back(d.target.at(shuffler.at(i)));
@@ -1174,6 +1237,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			for(int i=0;i<num_islands;++i)
 			{
 				InitPop(T.at(i).pop,p,r);
+				
 				// s.out << "Gen 2 Phen..." << "\n";
 				// s.out << "Fitness..." << "\n";
 				if(!p.EstimateFitness)
@@ -1437,7 +1501,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					if (p.limit_evals) termits = s.totalptevals();
 					else ++termits;
 					
-					if (!p.EstimateFitness && p.estimate_generality && p.G_shuffle)
+					if (!p.EstimateFitness && p.G_shuffle)
 						shuffle_data(d,p,r,s);	
 									
 				}
@@ -1517,56 +1581,72 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	else //no islands
 	{
 		tribe T(p.popsize,p.max_fit,p.min_fit);
-		if (p.init_validate_on)
+		if (p.pop_restart) // initialize population from file
 		{
-			s.out << "Initial validation..."; 
-			bool tmp = p.EstimateFitness;
-			p.EstimateFitness=0;
-			float worstfit;
-			int cnt=0;
-			//float bestfit;
-			vector<ind> tmppop;
-			// s.out << "Initialize Population..." << "\n";
-			InitPop(T.pop,p,r);
-			// s.out << "Gen 2 Phen..." << "\n";
-			// s.out << "Fitness..." << "\n";
-			Fitness(T.pop,p,d,s,FE[0]);
-			
-			worstfit = T.worstFit();
-			while(worstfit == p.max_fit && cnt<100)
-			{
-				for (vector<ind>::iterator j=T.pop.begin();j!=T.pop.end();)
-				{
-					if ( (*j).fitness == p.max_fit)
-					{
-						j=T.pop.erase(j);
-						tmppop.push_back(ind());
-					}
-					else
-						++j;
-				}
-				
-				s.out << "\ntmppop size: " << tmppop.size();
+			s.out << "loading pop from " + p.pop_restart_path + "...\n";
+			int tmp = load_pop(T.pop,p,s);
+			if (tmp < p.popsize){
+				s.out << "WARNING: population loaded from file is smaller than set pop size. Randomly initiated individuals will be added...\n";
+				vector<ind> tmppop(p.popsize-tmp);
 				InitPop(tmppop,p,r);
-				Fitness(tmppop,p,d,s,FE[0]);
-				
-				T.pop.insert(T.pop.end(),tmppop.begin(),tmppop.end());
-				tmppop.clear();
-				worstfit = T.worstFit();
-				cnt++;
-				if(cnt==100)
-					s.out << "initial population count exceeded. Starting evolution...\n";
+				swap_ranges(T.pop.end()-(p.popsize-tmp),T.pop.end(),tmppop.begin());
 			}
-			p.EstimateFitness=tmp;
-		}
-		else // normal population initialization
-		{
-			InitPop(T.pop,p,r);	
-
-			bool tmp = p.EstimateFitness;
-			p.EstimateFitness=0;
 			Fitness(T.pop,p,d,s,FE[0]);
-			p.EstimateFitness=tmp;
+		}
+		else{
+			if (p.init_validate_on)
+			{
+				s.out << "Initial validation..."; 
+				bool tmp = p.EstimateFitness;
+				p.EstimateFitness=0;
+				float worstfit;
+				int cnt=0;
+				//float bestfit;
+				vector<ind> tmppop;
+				// s.out << "Initialize Population..." << "\n";
+				InitPop(T.pop,p,r);
+				assert (T.pop.size()== p.popsize) ;
+				// s.out << "Gen 2 Phen..." << "\n";
+				// s.out << "Fitness..." << "\n";
+				Fitness(T.pop,p,d,s,FE[0]);
+				assert (T.pop.size()== p.popsize) ;
+			
+				worstfit = T.worstFit();
+				while(worstfit == p.max_fit && cnt<100)
+				{
+					for (vector<ind>::iterator j=T.pop.begin();j!=T.pop.end();)
+					{
+						if ( (*j).fitness == p.max_fit)
+						{
+							j=T.pop.erase(j);
+							tmppop.push_back(ind());
+						}
+						else
+							++j;
+					}
+				
+					s.out << "\ntmppop size: " << tmppop.size();
+					InitPop(tmppop,p,r);
+					Fitness(tmppop,p,d,s,FE[0]);
+				
+					T.pop.insert(T.pop.end(),tmppop.begin(),tmppop.end());
+					tmppop.clear();
+					worstfit = T.worstFit();
+					cnt++;
+					if(cnt==100)
+						s.out << "initial population count exceeded. Starting evolution...\n";
+				}
+				p.EstimateFitness=tmp;
+			}
+			else // normal population initialization
+			{
+				InitPop(T.pop,p,r);	
+
+				bool tmp = p.EstimateFitness;
+				p.EstimateFitness=0;
+				Fitness(T.pop,p,d,s,FE[0]);
+				p.EstimateFitness=tmp;
+			}
 		}
 		s.setgenevals();
 		s.out << " number of evals: " << s.getgenevals() << "\n";
@@ -1608,10 +1688,11 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			
 			 etmp = s.numevals[omp_get_thread_num()];
 
-			 if (!p.EstimateFitness && p.estimate_generality && p.G_shuffle)
+			 if (!p.EstimateFitness && p.G_shuffle)
 				shuffle_data(d,p,r,s);
-
+			 assert (T.pop.size() == p.popsize) ;
 			 Generation(T.pop,p,r,d,s,FE[0]);
+			 assert (T.pop.size()== p.popsize) ;
 			 //s.out << "Generation evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
 			 
 

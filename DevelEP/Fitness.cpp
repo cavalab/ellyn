@@ -234,7 +234,7 @@ void eval(node& n,vector<float>& outstack)
 		if(outstack.size()>=2){
 				float n1 = outstack.back(); outstack.pop_back();
 				float n2 = outstack.back(); outstack.pop_back();
-				if(abs(n1)<0.0001)
+				if(abs(n1)<0.000001)
 					outstack.push_back(0);
 				else
 					outstack.push_back(n2/n1);
@@ -261,7 +261,7 @@ void eval(node& n,vector<float>& outstack)
 	case 'l':
 		if(outstack.size()>=1){
 				float n1 = outstack.back(); outstack.pop_back();
-				if (abs(n1)<0.0001)
+				if (abs(n1)<0.000001)
 					outstack.push_back(0);
 				else
 					outstack.push_back(log(n1));
@@ -343,7 +343,7 @@ void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,uno
 			CalcOutput(me,p,FEvals,dattovar,FEtarget,s);
 		} // if estimate fitness
 		if (p.estimate_generality || p.PS_sel==2){
-				if (me.fitness == p.max_fit || me.fitness_v== p.max_fit)
+				if (me.fitness == p.max_fit || me.fitness_v== p.max_fit || boost::math::isnan(me.fitness_v) || boost::math::isinf(me.fitness_v))
 					me.genty = p.max_fit;
 				else{
 					if (p.G_sel==1) // MAE
@@ -355,6 +355,8 @@ void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,uno
 					else if (p.G_sel==3) // VAF
 						me.genty = abs(me.VAF-me.VAF_v)/me.VAF;
 				}
+				if ( boost::math::isnan(me.genty) || boost::math::isinf(me.genty))
+					me.genty=p.max_fit;
 		}
 	} // if not unwriteable equation
 	else{ // bad equation, assign maximum fitness

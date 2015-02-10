@@ -10,10 +10,12 @@
 using std::swap;
 void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
 {
+	assert (pop.size()== p.popsize) ;
 	//boost::progress_timer timer;
 	float choice;
 	
 	vector <ind> tmppop;
+	tmppop.reserve(pop.size());
 	///if(!p.parallel)
 	//{
 	unsigned int numits=0;
@@ -81,9 +83,10 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 	}
 
 	while(tmppop.size()>pop.size())
-		tmppop.erase(tmppop.end()-1);
-
-	if (p.sel==4 || p.lexage) // insert new pop into old pop
+		tmppop.pop_back();
+    assert (tmppop.size()== p.popsize) ;
+    //EDIT: looks like UMGHPCC build is going into this loop. is lexage initialized?
+	if (p.sel==4 || (p.sel==3 && p.lexage)) // insert new pop into old pop
 	{
 		//get tmppop fitness 
 		Fitness(tmppop,p,d,s,FE);
@@ -93,6 +96,6 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 		pop.insert(pop.end(),tmppop.begin(),tmppop.end());
 	}
 	else //replace pop with tmppop
-		pop.swap(tmppop);
-
+		pop = tmppop;
+	assert (pop.size()== p.popsize) ;
 }

@@ -6,7 +6,7 @@ limit_evals			1 // limit evals instead of number of generations
 max_evals			25000000000 // max point evaluations
 
 // Generation Settings 
-sel					4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
+sel					1	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 tourn_size			2
 rt_rep				0.0
 rt_cross			0.8
@@ -19,10 +19,9 @@ stoperror			0.0001	// stop condition / convergence condition
 init_validate_on	1	// initial fitness validation of starting population
 train				0  // split data into training and validation sets
 shuffle_data		0  // shuffle the data 
-pop_restart			1
-pop_restart_path	D:\Develep\Results\Sample\sample_init_pop.last_pop
+
 // Results
-resultspath			D:\Develep\Results\Sample
+resultspath			/home/wl90a/results/pagie-1/ep_tourn/ep0_i0_p0_e25B
 loud				1
 
 // Problem information
@@ -79,7 +78,7 @@ pHC_its				1
 pHC_gauss			1
 
 // epigenetic Hill Climber
-eHC_on				1
+eHC_on				0
 eHC_its				0
 eHC_prob			0.1
 eHC_size			1

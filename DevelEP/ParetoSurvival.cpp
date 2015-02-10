@@ -88,7 +88,13 @@ void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
 	// calc SPEA2 fitness (calcFitnesses())
 	// calc SPEA2 distance (calcDistances())
 	// truncate pop to original pop size (environmentalSelection())
-
+	//debugging
+	vector<int> ages;
+	vector<float> fitnesses;
+	for (size_t i =0; i<pop.size(); ++i){
+		ages.push_back(pop[i].age);
+		fitnesses.push_back(pop[i].fitness);
+	}
 	//boost::progress_timer timer;
 	float max_fit=0;
 	float max_age=0;
@@ -120,7 +126,12 @@ void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
 	//calcDistances(pop,S); //distances are calculated on a case-by-case basis to keep costs down
 	environmentalSelection(pop,(pop.size()-1)/2,S);
 	
-
+	ages.resize(0);
+	fitnesses.resize(0);
+	for (size_t i =0; i<pop.size(); ++i){
+		ages.push_back(pop[i].age);
+		fitnesses.push_back(pop[i].fitness);
+	}
 	//data.reserve(6);
 	//
 	//vector<int> fitindex(2);
@@ -394,7 +405,7 @@ int getNN(int index, int k, int size, SPEA2& S,vector<ind>& pop)
 		for (i = 0; i < size; i++)
 		{
 			double my_dist = S.dist[index][i];
-			my_dist = calcDistance(pop[index],pop[i]);
+			//my_dist = calcDistance(pop[index],pop[i]);
 			/*if (S.dist[index][i]!=-1) 
 				my_dist = S.dist[index][i];
 			else{

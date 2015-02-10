@@ -19,7 +19,7 @@ struct params {
 	long long max_evals; // maximum number of evals before termination (only active if limit_evals is true)
 
 	// Generation Settings 
-	int sel; // 1: tournament; 2: deterministic crowding; 3: NSGA
+	int sel; // 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 	int tourn_size;
 	float rt_rep; //probability of reproduction
 	float rt_cross; 
@@ -28,15 +28,17 @@ struct params {
 	float cross_ar; //crossover alternation rate
 	float mut_ar;
 	int cross; // 1: ultra; 2: one point
-	float stoperror; // stop condition / convergence condition
+	//float stoperror; // stop condition / convergence condition
 
 	bool init_validate_on; // initial fitness validation of individuals
 	bool train; // choice to turn on training for splitting up the data set
 	bool shuffle_data; // shuffle the data
 
+	bool pop_restart; // restart from previous population
+	string pop_restart_path; // restart population file path 
 	// Results
 	string resultspath;
-	bool loud;
+	//bool loud;
 
 	// use fitness estimator coevolution
 	bool EstimateFitness; 
@@ -49,14 +51,9 @@ struct params {
 	bool estimate_generality;
 	int G_sel; 
 	bool G_shuffle;
-	// Computer Settings
-	//bool parallel;
-	//int numcores;
+
 
 	bool printeverypop;
-
-	string sim_nom_mod; // embryo equation
-	int nstates;    // state space modeling: number of states
 
 	// Problem information
 	vector <string> intvars; // internal variables
@@ -93,12 +90,9 @@ struct params {
 
 	int min_len;
 	int max_len;
-
-	int max_dev_len;
-
+	
 	int complex_measure; // 1: genotype size; 2: symbolic size; 3: effective genotype size
 
-	float precision;
 
 	// Hill Climbing Settings
 
@@ -118,13 +112,6 @@ struct params {
 	bool eHC_on;
 	int eHC_its;
 	float eHC_prob;
-	bool eHC_size;
-	bool eHC_cluster;
-	bool eHC_dev;
-	bool eHC_best;
-	float eHC_prob_scale;
-	float eHC_max_prob;
-	float eHC_min_prob;
 	float eHC_init;
 	bool eHC_mut; // epigenetic mutation rather than hill climbing
 	bool eHC_slim; // use SlimFitness
@@ -144,28 +131,7 @@ struct params {
 	int numcases;
 	int lexpool;
 	bool lexage;
-	params(){ //default values
-		train=0;
-		eHC_mut=0;
-		eHC_slim=0;
-		print_log=1;
-		print_init_pop=0;
-		print_homology=0;
-		num_log_pts=0;
-		PS_sel=1;
-		EstimateFitness=0; 
-		FE_pop_size=0;
-		FE_ind_size=0;
-		FE_train_size=0;
-		FE_train_gens=0;
-		FE_rank=0;
-
-		estimate_generality=0;
-		G_sel=1;
-		G_shuffle=0;
-	}
-	~params(){}
-
+	
 	//print initial population
 	bool print_init_pop;
 	// print homology 
@@ -176,6 +142,108 @@ struct params {
 	int num_log_pts;
 	//pareto survival setting
 	int PS_sel;
+	
+	params(){ //default values
+		g=100; // number of generations (limited by default)
+		popsize=100; //population size
+		limit_evals=false; // limit evals instead of generations
+		max_evals=0; // maximum number of evals before termination (only active if limit_evals is true)
+
+		// Generation Settings 
+		sel=1; // 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
+		tourn_size=2;
+		rt_rep=0; //probability of reproduction
+		rt_cross=0.8; 
+		rt_mut=0.2;
+		cross_ar=0.025; //crossover alternation rate
+		mut_ar=0.025;
+		cross=2; // 1: ultra; 2: one point
+
+		init_validate_on=0; // initial fitness validation of individuals
+		train=0; // choice to turn on training for splitting up the data set
+		shuffle_data=0; // shuffle the data
+		pop_restart = 0; // restart from previous population
+		pop_restart_path=""; // restart population file path
+	
+		// Results and printing
+		resultspath="";
+		//print initial population
+		print_init_pop = 0;
+		// print homology 
+		print_homology = 0;
+		//print log
+		print_log = 1;
+		// number of log points to print (with eval limitation)
+		num_log_pts = 0;
+		
+		// Fitness estimators
+		EstimateFitness=0; 
+		FE_pop_size=0;
+		FE_ind_size=0;
+		FE_train_size=0;
+		FE_train_gens=0;
+		FE_rank=0;
+
+		estimate_generality=0;
+		G_sel=1; 
+		G_shuffle=0;
+		// Computer Settings
+		//bool parallel;
+		//int numcores;
+
+		printeverypop=0;
+		
+		min_len = 3;
+		max_len = 10;
+		
+		complex_measure=1; // 1: genotype size; 2: symbolic size; 3: effective genotype size
+
+
+		// Hill Climbing Settings
+
+			// generic line hill climber (Bongard)
+		lineHC_on = 0;
+		lineHC_its = 0;
+
+			// parameter Hill Climber
+		pHC_on = 0;
+		//pHC_size;
+		pHC_its = 0;
+		pHC_gauss = 0;
+
+			// epigenetic Hill Climber
+		eHC_on = 0;
+		eHC_its = 0;
+		eHC_prob = 0;
+		eHC_init = 0;
+		eHC_mut = 0; // epigenetic mutation rather than hill climbing
+		eHC_slim = 0; // use SlimFitness
+		
+		// Pareto settings
+
+		prto_arch_on = 0;
+		prto_arch_size = 0;
+		prto_sel_on = 0;
+
+		//island model
+		islands = 0;
+		island_gens = 0;
+
+		seed = 0;
+
+		// lexicase selection
+		numcases = 0;
+		lexpool = 0;
+		lexage = 0;
+		
+		
+		//pareto survival setting
+		PS_sel=1;
+
+	}
+	~params(){}
+
+	
 	void clear()
 	{
 		
