@@ -25,7 +25,7 @@ string Line2Eqn(vector<node>& line,string& eqnForm)
 				if(line.at(i).arity==1 && eqnstack.size()>=1){
 					switch (line.at(i).type){
 					case 'l':
-						sop="log";
+						sop="logp";
 						break;
 					case 's':
 						sop="sin";

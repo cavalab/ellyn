@@ -56,7 +56,7 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,d
 		setFEvals(FEvals,FEtarget,FE[i],d);
 
 		if(p.train || p.estimate_generality)
-			ndata_t = FEvals.size()/2;
+			ndata_t = FEvals.size()*p.train_pct;
 		else
 			ndata_t = FEvals.size();
 

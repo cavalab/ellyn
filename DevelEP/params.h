@@ -29,9 +29,11 @@ struct params {
 	float mut_ar;
 	int cross; // 1: ultra; 2: one point
 	//float stoperror; // stop condition / convergence condition
-
+	
+	// Data settings
 	bool init_validate_on; // initial fitness validation of individuals
 	bool train; // choice to turn on training for splitting up the data set
+	float train_pct; // percent of data to use for training (validation pct = 1-train_pct)
 	bool shuffle_data; // shuffle the data
 
 	bool pop_restart; // restart from previous population
@@ -122,8 +124,9 @@ struct params {
 	bool prto_sel_on;
 
 	//island model
-	int islands;
+	bool islands;
 	int island_gens;
+	int nt; // number of threads
 
 	int seed;
 
@@ -143,6 +146,7 @@ struct params {
 	//pareto survival setting
 	int PS_sel;
 	
+	// number of threads
 	params(){ //default values
 		g=100; // number of generations (limited by default)
 		popsize=100; //population size
@@ -228,6 +232,7 @@ struct params {
 		//island model
 		islands = 0;
 		island_gens = 0;
+		nt = 1;
 
 		seed = 0;
 
@@ -244,27 +249,27 @@ struct params {
 	~params(){}
 
 	
-	void clear()
-	{
-		
-		rep_wheel.clear();
-	
-		// Problem information
-		intvars.clear(); // internal variables
-		extvars.clear(); // external variables (external forces)
-		cons.clear();
-		cvals.clear();
-		seeds.clear();
-	
-		allvars.clear();// = intvars.insert(intvars.end(), extvars.begin(), extvars.end());
-		allblocks.clear();// = allvars.insert(allvars.end(),consvals.begin(),convals.end());
-		//allblocks = allblocks.insert(allblocks.end(),seeds.begin(),seeds.end());
+	//void clear()
+	//{
+	//	
+	//	rep_wheel.clear();
+	//
+	//	// Problem information
+	//	intvars.clear(); // internal variables
+	//	extvars.clear(); // external variables (external forces)
+	//	cons.clear();
+	//	cvals.clear();
+	//	seeds.clear();
+	//
+	//	allvars.clear();// = intvars.insert(intvars.end(), extvars.begin(), extvars.end());
+	//	allblocks.clear();// = allvars.insert(allvars.end(),consvals.begin(),convals.end());
+	//	//allblocks = allblocks.insert(allblocks.end(),seeds.begin(),seeds.end());
 
-		op_list.clear();
-		op_choice.clear(); // map op list to pointer location in makeline() pointer function
-		op_weight.clear();
-	
-	}
+	//	op_list.clear();
+	//	op_choice.clear(); // map op list to pointer location in makeline() pointer function
+	//	op_weight.clear();
+	//
+	//}
 
 };
 #endif

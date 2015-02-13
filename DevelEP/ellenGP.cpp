@@ -52,13 +52,23 @@ int main(int argc, char** argv)
 	}
 	catch(exception& er) 
 	{
-		cout << "Error: " << er.what() << endl;
+		cout << "Error: " << er.what() << "\n Exiting in 5 seconds...\n";
+		#if defined(_WIN32)
+			_sleep(5000);
+		#else
+			sleep(5);
+		#endif
 		exit(1);
 
 	}
 	catch(...)
 	{
-		cout << "Exception Occurred. Ending..."<<endl;
+		cout << "Exception Occurred. Exiting in 5 seconds...\n";
+		#if defined(_WIN32)
+			_sleep(5000);
+		#else
+			sleep(5);
+		#endif
 		exit(1);
 	}
 	

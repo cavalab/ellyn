@@ -17,7 +17,8 @@ mut_ar				.025 //mutation alternation rate
 stoperror			0.0001	// stop condition / convergence condition
 
 init_validate_on	1	// initial fitness validation of starting population
-train				0  // split data into training and validation sets
+train				1  // split data into training and validation sets
+train_pct			0.7 // percent of data to be used in training	
 shuffle_data		0  // shuffle the data 
 pop_restart			1
 pop_restart_path	D:\Develep\Results\Sample\sample_init_pop.last_pop
@@ -99,5 +100,5 @@ prto_arch_size		100
 prto_sel_on			1
 
 // island model
-islands				0
+islands				1
 island_gens			10

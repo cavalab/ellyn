@@ -491,6 +491,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.island_gens;
 		else if(varname.compare("train") ==0)
 			ss>>p.train;
+		else if(varname.compare("train_pct") ==0)
+			ss>>p.train_pct;
 		else if(varname.compare("printeverypop") == 0)
 			ss>>p.printeverypop;
 		else if(varname.compare("estimate_fitness") == 0)
@@ -1078,22 +1080,33 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		s.out << "WARNING: cannot run island populations in trial mode. This trial will run on one core.\n";
 		p.islands = false;
 	 }
+	
+	int nt=0;
+	//int ntt=0;	
+
+	#pragma omp parallel 
+	{
+		nt = omp_get_num_threads();
+	}
+	s.out << "Number of threads: " << nt << "\n";
+	//s.out << "OMP Number of threads: " << omp_get_num_threads() << "\n";
+	p.nt = nt;
 
 	//initialize random number generator
 	unsigned int seed1 = int(time(NULL));
 	s.out << "seeds: \n";
 	r.resize(omp_get_max_threads());
-	#pragma omp parallel for 
-	for(int seeder=0;seeder<omp_get_max_threads();seeder++)
+	#pragma omp parallel 
 	{
 			//cout << "seeder: " << seeder <<endl;
 			//cout << "seed1: " << seed1*seeder <<endl;
 			if(!trials){
-				s.out << to_string(static_cast<long long>(seed1*(seeder+1))) + "\n";
-				r.at(seeder).SetSeed(seed1*(seeder+1));
+				s.out << to_string(static_cast<long long>(seed1*(omp_get_thread_num()+1))) + "\n";
+				//r.at(seeder).SetSeed(seed1*(seeder+1));
+				r.at(omp_get_thread_num()).SetSeed(seed1*(omp_get_thread_num()+1));
 			}
 			else
-				r.at(seeder).SetSeed(seed1*(seeder+1)*trialnum);
+				r.at(omp_get_thread_num()).SetSeed(seed1*(omp_get_thread_num()+1)*trialnum);
 	}
 	if(trials)
 		s.out << (omp_get_thread_num()+1)*seed1*trialnum << "\n";
@@ -1116,12 +1129,15 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	if (p.islands)
 	{
 		//p.parallel=false;
+		// determine number of threads
 		
-		int num_islands=omp_get_max_threads();
+		//int num_islands=omp_get_max_threads(); //
+		int num_islands=nt;
 		int subpops = p.popsize/num_islands;
 		vector<tribe> T;
 		tribe World(subpops*num_islands,p.max_fit,p.min_fit); //total population of tribes
-		 s.out << num_islands << " islands of " << subpops << " individuals, total pop " << subpops*num_islands <<"\n";
+		s.out << num_islands << " islands of " << subpops << " individuals, total pop " << subpops*num_islands <<"\n";
+		 
 
 		for(int i=0;i<num_islands;++i)
 			T.push_back(tribe(subpops,p.max_fit,p.min_fit));
@@ -1284,12 +1300,12 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		// {
 			int q;
 //			int task_num;
-			int index=-1;
+			//int index=-1;
 //			int cntr;
-			
+			/*
 			vector<int> task_status;
 			vector<int> task_assignments(num_islands,0);
-			task_assignments.push_back(1);	
+			task_assignments.push_back(1);	*/
 
 		//#pragma omp parallel private(q, task_num, cntr) shared(pass, index)
 		//{
@@ -1305,30 +1321,30 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		//			switch(task_num){
 		//			case 0: //evolve solution population
 		//				if(pass){			
-		//					Generation(T.at(q).pop,p,r,d,s,FE[0]);	
+		//					Generation(T[q].pop,p,r,d,s,FE[0]);	
 
-		//					if (stopcondition(T.at(q),p,d,s,FE[0]))
+		//					if (stopcondition(T[q],p,d,s,FE[0]))
 		//						pass=0;
 		//				}
 
 		//				if (pass) {
 		//					if (p.pHC_on && p.ERC){
-		//						for(int k=0; k<T.at(q).pop.size(); ++k)
-		//							HillClimb(T.at(q).pop.at(k),p,r,d,s,FE[0]);
+		//						for(int k=0; k<T[q].pop.size(); ++k)
+		//							HillClimb(T[q].pop.at(k),p,r,d,s,FE[0]);
 		//					}
 		//					if (p.eHC_on){
-		//						for(int m=0; m<T.at(q).pop.size(); m++)
-		//							EpiHC(T.at(q).pop.at(m),p,r,d,s,FE[0]);
+		//						for(int m=0; m<T[q].pop.size(); m++)
+		//							EpiHC(T[q].pop.at(m),p,r,d,s,FE[0]);
 		//					}
 		//	
-		//					if (stopcondition(T.at(q),p,d,s,FE[0]))
+		//					if (stopcondition(T[q],p,d,s,FE[0]))
 		//						pass=0;
 		//				}
 
 		//				// construct world population
 		//				cntr=0;
 		//				for(int k=q*subpops;k<(q+1)*subpops;++k){
-		//					World.pop.at(k)=T.at(q).pop.at(cntr);
+		//					World.pop.at(k)=T[q].pop.at(cntr);
 		//					makenew(World.pop.at(k));
 		//					cntr++;
 		//				}
@@ -1402,7 +1418,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		//		}
 
 		//		if (migrate)					
-		//			T.at(q).pop.assign(World.pop.begin()+q*subpops,World.pop.begin()+(q+1)*subpops);
+		//			T[q].pop.assign(World.pop.begin()+q*subpops,World.pop.begin()+(q+1)*subpops);
 				
 
 		//		if (gen>p.g) pass=0;
@@ -1411,7 +1427,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		//print initial population
 		// construct world population
 		int cntr=0;
-		for (int q0 = 0; q0<omp_get_max_threads();++q0){
+		for (int q0 = 0; q0<nt;++q0){ 
 			for(int k=q0*subpops;k<(q0+1)*subpops;++k){
 				World.pop.at(k)=T.at(q0).pop.at(cntr);
 				//makenew(World.pop.at(k));
@@ -1419,150 +1435,151 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			}
 			cntr=0;
 		}
-		printpop(World.pop,p,s,logname,3);
+		if (p.print_init_pop) printpop(World.pop,p,s,logname,3);
 		#pragma omp parallel private(q) shared(pass)
 		{
 		
-		q = omp_get_thread_num();
+			q = omp_get_thread_num();
 
-		while(termits<=term && pass)
-		{
+			while(termits<=term && pass)
+			{
 			
 
-			if(pass){			
-				Generation(T.at(q).pop,p,r,d,s,FE[0]);	
+				if(pass){			
+					Generation(T[q].pop,p,r,d,s,FE[0]);	
 
-				if (stopcondition(T.at(q),p,d,s,FE[0]))
-					pass=0;
-			}
-
-			if (pass) {
-				if (p.pHC_on && p.ERC)
-				{
-						for(int k=0; k<T.at(q).pop.size(); ++k)
-							HillClimb(T.at(q).pop.at(k),p,r,d,s,FE[0]);
+					if (stopcondition(T[q],p,d,s,FE[0]))
+						pass=0;
 				}
-				if (p.eHC_on && !p.eHC_mut) 
-				{
-						for(int m=0; m<T.at(q).pop.size(); m++)
-							EpiHC(T.at(q).pop.at(m),p,r,d,s,FE[0]);
-				}
-			
-				if (stopcondition(T.at(q),p,d,s,FE[0]))
-					pass=0;
-			}
 
-			
-				// construct world population
-				int cntr=0;
-				for(int k=q*subpops;k<(q+1)*subpops;++k){
-					World.pop.at(k)=T.at(q).pop.at(cntr);
-					//makenew(World.pop.at(k));
-					cntr++;
-				}
-			
-				#pragma omp barrier
-				
-				#pragma omp single 
-				{
-					s.setgenevals();
-					if(s.totalevals()>mixtrigger) 
+				if (pass) {
+					if (p.pHC_on && p.ERC)
 					{
-						//shuffle population	
-						std::random_shuffle(World.pop.begin(),World.pop.end(),r[q]);
-						//redistribute populations to islands
-						s.out << "Shuffling island populations...\n";
-						migrate = true;
-						mixtrigger+=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
+							for(int k=0; k<T[q].pop.size(); ++k)
+								HillClimb(T[q].pop.at(k),p,r,d,s,FE[0]);
 					}
-					else
-						migrate=false;
+					if (p.eHC_on && !p.eHC_mut) 
+					{
+							for(int m=0; m<T[q].pop.size(); m++)
+								EpiHC(T[q].pop.at(m),p,r,d,s,FE[0]);
+					}
+			
+					if (stopcondition(T[q],p,d,s,FE[0]))
+						pass=0;
 				}
-				#pragma omp single 
-				{
-					if(p.prto_arch_on){
-						A.update(World.pop);
-						printpop(A.pop,p,s,logname,1);
+
+			
+					// construct world population
+					int cntr=0;
+					//std::vector<ind>::iterator it = T[q].begin();
+					//World.pop.assign(
+					for(int k=q*subpops;k<(q+1)*subpops;++k){
+						World.pop.at(k)=T[q].pop.at(cntr);
+						//makenew(World.pop.at(k));
+						cntr++;
 					}
-					if (!p.limit_evals || s.totalptevals() >= print_trigger){
-						printdatafile(World,s,p,r,dfout);
-						if (p.printeverypop) printpop(World.pop,p,s,logname,2);
-						if (p.print_log) {
-							printstats(World,gen,s,p,A);
-							s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
-							s.out << "Total Evals: " << s.totalevals() << "\n";
-							s.out << "Point Evals: " << s.totalptevals() << "\n";
-							s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
-							s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
-						}
-						if (print_trigger!=0) print_trigger += p.max_evals/p.num_log_pts;
-					}
-					++gen;
-					if (p.limit_evals) termits = s.totalptevals();
-					else ++termits;
 					
-					if (!p.EstimateFitness && p.G_shuffle)
-						shuffle_data(d,p,r,s);	
-									
-				}
-				#pragma omp single  nowait //coevolve fitness estimators
-				{
+					#pragma omp barrier
 					
-					if (p.EstimateFitness){
+					#pragma omp single  nowait //coevolve fitness estimators
+					{
+					
+						if (p.EstimateFitness){
 
 						
+							float aveFEfit=0;
+							for (int u=0;u<FE.size();u++)
+								aveFEfit+=FE[u].fitness;
+							aveFEfit /= FE.size();
+							if (aveFEfit==0)
+								std::random_shuffle(tmpFE.begin(),tmpFE.end(),r[omp_get_thread_num()]);
+							else
+								EvolveFE(World.pop,tmpFE,trainers,p,d,s,r);
+							if (!p.limit_evals || s.totalptevals() >= print_trigger){
+								s.out << "Evolving fitness estimators...\n";
+								s.out << "Best FE fit: " << FE[0].fitness <<"\n";
+								if (p.estimate_generality) s.out << "Best FE genty: " << FE[0].genty <<"\n";
+								s.out << "Ave FE fit: " << aveFEfit << "\n";
+								s.out << "Current Fitness Estimator:\n";
 						
+								for (int b=0;b<FE[0].FEpts.size();b++)
+									s.out << FE[0].FEpts[b] << " ";
+								s.out << "\n";
+							}
 						
-						float aveFEfit=0;
-						for (int u=0;u<FE.size();u++)
-							aveFEfit+=FE[u].fitness;
-						aveFEfit /= FE.size();
-						if (aveFEfit==0)
-							std::random_shuffle(tmpFE.begin(),tmpFE.end(),r[omp_get_thread_num()]);
+						}
+					}
+					#pragma omp single 
+					{
+						s.setgenevals();
+						if(s.totalevals()>mixtrigger) 
+						{
+							//shuffle population	
+							std::random_shuffle(World.pop.begin(),World.pop.end(),r[q]);
+							//redistribute populations to islands
+							s.out << "Shuffling island populations...\n";
+							migrate = true;
+							mixtrigger+=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
+						}
 						else
-							EvolveFE(World.pop,tmpFE,trainers,p,d,s,r);
+							migrate=false;
+					}
+					#pragma omp single 
+					{
+						if(p.prto_arch_on){
+							A.update(World.pop);
+							printpop(A.pop,p,s,logname,1);
+						}
 						if (!p.limit_evals || s.totalptevals() >= print_trigger){
-							s.out << "Evolving fitness estimators...\n";
-							s.out << "Best FE fit: " << FE[0].fitness <<"\n";
-							if (p.estimate_generality) s.out << "Best FE genty: " << FE[0].genty <<"\n";
-							s.out << "Ave FE fit: " << aveFEfit << "\n";
-							s.out << "Current Fitness Estimator:\n";
-						
-							for (int b=0;b<FE[0].FEpts.size();b++)
-								s.out << FE[0].FEpts[b] << " ";
-							s.out << "\n";
+							printdatafile(World,s,p,r,dfout);
+							if (p.printeverypop) printpop(World.pop,p,s,logname,2);
+							if (p.print_log) {
+								printstats(World,gen,s,p,A);
+								s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
+								s.out << "Total Evals: " << s.totalevals() << "\n";
+								s.out << "Point Evals: " << s.totalptevals() << "\n";
+								s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
+								s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
+							}
+							if (print_trigger!=0) print_trigger += p.max_evals/p.num_log_pts;
 						}
-						
+						++gen;
+						if (p.limit_evals) termits = s.totalptevals();
+						else ++termits;
+					
+						if (!p.EstimateFitness && p.G_shuffle)
+							shuffle_data(d,p,r,s);	
+									
 					}
-				}
-				#pragma omp single
-				{
-					if (p.EstimateFitness){
-						// assign tmpFE to FE
-						FE.assign(tmpFE.begin(),tmpFE.end());
-						/*float avefit=0;
-						for (int u=0;u<FE.size();u++)
-							avefit+=FE[u].fitness;
-						avefit /= FE.size();
-						if (avefit>1)
-							cout <<"avefit error\n";*/
-						if(gen>trainer_trigger) { //pick new trainers when FE pop has converged or when it has been enough generations
-						//if(gen>trainer_trigger) {
-							s.out << "Picking trainers...\n";
-							PickTrainers(World.pop,FE,trainers,p,d,s);
-							trainer_trigger = gen + p.FE_train_gens; //p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
-							//trainer_trigger=0;
+					
+					#pragma omp single
+					{
+						if (p.EstimateFitness){
+							// assign tmpFE to FE
+							FE.assign(tmpFE.begin(),tmpFE.end());
+							/*float avefit=0;
+							for (int u=0;u<FE.size();u++)
+								avefit+=FE[u].fitness;
+							avefit /= FE.size();
+							if (avefit>1)
+								cout <<"avefit error\n";*/
+							if(gen>trainer_trigger) { //pick new trainers when FE pop has converged or when it has been enough generations
+							//if(gen>trainer_trigger) {
+								s.out << "Picking trainers...\n";
+								PickTrainers(World.pop,FE,trainers,p,d,s);
+								trainer_trigger = gen + p.FE_train_gens; //p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
+								//trainer_trigger=0;
+							}
 						}
 					}
-				}
 
-				if (migrate)					
-					T.at(q).pop.assign(World.pop.begin()+q*subpops,World.pop.begin()+(q+1)*subpops);
+					if (migrate)					
+						T[q].pop.assign(World.pop.begin()+q*subpops,World.pop.begin()+(q+1)*subpops);
 
-				//if (gen>p.g) pass=0;
+					//if (gen>p.g) pass=0;
 								
 			
-		}  s.out << "exited while loop...\n";
+			}  s.out << "exited while loop...\n";
 		} s.out << "exited parallel region ...\n";
 		
 

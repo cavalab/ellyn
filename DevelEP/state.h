@@ -34,14 +34,21 @@ struct state{
 
 	state()
 	{
-		ptevals.resize(omp_get_max_threads());
-		numevals.resize(omp_get_max_threads());
+		int nt=0;
+		#pragma omp parallel 
+		{
+			nt = omp_get_num_threads();
+		}
+		ptevals.assign(nt,0);
+		//ptevals.resize(nt);
+		//numevals.resize(nt);
+		numevals.assign(nt,0);
 		genevals.push_back(0);
-		eHC_updates.assign(omp_get_max_threads(),0);
-		pHC_updates.assign(omp_get_max_threads(),0);
-		good_cross.assign(omp_get_max_threads(),0);
-		bad_cross.assign(omp_get_max_threads(),0);
-		neut_cross.assign(omp_get_max_threads(),0);
+		eHC_updates.assign(nt,0);
+		pHC_updates.assign(nt,0);
+		good_cross.assign(nt,0);
+		bad_cross.assign(nt,0);
+		neut_cross.assign(nt,0);
 		total_eHC_updates=0;
 		total_pHC_updates=0;
 		good_cross_pct=0;
@@ -173,9 +180,11 @@ struct state{
 	}
 	void clearCross()
 	{
-		good_cross.assign(omp_get_max_threads(),0);
-		bad_cross.assign(omp_get_max_threads(),0);
-		neut_cross.assign(omp_get_max_threads(),0);
+		for (size_t i =0; i<good_cross.size(); ++i){
+			good_cross[i] = 0;
+			bad_cross[i] = 0;
+			neut_cross[i] = 0;
+		}
 
 	}
 	void setCrossPct(vector<ind>& pop)

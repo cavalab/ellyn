@@ -396,7 +396,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 	int ptevals=0;
 	unsigned int ndata_t,ndata_v; // training and validation data sizes
 	if (p.train){
-		ndata_t = vals.size()/2;
+		ndata_t = vals.size()*p.train_pct;
 		ndata_v = vals.size()-ndata_t;
 	}
 	else{
@@ -621,7 +621,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 	int ptevals=0;
 	int ndata_t,ndata_v; // training and validation data sizes
 	if (p.train){
-		ndata_t = vals.size()/2;
+		ndata_t = vals.size()*p.train_pct;
 		ndata_v = vals.size()-ndata_t;
 	}
 	else{
@@ -905,11 +905,11 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 	
 	if (p.train){
 		if(!p.EstimateFitness){
-			ndata_t = d.vals.size()/2;
+			ndata_t = d.vals.size()*p.train_pct;
 			ndata_v = d.vals.size()-ndata_t;
 		}
 		else{
-			ndata_t = FEvals.size()/2;
+			ndata_t = FEvals.size()*p.train_pct;
 			ndata_v = FEvals.size()-ndata_t;
 		}
 	}
@@ -997,7 +997,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 					VAFlex.push_back(0);
 
 					if (p.train){
-						ndata_t = d.lexvals[lex].size()/2;
+						ndata_t = d.lexvals[lex].size()*p.train_pct;
 						ndata_v = d.lexvals[lex].size()-ndata_t;
 					}
 					else{

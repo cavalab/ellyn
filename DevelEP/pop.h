@@ -23,41 +23,32 @@ struct ind {
 	/*vector <std::shared_ptr<node> > line;*/
 	
 	vector <node> line;
-	std::vector<float> output;
-	std::vector<float> output_v;
+	vector<float> output;
+	vector<float> output_v;
 	vector<float> fitlex; // fitnesses for lexicase selection
 	vector<float> f; // vector of objectives for multi-objective implementations (PS_sel)
 	std::vector<unsigned int> outstacklen;
 	std::vector<float> outstack; // linearized outstack
 	std::vector<int> dominated; //for spea2 strength
-	//std::vector<vector<float>> outstack; //optional node-by-node stack tracing
-	//std::vector <std::string> args;
 	std::string eqn;
-	std::string eqn_form; // equation form for string distance comparison to other forms
-	
+	std::string eqn_form; // equation form for string distance comparison to other forms	
 	float abserror;
 	float abserror_v;
-
 	float corr;
 	float corr_v;
 	float VAF;
 	float VAF_v;
-
 	float fitness;
-	float fitness_v; 
-	
+	float fitness_v;	
 	float FEvar; //variance in fitness estimates (for sorting purposes)
 	float GEvar; //variance in generality estimates (for sorting purposes)
-
 	float genty; //generality
 	float spea_fit;
-
 	float parentfitness;
 	int eff_size;
 	int age;
 	int rank;
 	int complexity;
-	//std::vector <int> ptr;
 	char origin; // x: crossover, m: mutation, i: initialization
 
 	/* 
@@ -70,8 +61,8 @@ struct ind {
 	{
 		abserror = 0;
 		corr = 0;
-		age=1;
-		genty=1;
+		age = 1;
+		genty = 1;
 	}
 	/*ind(const ind& x)
 	{
@@ -88,28 +79,29 @@ struct ind {
 		//}
 		//
 	}
-	ind & operator = (ind s)
+	ind & operator = (ind s) // over-ride copy construction with swap 
     {
       s.swap (*this); // Non-throwing swap
       return *this;
-    }// Old resources released when destructor of temp is called.
+    }
  
     void swap (ind &s) 
-	{
-		//vectors
-		outstack.swap(s.outstack); 
-		line.swap(s.line);
+	{	
+		
+		line.swap(s.line);						// vectors
 		output.swap(s.output);
 		output_v.swap(s.output_v);
 		fitlex.swap(s.fitlex);
+		f.swap(s.f);
 		outstacklen.swap(s.outstacklen);
-
-		eqn.swap(s.eqn);
+		outstack.swap(s.outstack);		
+		dominated.swap(dominated);
+		eqn.swap(s.eqn);						// strings
 		eqn_form.swap(s.eqn_form);
 
 		using std::swap;
-		//floats
-		swap(this->abserror,s.abserror);
+		
+		swap(this->abserror,s.abserror);		// floats
 		swap(this->abserror_v,s.abserror_v);
 		swap(this->corr,s.corr);
 		swap(this->corr_v,s.corr_v);
@@ -118,16 +110,16 @@ struct ind {
 		swap(this->fitness,s.fitness);
 		swap(this->fitness_v,s.fitness_v);
 		swap(this->FEvar,s.FEvar);
-		swap(this->parentfitness,s.parentfitness);
 		swap(this->GEvar,s.GEvar);
 		swap(this->genty,s.genty);
-		//ints
-		swap(this->eff_size,s.eff_size);
+		swap(this->spea_fit,s.spea_fit);
+		swap(this->parentfitness,s.parentfitness);
+		swap(this->eff_size,s.eff_size);		// ints
 		swap(this->age,s.age);
 		swap(this->rank,s.rank);
 		swap(this->complexity,s.complexity);
-		//chars
-		swap(this->origin,s.origin);
+		
+		swap(this->origin,s.origin);			// chars
 		
 
 	}//throw (); // Also see the non-throwing swap idiom
