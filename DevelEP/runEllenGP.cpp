@@ -169,11 +169,15 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	fout << endl;
 	fout << "size: " << best.line.size() << "\n";
 	fout << "eff size: " << best.eff_size << "\n";
-	fout << "abs error: " << best.abserror<< "\n";;
-	fout << "correlation: " << best.corr<< "\n";;
-	fout << "fitness: " << best.fitness<< "\n";;
-
-	fout << "parent fitness: " << best.parentfitness << "\n";;
+	fout << "training abs error: " << best.abserror<< "\n";
+	fout << "training correlation: " << best.corr<< "\n";
+	fout << "training fitness: " << best.fitness<< "\n";
+	fout << "training VAF: " << best.VAF <<"\n";
+	fout << "validation abs error: " << best.abserror_v<< "\n";
+	fout << "validation correlation: " << best.corr_v<< "\n";
+	fout << "validation fitness: " << best.fitness_v<< "\n";
+	fout << "validation VAF: " << best.VAF_v <<"\n";
+	fout << "parent fitness: " << best.parentfitness << "\n";
 	fout << "origin: " << best.origin << "\n";
 	fout << "age: " << best.age << "\n";
 	fout << "eqn form: " << best.eqn_form << "\n";
@@ -189,10 +193,11 @@ void initdatafile(std::ofstream& dfout,string & logname)
 	string dataname = logname.substr(0,logname.size()-4)+".data";
 	dfout.open(dataname,std::ofstream::out | std::ofstream::app);
 	//dfout.open(dataname,std::ofstream::app);
-	dfout << "pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t best_R2 \t best_R2_v \t size \t eff_size \t pHC_pct \t eHC_pct \t good_g_pct \t neut_g_pct \t bad_g_pct \t tot_hom \t on_hom \t off_hom\n";
+	//dfout << "pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t best_R2 \t best_R2_v \t best_VAF \t best_VAF_v \t size \t eff_size \t pHC_pct \t eHC_pct \t good_g_pct \t neut_g_pct \t bad_g_pct \t tot_hom \t on_hom \t off_hom\n";
+	dfout << "gen,pt_evals,best_eqn,best_fit,best_fit_v,med_fit,med_fit_v,best_MAE,best_MAE_v,best_R2,best_R2_v,size,eff_size,pHC_pct,eHC_pct,good_g_pct,neut_g_pct,bad_g_pct,tot_hom,on_hom,off_hom\n";
 	//fout.close(dataname);
 }
-void printdatafile(tribe& T,state& s,params& p, vector<Randclass>& r,std::ofstream& dfout)
+void printdatafile(tribe& T,state& s,params& p, vector<Randclass>& r,std::ofstream& dfout, int gen)
 {
 	//string dataname = logname.substr(0,logname.size()-4)+".data";
 	//std::ofstream fout;
@@ -201,11 +206,12 @@ void printdatafile(tribe& T,state& s,params& p, vector<Randclass>& r,std::ofstre
 	sub_ind best_ind;
 	T.getbestsubind(best_ind);
 
-	dfout << s.totalptevals() << "\t" << best_ind.eqn << "\t" << T.bestFit() << "\t" << T.bestFit_v() << "\t" << T.medFit() << "\t" << T.medFit_v() << "\t" << best_ind.abserror << "\t" << best_ind.abserror_v << "\t" << best_ind.corr << "\t" << best_ind.corr_v << "\t" << T.meanSize() << "\t" << T.meanEffSize() << "\t" << s.current_pHC_updates/float(p.popsize)*100.0 << "\t" << s.current_eHC_updates/float(p.popsize)*100.0 << "\t" <<  s.good_cross_pct << "\t" << s.neut_cross_pct << "\t" << s.bad_cross_pct;
+	/*dfout << s.totalptevals() << "\t" << best_ind.eqn << "\t" << T.bestFit() << "\t" << T.bestFit_v() << "\t" << T.medFit() << "\t" << T.medFit_v() << "\t" << best_ind.abserror << "\t" << best_ind.abserror_v << "\t" << best_ind.corr << "\t" << best_ind.corr_v << "\t" << T.meanSize() << "\t" << T.meanEffSize() << "\t" << s.current_pHC_updates/float(p.popsize)*100.0 << "\t" << s.current_eHC_updates/float(p.popsize)*100.0 << "\t" <<  s.good_cross_pct << "\t" << s.neut_cross_pct << "\t" << s.bad_cross_pct;*/
+	dfout << gen << s.totalptevals() << "," << best_ind.eqn << "," << T.bestFit() << "," << T.bestFit_v() << "," << T.medFit() << "," << T.medFit_v() << "," << best_ind.abserror << "," << best_ind.abserror_v << "," << best_ind.corr << "," << best_ind.corr_v << "," << best_ind.VAF << "," << best_ind.VAF_v << T.meanSize() << "," << T.meanEffSize() << "," << s.current_pHC_updates/float(p.popsize)*100.0 << "," << s.current_eHC_updates/float(p.popsize)*100.0 << "," <<  s.good_cross_pct << "," << s.neut_cross_pct << "," << s.bad_cross_pct;
 	if (p.print_homology){
 		float tot_hom, on_hom, off_hom;
 		T.hom(r,tot_hom,on_hom,off_hom);
-		dfout << "\t" << tot_hom << "\t" << on_hom << "\t" << off_hom;
+		dfout << "," << tot_hom << "," << on_hom << "," << off_hom;
 	}
 	dfout <<"\n";
 
@@ -271,12 +277,14 @@ void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
 		fout << "size: " << pop.at(h).line.size() << "\n";
 		fout << "eff size: " << pop.at(h).eff_size << "\n";
 		fout << "complexity: " << pop.at(h).complexity << "\n";
+		fout << "fitness: " << pop.at(h).fitness<< "\n";
+		fout << "fitness_v: " << pop.at(h).fitness_v<< "\n";
 		fout << "MAE: " << pop.at(h).abserror<< "\n";;
 		fout << "MAE_v: " << pop.at(h).abserror_v<< "\n";
 		fout << "correlation: " << pop.at(h).corr<< "\n";
 		fout << "correlation_v: " << pop.at(h).corr_v<< "\n";
-		fout << "fitness: " << pop.at(h).fitness<< "\n";
-		fout << "fitness_v: " << pop.at(h).fitness_v<< "\n";
+		fout << "VAF: " << pop.at(h).VAF<< "\n";
+		fout << "VAF_v: " << pop.at(h).VAF_v<< "\n";
 		fout <<  "rank: " << pop.at(h).rank << "\n";
 		fout << "parent fitness: " << pop.at(h).parentfitness << "\n";
 		fout << "origin: " << pop.at(h).origin << "\n";
@@ -1531,7 +1539,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 							printpop(A.pop,p,s,logname,1);
 						}
 						if (!p.limit_evals || s.totalptevals() >= print_trigger){
-							printdatafile(World,s,p,r,dfout);
+							printdatafile(World,s,p,r,dfout,gen);
 							if (p.printeverypop) printpop(World.pop,p,s,logname,2);
 							if (p.print_log) {
 								printstats(World,gen,s,p,A);
@@ -1589,7 +1597,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			if (p.prto_arch_on) Fitness(A.pop,p,d,s,FE[0]);
 			p.EstimateFitness=1;
 		}
-		printdatafile(World,s,p,r,dfout);
+		printdatafile(World,s,p,r,dfout,gen);
 		printbestind(World,p,s,logname);
 		printpop(World.pop,p,s,logname,0);
 		if (p.prto_arch_on)
@@ -1743,7 +1751,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					printpop(A.pop,p,s,logname,1);
 				}
 				if (!p.limit_evals || s.totalptevals() >= print_trigger){ 
-					printdatafile(T,s,p,r,dfout);
+					printdatafile(T,s,p,r,dfout,counter);
 					if (p.printeverypop) printpop(T.pop,p,s,logname,2);
 					if (p.print_log){
 						printstats(T,counter,s,p,A);
@@ -1759,7 +1767,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 
 				if (p.sel==2)
 					trigger+=p.popsize*(p.rt_mut+p.rt_rep)+p.popsize*p.rt_cross/2;
-				counter++;
+				++counter;
 		
 			 }
 			
@@ -1802,7 +1810,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			p.EstimateFitness=1;
 		}
 
-		printdatafile(T,s,p,r,dfout);
+		printdatafile(T,s,p,r,dfout,counter);
 		printbestind(T,p,s,logname);
 		printpop(T.pop,p,s,logname,0);
 		if (p.prto_arch_on)

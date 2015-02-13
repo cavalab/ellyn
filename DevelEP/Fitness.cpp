@@ -767,7 +767,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 				else if (p.fit_type==3)
 					me.fitness = me.abserror/me.corr;
 				else if (p.fit_type==4)
-					me.fitness = 1-me.VAF;
+					me.fitness = 1-me.VAF/100;
 				if (p.norm_error)
 					me.fitness = me.fitness/target_std;
 			}
@@ -802,7 +802,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 					else if (p.fit_type==3)
 						me.fitness_v = me.abserror_v/me.corr_v;
 					else if (p.fit_type==4)
-						me.fitness = 1-me.VAF;
+						me.fitness = 1-me.VAF/100;
 					if (p.norm_error)
 						me.fitness_v = me.fitness_v/target_std_v;
 
@@ -1108,7 +1108,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 						else if (p.fit_type==3)
 							me.fitlex[lex] = errorlex[lex]/corrlex[lex];
 						else if (p.fit_type==4)
-							me.fitlex[lex] = 1-VAFlex[lex];
+							me.fitlex[lex] = 1-VAFlex[lex]/100;
 						if (p.norm_error)
 							me.fitlex[lex] = me.fitlex[lex]/target_std_lex;
 					}
@@ -1176,7 +1176,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 					else if (p.fit_type==3)
 						me.fitness = me.abserror/me.corr;
 					else if (p.fit_type==4)
-						me.fitness = 1-me.VAF;
+						me.fitness = 1-me.VAF/100;
 					if (p.norm_error)
 						me.fitness = me.fitness/target_std_lex;
 
@@ -1216,7 +1216,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 						else if (p.fit_type==3)
 							me.fitness_v = me.abserror_v/me.corr_v;
 						else if (p.fit_type==4)
-							me.fitness = 1-me.VAF;
+							me.fitness = 1-me.VAF/100;
 						if (p.norm_error)
 							me.fitness_v = me.fitness_v/target_std_lex_v;
 					}

@@ -160,8 +160,11 @@ struct sub_ind
 	float fitness;
 	float abserror;
 	float corr;
+	float VAF;
+
 	float abserror_v;
 	float corr_v;
+	float VAF_v;
 	string eqn;
 	int age;
 	int complexity;
@@ -172,6 +175,8 @@ struct sub_ind
 		abserror_v = x.abserror_v;
 		corr = x.corr; 
 		corr_v = x.corr_v; 
+		VAF = x.VAF;
+		VAF_v = x.VAF_v;
 		eqn = x.eqn; 
 		age=x.age; 
 		complexity = x.complexity;

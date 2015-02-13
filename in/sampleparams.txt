@@ -95,7 +95,7 @@ eHC_slim			0  // minimize point evaluations as much as possible
 
 // Pareto settings
 
-prto_arch_on		0
+prto_arch_on		1
 prto_arch_size		100
 prto_sel_on			1
 
