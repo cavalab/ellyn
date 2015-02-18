@@ -1,14 +1,13 @@
-g					100	// number of generations
-popsize				100	//population size
-numits				1	// number of trials
+g					500	// number of generations
+popsize				1000	//population size
 limit_evals			0 // limit evals instead of number of generations
-max_evals			10000000000 // max point evaluations
+max_evals			5000000000 // max point evaluations
 
 // Generation Settings 
-sel					4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
+sel					1	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 tourn_size			2
-rt_rep				0.0
-rt_cross			0.8
+rt_rep				0.1
+rt_cross			0.7
 rt_mut				0.2
 cross				2	// 1: ultra 2: one point1
 cross_ar			.1 //crossover alternation rate (ultra only)
@@ -17,25 +16,22 @@ stoperror			0.0001	// stop condition / convergence condition
 
 init_validate_on	1	// initial fitness validation of starting population
 train				1  // split data into training and validation sets
-train_pct			0.7 // percent of data to be used in training	
 shuffle_data		0  // shuffle the data 
-pop_restart			1
-pop_restart_path	D:\Develep\Results\Sample\sample_init_pop.last_pop
 
-// Results and Printing Options
-resultspath			D:\Develep\Results\Sample
-printeverypop		0  // save printout of population at every generation
+// Results
+resultspath			D:\Develep\Results\tower\fgs
 print_genome		1
-num_log_pts			0
+num_log_pts			0 // 0 means log all points
+printeverypop		0  // save printout of population at every generation
 
 // Problem information
-intvars				x	y
+intvars				X1	X2	X3	X4	X5	X6	X7	X8	X9	X10	X11	X12	X13	X14	X15	X16	X17	X18	X19	X20	X21	X22	X23	X24	X25
 extvars					
-cons     			k					
-cvals				1.0						
+cons     								
+cvals										
 seeds				
 
-ERC					0 // ephemeral random constants
+ERC					1 // ephemeral random constants
 ERCints				0	
 maxERC				10
 minERC				-10
@@ -46,18 +42,21 @@ fit_type			3	// 1: error, 2: corr, 3: combo, 4: VAF
 norm_error			0  // // normalize error by the standard deviation of the target data being u
 max_fit				100000000000000000000
 min_fit				0.00000000000000000001
-estimate_fitness 	0	// coevolve fitness estimators
-FE_pop_size			12	// fitness estimator population size
-FE_ind_size			4	// number of fitness cases for FE to use
+estimate_fitness      0	// coevolve fitness estimators
+FE_pop_size			10	// fitness estimator population size
+FE_ind_size			10	// number of fitness cases for FE to use
 FE_train_size		10	// trainer population size
 FE_train_gens		10 // number of generations between trainer selections
 FE_rank				1	// use rank for FE fitness rather than error  
+estimate_generality 	0	// calculate generality 
+G_sel				3	// 1: error, 2: corr, 3: combo, 4: VAF
+G_shuffle			1	// shuffle data each generation 
 
 //available operators: n	v	+	-	*	/
 //index                0	1	2	3	4	5	6	7	8	9
 
-op_list				n	v	+	-	*	/
-op_weight			4	4	1	1	1	1				
+op_list				n	v	+	-	*	/	sin	cos	exp	log
+op_weight			4	4	1	1	1	1	1	1	1	1			
 weight_ops_on		1
 min_len				3
 max_len				50
@@ -93,14 +92,16 @@ eHC_init			.50 // percent of expressed genes in initial genotypes
 eHC_prob_scale		1
 eHC_max_prob		.75
 eHC_min_prob		0.25
-eHC_slim			0  // minimize point evaluations as much as possible
+eHC_slim			0
 
 // Pareto settings
 
-prto_arch_on		1
-prto_arch_size		100
+prto_arch_on		0
+prto_arch_size		50
 prto_sel_on			1
 
 // island model
 islands				0
 island_gens			10
+
+PS_sel 				2

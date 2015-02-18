@@ -14,7 +14,6 @@ struct params {
 	
 	int g; // number of generations (limited by default)
 	int popsize; //population size
-	int numits;  // number of trials
 	bool limit_evals; // limit evals instead of generations
 	long long max_evals; // maximum number of evals before termination (only active if limit_evals is true)
 
@@ -56,7 +55,8 @@ struct params {
 
 
 	bool printeverypop;
-
+	bool print_genome;
+	bool print_epigenome;
 	// Problem information
 	vector <string> intvars; // internal variables
 	vector <string> extvars; // external variables (external forces)
@@ -163,8 +163,10 @@ struct params {
 		mut_ar=0.025;
 		cross=2; // 1: ultra; 2: one point
 
+		// Data settings
 		init_validate_on=0; // initial fitness validation of individuals
 		train=0; // choice to turn on training for splitting up the data set
+		train_pct=0.5; // default split of data is 50/50
 		shuffle_data=0; // shuffle the data
 		pop_restart = 0; // restart from previous population
 		pop_restart_path=""; // restart population file path
@@ -179,7 +181,11 @@ struct params {
 		print_log = 1;
 		// number of log points to print (with eval limitation)
 		num_log_pts = 0;
-		
+		// print csv files of genome each print cycle
+		print_genome = 0;
+		// print csv files of epigenome each print cycle
+		print_epigenome = 0;
+
 		// Fitness estimators
 		EstimateFitness=0; 
 		FE_pop_size=0;

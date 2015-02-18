@@ -50,6 +50,85 @@ bool check_genty(vector<ind>& pop,params& p){
 	}
 	return 1;
 }
+void printGenome(tribe& T,int gen,string& logname,data& d,params& p)
+{
+	// print genome to file in csv format
+	// create data file
+	// print format: print in head-to-tail fashion with grid locations
+	// x y gene
+	// gene encoding: +:1,-:2,*:3,/:4,sin:5,cos:6,exp:7,log:8,constant:9,vars:10-length(vars)
+
+	 std::ofstream gout;
+	 string filename = logname.substr(0,logname.size()-4)+"_g.csv."+std::to_string(static_cast<long long>(gen));
+	 gout.open(filename);
+	 gout << "x,y,fit,age,g,e\n";
+	 string out;
+	 string tmp;
+	 int k;
+	 float y;
+	 float max_fit=0;
+	 float min_fit=10000;
+	 float max_age=0;
+	 float min_age=100000;
+	 float max_line=0;
+	 float min_line = 1000;
+	 for (size_t i =0; i<T.pop.size(); ++i){
+		if (log(1+T.pop[i].fitness)>max_fit) max_fit=log(1+T.pop[i].fitness);
+		if (log(1+T.pop[i].fitness)<min_fit) min_fit=log(1+T.pop[i].fitness);
+		if (T.pop[i].age>max_age) max_age=T.pop[i].age;
+		if (T.pop[i].age<min_age) min_age=T.pop[i].age;
+		for (size_t j = 0; j<T.pop[i].line.size(); ++j){
+			if (T.pop[i].line.size()>max_line) max_line=T.pop[i].line.size();
+			if (T.pop[i].line.size()<min_line) min_line=T.pop[i].line.size();
+		}
+	}
+	 T.sortpop();
+	// T.sortpop_age();
+	 for (size_t i=0; i<T.pop.size(); ++i){
+		 y=0;
+		 for (int j=T.pop[i].line.size()-1; j>=0; --j){
+			 switch(T.pop[i].line[j].type){
+			 case '+':
+				 out="1";
+				 break;
+			 case '-':
+				 out="2";
+				 break;
+			 case '*':
+				 out="3";
+				 break;
+			 case '/':
+				 out="4";
+				 break;
+			 case 's':
+				 out="5";
+				 break;
+			 case 'c':
+				 out="6";
+				 break;
+			 case 'e':
+				 out="7";
+				 break;
+			 case 'l':
+				 out="8";
+				 break;
+			 case 'n':
+				 out="9";
+				 break;
+			 case 'v':
+				 k=0;
+				 while (T.pop[i].line[j].varname.compare(d.label[k])!=0)
+					 ++k;
+				 tmp=std::to_string(static_cast<long long>(k+10));
+				 out = tmp;
+				 break;
+			 }
+			 gout << float(float(i)/float(T.pop.size())) << "," << y/p.max_len << "," << (log(1+T.pop[i].fitness)-min_fit)/(max_fit-min_fit) << "," << (float(T.pop[i].age)-min_age)/(max_age-min_age) << "," << out << "," << T.pop[i].line[j].on << "\n";
+			++y;
+		}
+	 }
+	 gout.close();
+}
 void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A)
 {
 	
@@ -207,7 +286,7 @@ void printdatafile(tribe& T,state& s,params& p, vector<Randclass>& r,std::ofstre
 	T.getbestsubind(best_ind);
 
 	/*dfout << s.totalptevals() << "\t" << best_ind.eqn << "\t" << T.bestFit() << "\t" << T.bestFit_v() << "\t" << T.medFit() << "\t" << T.medFit_v() << "\t" << best_ind.abserror << "\t" << best_ind.abserror_v << "\t" << best_ind.corr << "\t" << best_ind.corr_v << "\t" << T.meanSize() << "\t" << T.meanEffSize() << "\t" << s.current_pHC_updates/float(p.popsize)*100.0 << "\t" << s.current_eHC_updates/float(p.popsize)*100.0 << "\t" <<  s.good_cross_pct << "\t" << s.neut_cross_pct << "\t" << s.bad_cross_pct;*/
-	dfout << gen << s.totalptevals() << "," << best_ind.eqn << "," << T.bestFit() << "," << T.bestFit_v() << "," << T.medFit() << "," << T.medFit_v() << "," << best_ind.abserror << "," << best_ind.abserror_v << "," << best_ind.corr << "," << best_ind.corr_v << "," << best_ind.VAF << "," << best_ind.VAF_v << T.meanSize() << "," << T.meanEffSize() << "," << s.current_pHC_updates/float(p.popsize)*100.0 << "," << s.current_eHC_updates/float(p.popsize)*100.0 << "," <<  s.good_cross_pct << "," << s.neut_cross_pct << "," << s.bad_cross_pct;
+	dfout << gen << "," << s.totalptevals() << "," << best_ind.eqn << "," << T.bestFit() << "," << T.bestFit_v() << "," << T.medFit() << "," << T.medFit_v() << "," << best_ind.abserror << "," << best_ind.abserror_v << "," << best_ind.corr << "," << best_ind.corr_v << "," << best_ind.VAF << "," << best_ind.VAF_v << T.meanSize() << "," << T.meanEffSize() << "," << s.current_pHC_updates/float(p.popsize)*100.0 << "," << s.current_eHC_updates/float(p.popsize)*100.0 << "," <<  s.good_cross_pct << "," << s.neut_cross_pct << "," << s.bad_cross_pct;
 	if (p.print_homology){
 		float tot_hom, on_hom, off_hom;
 		T.hom(r,tot_hom,on_hom,off_hom);
@@ -334,8 +413,6 @@ void load_params(params &p, std::ifstream& fs)
 		}
 		else if(varname.compare("popsize") == 0)
 			ss >> p.popsize;
-		//else if(varname.compare("numits") == 0)
-		//	ss>>p.numits;
 		else if(varname.compare("sel") == 0)
 			ss>>p.sel;
 		else if(varname.compare("tourn_size") == 0)
@@ -537,6 +614,10 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.print_log;
 		else if(varname.compare("print_init_pop") == 0)
 			ss>>p.print_init_pop;
+		else if(varname.compare("print_genome") == 0)
+			ss>>p.print_genome;
+		else if(varname.compare("print_epigenome") == 0)
+			ss>>p.print_epigenome;
 		else if(varname.compare("num_log_pts") == 0)
 			ss>>p.num_log_pts;
 		else if(varname.compare("PS_sel") == 0)
@@ -1079,7 +1160,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	 s.out << "ERC: " << p.ERC << "\n";
 	 s.out << "Parameter Hill Climber: " << p.pHC_on <<"\n";
 	 s.out << "Epigenetic Hill Climber: " << p.eHC_on <<"\n";
-	 if(p.train) s.out << "Data split 50/50 for training and validation.\n";
+	 if(p.train) s.out << "Data split " << p.train_pct << "/" << 1-p.train_pct << " for training and validation.\n";
 	 s.out << "Total Population Size: " << p.popsize << "\n";
 	 if (p.limit_evals) s.out << "Maximum Point Evals: " << p.max_evals << "\n";
 	 else s.out << "Maximum Generations: " << p.g << "\n";
@@ -1295,6 +1376,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		
 		}
 		else {
+			print_trigger=0;
 			termits=1;
 			term = p.g;
 		}
@@ -1444,6 +1526,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			cntr=0;
 		}
 		if (p.print_init_pop) printpop(World.pop,p,s,logname,3);
+		if (p.print_genome) printGenome(World,0,logname,d,p);
 		#pragma omp parallel private(q) shared(pass)
 		{
 		
@@ -1550,12 +1633,13 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 								s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
 							}
 							if (print_trigger!=0) print_trigger += p.max_evals/p.num_log_pts;
+							if (p.print_genome) printGenome(World,gen,logname,d,p);
 						}
 						++gen;
 						if (p.limit_evals) termits = s.totalptevals();
 						else ++termits;
 					
-						if (!p.EstimateFitness && p.G_shuffle)
+						if (!p.EstimateFitness && p.estimate_generality && p.G_shuffle)
 							shuffle_data(d,p,r,s);	
 									
 					}
@@ -1687,12 +1771,12 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 
 		int gen=0;
 		int counter=0;
-		if(p.sel==2) // if using deterministic crowding, increase gen size
-		{
-			gen = p.g*(p.popsize*(p.rt_mut+p.rt_rep) + p.popsize*p.rt_cross/2);
-			trigger = p.popsize*(p.rt_mut+p.rt_rep)+p.popsize*p.rt_cross/2;
-		}
-		else
+		//if(p.sel==2) // if using deterministic crowding, increase gen size
+		//{
+		//	gen = p.g*(p.popsize*(p.rt_mut+p.rt_rep) + p.popsize*p.rt_cross/2);
+		//	trigger = p.popsize*(p.rt_mut+p.rt_rep)+p.popsize*p.rt_cross/2;
+		//}
+		//else
 			gen=p.g;
 		long long term, print_trigger;
 		bool printed=false;
@@ -1701,23 +1785,27 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			if (p.num_log_pts ==0) print_trigger=0;
 			else print_trigger = p.max_evals/p.num_log_pts;
 		}
-		else term = gen;
-
+		else{
+			print_trigger=0;
+			term = gen;
+		}
 		if (p.EstimateFitness)
 			InitPopFE(FE,T.pop,trainers,p,r,d,s);
 		float etmp;
 		//print initial population
 		if (p.print_init_pop) printpop(T.pop,p,s,logname,3);
+		if (p.print_genome) printGenome(T,0,logname,d,p);
+
 		while (termits<=term && !stopcondition(T,p,d,s,FE[0]))
 		{
 			
 			 etmp = s.numevals[omp_get_thread_num()];
 
-			 if (!p.EstimateFitness && p.G_shuffle)
+			 if (!p.EstimateFitness && p.estimate_generality && p.G_shuffle)
 				shuffle_data(d,p,r,s);
-			 assert (T.pop.size() == p.popsize) ;
+			 assert (T.pop.size() == p.popsize);
 			 Generation(T.pop,p,r,d,s,FE[0]);
-			 assert (T.pop.size()== p.popsize) ;
+			 assert (T.pop.size()== p.popsize);
 			 //s.out << "Generation evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
 			 
 
@@ -1762,11 +1850,12 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 						s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
 					}
 					if (print_trigger!=0) print_trigger += p.max_evals/p.num_log_pts;
+					if (p.print_genome) printGenome(T,counter,logname,d,p);
 					printed=true;
 				}
 
-				if (p.sel==2)
-					trigger+=p.popsize*(p.rt_mut+p.rt_rep)+p.popsize*p.rt_cross/2;
+				//if (p.sel==2)
+					//trigger+=p.popsize*(p.rt_mut+p.rt_rep)+p.popsize*p.rt_cross/2;
 				++counter;
 		
 			 }

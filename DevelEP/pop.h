@@ -408,6 +408,10 @@ struct tribe{
 	{
 		sort(pop.begin(),pop.end(),SortFit());
 	}
+	void sortpop_age()
+	{
+		sort(pop.begin(),pop.end(),SortAge());
+	}
 	void hom(vector<Randclass>& r, float& tot_hom, float& on_hom, float& off_hom)
 	{
 		tot_hom = 0; on_hom=0; off_hom=0;

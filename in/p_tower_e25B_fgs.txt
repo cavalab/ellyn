@@ -3,7 +3,7 @@ popsize				1000	//population size
 numits				1	// number of trials
 printeverypop		0  // save printout of population at every generation
 limit_evals			1 // limit evals instead of number of generations
-max_evals			25000000000 // max point evaluations
+max_evals			1000000000 // max point evaluations
 
 // Generation Settings 
 sel					4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
@@ -23,6 +23,7 @@ shuffle_data		0  // shuffle the data
 // Results
 resultspath			D:\Develep\Results\tower\fgs
 loud				1
+print_genome		1
 
 // Problem information
 intvars				X1	X2	X3	X4	X5	X6	X7	X8	X9	X10	X11	X12	X13	X14	X15	X16	X17	X18	X19	X20	X21	X22	X23	X24	X25

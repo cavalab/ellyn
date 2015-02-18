@@ -64,7 +64,11 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		}
 	case 2: // deterministic crowding
 		{	
-			for (int j=0; j<p.popsize/p.nt;++j) 
+			int popsize;
+			if (p.islands) popsize = p.popsize/p.nt;
+			else popsize = p.popsize;
+
+			for (int j=0; j<popsize;++j) 
 				DC(pop,p,r,d,s,FE);
 			break;
 		}
