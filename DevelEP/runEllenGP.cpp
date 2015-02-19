@@ -82,8 +82,9 @@ void printGenome(tribe& T,int gen,string& logname,data& d,params& p)
 			if (T.pop[i].line.size()<min_line) min_line=T.pop[i].line.size();
 		}
 	}
-	 T.sortpop();
-	// T.sortpop_age();
+	if(p.sel==4) T.sortpop_age();
+	else T.sortpop();
+	
 	 for (size_t i=0; i<T.pop.size(); ++i){
 		 y=0;
 		 for (int j=T.pop[i].line.size()-1; j>=0; --j){
