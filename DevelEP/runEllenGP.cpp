@@ -911,7 +911,7 @@ int load_pop(vector<ind>& pop,params& p,state& s)
 			while (ss>>tmps){
 				if (tmps.compare("+")==0 || tmps.compare("-")==0 || tmps.compare("*")==0 || tmps.compare("/")==0 || tmps.compare("s")==0 || tmps.compare("c")==0 || tmps.compare("e")==0 || tmps.compare("l")==0) // operator node
 					pop[i].line.push_back(node(char(tmps[0])));
-				else if (isdigit(tmps[0])) // constant node
+				else if (isdigit(tmps[0]) || tmps[0]=='-') // constant node
 					pop[i].line.push_back(node(std::stof(tmps)));
 				else //variable node
 					pop[i].line.push_back(node(tmps));
@@ -1232,16 +1232,151 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		for(int i=0;i<num_islands;++i)
 			T.push_back(tribe(subpops,p.max_fit,p.min_fit));
 		// run separate islands 
-		if (p.init_validate_on)
+		if (p.pop_restart) // initialize population from file
 		{
-			s.out << "Initial validation..."; 
-			
-			if (p.EstimateFitness)
+			s.out << "loading pop from " + p.pop_restart_path + "...\n";
+			int tmp = load_pop(World.pop,p,s);
+			if (tmp < p.popsize){
+				s.out << "WARNING: population loaded from file is smaller than set pop size. Randomly initiated individuals will be added...\n";
+				vector<ind> tmppop(p.popsize-tmp);
+				InitPop(tmppop,p,r);
+				swap_ranges(World.pop.end()-(p.popsize-tmp),World.pop.end(),tmppop.begin());
+			}
+			// initialize fitness estimation pop
+			if (p.EstimateFitness){
+				p.EstimateFitness=0;
+				Fitness(World.pop,p,d,s,FE[0]);
+				p.EstimateFitness=1;
+				InitPopFE(FE,World.pop,trainers,p,r,d,s);
+			}
+			else
+				Fitness(World.pop,p,d,s,FE[0]);
+
+			std::random_shuffle(World.pop.begin(),World.pop.end(),r[0]);
+			//assign population to islands
+			#pragma omp parallel for
+			for (int q = 0; q<num_islands; ++q)
+				T[q].pop.assign(World.pop.begin()+q*subpops,World.pop.begin()+(q+1)*subpops);
+		}
+		else
+		{
+			if (p.init_validate_on)
 			{
-				#pragma omp parallel for
+				s.out << "Initial validation..."; 
+			
+				if (p.EstimateFitness)
+				{
+					#pragma omp parallel for
+					for(int i=0;i<num_islands;++i)
+						InitPop(T.at(i).pop,p,r);
+				
+					// construct world population
+					for(int j=0;j<T.size();++j){
+						for(int k=0;k<T[0].pop.size();++k){
+							World.pop.at(j*T[0].pop.size()+k)=T.at(j).pop.at(k);
+							//makenew(World.pop[j*T[0].pop.size()+k]);	
+						}
+					}
+					// initialize fitness estimation pop
+					InitPopFE(FE,World.pop,trainers,p,r,d,s);
+
+					//discard invalid individuals
+					#pragma omp parallel for
+					for(int i=0;i<num_islands;++i){
+						float worstfit;
+						float bestfit;
+						vector<ind> tmppop;
+
+						Fitness(T.at(i).pop,p,d,s,FE[0]);
+						worstfit = T.at(i).worstFit();
+						bestfit = T.at(i).bestFit();
+
+					
+						int counter=0;
+						while(worstfit == p.max_fit && counter<100)
+						{
+							for (vector<ind>::iterator j=T.at(i).pop.begin();j!=T.at(i).pop.end();)
+							{
+								if ( (*j).fitness == p.max_fit)
+								{
+									j=T.at(i).pop.erase(j);
+									tmppop.push_back(ind());
+								}
+								else
+									++j;
+							}
+
+							InitPop(tmppop,p,r);
+							Fitness(tmppop,p,d,s,FE[0]);
+							T.at(i).pop.insert(T.at(i).pop.end(),tmppop.begin(),tmppop.end());
+							tmppop.clear();
+							worstfit = T.at(i).worstFit();
+							counter++;
+							if(counter==100)
+								s.out << "initial population count exceeded. Starting evolution...\n";
+						}
+					}
+					s.setgenevals();
+					s.out << " number of evals: " << s.getgenevals() << "\n";
+				}
+				else{
+				
+					#pragma omp parallel for 
+					for(int i=0;i<num_islands;++i)
+					{
+						float worstfit;
+						float bestfit;
+						vector<ind> tmppop;
+						// s.out << "Initialize Population..." << "\n";
+						InitPop(T.at(i).pop,p,r);
+						// s.out << "Fitness..." << "\n";
+						Fitness(T.at(i).pop,p,d,s,FE[0]);
+						worstfit = T.at(i).worstFit();
+						bestfit = T.at(i).bestFit();
+						int counter=0;
+						while(worstfit == p.max_fit && counter<100)
+						{
+							for (vector<ind>::iterator j=T.at(i).pop.begin();j!=T.at(i).pop.end();)
+							{
+								if ( (*j).fitness == p.max_fit)
+								{
+									j=T.at(i).pop.erase(j);
+									tmppop.push_back(ind());
+								}
+								else
+									++j;
+							}
+
+							InitPop(tmppop,p,r);
+							Fitness(tmppop,p,d,s,FE[0]);
+							T.at(i).pop.insert(T.at(i).pop.end(),tmppop.begin(),tmppop.end());
+							tmppop.clear();
+							worstfit = T.at(i).worstFit();
+							counter++;
+							if(counter==100)
+								s.out << "initial population count exceeded. Starting evolution...\n";
+						}
+				
+					}
+			
+					s.setgenevals();
+					s.out << " number of evals: " << s.getgenevals() << "\n";
+				}
+			}
+			else // normal population initialization
+			{
+				/*bool tmp = p.EstimateFitness;
+				p.EstimateFitness=0;*/
+				#pragma omp parallel for 
 				for(int i=0;i<num_islands;++i)
+				{
 					InitPop(T.at(i).pop,p,r);
 				
+					// s.out << "Gen 2 Phen..." << "\n";
+					// s.out << "Fitness..." << "\n";
+					if(!p.EstimateFitness)
+						Fitness(T.at(i).pop,p,d,s,FE[0]);
+				}
 				// construct world population
 				for(int j=0;j<T.size();++j){
 					for(int k=0;k<T[0].pop.size();++k){
@@ -1249,121 +1384,14 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 						//makenew(World.pop[j*T[0].pop.size()+k]);	
 					}
 				}
-				// initialize fitness estimation pop
-				InitPopFE(FE,World.pop,trainers,p,r,d,s);
-
-				//discard invalid individuals
-				#pragma omp parallel for
-				for(int i=0;i<num_islands;++i){
-					float worstfit;
-					float bestfit;
-					vector<ind> tmppop;
-
-					Fitness(T.at(i).pop,p,d,s,FE[0]);
-					worstfit = T.at(i).worstFit();
-					bestfit = T.at(i).bestFit();
-
-					
-					int counter=0;
-					while(worstfit == p.max_fit && counter<100)
-					{
-						for (vector<ind>::iterator j=T.at(i).pop.begin();j!=T.at(i).pop.end();)
-						{
-							if ( (*j).fitness == p.max_fit)
-							{
-								j=T.at(i).pop.erase(j);
-								tmppop.push_back(ind());
-							}
-							else
-								++j;
-						}
-
-						InitPop(tmppop,p,r);
-						Fitness(tmppop,p,d,s,FE[0]);
-						T.at(i).pop.insert(T.at(i).pop.end(),tmppop.begin(),tmppop.end());
-						tmppop.clear();
-						worstfit = T.at(i).worstFit();
-						counter++;
-						if(counter==100)
-							s.out << "initial population count exceeded. Starting evolution...\n";
-					}
+				if (p.EstimateFitness){
+					InitPopFE(FE,World.pop,trainers,p,r,d,s);
+					#pragma omp parallel for 
+					for(int i=0;i<num_islands;++i)
+						Fitness(T.at(i).pop,p,d,s,FE[0]);
 				}
-				s.setgenevals();
-				s.out << " number of evals: " << s.getgenevals() << "\n";
-			}
-			else{
-				
-				#pragma omp parallel for 
-				for(int i=0;i<num_islands;++i)
-				{
-					float worstfit;
-					float bestfit;
-					vector<ind> tmppop;
-					// s.out << "Initialize Population..." << "\n";
-					InitPop(T.at(i).pop,p,r);
-					// s.out << "Fitness..." << "\n";
-					Fitness(T.at(i).pop,p,d,s,FE[0]);
-					worstfit = T.at(i).worstFit();
-					bestfit = T.at(i).bestFit();
-					int counter=0;
-					while(worstfit == p.max_fit && counter<100)
-					{
-						for (vector<ind>::iterator j=T.at(i).pop.begin();j!=T.at(i).pop.end();)
-						{
-							if ( (*j).fitness == p.max_fit)
-							{
-								j=T.at(i).pop.erase(j);
-								tmppop.push_back(ind());
-							}
-							else
-								++j;
-						}
-
-						InitPop(tmppop,p,r);
-						Fitness(tmppop,p,d,s,FE[0]);
-						T.at(i).pop.insert(T.at(i).pop.end(),tmppop.begin(),tmppop.end());
-						tmppop.clear();
-						worstfit = T.at(i).worstFit();
-						counter++;
-						if(counter==100)
-							s.out << "initial population count exceeded. Starting evolution...\n";
-					}
-				
-				}
-			
-				s.setgenevals();
-				s.out << " number of evals: " << s.getgenevals() << "\n";
 			}
 		}
-		else // normal population initialization
-		{
-			/*bool tmp = p.EstimateFitness;
-			p.EstimateFitness=0;*/
-			#pragma omp parallel for 
-			for(int i=0;i<num_islands;++i)
-			{
-				InitPop(T.at(i).pop,p,r);
-				
-				// s.out << "Gen 2 Phen..." << "\n";
-				// s.out << "Fitness..." << "\n";
-				if(!p.EstimateFitness)
-					Fitness(T.at(i).pop,p,d,s,FE[0]);
-			}
-			// construct world population
-			for(int j=0;j<T.size();++j){
-				for(int k=0;k<T[0].pop.size();++k){
-					World.pop.at(j*T[0].pop.size()+k)=T.at(j).pop.at(k);
-					//makenew(World.pop[j*T[0].pop.size()+k]);	
-				}
-			}
-			if (p.EstimateFitness){
-				InitPopFE(FE,World.pop,trainers,p,r,d,s);
-				#pragma omp parallel for 
-				for(int i=0;i<num_islands;++i)
-					Fitness(T.at(i).pop,p,d,s,FE[0]);
-			}
-		}
-		
 		// use tmpFE for updating in parallel
 		vector<FitnessEstimator> tmpFE = FE; 
 

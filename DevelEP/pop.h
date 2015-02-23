@@ -142,6 +142,8 @@ struct ind {
 		corr_v=0;
 		fitness=0;
 		fitness_v=0;
+		VAF = 0;
+		VAF_v = 0;
 		eqn = "";
 		eqn_form="";
 		output.clear();
