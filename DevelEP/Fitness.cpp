@@ -107,9 +107,9 @@ float VAF(vector<float>& output,vector<float>& target,float meantarget,int off)
 		var_target+=pow(v1,2);
 		var_diff+=pow(v2,2);
 	}
-	//q = q/(ndata-1); //unbiased esimator
-	var_target=var_target/(ndata-1); //unbiased esimator
-	var_diff =var_diff/(ndata-1); //unbiased esimator
+	//q = q/(ndata-1); //unbiased estimator
+	var_target=var_target/(ndata-1); //unbiased estimator
+	var_diff =var_diff/(ndata-1); //unbiased estimator
 	if(abs(var_target)<0.0000001 || abs(var_diff)<0.0000001)
 		vaf = 0;
 	else{
@@ -308,8 +308,6 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,unordered_map<string,float*>& datatable, vector<float>& dattovar)
 {
     
-
-	
 	me.abserror = 0;
 	me.abserror_v = 0;
 	
@@ -376,7 +374,7 @@ void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,uno
 			 
 }
 void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s)
-{
+{		
 	vector<float> outstack;
 	me.output.resize(0); 
 	me.output_v.resize(0); 
@@ -489,7 +487,21 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 			//calculate correlation coefficient
 			me.corr = getCorr(me.output,target,meanout,meantarget,0,target_std);
 			me.VAF = VAF(me.output,target,meantarget,0);
+			if (me.corr < 0.001 && me.VAF/100 > .7){
+				s.out << "Error in VAF calculation (probably)\n";
+				s.out << "corr: " << me.corr << "\n";
+				s.out << "VAF: " << me.VAF << "\n";
+				s.out << "output: \t";
 
+				for (int i = 0; i<me.output.size(); ++i){
+					s.out << me.output[i] << "\t";
+				}
+				s.out << "target: \t";
+				for (int i = 0; i<me.output.size(); ++i){
+					s.out << target[i] << "\t";
+				}
+				exit(1);
+			}
 			if (p.train)
 			{
 				q = 0;
@@ -508,8 +520,10 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 		if (me.eqn.compare("1")==0 && me.corr > 0.0001)
 				cout << "caught\n";
 
-			if (!pass)
+			if (!pass){
 				me.corr = 0;
+				me.VAF = 0;
+			}
 						
 
 			if(me.corr < p.min_fit)
@@ -541,8 +555,10 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 				(me.fitness=p.min_fit);
 
 			if(p.train){ //assign validation fitness
-				if (!pass)
+				if (!pass){
 					me.corr_v = 0;
+					me.VAF_v = 0;
+				}
 						
 
 				if(me.corr_v < p.min_fit)
@@ -596,7 +612,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 			//			me.genty = abs(me.VAF-me.VAF_v)/me.VAF;
 			//	}
 			//}
-
+			
 		s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
 }
 
@@ -742,9 +758,10 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 		if (me.eqn.compare("1")==0 && me.corr > 0.0001)
 				cout << "caught\n";
 
-			if (!pass)
+			if (!pass){
 				me.corr = 0;
-						
+				me.VAF = 0;
+			}
 
 			if(me.corr < p.min_fit)
 				me.corr=p.min_fit;
@@ -758,6 +775,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 				me.fitness=p.max_fit;
 				me.abserror=p.max_fit;
 				me.corr = p.min_fit;
+				me.VAF = p.min_fit;
 			}
 			else{
 				if (p.fit_type==1)
@@ -779,9 +797,10 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 				(me.fitness=p.min_fit);
 
 			if(p.train){ //assign validation fitness
-				if (!pass)
+				if (!pass){
 					me.corr_v = 0;
-						
+					me.VAF_v = 0;
+				}
 
 				if(me.corr_v < p.min_fit)
 					me.corr_v=p.min_fit;
@@ -802,7 +821,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 					else if (p.fit_type==3)
 						me.fitness_v = me.abserror_v/me.corr_v;
 					else if (p.fit_type==4)
-						me.fitness = 1-me.VAF/100;
+						me.fitness_v = 1-me.VAF/100;
 					if (p.norm_error)
 						me.fitness_v = me.fitness_v/target_std_v;
 
@@ -816,6 +835,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 			}
 			else{ // if not training, assign copy of regular fitness to the validation fitness variables
 				me.corr_v=me.corr;
+				me.VAF_v = me.VAF;
 				me.abserror_v=me.abserror;
 				me.fitness_v=me.fitness;
 			}
@@ -1189,9 +1209,10 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 					(me.fitness=p.min_fit);
 
 				if(p.train){
-					if (!pass)
+					if (!pass){
 						me.corr_v = 0;
-						
+						me.VAF_v = 0;
+					}
 
 					if(me.corr_v < p.min_fit)
 						me.corr_v=p.min_fit;
@@ -1207,6 +1228,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 						me.fitness_v=p.max_fit;
 						me.abserror=p.max_fit;
 						me.corr = p.min_fit;
+						me.VAF = p.min_fit;
 					}
 					else{
 						if (p.fit_type==1)
@@ -1229,6 +1251,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 				}
 				else{ // if not training, assign copy of regular fitness to validation variales
 					me.corr_v=me.corr;
+					me.VAF_v = me.VAF;
 					me.abserror_v=me.abserror;
 					me.fitness_v=me.fitness;
 				}

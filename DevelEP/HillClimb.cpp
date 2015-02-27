@@ -15,11 +15,11 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,Fitne
 	//for (int i=0; i<pop.size(); ++i) // for each individual
 	//	{
 			vector<ind> tmp_ind(1);
-			tmp_ind[0] = oldind; 
+			//tmp_ind[0] = oldind; 
 			//makenew(tmp_ind[0]);
-			tmp_ind[0].clrPhen(); // clear phenotype
+			//tmp_ind[0].clrPhen(); // clear phenotype
 
-			bool updated=0;
+			bool updated=false;
 			int HCits; 
 			//if (oldind.corr >= 0.999)
 			//	HCits = 10;
@@ -28,12 +28,15 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,Fitne
 
 			for (int j=0;j<HCits; ++j) // for number of specified iterations
 			{
-				if (updated)
-				{
-				    tmp_ind[0] = oldind;  
-					//makenew(tmp_ind[0]);
-					tmp_ind[0].clrPhen(); // clear phenotype
-				}
+				//if (updated)
+				//{
+				//    tmp_ind[0] = oldind;  
+				//	//makenew(tmp_ind[0]);
+				//	tmp_ind[0].clrPhen(); // clear phenotype
+				//}
+				tmp_ind.resize(0);
+				tmp_ind.push_back(oldind);
+				tmp_ind[0].clrPhen();
 				for (int h= 0; h<tmp_ind[0].line.size();++h) // for length of genotype
 				{
 					if(tmp_ind[0].line.at(h).type=='n' && tmp_ind[0].line.at(h).on) // insert function with true epiline value

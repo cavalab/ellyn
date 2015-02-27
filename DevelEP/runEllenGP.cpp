@@ -274,7 +274,7 @@ void initdatafile(std::ofstream& dfout,string & logname)
 	dfout.open(dataname,std::ofstream::out | std::ofstream::app);
 	//dfout.open(dataname,std::ofstream::app);
 	//dfout << "pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t best_R2 \t best_R2_v \t best_VAF \t best_VAF_v \t size \t eff_size \t pHC_pct \t eHC_pct \t good_g_pct \t neut_g_pct \t bad_g_pct \t tot_hom \t on_hom \t off_hom\n";
-	dfout << "gen,pt_evals,best_eqn,best_fit,best_fit_v,med_fit,med_fit_v,best_MAE,best_MAE_v,best_R2,best_R2_v,size,eff_size,pHC_pct,eHC_pct,good_g_pct,neut_g_pct,bad_g_pct,tot_hom,on_hom,off_hom\n";
+	dfout << "gen,pt_evals,best_eqn,best_fit,best_fit_v,med_fit,med_fit_v,best_MAE,best_MAE_v,best_R2,best_R2_v,best_VAF,best_VAF_v,size,eff_size,pHC_pct,eHC_pct,good_g_pct,neut_g_pct,bad_g_pct,tot_hom,on_hom,off_hom\n";
 	//fout.close(dataname);
 }
 void printdatafile(tribe& T,state& s,params& p, vector<Randclass>& r,std::ofstream& dfout, int gen)
@@ -287,7 +287,7 @@ void printdatafile(tribe& T,state& s,params& p, vector<Randclass>& r,std::ofstre
 	T.getbestsubind(best_ind);
 
 	/*dfout << s.totalptevals() << "\t" << best_ind.eqn << "\t" << T.bestFit() << "\t" << T.bestFit_v() << "\t" << T.medFit() << "\t" << T.medFit_v() << "\t" << best_ind.abserror << "\t" << best_ind.abserror_v << "\t" << best_ind.corr << "\t" << best_ind.corr_v << "\t" << T.meanSize() << "\t" << T.meanEffSize() << "\t" << s.current_pHC_updates/float(p.popsize)*100.0 << "\t" << s.current_eHC_updates/float(p.popsize)*100.0 << "\t" <<  s.good_cross_pct << "\t" << s.neut_cross_pct << "\t" << s.bad_cross_pct;*/
-	dfout << gen << "," << s.totalptevals() << "," << best_ind.eqn << "," << T.bestFit() << "," << T.bestFit_v() << "," << T.medFit() << "," << T.medFit_v() << "," << best_ind.abserror << "," << best_ind.abserror_v << "," << best_ind.corr << "," << best_ind.corr_v << "," << best_ind.VAF << "," << best_ind.VAF_v << T.meanSize() << "," << T.meanEffSize() << "," << s.current_pHC_updates/float(p.popsize)*100.0 << "," << s.current_eHC_updates/float(p.popsize)*100.0 << "," <<  s.good_cross_pct << "," << s.neut_cross_pct << "," << s.bad_cross_pct;
+	dfout << gen << "," << s.totalptevals() << "," << best_ind.eqn << "," << T.bestFit() << "," << T.bestFit_v() << "," << T.medFit() << "," << T.medFit_v() << "," << best_ind.abserror << "," << best_ind.abserror_v << "," << best_ind.corr << "," << best_ind.corr_v << "," << best_ind.VAF << "," << best_ind.VAF_v << "," << T.meanSize() << "," << T.meanEffSize() << "," << s.current_pHC_updates/float(p.popsize)*100.0 << "," << s.current_eHC_updates/float(p.popsize)*100.0 << "," <<  s.good_cross_pct << "," << s.neut_cross_pct << "," << s.bad_cross_pct;
 	if (p.print_homology){
 		float tot_hom, on_hom, off_hom;
 		T.hom(r,tot_hom,on_hom,off_hom);
@@ -1224,9 +1224,10 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		//int num_islands=omp_get_max_threads(); //
 		int num_islands=nt;
 		int subpops = p.popsize/num_islands;
+		p.popsize = subpops*num_islands;
 		vector<tribe> T;
 		tribe World(subpops*num_islands,p.max_fit,p.min_fit); //total population of tribes
-		s.out << num_islands << " islands of " << subpops << " individuals, total pop " << subpops*num_islands <<"\n";
+		s.out << num_islands << " islands of " << subpops << " individuals, total pop " << p.popsize <<"\n";
 		 
 
 		for(int i=0;i<num_islands;++i)
