@@ -3,15 +3,15 @@ popsize				100	//population size
 limit_evals			1 // limit evals instead of number of generations
 max_evals			10000000000000 // max point evaluations
 pop_restart			1 //start from previous population
-pop_restart_path	C:\Users\TheQuarry\Dropbox\Automated_modeling\ellen\in\mfa_all_test.last_pop
+pop_restart_path	C:\Users\TheQuarry\Dropbox\Automated_modeling\ellen\in\mfa_pop.init_pop
 
 // Generation Settings 
 sel					4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 tourn_size			2
 rt_rep				0
-rt_cross			0.9
-rt_mut				0.1
-cross				2	// 1: ultra 2: one point1
+rt_cross			0.95
+rt_mut				0.05
+cross				2	// 1: ultra 2: one point
 cross_ar			.025 //crossover alternation rate (ultra only)
 mut_ar				.025 //mutation alternation rate (ultra only)
 stoperror			0.0001	// stop condition / convergence condition
@@ -27,7 +27,7 @@ resultspath			D:\ellenGP\results\CART\mfa_all
 num_log_pts			0
 
 // Problem information
-intvars				V	B	TQ	TSR t ddx ddy 
+intvars				V	B	TQ	TSR ddx ddy 
 extvars					
 cons				
 cvals				
@@ -45,8 +45,8 @@ norm_error			0  // // normalize error by the standard deviation of the target da
 max_fit				100000000000000000000
 min_fit				0.00000000000000000001
 estimate_fitness 	1	// coevolve fitness estimators
-FE_pop_size			20	// fitness estimator population size
-FE_ind_size			1000	// number of fitness cases for FE to use
+FE_pop_size			10	// fitness estimator population size
+FE_ind_size			715	// number of fitness cases for FE to use
 FE_train_size		10	// trainer population size
 FE_train_gens		1000 // number of generations between trainer selections
 FE_rank				1	// use rank for FE fitness rather than error  
@@ -87,5 +87,5 @@ prto_arch_size		50
 prto_sel_on			1
 
 // island model
-islands				1
+islands				0
 island_gens			1000

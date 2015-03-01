@@ -21,11 +21,12 @@ string Line2Eqn(vector<node>& line,string& eqnForm)
 			}
 			else{
 				string sop;
+				string sop2; // for protected functions
 				char tmp = line.at(i).type;
 				if(line.at(i).arity==1 && eqnstack.size()>=1){
 					switch (line.at(i).type){
 					case 'l':
-						sop="logp";
+						sop="log";
 						break;
 					case 's':
 						sop="sin";
@@ -46,8 +47,14 @@ string Line2Eqn(vector<node>& line,string& eqnForm)
 					s1f.insert(0,"(");
 					s1+=")";
 					s1f+=")";
-					eqnstack.push_back(sop + s1);
-					formstack.push_back(sop + s1f);
+					if (sop.compare("log")==0){
+						eqnstack.push_back(sop + "(abs" + s1 + ")");
+						formstack.push_back(sop + "(abs" + s1f + ")");
+					}
+					else{
+						eqnstack.push_back(sop + s1);
+						formstack.push_back(sop + s1f);
+					}
 				}
 				else if (line.at(i).arity==2 && eqnstack.size()>=2){
 					string s1 = eqnstack.back(); eqnstack.pop_back();

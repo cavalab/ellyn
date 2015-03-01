@@ -152,7 +152,7 @@ struct params {
 		popsize=100; //population size
 		limit_evals=false; // limit evals instead of generations
 		max_evals=0; // maximum number of evals before termination (only active if limit_evals is true)
-
+		init_trees=1;
 		// Generation Settings 
 		sel=1; // 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 		tourn_size=2;

@@ -249,6 +249,7 @@ void InitPopFE(vector <FitnessEstimator>& FE,vector<ind> &pop,vector<ind>& train
 	trainers.reserve(p.FE_train_size);
 	for (int i=0;i<p.FE_train_size;++i){
 		trainers.push_back(pop[r[omp_get_thread_num()].rnd_int(0,pop.size()-1)]);
+		//calc trainer fitness
 	}
 	//p.EstimateFitness = 0; // turn fitness estimation off (all data points used)
 	//Fitness(trainers,p,d,s,FE[0]); //note: FE[0] does not get used here

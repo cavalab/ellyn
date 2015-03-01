@@ -63,6 +63,7 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 			
 		pop.at(i).origin = 'i';
 		
+		assert(!pop.at(i).line.empty());
 
 
 	}
