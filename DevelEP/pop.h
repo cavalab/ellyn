@@ -146,8 +146,8 @@ struct ind {
 		VAF_v = 0;
 		eqn = "";
 		eqn_form="";
-		output.resize(0);
-		output_v.resize(0);
+		output.clear();
+		output_v.clear();
 		genty = 1;
 		//outstack.clear();
 		// nominal model must be encased in set of parenthesis. the pointer points to that which is encased.

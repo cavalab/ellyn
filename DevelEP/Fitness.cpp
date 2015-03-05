@@ -85,6 +85,47 @@ float getCorr(vector<float>& output,vector<float>& target,float meanout,float me
 	target_std = sqrt(var_target);
 	return corr;
 }
+float VAF_loud(vector<float>& output,vector<float>& target,float meantarget,int off,state& s)
+{
+	float v1,v2;
+	float var_target=0;
+	float var_diff = 0;
+	float q=0;
+	float ndata = float(output.size());
+	float vaf=0;
+//	float diff;
+	float diffmean=0;
+	s.out << "output.size() = " << output.size() << "\n";
+	s.out << "target.size() = " << target.size() << "\n";
+
+	for (unsigned int c = 0; c<output.size(); ++c)
+		diffmean += target.at(c+off)-output.at(c);
+	diffmean = diffmean/output.size();
+	s.out << "diffmean = " << diffmean << "\n";
+	//calculate correlation coefficient
+	for (unsigned int c = 0; c<output.size(); ++c)
+	{		
+		v1 = target.at(c+off)-meantarget;
+		v2 = (target.at(c+off)-output.at(c))-diffmean;
+		var_target+=pow(v1,2);
+		var_diff+=pow(v2,2);
+	}
+	//q = q/(ndata-1); //unbiased estimator
+	var_target=var_target/(ndata-1); //unbiased estimator
+	var_diff =var_diff/(ndata-1); //unbiased estimator
+	s.out << "var_diff = " << var_diff << "\n";
+	s.out << "var_target = " << var_target << "\n";
+	s.out << "var_diff / var_target = " << var_diff/var_target << "\n";
+	if(var_target<0.0000001)
+		return 0;
+	else{
+		float tmp = (1-var_diff/var_target)*100;
+		s.out << "tmp = " << tmp << "\n";
+		vaf = std::max(float(0),tmp);
+		s.out << "vaf = " << vaf << "\n";
+	}
+	return vaf;
+}
 float VAF(vector<float>& output,vector<float>& target,float meantarget,int off)
 {
 	float v1,v2;
@@ -92,7 +133,7 @@ float VAF(vector<float>& output,vector<float>& target,float meantarget,int off)
 	float var_diff = 0;
 	float q=0;
 	float ndata = float(output.size());
-	float vaf;
+	float vaf=0;
 //	float diff;
 	float diffmean=0;
 
@@ -110,8 +151,8 @@ float VAF(vector<float>& output,vector<float>& target,float meantarget,int off)
 	//q = q/(ndata-1); //unbiased estimator
 	var_target=var_target/(ndata-1); //unbiased estimator
 	var_diff =var_diff/(ndata-1); //unbiased estimator
-	if(abs(var_target)<0.0000001 || abs(var_diff)<0.0000001)
-		vaf = 0;
+	if(var_target<0.0000001)
+		return 0;
 	else{
 		float tmp = (1-var_diff/var_target)*100;
 		vaf = std::max(float(0),tmp);
@@ -417,7 +458,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 			//if (p.eHC_slim) me.outstack.push_back(vector<float>());
 			int k_eff=0;
 
-			for (unsigned int j=0; j<p.allvars.size();++j)
+			for (unsigned int j=0; j<p.allvars.size();++j) //wgl: add time delay of output variable here 
 				dattovar.at(j)= vals[sim][j];
 
 			for(int k=0;k<me.line.size();++k){
@@ -488,7 +529,9 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 			me.corr = getCorr(me.output,target,meanout,meantarget,0,target_std);
 			me.VAF = VAF(me.output,target,meantarget,0);
 			if (me.corr < 0.001 && me.VAF/100 > .7){
-				s.out << "Error in VAF calculation (probably)\n";
+				s.out << "Error in VAF calculation (probably):\n";
+				s.out << me.eqn; 
+				s.out << "meantarget: " << meantarget << "\n";
 				s.out << "corr: " << me.corr << "\n";
 				s.out << "VAF: " << me.VAF << "\n";
 				s.out << "output: \t";
@@ -496,11 +539,14 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 				for (int i = 0; i<me.output.size(); ++i){
 					s.out << me.output[i] << "\t";
 				}
-				s.out << "target: \t";
+				s.out << "\ntarget: \t";
 				for (int i = 0; i<me.output.size(); ++i){
 					s.out << target[i] << "\t";
 				}
-				exit(1);
+				s.out << "\n recalculating with VAF_loud...\n";
+				me.VAF = VAF_loud(me.output,target,meantarget,0,s);
+				s.out << "\n setting VAF = 0 and continuing...\n";
+				me.VAF=0;
 			}
 			if (p.train)
 			{
