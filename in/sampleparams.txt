@@ -1,8 +1,8 @@
 g					100	// number of generations
-popsize				100	//population size
+popsize				1000	//population size
 numits				1	// number of trials
 limit_evals			0 // limit evals instead of number of generations
-max_evals			10000000000 // max point evaluations
+max_evals			50000000000 // max point evaluations
 
 // Generation Settings 
 sel					4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
@@ -34,6 +34,8 @@ extvars
 cons     			k					
 cvals				1.0						
 seeds				
+AR					1 //include auto-regressive output variables
+AR_n 				10 // order of auto-regression (number of time-steps back)
 
 ERC					0 // ephemeral random constants
 ERCints				0	

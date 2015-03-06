@@ -627,6 +627,10 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.pop_restart;
 		else if(varname.compare("pop_restart_path") == 0)
 			ss>>p.pop_restart_path;
+		else if(varname.compare("AR") == 0)
+			ss>>p.AR;
+		else if(varname.compare("AR_n") == 0)
+			ss>>p.AR_n;
 		else{}
     }
 	p.allvars = p.intvars;
@@ -735,7 +739,7 @@ void load_data(data &d, std::ifstream& fs,params& p)
 	// get variable names from first line / number of variables
 	getline(fs,s,'\n');
 	istringstream ss(s);
-	ss>>tmps;
+	ss>>d.target_var;
 	vector<int> d_col; // keep indices; columns of data that are to be used (they are variables in p.allvars)
 	int d_index=0;
 	while (ss>>tmps)
@@ -1091,7 +1095,14 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		}
 	if (p.sel == 3) load_lexdata(d,ds,p);
 	else load_data(d,ds,p);
-	
+	// load AR variables if necessary
+	if (p.AR)
+	{
+		for (int i=0;i<p.AR_n;++i){
+			p.allvars.push_back(d.target_var + to_string(static_cast<long long>(i)));
+			d.label.push_back(d.target_var + to_string(static_cast<long long>(i)));
+		}
+	}
 	std::time_t t =  std::time(NULL);
     
 

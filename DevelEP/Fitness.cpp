@@ -103,17 +103,19 @@ float VAF_loud(vector<float>& output,vector<float>& target,float meantarget,int 
 	diffmean = diffmean/output.size();
 	s.out << "diffmean = " << diffmean << "\n";
 	//calculate correlation coefficient
+	s.out << "var_diff: ";
 	for (unsigned int c = 0; c<output.size(); ++c)
 	{		
 		v1 = target.at(c+off)-meantarget;
 		v2 = (target.at(c+off)-output.at(c))-diffmean;
 		var_target+=pow(v1,2);
 		var_diff+=pow(v2,2);
+		s.out << var_diff << "\t";
 	}
 	//q = q/(ndata-1); //unbiased estimator
 	var_target=var_target/(ndata-1); //unbiased estimator
 	var_diff =var_diff/(ndata-1); //unbiased estimator
-	s.out << "var_diff = " << var_diff << "\n";
+	s.out << "\nvar_diff = " << var_diff << "\n";
 	s.out << "var_target = " << var_target << "\n";
 	s.out << "var_diff / var_target = " << var_diff/var_target << "\n";
 	if(var_target<0.0000001)
@@ -128,6 +130,9 @@ float VAF_loud(vector<float>& output,vector<float>& target,float meantarget,int 
 }
 float VAF(vector<float>& output,vector<float>& target,float meantarget,int off)
 {
+	if (*min_element(output.begin(),output.end())==*max_element(output.begin(),output.end()))
+		return 0;
+
 	float v1,v2;
 	float var_target=0;
 	float var_diff = 0;
@@ -458,9 +463,23 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 			//if (p.eHC_slim) me.outstack.push_back(vector<float>());
 			int k_eff=0;
 
-			for (unsigned int j=0; j<p.allvars.size();++j) //wgl: add time delay of output variable here 
+			for (unsigned int j=0; j<p.allvars.size()-p.AR_n;++j) //wgl: add time delay of output variable here 
 				dattovar.at(j)= vals[sim][j];
-
+			if (p.AR){ // auto-regressive output variables
+				int ARstart = p.allvars.size()-p.AR_n; 
+				for (unsigned int h=0; h<p.AR_n; ++h){
+					if (sim<ndata_t){
+						if (me.output.size()>h) // add distinction for training / validation data
+							dattovar[ARstart+h] = me.output[sim-1-h];
+						else dattovar[ARstart+h] = 0;
+					}
+					else{
+						if (me.output_v.size()>h) // add distinction for training / validation data
+							dattovar[ARstart+h] = me.output_v[sim-1-h-ndata_t];
+						else dattovar[ARstart+h] = 0;
+					}
+				}
+			}
 			for(int k=0;k<me.line.size();++k){
 				/*if(me.line.at(k).type=='v'){
 					if (static_pointer_cast<n_sym>(me.line.at(k)).valpt==NULL)

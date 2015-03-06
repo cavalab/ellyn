@@ -10,6 +10,7 @@ using namespace std;
 
 struct data {
 
+
 	vector<string> label; // variables corresponding to those defined in parameters 
 	vector<vector<float> > vals; //2D vector of all data, can be accessed data[row][column]
 	//vector<vector<float>> FEvals;
@@ -27,8 +28,9 @@ struct data {
 	vector<vector<float> > targetlex;
 	vector<vector<vector<float> > > lexvals;
 	//vector<int> lexicase;
-	
+	string target_var; //target variable
 
+	data(){}
 	void clear()
 	{
 		label.clear();
