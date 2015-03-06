@@ -3,6 +3,7 @@ popsize				1000	//population size
 numits				1	// number of trials
 limit_evals			0 // limit evals instead of number of generations
 max_evals			50000000000 // max point evaluations
+PS_sel				3
 
 // Generation Settings 
 sel					4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm

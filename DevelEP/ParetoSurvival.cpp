@@ -99,10 +99,12 @@ void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
 	float max_fit=0;
 	float max_age=0;
 	float max_genty=0;
+	float max_complexity=0;
 	for (size_t i =0; i<pop.size(); ++i){
 		if (pop[i].fitness>max_fit) max_fit=pop[i].fitness;
 		if (pop[i].age>max_age) max_age=pop[i].age;
 		if (pop[i].genty>max_genty) max_genty=pop[i].genty;
+		if (pop[i].complexity>max_complexity) max_complexity = pop[i].complexity;
 	}
 	if(p.PS_sel==1) // fitness, age
 	{
@@ -119,6 +121,15 @@ void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
 			pop[i].f.push_back(pop[i].fitness/max_fit);
 			pop[i].f.push_back(pop[i].age/max_age);
 			pop[i].f.push_back(pop[i].genty/max_genty);
+		}
+	}
+	else if(p.PS_sel==3) // fitness, age, complexity
+	{
+		for (size_t i = 0; i<pop.size(); ++i){
+			pop[i].f.resize(0);
+			pop[i].f.push_back(pop[i].fitness/max_fit);
+			pop[i].f.push_back(pop[i].age/max_age);
+			pop[i].f.push_back(float(pop[i].complexity)/max_complexity);
 		}
 	}
 	SPEA2 S(pop.size(),pop[0].f.size());
