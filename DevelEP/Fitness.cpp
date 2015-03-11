@@ -219,7 +219,7 @@ int getComplexity(string& eqn)
 		else if (isalpha(c) && (m+1)<eqn.size()){
 			bool pass=true;
 			while ((m+1)<eqn.size() && pass){
-				if (isalpha(eqn[m+1])) ++m; 
+				if (isalpha(eqn[m+1]) || isdigit(eqn[m+1])) ++m; 
 				else pass=0;
 			}
 			++complexity;
