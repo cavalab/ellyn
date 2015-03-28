@@ -175,61 +175,93 @@ float std_dev(vector<float>& target,float& meantarget)
 	s = s/(target.size()-1);
 	return sqrt(s);
 }
-int getComplexity(string& eqn)
-{
-	int complexity=0;
-	char c;
-	for(int m=0;m<eqn.size();++m){
-		c=eqn[m];
-		
-		if(c=='/')
-			complexity=complexity+2;
-		else if (c=='s'){
-			if(m+2<eqn.size()){
-				if ( eqn[m+1]=='i' && eqn[m+2] == 'n'){
-					complexity=complexity+3;
-					m=m+2;
-				}
-			}
+int getComplexity(vector<node>& line)
+{	
+	int complexity = 0;
+	/*for (int i = 0; i<line.size(); ++i){
+		if (line[i].on){
+			complexity += line[i].c; 
 		}
-		else if (c=='c'){
-			if(m+2<eqn.size()){
-				if ( eqn[m+1]=='o' && eqn[m+2] == 's'){
-					complexity=complexity+3;
-					m=m+2;
-				}
-			}
-		}
-		else if (c=='e'){
-			if(m+2<eqn.size()){
-				if ( eqn[m+1]=='x' && eqn[m+2] == 'p'){
-					complexity=complexity+4;
-					m=m+2;
-				}
-			}
-		}
-		else if (c=='l'){
-			if(m+2<eqn.size()){
-				if ( eqn[m+1]=='o' && eqn[m+2] == 'g'){
-					complexity=complexity+4;
-					m=m+2;
-				}
-			}
-		}
-		else if (isalpha(c) && (m+1)<eqn.size()){
-			bool pass=true;
-			while ((m+1)<eqn.size() && pass){
-				if (isalpha(eqn[m+1]) || isdigit(eqn[m+1])) ++m; 
-				else pass=0;
-			}
-			++complexity;
-		}
-		else
-			++complexity;
 	}
+	return complexity;*/
 
+	int a = 1;
+	int i = line.size()-1;
+	while (a > 0 && i >= 0)
+	{
+		if (line[i].on && !line[i].intron){
+			
+			complexity += line[i].c;
+			--a;
+			a += line[i].arity;
+		}
+		--i;
+	}
 	return complexity;
 }
+//int getComplexity(string& eqn)
+//{
+//	int complexity=0;
+//	char c;
+//	for(int m=0;m<eqn.size();++m){
+//		c=eqn[m];
+//		
+//		if(c=='/')
+//			complexity=complexity+2;
+//		else if (c=='s'){
+//			
+//			if(m+2<eqn.size()){
+//				if ( eqn[m+1]=='i' && eqn[m+2] == 'n'){
+//					complexity=complexity+3;
+//					m=m+2;
+//				}
+//			}
+//			if (m+3<eqn.size()){ //sqrt
+//				if ( eqn[m+1]=='q' && eqn[m+2] == 'r' && eqn[m+3]=='t'){
+//					complexity=complexity+3;
+//					m=m+2;
+//				}
+//			}
+//			
+//		}
+//		else if (c=='c'){
+//			if(m+2<eqn.size()){
+//				if ( eqn[m+1]=='o' && eqn[m+2] == 's'){
+//					complexity=complexity+3;
+//					m=m+2;
+//				}
+//			}
+//		}
+//		else if (c=='e'){
+//			if(m+2<eqn.size()){
+//				if ( eqn[m+1]=='x' && eqn[m+2] == 'p'){
+//					complexity=complexity+4;
+//					m=m+2;
+//				}
+//			}
+//		}
+//		else if (c=='l'){
+//			if(m+2<eqn.size()){
+//				if ( eqn[m+1]=='o' && eqn[m+2] == 'g'){
+//					complexity=complexity+4;
+//					m=m+2;
+//				}
+//			}
+//		}
+//		else if (isalpha(c) && (m+1)<eqn.size()){
+//			bool pass=true;
+//			while ((m+1)<eqn.size() && pass){
+//				if (isalpha(eqn[m+1]) || isdigit(eqn[m+1])) ++m; 
+//				else pass=0;
+//			}
+//			++complexity;
+//		}
+//		else
+//			++complexity;
+//	}
+//
+//	return complexity;
+//}
 int getEffSize(vector<node>& line)
 {
 	int eff_size=0;
@@ -258,7 +290,10 @@ void eval(node& n,vector<float>& outstack)
 				float n2 = outstack.back(); outstack.pop_back();
 
 				outstack.push_back(n2+n1);
+				n.intron=false;
 		}
+		else 
+			n.intron=true;
 		break;
 	case '-':
 		if(outstack.size()>=2){
@@ -266,7 +301,10 @@ void eval(node& n,vector<float>& outstack)
 				float n2 = outstack.back(); outstack.pop_back();
 
 				outstack.push_back(n2-n1);
+				n.intron=false;
 		}
+		else 
+			n.intron=true;
 		break;
 	case '*':
 		if(outstack.size()>=2){
@@ -274,7 +312,10 @@ void eval(node& n,vector<float>& outstack)
 				float n2 = outstack.back(); outstack.pop_back();
 
 				outstack.push_back(n2*n1);
+				n.intron=false;
 		}
+		else 
+			n.intron=true;
 		break;
 	case '/':
 		if(outstack.size()>=2){
@@ -284,25 +325,37 @@ void eval(node& n,vector<float>& outstack)
 					outstack.push_back(1);
 				else
 					outstack.push_back(n2/n1);
+				n.intron=false;
 		}
+		else 
+			n.intron=true;
 		break;
 	case 's':
 		if(outstack.size()>=1){
 				float n1 = outstack.back(); outstack.pop_back();
 				outstack.push_back(sin(n1));
+				n.intron=false;
 		}
+		else 
+			n.intron=true;
 		break;
 	case 'c':
 		if(outstack.size()>=1){
 				float n1 = outstack.back(); outstack.pop_back();
 				outstack.push_back(cos(n1));
+				n.intron=false;
 		}
+		else 
+			n.intron=true;
 		break;
 	case 'e':
 		if(outstack.size()>=1){
 				float n1 = outstack.back(); outstack.pop_back();
 				outstack.push_back(exp(n1));
+				n.intron=false;
 		}
+		else 
+			n.intron=true;
 		break;
 	case 'l':
 		if(outstack.size()>=1){
@@ -311,8 +364,23 @@ void eval(node& n,vector<float>& outstack)
 					outstack.push_back(0);
 				else // safe log of absolute value of n1
 					outstack.push_back(log(abs(n1)));
+				n.intron=false;
 		}
+		else 
+			n.intron=true;
 		break;
+	case 'q':
+		if(outstack.size()>=1){
+				float n1 = outstack.back(); outstack.pop_back();
+				// safe sqrt of absolute value of n1
+				if (n1<0)
+					outstack.push_back(0);
+				else
+					outstack.push_back(sqrt(n1));
+				n.intron=false;
+		}
+		else 
+			n.intron=true;
 	}
 }
 void FitnessEstimate(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE);
@@ -334,7 +402,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 	{
 		pop.at(count).eqn = Line2Eqn(pop.at(count).line,pop.at(count).eqn_form);
 		//getEqnForm(pop.at(count).eqn,pop.at(count).eqn_form);
-		pop.at(count).complexity= getComplexity(pop.at(count).eqn_form);
+		
 		pop.at(count).eff_size = getEffSize(pop.at(count).line);
 
 		if(p.sel!=3){
@@ -344,7 +412,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 		{
 			LexicaseFitness(pop.at(count),p,d,s,FE);
 		}//LEXICASE FITNESS
-
+		pop.at(count).complexity= getComplexity(pop.at(count).line);
 		/*if (p.estimate_generality && pop.at(count).genty != abs(pop[count].fitness-pop[count].fitness_v)/pop[count].fitness && pop.at(count).genty != p.max_fit) 
 			std::cerr << "genty error, line 300 Fitness.cpp\n";*/
 	}//for(int count = 0; count<pop.size(); ++count)
@@ -965,11 +1033,12 @@ bool SlimFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE, int li
 
 	me.eqn = Line2Eqn(me.line,me.eqn_form);
 	//getEqnForm(me.eqn,me.eqn_form);
-	me.complexity= getComplexity(me.eqn_form);
+	
 	me.eff_size = getEffSize(me.line);
 
 	bool pass = getSlimFit(me,p,d,s,FE,linestart,orig_fit);
-		
+	
+	me.complexity= getComplexity(me.line);
 	s.numevals[omp_get_thread_num()]=s.numevals[omp_get_thread_num()]+1;
 	return pass;
 }
@@ -1022,7 +1091,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 					++me.eff_size;
 			}
 			// Get Complexity
-			me.complexity= getComplexity(me.eqn_form);
+			me.complexity= getComplexity(me.line);
 			
 			// set data pointers
 			for(int m=0;m<me.line.size();++m){

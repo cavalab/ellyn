@@ -37,6 +37,9 @@ string Line2Eqn(vector<node>& line,string& eqnForm)
 					case 'e':
 						sop="exp";
 						break;
+					case 'q':
+						sop="sqrt";
+						break;
 					default:
 						cout << "error";
 					}
@@ -47,7 +50,7 @@ string Line2Eqn(vector<node>& line,string& eqnForm)
 					s1f.insert(0,"(");
 					s1+=")";
 					s1f+=")";
-					if (sop.compare("log")==0){
+					if (sop.compare("log")==0 ){ //|| sop.compare("sqrt")==0
 						eqnstack.push_back(sop + "(abs" + s1 + ")");
 						formstack.push_back(sop + "(abs" + s1f + ")");
 					}

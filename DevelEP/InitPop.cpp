@@ -193,6 +193,9 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 				}
 				tmpstack.clear();
 				break;
+			case 11: //sqrt
+				newind.line.push_back(node('q'));
+				break;
 			}
 	}
 	/*while (newind.line.back()->type=='n'||newind.line.back()->type=='v')
@@ -330,6 +333,10 @@ void push_back_node(vector <node>& line, int choice, params& p,vector<Randclass>
 			//line.push_back(shared_ptr<node>(new n_log()));
 			line.push_back(node('l'));
 			break;
+		case 11: // sqrt
+			//line.push_back(shared_ptr<node>(new n_log()));
+			line.push_back(node('q'));
+			break;
 	}
 }
 void push_front_node(vector <node>& line, int choice, params& p,vector<Randclass>& r)
@@ -405,6 +412,9 @@ void push_front_node(vector <node>& line, int choice, params& p,vector<Randclass
 		case 9: // log
 			//line.insert(line.begin(),shared_ptr<node>(new n_log()));
 			line.insert(line.begin(),node('l'));
+			break;
+		case 11: // sqrt
+			line.insert(line.begin(),node('q'));
 			break;
 	}
 }

@@ -1,5 +1,5 @@
 g					100	// number of generations
-popsize				1000	//population size
+popsize				100	//population size
 numits				1	// number of trials
 limit_evals			0 // limit evals instead of number of generations
 max_evals			50000000000 // max point evaluations
@@ -56,11 +56,11 @@ FE_train_size		10	// trainer population size
 FE_train_gens		10 // number of generations between trainer selections
 FE_rank				1	// use rank for FE fitness rather than error  
 
-//available operators: n	v	+	-	*	/
-//index                0	1	2	3	4	5	6	7	8	9
+//available operators: n	v	+	-	*	/	sin	cos	exp	log	sqrt	
+//index                0	1	2	3	4	5	6	7	8	9	10
 
-op_list				n	v	+	-	*	/
-op_weight			4	4	1	1	1	1				
+op_list				n	v	+	-	*	/	sqrt
+op_weight			4	4	1	1	1	1	1			
 weight_ops_on		1
 min_len				3
 max_len				50

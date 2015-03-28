@@ -694,6 +694,11 @@ void load_params(params &p, std::ifstream& fs)
 			p.op_choice.push_back(9);
 			p.op_arity.push_back(1);
 		}
+		else if (p.op_list.at(i).compare("sqrt")==0)
+		{
+			p.op_choice.push_back(11);
+			p.op_arity.push_back(1);
+		}
 		else 
 			cout << "bad command (load params op_choice)" << "\n";
 	}

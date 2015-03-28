@@ -16,25 +16,31 @@ public:
 	float value;
 	float* valpt;
 	string varname;
-	node() {type=0; on=1; arity=0;}
+	int c; // complexity
+	bool intron; // behavioral intron declaration (used in getComplexity())
+	node() {type=0; on=1; arity=0; intron = 0;}
 	//node(int set) {type=set;on=1;}
 	//operator with specified arity
-	node(char stype,int sarity){type=stype;arity=sarity;on=1;}
+	node(char stype,int sarity){type=stype; arity=sarity; on=1; setComplexity(); intron = 0;}
 	//operator with arity lookup
 	node(char stype)
 	{
 		type=stype;
-		if (type=='s' || type=='c' || type=='e' || type=='l')
+		if (type=='s' || type=='c' || type=='e' || type=='l' || type=='q')
 			arity = 1;
 		else
 			arity = 2;
 
 		on=1;
+
+		// assign complexity
+		setComplexity();
+		intron = 0;
 	}
 	//number
-	node(float svalue){type='n'; value=svalue; on=1; arity=0;}
+	node(float svalue){type='n'; value=svalue; on=1; arity=0; c=1;intron = 0;}
 	//variable
-	node(string& vname){type='v';varname=vname;on=1;arity=0;}
+	node(string& vname){type='v';varname=vname;on=1;arity=0; c=1;intron = 0;}
 	//set pointer for variables
 	void setpt(float* set)
 	{
@@ -43,6 +49,15 @@ public:
 		valpt=set;
 	}
 	~node() {}
+private:
+	void setComplexity()
+	{
+		// assign complexity
+		if (type=='e' || type=='l') c = 4; 
+		else if (type=='s' || type=='c' ) c = 3;
+		else if (type=='/' || type=='q') c = 2;
+		else c = 1;
+	}
 	//void eval(vector<float> & outstack)=0;
 	/*node* clone() const
 	{
