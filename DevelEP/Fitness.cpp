@@ -538,12 +538,14 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 				for (unsigned int h=0; h<p.AR_n; ++h){
 					if (sim<ndata_t){
 						if (me.output.size()>h) // add distinction for training / validation data
-							dattovar[ARstart+h] = me.output[sim-1-h];
+							if (p.AR_lookahead) dattovar[ARstart+h] = target[sim-1-h];
+							else dattovar[ARstart+h] = me.output[sim-1-h];
 						else dattovar[ARstart+h] = 0;
 					}
 					else{
 						if (me.output_v.size()>h) // add distinction for training / validation data
-							dattovar[ARstart+h] = me.output_v[sim-1-h-ndata_t];
+							if (p.AR_lookahead) dattovar[ARstart+h] = target[sim-1-h];
+							else dattovar[ARstart+h] = me.output_v[sim-1-h-ndata_t];
 						else dattovar[ARstart+h] = 0;
 					}
 				}

@@ -37,6 +37,7 @@ cvals				1.0
 seeds				
 AR					1 //include auto-regressive output variables
 AR_n 				10 // order of auto-regression (number of time-steps back)
+AR_lookahead		1 // just predict one output ahead
 
 ERC					0 // ephemeral random constants
 ERCints				0	

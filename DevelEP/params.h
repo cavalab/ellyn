@@ -66,7 +66,7 @@ struct params {
 	vector <vector <node> > seedstacks;
 	bool AR; //auto-regressive output
 	int AR_n; //order of auto-regressive output
-
+	bool AR_lookahead; 
 	vector <string> allvars;// = intvars.insert(intvars.end(), extvars.begin(), extvars.end());
 	vector <string> allblocks;// = allvars.insert(allvars.end(),consvals.begin(),convals.end());
 	//allblocks = allblocks.insert(allblocks.end(),seeds.begin(),seeds.end());
@@ -174,6 +174,7 @@ struct params {
 		pop_restart_path=""; // restart population file path
 		AR = 0;
 		AR_n = 0;
+		AR_lookahead = 0;
 		// Results and printing
 		resultspath="";
 		//print initial population
