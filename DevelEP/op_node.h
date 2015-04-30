@@ -53,7 +53,8 @@ private:
 	void setComplexity()
 	{
 		// assign complexity
-		if (type=='e' || type=='l') c = 4; 
+		if (type=='^') c = 5;
+		else if (type=='e' || type=='l') c = 4; 
 		else if (type=='s' || type=='c' ) c = 3;
 		else if (type=='/' || type=='q') c = 2;
 		else c = 1;

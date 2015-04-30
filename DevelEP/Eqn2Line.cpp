@@ -257,8 +257,14 @@ void Eqn2Line(string& expr,vector<node>& eqnstack)
 			{
 				//numstack.push_back(stof(tstart));
 				RPN+=tstart;
-				eqnstack.push_back(node(stof(tstart)));
-				//push_numstack(atoi(tstart));
+				if (isdigit(tstart[0]))
+					//eqnstack.push_back(shared_ptr<node>(new n_num(stof(tstart))));
+					eqnstack.push_back(node(stof(tstart)));
+				else if (is_letter(tstart[0]))
+					//eqnstack.push_back(shared_ptr<node>(new n_sym(tstart)));
+					eqnstack.push_back(node(tstart));
+				else
+					cout << "oops.\n";
 				tstart.clear();
 				lastop=NULL;
 			} 
