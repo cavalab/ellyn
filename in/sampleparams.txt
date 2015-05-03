@@ -11,7 +11,7 @@ tourn_size			2
 rt_rep				0.0
 rt_cross			0.8
 rt_mut				0.2
-cross				2	// 1: ultra 2: one point1
+cross				1	// 1: ultra 2: one point1
 cross_ar			.1 //crossover alternation rate (ultra only)
 mut_ar				.025 //mutation alternation rate 
 stoperror			0.0001	// stop condition / convergence condition

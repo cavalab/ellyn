@@ -32,58 +32,99 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 			else
 				r2=0;
 		
-			if(parents[r1].line.size()>parents[r2].line.size())
-			{
-				off1 = r[omp_get_thread_num()].rnd_int(0,parents[r1].line.size()-parents[r2].line.size()-1);
-				off2 = 0;
-			}
-			else if (parents[r2].line.size()>parents[r1].line.size())
-			{
-				off1 = 0;
-				off2 = r[omp_get_thread_num()].rnd_int(0,parents[r2].line.size()-parents[r1].line.size()-1);
-			}
-			else
-			{
-				off1=0; 
-				off2=0;
-			}
-			head = r1;
-			offset=off1;
-			// assign beginning of parent to kid if it is longer
-			kids.at(r1).line.insert(kids.at(r1).line.end(),parents[r1].line.begin(),parents[r1].line.begin()+offset);
+			//if(parents[r1].line.size()>parents[r2].line.size())
+			//{
+			//	off1 = r[omp_get_thread_num()].rnd_int(0,parents[r1].line.size()-parents[r2].line.size()-1);
+			//	off2 = 0;
+			//}
+			//else if (parents[r2].line.size()>parents[r1].line.size())
+			//{
+			//	off1 = 0;
+			//	off2 = r[omp_get_thread_num()].rnd_int(0,parents[r2].line.size()-parents[r1].line.size()-1);
+			//}
+			//else
+			//{
+			//	off1=0; 
+			//	off2=0;
+			//}
+			//head = r1;
+			//offset=off1;
+			//// assign beginning of parent to kid if it is longer
+			//kids.at(r1).line.insert(kids.at(r1).line.end(),parents[r1].line.begin(),parents[r1].line.begin()+offset);
 
-			for (unsigned int i=0;i<std::min(parents[r1].line.size(),parents[r2].line.size());++i)
+			//for (unsigned int i=0;i<std::min(parents[r1].line.size(),parents[r2].line.size());++i)
+			//{
+			//	if (r[omp_get_thread_num()].rnd_flt(0,1)<p.cross_ar)
+			//	{
+			//		if(head==r1)
+			//		{
+			//			head=r2;
+			//			offset=off2;
+			//		}
+			//		else
+			//		{
+			//			head=r1;
+			//			offset=off1;
+			//		}
+			//	}
+			//		
+			//	kids.at(r1).line.push_back(parents[head].line.at(i+offset));
+			//}
+			//if(kids.at(r1).line.size() < parents[r1].line.size())
+			//{
+			//	int gap = kids.at(r1).line.size() < parents[r1].line.size()+1;
+			//	kids.at(r1).line.insert(kids.at(r1).line.end(),parents[r1].line.end()-gap,parents[r1].line.end());
+			//}
+				//kids.at(r1).line.push_back(parents[r1].line.at(kids.at(r1).line.size()));
+
+			// new version uses alignment deviation rather than an initial random offset.
+			head = r1;
+			offset = 0;
+			for (unsigned int i=0;i<std::min(parents[r1].line.size(),parents[r2].line.size()); ++i)
 			{
 				if (r[omp_get_thread_num()].rnd_flt(0,1)<p.cross_ar)
 				{
 					if(head==r1)
 					{
 						head=r2;
-						offset=off2;
+						offset=r[omp_get_thread_num()].gasdev()*parents[head].line.size()*p.cross_ar;
 					}
 					else
 					{
 						head=r1;
-						offset=off1;
+						offset=r[omp_get_thread_num()].gasdev()*parents[head].line.size()*p.cross_ar;
 					}
 				}
-					
+
+				if (i+offset>=parents[head].line.size() || i+offset <= 0) offset = 0;
+
 				kids.at(r1).line.push_back(parents[head].line.at(i+offset));
+				
+				
 			}
 			if(kids.at(r1).line.size() < parents[r1].line.size())
 			{
-				int gap = kids.at(r1).line.size() < parents[r1].line.size()+1;
+				int gap = parents[r1].line.size()-kids.at(r1).line.size() +1;
 				kids.at(r1).line.insert(kids.at(r1).line.end(),parents[r1].line.end()-gap,parents[r1].line.end());
 			}
-				//kids.at(r1).line.push_back(parents[r1].line.at(kids.at(r1).line.size()));
 		}
 	}
 	else if (p.cross==2) // one-point crossover
 	{
 		int point1 = r[omp_get_thread_num()].rnd_int(0,min(p1.line.size(),p2.line.size()));
+		int point2 = point1 + r[omp_get_thread_num()].gasdev(); //*abs(int(p1.line.size()-p2.line.size()))/10;
+		point1 += r[omp_get_thread_num()].gasdev(); //*abs(int(p1.line.size()-p2.line.size()))/10;
+
+		if (point1>p1.line.size()) point1 = p1.line.size();
+		if (point1<0) point1 = 0;
+
+		if (point2>p2.line.size()) point2 = p2.line.size();
+		if (point2<0) point2 = 0;
+
 		kids[0].line.assign(parents[0].line.begin(),parents[0].line.begin()+point1);
-		kids[0].line.insert(kids[0].line.end(),parents[1].line.begin()+point1,parents[1].line.end());
-		kids[1].line.assign(parents[1].line.begin(),parents[1].line.begin()+point1);
+		kids[0].line.insert(kids[0].line.end(),parents[1].line.begin()+point2,parents[1].line.end());
+
+		kids[1].line.assign(parents[1].line.begin(),parents[1].line.begin()+point2);
 		kids[1].line.insert(kids[1].line.end(),parents[0].line.begin()+point1,parents[0].line.end());
 
 		//int empty_count=0;
