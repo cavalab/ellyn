@@ -362,8 +362,11 @@ void eval(node& n,vector<float>& outstack)
 				float n1 = outstack.back(); outstack.pop_back();
 				if (abs(n1)<0.000001)
 					outstack.push_back(0);
-				else // safe log of absolute value of n1
-					outstack.push_back(log(abs(n1)));
+				else 
+					// safe log of absolute value of n1
+					//outstack.push_back(log(abs(n1)));
+					// unsafe log of real value
+					outstack.push_back(log(n1));
 				n.intron=false;
 		}
 		else 

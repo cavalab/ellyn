@@ -50,14 +50,14 @@ string Line2Eqn(vector<node>& line,string& eqnForm)
 					s1f.insert(0,"(");
 					s1+=")";
 					s1f+=")";
-					if (sop.compare("log")==0 ){ //|| sop.compare("sqrt")==0
-						eqnstack.push_back(sop + "(abs" + s1 + ")");
-						formstack.push_back(sop + "(abs" + s1f + ")");
-					}
-					else{
-						eqnstack.push_back(sop + s1);
-						formstack.push_back(sop + s1f);
-					}
+					//if (sop.compare("log")==0 ){ //|| sop.compare("sqrt")==0
+					//	eqnstack.push_back(sop + "(abs" + s1 + ")");
+					//	formstack.push_back(sop + "(abs" + s1f + ")");
+					//}
+					//else{
+					eqnstack.push_back(sop + s1);
+					formstack.push_back(sop + s1f);
+					//}
 				}
 				else if (line.at(i).arity==2 && eqnstack.size()>=2){
 					string s1 = eqnstack.back(); eqnstack.pop_back();
