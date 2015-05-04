@@ -726,7 +726,7 @@ void load_params(params &p, std::ifstream& fs)
 	//normalize fn weights
 	if (p.weight_ops_on) 
 	{
-		float sumweight = accumulate(p.op_weight.begin(),p.op_weight.end(),0);
+		float sumweight = accumulate(p.op_weight.begin(),p.op_weight.end(),0.0);
 		for(unsigned int i=0;i<p.op_weight.size();++i)
                         p.op_weight.at(i) = p.op_weight.at(i)/sumweight;
 	}
