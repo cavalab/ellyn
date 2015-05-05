@@ -634,6 +634,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.AR_n;
 		else if(varname.compare("AR_lookahead") == 0)
 			ss>>p.AR_lookahead;
+		else if(varname.compare("align_dev") ==0)
+			ss>>p.align_dev;
 		else{}
     }
 	p.allvars = p.intvars;

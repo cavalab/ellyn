@@ -562,15 +562,15 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 					//me.line.at(k).eval(outstack);
 					eval(me.line.at(k),outstack);
 					++ptevals;
-				if (p.eHC_on && p.eHC_slim) // stack tracing
-				{
-					if(!outstack.empty()) me.outstack[k_eff*vals.size() + sim] = outstack.back();
-					else me.outstack[k_eff*vals.size() + sim] = 0;
-					if (sim==0) me.outstacklen.push_back(outstack.size());
-					/*if(!outstack.empty()) me.outstack.push_back(outstack.back());
-					else me.outstack.push_back(0);*/
-				}
-				++k_eff;
+					if (p.eHC_on && p.eHC_slim) // stack tracing
+					{
+						if(!outstack.empty()) me.outstack[k_eff*vals.size() + sim] = outstack.back();
+						else me.outstack[k_eff*vals.size() + sim] = 0;
+						if (sim==0) me.outstacklen.push_back(outstack.size());
+						/*if(!outstack.empty()) me.outstack.push_back(outstack.back());
+						else me.outstack.push_back(0);*/
+					}
+					++k_eff;
 					/*else
 						cout << "hm";*/
 				}

@@ -87,14 +87,16 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 					if(head==r1)
 					{
 						head=r2;
-						offset=r[omp_get_thread_num()].gasdev()*parents[head].line.size()*p.cross_ar;
+						
 					}
 					else
 					{
 						head=r1;
-						offset=r[omp_get_thread_num()].gasdev()*parents[head].line.size()*p.cross_ar;
+						//offset=r[omp_get_thread_num()].gasdev()*parents[head].line.size()*p.cross_ar;
 					}
+					if (p.align_dev) offset=r[omp_get_thread_num()].gasdev();//*parents[head].line.size()*p.cross_ar;
 				}
+				
 
 				if (i+offset>=parents[head].line.size() || i+offset <= 0) offset = 0;
 
@@ -111,58 +113,70 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 	}
 	else if (p.cross==2) // one-point crossover
 	{
-		bool tryagain = true;
-		int max_tries = 2;
-		int tries = 0;
-		while (tryagain && tries < max_tries) {
-			int point1 = r[omp_get_thread_num()].rnd_int(0,min(p1.line.size(),p2.line.size()));
-			int point2 = point1 + r[omp_get_thread_num()].gasdev(); //*abs(int(p1.line.size()-p2.line.size()))/10;
-			int tmp1 = point1;
-			int tmp2 = point2;
+		if (p.align_dev){
+			bool tryagain = true;
+			int max_tries = 2;
+			int tries = 0;
+			while (tryagain && tries < max_tries) {
+				int point1 = r[omp_get_thread_num()].rnd_int(0,min(p1.line.size(),p2.line.size()));
+				int point2 = point1 + r[omp_get_thread_num()].gasdev(); //*abs(int(p1.line.size()-p2.line.size()))/10;
+				int tmp1 = point1;
+				int tmp2 = point2;
 
-			point1 += r[omp_get_thread_num()].gasdev(); //*abs(int(p1.line.size()-p2.line.size()))/10;
-			int tmp1_1 = point1; 
+				point1 += r[omp_get_thread_num()].gasdev(); //*abs(int(p1.line.size()-p2.line.size()))/10;
+				int tmp1_1 = point1; 
 
-			if (point1 < 0) 
-				point1 = 0;
-			else if (point1 > p1.line.size()) {
-				point1 = p1.line.size();
-			}
+				if (point1 < 0) 
+					point1 = 0;
+				else if (point1 > p1.line.size()) {
+					point1 = p1.line.size();
+				}
 		
 
-			if (point2 < 0) 
-				point2 = 0;
-			else if (point2 > p2.line.size()) {
-				int p2size = p2.line.size();
-				point2 = p2.line.size();
-			}
+				if (point2 < 0) 
+					point2 = 0;
+				else if (point2 > p2.line.size()) {
+					int p2size = p2.line.size();
+					point2 = p2.line.size();
+				}
 		
 
-			kids[0].line.assign(parents[0].line.begin(),parents[0].line.begin()+point1);
-			kids[0].line.insert(kids[0].line.end(),parents[1].line.begin()+point2,parents[1].line.end());
+				kids[0].line.assign(parents[0].line.begin(),parents[0].line.begin()+point1);
+				kids[0].line.insert(kids[0].line.end(),parents[1].line.begin()+point2,parents[1].line.end());
 
-			kids[1].line.assign(parents[1].line.begin(),parents[1].line.begin()+point2);
-			kids[1].line.insert(kids[1].line.end(),parents[0].line.begin()+point1,parents[0].line.end());
+				kids[1].line.assign(parents[1].line.begin(),parents[1].line.begin()+point2);
+				kids[1].line.insert(kids[1].line.end(),parents[0].line.begin()+point1,parents[0].line.end());
 
-			if (kids[0].line.empty() || kids[1].line.empty())
-				tryagain = true; 
-			else
-				tryagain = false;
+				if (kids[0].line.empty() || kids[1].line.empty())
+					tryagain = true; 
+				else
+					tryagain = false;
 
-			++tries;
+				++tries;
 			
+			}
+			if (tryagain)
+			{
+				int point1 = min(p1.line.size(),p2.line.size())/2;
+				int point2 = point1;
+
+				kids[0].line.assign(parents[0].line.begin(),parents[0].line.begin()+point1);
+				kids[0].line.insert(kids[0].line.end(),parents[1].line.begin()+point2,parents[1].line.end());
+
+				kids[1].line.assign(parents[1].line.begin(),parents[1].line.begin()+point2);
+				kids[1].line.insert(kids[1].line.end(),parents[0].line.begin()+point1,parents[0].line.end());
+			}
 		}
-		if (tryagain)
-		{
-			int point1 = min(p1.line.size(),p2.line.size())/2;
-			int point2 = point1;
-
+		else{
+			int point1 = r[omp_get_thread_num()].rnd_int(0,min(p1.line.size(),p2.line.size()));
+			
 			kids[0].line.assign(parents[0].line.begin(),parents[0].line.begin()+point1);
-			kids[0].line.insert(kids[0].line.end(),parents[1].line.begin()+point2,parents[1].line.end());
+			kids[0].line.insert(kids[0].line.end(),parents[1].line.begin()+point1,parents[1].line.end());
 
-			kids[1].line.assign(parents[1].line.begin(),parents[1].line.begin()+point2);
+			kids[1].line.assign(parents[1].line.begin(),parents[1].line.begin()+point1);
 			kids[1].line.insert(kids[1].line.end(),parents[0].line.begin()+point1,parents[0].line.end());
 		}
+
 		//int empty_count=0;
 		//while(kids[0].line.empty() || kids[1].line.empty() || kids[0].line.size()>p.max_len || kids[1].line.size()>p.max_len && empty_count<10){
 		//	int point1 = r[omp_get_thread_num()].rnd_int(0,p1.line.size());
@@ -194,8 +208,8 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 	//	if(kids[0].line.at(t)>99) tmpinssize++;
 	//if(tmpinssize!=kids[0].args.size())
 	//	cout << "size mismatch" << endl;
-	if (kids[0].line.empty() || kids[1].line.empty())
-		cout << "?!";
+	assert(~kids[0].line.empty() && ~kids[1].line.empty());
+		
 
 	tmpinssize=0;
 

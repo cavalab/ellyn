@@ -27,6 +27,7 @@ struct params {
 	float cross_ar; //crossover alternation rate
 	float mut_ar;
 	int cross; // 1: ultra; 2: one point
+	bool align_dev; // on or off - adds alignment deviation via gaussian random variable
 	//float stoperror; // stop condition / convergence condition
 	
 	// Data settings
@@ -164,6 +165,7 @@ struct params {
 		cross_ar=0.025; //crossover alternation rate
 		mut_ar=0.025;
 		cross=2; // 1: ultra; 2: one point
+		align_dev = 0;
 
 		// Data settings
 		init_validate_on=0; // initial fitness validation of individuals
