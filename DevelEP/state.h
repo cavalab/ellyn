@@ -37,7 +37,7 @@ struct state{
 		int nt=0;
 		#pragma omp parallel 
 		{
-			nt = omp_get_num_threads();
+			nt = omp_get_max_threads();
 		}
 		ptevals.assign(nt,0);
 		//ptevals.resize(nt);

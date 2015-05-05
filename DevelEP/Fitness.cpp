@@ -750,7 +750,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 			//			me.genty = abs(me.VAF-me.VAF_v)/me.VAF;
 			//	}
 			//}
-			
+			int tmp = omp_get_thread_num();
 		s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
 }
 
@@ -983,6 +983,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 				else
 					me.genty = abs(me.fitness-me.fitness_v)/me.fitness;
 			}*/
+			int tmp = omp_get_thread_num();
 		s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
 		return true;
 }

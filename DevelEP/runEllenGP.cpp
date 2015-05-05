@@ -287,11 +287,11 @@ void printdatafile(tribe& T,state& s,params& p, vector<Randclass>& r,std::ofstre
 	T.getbestsubind(best_ind);
 
 	/*dfout << s.totalptevals() << "\t" << best_ind.eqn << "\t" << T.bestFit() << "\t" << T.bestFit_v() << "\t" << T.medFit() << "\t" << T.medFit_v() << "\t" << best_ind.abserror << "\t" << best_ind.abserror_v << "\t" << best_ind.corr << "\t" << best_ind.corr_v << "\t" << T.meanSize() << "\t" << T.meanEffSize() << "\t" << s.current_pHC_updates/float(p.popsize)*100.0 << "\t" << s.current_eHC_updates/float(p.popsize)*100.0 << "\t" <<  s.good_cross_pct << "\t" << s.neut_cross_pct << "\t" << s.bad_cross_pct;*/
-	dfout << gen << "," << s.totalptevals() << "," << best_ind.eqn << "," << T.bestFit() << "," << T.bestFit_v() << "," << T.medFit() << "," << T.medFit_v() << "," << best_ind.abserror << "," << best_ind.abserror_v << "," << best_ind.corr << "," << best_ind.corr_v << "," << best_ind.VAF << "," << best_ind.VAF_v << "," << T.meanSize() << "," << T.meanEffSize() << "," << s.current_pHC_updates/float(p.popsize)*100.0 << "," << s.current_eHC_updates/float(p.popsize)*100.0 << "," <<  s.good_cross_pct << "," << s.neut_cross_pct << "," << s.bad_cross_pct;
+	dfout << gen << "\t" << s.totalptevals() << "\t" << best_ind.eqn << "\t" << T.bestFit() << "\t" << T.bestFit_v() << "\t" << T.medFit() << "\t" << T.medFit_v() << "\t" << best_ind.abserror << "\t" << best_ind.abserror_v << "\t" << best_ind.corr << "\t" << best_ind.corr_v << "\t" << best_ind.VAF << "\t" << best_ind.VAF_v << "\t" << T.meanSize() << "\t" << T.meanEffSize() << "\t" << s.current_pHC_updates/float(p.popsize)*100.0 << "\t" << s.current_eHC_updates/float(p.popsize)*100.0 << "\t" <<  s.good_cross_pct << "\t" << s.neut_cross_pct << "\t" << s.bad_cross_pct;
 	if (p.print_homology){
 		float tot_hom, on_hom, off_hom;
 		T.hom(r,tot_hom,on_hom,off_hom);
-		dfout << "," << tot_hom << "," << on_hom << "," << off_hom;
+		dfout << "\t" << tot_hom << "\t" << on_hom << "\t" << off_hom;
 	}
 	dfout <<"\n";
 
