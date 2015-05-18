@@ -575,6 +575,8 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 						cout << "hm";*/
 				}
 			}
+			/*if (outstack.size()>1)
+				cout << "non-tree\n";*/
 
 			if(!outstack.empty()){
 				

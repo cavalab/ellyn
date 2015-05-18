@@ -203,6 +203,50 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 		//}
 
 	}
+	else if (p.cross == 3) // sub-tree-like crossover
+	{	
+		// NOT TESTED YET: UNDER DEVELOPMENT
+		for (int r1=0; r1 < 2; ++r1)
+		{
+			if(r1==0)
+				r2=1;
+			else
+				r2=0;
+
+			int pt1 = r[omp_get_thread_num()].rnd_int(0,parents[r1].line.size()-1);
+			int end1 = pt1;
+			int sum_arity = parents[r1].line[pt1].arity;
+			while (sum_arity > 0 && pt1 > 0)
+			{
+				--pt1;
+				--sum_arity;
+				sum_arity+=parents[r1].line[pt1].arity;
+				
+			}
+			int begin1 = pt1;
+
+			int pt2 = r[omp_get_thread_num()].rnd_int(0,parents[r2].line.size()-1);
+			int end2 = pt2;
+			sum_arity = parents[r2].line[pt2].arity;
+			while (sum_arity > 0 && pt2 > 0)
+			{
+				
+				--pt2;
+				--sum_arity;
+				sum_arity+=parents[r2].line[pt2].arity;
+			}
+			int begin2 = pt2;
+			ind st1, st2;
+			st1.line.assign(parents[r1].line.begin()+begin1,parents[r1].line.begin()+end1+1);
+			st2.line.assign(parents[r2].line.begin()+begin2,parents[r2].line.begin()+end2+1);
+			
+			kids[r1].line.assign(parents[r1].line.begin(),parents[r1].line.begin()+begin1);
+			kids[r1].line.insert(kids[r1].line.end(),parents[r2].line.begin()+begin2,parents[r2].line.begin()+end2+1);
+			kids[r1].line.insert(kids[r1].line.end(),parents[r1].line.begin()+end1+1,parents[r1].line.end());
+		}
+		
+		
+	}
 	//tmpinssize=0;
 	//for(unsigned int t=0; t<kids[0].line.size();t++)
 	//	if(kids[0].line.at(t)>99) tmpinssize++;

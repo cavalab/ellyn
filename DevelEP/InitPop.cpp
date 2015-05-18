@@ -444,6 +444,10 @@ int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,params
 		//splitnodes = int(round(float(level)/float(a)));
 		//splitnodes = r[omp_get_thread_num()].rnd_int(1,level-1);
 	}
+	/*else if (a == 0)
+		cout << "debug";*/
+
+		
 	for (int i=1;i<=a;++i)
 	{
 		if (i==a)
