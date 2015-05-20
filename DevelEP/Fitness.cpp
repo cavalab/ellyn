@@ -392,7 +392,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE);
 
 void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 {
-	
+	////
 	//set up data table for conversion of symbolic variables
 	unordered_map <string,float*> datatable;
 	vector<float> dattovar(d.label.size());
