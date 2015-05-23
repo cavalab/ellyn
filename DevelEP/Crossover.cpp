@@ -80,7 +80,7 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 			// new version uses alignment deviation rather than an initial random offset.
 			head = r1;
 			offset = 0;
-			for (unsigned int i=0;i<std::min(parents[r1].line.size(),parents[r2].line.size()); ++i)
+			for (unsigned int i=0;i<parents[r1].line.size(); ++i)
 			{
 				if (r[omp_get_thread_num()].rnd_flt(0,1)<p.cross_ar)
 				{
@@ -100,22 +100,22 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 
 				if (i+offset>=parents[head].line.size() || i+offset <= 0) offset = 0;
 
-				kids.at(r1).line.push_back(parents[head].line.at(i+offset));
+				if (i < parents[head].line.size() && kids.at(r1).line.size() < p.max_len) kids.at(r1).line.push_back(parents[head].line.at(i+offset));
 				
 				
 			}
-			if(kids.at(r1).line.size() < parents[r1].line.size())
+			/*if(kids.at(r1).line.size() < parents[r1].line.size())
 			{
 				int gap = parents[r1].line.size()-kids.at(r1).line.size() +1;
 				kids.at(r1).line.insert(kids.at(r1).line.end(),parents[r1].line.end()-gap,parents[r1].line.end());
-			}
+			}*/
 		}
 	}
 	else if (p.cross==2) // one-point crossover
 	{
 		if (p.align_dev){
 			bool tryagain = true;
-			int max_tries = 2;
+			int max_tries = 5;
 			int tries = 0;
 			while (tryagain && tries < max_tries) {
 				int point1 = r[omp_get_thread_num()].rnd_int(0,min(p1.line.size(),p2.line.size()));
@@ -147,7 +147,7 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 				kids[1].line.assign(parents[1].line.begin(),parents[1].line.begin()+point2);
 				kids[1].line.insert(kids[1].line.end(),parents[0].line.begin()+point1,parents[0].line.end());
 
-				if (kids[0].line.empty() || kids[1].line.empty())
+				if (kids[0].line.empty() || kids[1].line.empty() || kids[0].line.size()>p.max_len || kids[1].line.size()>p.max_len)
 					tryagain = true; 
 				else
 					tryagain = false;

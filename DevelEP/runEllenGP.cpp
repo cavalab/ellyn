@@ -145,11 +145,11 @@ s.out << "Mean Size: " << T.meanSize() << "\n";
 s.out << "Mean Eff Size: " << T.meanEffSize() << "\n";
 s.out << "Pareto Front Equations: " << A.optimal_size << "\n";
 if(p.pHC_on)
-	s.out << "Parameter updates: " << float(s.setPHCupdates())/float(p.popsize)*100 << "%%\n";
+	s.out << "Parameter updates: " << float(s.setPHCupdates())/float(p.popsize)*100 << "%\n";
 if(p.eHC_on)
-	s.out << "Epigenetic updates: " << float(s.setEHCupdates())/float(p.popsize)*100 << "%%\n";
-s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "%%\n";
-s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "%%\n";
+	s.out << "Epigenetic updates: " << float(s.setEHCupdates())/float(p.popsize)*100 << "%\n";
+s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "%\n";
+s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "%\n";
 s.out << "Bad Genetics: " << s.getBadCrossPct() << "%\n";
 //s.clearCross();
 //float totalshares = 0;
@@ -732,6 +732,13 @@ void load_params(params &p, std::ifstream& fs)
 		for(unsigned int i=0;i<p.op_weight.size();++i)
                         p.op_weight.at(i) = p.op_weight.at(i)/sumweight;
 	}
+
+	// turn off AR_n if AR is not being used
+	if (!p.AR){
+		p.AR_n = 0; 
+		p.AR_lookahead= 0;
+	}
+
 }
 void load_data(data &d, std::ifstream& fs,params& p)
 {
