@@ -63,7 +63,10 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,FitnessEs
 			//Gen2Phen(tmp_ind,p);
 			//get fitness 
 			if (p.eHC_slim){
-				tmp_ind[0].outstack.resize(outstart*d.vals.size());
+
+				if (p.EstimateFitness) tmp_ind[0].outstack.resize(outstart*FE.FEpts.size());
+				else tmp_ind[0].outstack.resize(outstart*d.vals.size());
+
 				tmp_ind[0].outstacklen.resize(outstart);
 				pass = SlimFitness(tmp_ind[0],p,d,s,FE,linestart,oldind.fitness);
 			}
