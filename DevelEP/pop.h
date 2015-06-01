@@ -27,8 +27,8 @@ struct ind {
 	vector<float> output_v;
 	vector<float> fitlex; // fitnesses for lexicase selection
 	vector<float> f; // vector of objectives for multi-objective implementations (PS_sel)
-	std::vector<unsigned int> outstacklen;
-	std::vector<float> outstack; // linearized outstack
+	std::vector<unsigned int> float_stacklen;
+	std::vector<float> float_stack; // linearized float_stack
 	std::vector<int> dominated; //for spea2 strength
 	std::string eqn;
 	std::string eqn_form; // equation form for string distance comparison to other forms	
@@ -93,8 +93,8 @@ struct ind {
 		output_v.swap(s.output_v);
 		fitlex.swap(s.fitlex);
 		f.swap(s.f);
-		outstacklen.swap(s.outstacklen);
-		outstack.swap(s.outstack);		
+		float_stacklen.swap(s.float_stacklen);
+		float_stack.swap(s.float_stack);		
 		dominated.swap(dominated);
 		eqn.swap(s.eqn);						// strings
 		eqn_form.swap(s.eqn_form);
@@ -149,7 +149,7 @@ struct ind {
 		output.clear();
 		output_v.clear();
 		genty = 1;
-		//outstack.clear();
+		//float_stack.clear();
 		// nominal model must be encased in set of parenthesis. the pointer points to that which is encased.
 		//ptr[0]= 1;
 		//ptr[1] = nom_mod.size()-2;

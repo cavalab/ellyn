@@ -22,7 +22,7 @@ struct paretoarchive{
 		pop.insert(pop.end(),newpop.begin(),newpop.end());
 		//shrink pareto population by discarding outputs
 		for (int i=pop.size()-newpop.size();i<pop.size();i++) {
-			pop.at(i).outstack.clear();
+			pop.at(i).float_stack.clear();
 			pop.at(i).output.clear();
 		}
 		sort(pop.begin(),pop.end(),SortComplexity());

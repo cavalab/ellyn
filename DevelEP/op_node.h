@@ -59,7 +59,7 @@ private:
 		else if (type=='/' || type=='q') c = 2;
 		else c = 1;
 	}
-	//void eval(vector<float> & outstack)=0;
+	//void eval(vector<float> & float_stack)=0;
 	/*node* clone() const
 	{
 		return do_clone();
@@ -82,10 +82,10 @@ private:
 //	n_num(){on=1;arity=0;}
 //	n_num(float set) {type='n'; value=set; on=1; arity=0;}
 //	~n_num(){}
-//	virtual void eval(vector<float> & outstack)	
+//	virtual void eval(vector<float> & float_stack)	
 //	{
 //		//if (on)
-//			outstack.push_back(value);
+//			float_stack.push_back(value);
 //	}
 ////private:
 ////	virtual node* do_clone() const
@@ -113,12 +113,12 @@ private:
 //
 //		valpt=set;
 //	}
-//	virtual void eval(vector<float> & outstack)
+//	virtual void eval(vector<float> & float_stack)
 //	{
 //		if (valpt==NULL)
 //			cout<<"problem";
 //		else
-//			outstack.push_back(*valpt);
+//			float_stack.push_back(*valpt);
 //	}
 ////private:
 ////	virtual node* do_clone() const
@@ -131,14 +131,14 @@ private:
 //public:
 //	n_add(){type='+';arity=2;on=1;}
 //	~n_add(){}
-//	virtual void eval(vector<float> & outstack)
+//	virtual void eval(vector<float> & float_stack)
 //	{
 //		//if (on){
-//			if(outstack.size()>=2){
-//				float n1 = outstack.back(); outstack.pop_back();
-//				float n2 = outstack.back(); outstack.pop_back();
+//			if(float_stack.size()>=2){
+//				float n1 = float_stack.back(); float_stack.pop_back();
+//				float n2 = float_stack.back(); float_stack.pop_back();
 //
-//				outstack.push_back(n2+n1);
+//				float_stack.push_back(n2+n1);
 //			}
 //		//}
 //	}
@@ -153,14 +153,14 @@ private:
 //public:
 //	n_sub(){type='-';arity=2;on=1;}
 //	~n_sub(){}
-//	virtual void eval(vector<float> & outstack)
+//	virtual void eval(vector<float> & float_stack)
 //	{
 //		//if (on){
-//			if(outstack.size()>=2){
-//				float n1 = outstack.back(); outstack.pop_back();
-//				float n2 = outstack.back(); outstack.pop_back();
+//			if(float_stack.size()>=2){
+//				float n1 = float_stack.back(); float_stack.pop_back();
+//				float n2 = float_stack.back(); float_stack.pop_back();
 //
-//				outstack.push_back(n2-n1);
+//				float_stack.push_back(n2-n1);
 //			}
 //		//}
 //	}
@@ -174,14 +174,14 @@ private:
 //public:
 //	n_mul(){type='*';arity=2;on=1;}
 //	~n_mul(){}
-//	virtual void eval(vector<float> & outstack)
+//	virtual void eval(vector<float> & float_stack)
 //	{
 //		//if (on){
-//			if(outstack.size()>=2){
-//				float n1 = outstack.back(); outstack.pop_back();
-//				float n2 = outstack.back(); outstack.pop_back();
+//			if(float_stack.size()>=2){
+//				float n1 = float_stack.back(); float_stack.pop_back();
+//				float n2 = float_stack.back(); float_stack.pop_back();
 //
-//				outstack.push_back(n2*n1);
+//				float_stack.push_back(n2*n1);
 //			}
 //		//}
 //	}
@@ -195,16 +195,16 @@ private:
 //public:
 //	n_div(){type='/';on=1;arity=2;}
 //	~n_div(){}
-//	virtual void eval(vector<float> & outstack)
+//	virtual void eval(vector<float> & float_stack)
 //	{
 //		//if (on){
-//			if(outstack.size()>=2){
-//				float n1 = outstack.back(); outstack.pop_back();
-//				float n2 = outstack.back(); outstack.pop_back();
+//			if(float_stack.size()>=2){
+//				float n1 = float_stack.back(); float_stack.pop_back();
+//				float n2 = float_stack.back(); float_stack.pop_back();
 //				if(abs(n1)<0.0001)
-//					outstack.push_back(0);
+//					float_stack.push_back(0);
 //				else
-//					outstack.push_back(n2/n1);
+//					float_stack.push_back(n2/n1);
 //			}
 //		//}
 //	}
@@ -219,12 +219,12 @@ private:
 //public:
 //	n_sin(){type='s';arity=1;on=1;}
 //	~n_sin(){}
-//	virtual void eval(vector<float> & outstack)
+//	virtual void eval(vector<float> & float_stack)
 //	{
 //		//if (on){
-//			if(outstack.size()>=1){
-//				float n1 = outstack.back(); outstack.pop_back();
-//				outstack.push_back(sin(n1));
+//			if(float_stack.size()>=1){
+//				float n1 = float_stack.back(); float_stack.pop_back();
+//				float_stack.push_back(sin(n1));
 //			}
 //		//}
 //	}
@@ -240,12 +240,12 @@ private:
 //public:
 //	n_cos(){type='c';arity=1;on=1;}
 //	~n_cos(){}
-//	virtual void eval(vector<float> & outstack)
+//	virtual void eval(vector<float> & float_stack)
 //	{
 //		//if (on){
-//			if(outstack.size()>=1){
-//				float n1 = outstack.back(); outstack.pop_back();
-//				outstack.push_back(cos(n1));
+//			if(float_stack.size()>=1){
+//				float n1 = float_stack.back(); float_stack.pop_back();
+//				float_stack.push_back(cos(n1));
 //			}
 //		//}
 //	}
@@ -260,12 +260,12 @@ private:
 //public:
 //	n_exp(){type='e';arity=1;on=1;}
 //	~n_exp(){}
-//	virtual void eval(vector<float> & outstack)
+//	virtual void eval(vector<float> & float_stack)
 //	{
 //		//if (on){
-//			if(outstack.size()>=1){
-//				float n1 = outstack.back(); outstack.pop_back();
-//				outstack.push_back(exp(n1));
+//			if(float_stack.size()>=1){
+//				float n1 = float_stack.back(); float_stack.pop_back();
+//				float_stack.push_back(exp(n1));
 //			}
 //		//}
 //	}
@@ -280,15 +280,15 @@ private:
 //public:
 //	n_log(){type='l';arity=1;on=1;}
 //	~n_log(){}
-//	virtual void eval(vector<float> & outstack)
+//	virtual void eval(vector<float> & float_stack)
 //	{
 //		//if (on){
-//			if(outstack.size()>=1){
-//				float n1 = outstack.back(); outstack.pop_back();
+//			if(float_stack.size()>=1){
+//				float n1 = float_stack.back(); float_stack.pop_back();
 //				if (abs(n1)<0.0001)
-//					outstack.push_back(0);
+//					float_stack.push_back(0);
 //				else
-//					outstack.push_back(log(n1));
+//					float_stack.push_back(log(n1));
 //			}
 //		//}
 //	}
