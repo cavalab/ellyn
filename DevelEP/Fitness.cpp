@@ -271,7 +271,7 @@ int getEffSize(vector<node>& line)
 	}
 	return eff_size;
 }
-void eval(node& n,vector<float>& float_stack,vector<bool>& binstack)
+void eval(node& n,vector<float>& float_stack,vector<bool>& bin_stack)
 {
 	switch(n.type) 
 	{
@@ -389,7 +389,7 @@ void eval(node& n,vector<float>& float_stack,vector<bool>& binstack)
 		if(float_stack.size()>=2){
 			float n1 = float_stack.back(); float_stack.pop_back();
 			float n2 = float_stack.back(); float_stack.pop_back();
-			binstack.push_back(n1==n2);
+			bin_stack.push_back(n1==n2);
 			n.intron=false;
 		}
 		else
@@ -399,7 +399,7 @@ void eval(node& n,vector<float>& float_stack,vector<bool>& binstack)
 		if(float_stack.size()>=2){
 			float n1 = float_stack.back(); float_stack.pop_back();
 			float n2 = float_stack.back(); float_stack.pop_back();
-			binstack.push_back(n1!=n2);
+			bin_stack.push_back(n1!=n2);
 			n.intron=false;
 		}
 		else
@@ -409,7 +409,7 @@ void eval(node& n,vector<float>& float_stack,vector<bool>& binstack)
 		if(float_stack.size()>=2){
 			float n1 = float_stack.back(); float_stack.pop_back();
 			float n2 = float_stack.back(); float_stack.pop_back();
-			binstack.push_back(n2 > n1);
+			bin_stack.push_back(n2 > n1);
 			n.intron=false;
 		}
 		else
@@ -419,7 +419,7 @@ void eval(node& n,vector<float>& float_stack,vector<bool>& binstack)
 		if(float_stack.size()>=2){
 			float n1 = float_stack.back(); float_stack.pop_back();
 			float n2 = float_stack.back(); float_stack.pop_back();
-			binstack.push_back(n2 < n1);
+			bin_stack.push_back(n2 < n1);
 			n.intron=false;
 		}
 		else
@@ -429,7 +429,7 @@ void eval(node& n,vector<float>& float_stack,vector<bool>& binstack)
 		if(float_stack.size()>=2){
 			float n1 = float_stack.back(); float_stack.pop_back();
 			float n2 = float_stack.back(); float_stack.pop_back();
-			binstack.push_back(n2 >= n1);
+			bin_stack.push_back(n2 >= n1);
 			n.intron=false;
 		}
 		else
@@ -439,15 +439,15 @@ void eval(node& n,vector<float>& float_stack,vector<bool>& binstack)
 		if(float_stack.size()>=2){
 			float n1 = float_stack.back(); float_stack.pop_back();
 			float n2 = float_stack.back(); float_stack.pop_back();
-			binstack.push_back(n2 <= n1);
+			bin_stack.push_back(n2 <= n1);
 			n.intron=false;
 		}
 		else
 			n.intron=true;
 		break;
-	case 'i': // if (arity 2). if binstack true, leave top element of floating stack. otherwise, pop it.
-		if(binstack.size()>=1 && float_stack.size()>=1){
-			bool b1 = binstack.back(); binstack.pop_back();
+	case 'i': // if (arity 2). if bin_stack true, leave top element of floating stack. otherwise, pop it.
+		if(bin_stack.size()>=1 && float_stack.size()>=1){
+			bool b1 = bin_stack.back(); bin_stack.pop_back();
 			if (!b1)
 				float_stack.pop_back();
 			n.intron=false;
@@ -455,15 +455,15 @@ void eval(node& n,vector<float>& float_stack,vector<bool>& binstack)
 		else
 			n.intron=true;
 		break;
-	case 't': // if-then-else (arity 3). if binstack true, leave 2nd element of floating stack and pop first. otherwise, pop 2nd and leave first.
-		if(binstack.size()>=1 && float_stack.size()>=2){
-			bool b1 = binstack.back(); binstack.pop_back();
+	case 't': // if-then-else (arity 3). if bin_stack true, leave 2nd element of floating stack and pop first. otherwise, pop 2nd and leave first.
+		if(bin_stack.size()>=1 && float_stack.size()>=2){
+			bool b1 = bin_stack.back(); bin_stack.pop_back();
 			//float n1 = float_stack.back(); float_stack.pop_back();
 			//float n2 = float_stack.back(); float_stack.pop_back();
 			if (b1)
 				float_stack.pop_back();
 			else{
-				float_stack.at(float_stack.size()-2).swap(float_stack.back());
+				swap(float_stack[float_stack.size()-2],float_stack.back());
 				float_stack.pop_back();
 			}
 			n.intron=false;
@@ -491,7 +491,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 	//#pragma omp parallel for private(e)
 	for(int count = 0; count<pop.size(); ++count)
 	{
-		pop.at(count).eqn = Line2Eqn(pop.at(count).line,pop.at(count).eqn_form);
+		pop.at(count).eqn = Line2Eqn(pop.at(count).line,pop.at(count).eqn_form,p);
 		//getEqnForm(pop.at(count).eqn,pop.at(count).eqn_form);
 		
 		pop.at(count).eff_size = getEffSize(pop.at(count).line);
@@ -581,7 +581,7 @@ void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,uno
 void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s)
 {		
 	vector<float> float_stack;
-	vector<bool> binstack;
+	vector<bool> bin_stack;
 	me.output.resize(0); 
 	me.output_v.resize(0); 
 	float SStot=0;
@@ -649,7 +649,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 				}*/
 				if (me.line.at(k).on){
 					//me.line.at(k).eval(float_stack);
-					eval(me.line.at(k),float_stack);
+					eval(me.line.at(k),float_stack,bin_stack);
 					++ptevals;
 					if (p.eHC_on && p.eHC_slim) // stack tracing
 					{
@@ -667,12 +667,13 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 			/*if (float_stack.size()>1)
 				cout << "non-tree\n";*/
 
-			if(!float_stack.empty()){
+			if(!(!p.classification && float_stack.empty()) && !(p.classification && bin_stack.empty())){
 				
 
 				if (p.train){
 					if(sim<ndata_t){
-						me.output.push_back(float_stack.back());
+						if (p.classification) me.output.push_back(float(bin_stack.back()));
+						else me.output.push_back(float_stack.back());
 						me.abserror += abs(target.at(sim)-me.output.at(sim));
 						meantarget += target.at(sim);
 						meanout += me.output[sim];
@@ -680,7 +681,8 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 					}
 					else
 					{
-						me.output_v.push_back(float_stack.back());
+						if (p.classification) me.output_v.push_back(float(bin_stack.back()));
+						else me.output_v.push_back(float_stack.back());
 						me.abserror_v += abs(target.at(sim)-me.output_v.at(sim-ndata_t));
 						meantarget_v += target.at(sim);
 						meanout_v += me.output_v[sim-ndata_t];
@@ -689,7 +691,8 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 
 				}
 				else {
-					me.output.push_back(float_stack.back());
+					if (p.classification) me.output.push_back(float(bin_stack.back()));
+					else me.output.push_back(float_stack.back());
 					me.abserror += abs(target.at(sim)-me.output.at(sim));
 					meantarget += target.at(sim);
 					meanout += me.output[sim];
@@ -848,6 +851,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s,int linestart, float orig_fit)
 {
 	vector<float> float_stack;// = init_stack;
+	vector<bool> bin_stack;
 	me.output.clear();
 	me.output_v.clear();
 	float SStot=0;
@@ -910,7 +914,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 				}*/
 				if (me.line.at(k).on){
 					//me.line.at(k).eval(float_stack);
-					eval(me.line.at(k),float_stack);
+					eval(me.line.at(k),float_stack, bin_stack);
 					++ptevals;
 					if(!float_stack.empty()) me.float_stack[k_eff*vals.size() + sim] = float_stack.back(); 
 					else me.float_stack[k_eff*vals.size() + sim] = 0;
@@ -1128,7 +1132,7 @@ bool getSlimFit(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,int line
 bool SlimFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE, int linestart,  float orig_fit)
 {
 
-	me.eqn = Line2Eqn(me.line,me.eqn_form);
+	me.eqn = Line2Eqn(me.line,me.eqn_form,p);
 	//getEqnForm(me.eqn,me.eqn_form);
 	
 	me.eff_size = getEffSize(me.line);
@@ -1178,7 +1182,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 
 	int ptevals=0;
 	//get equation and equation form
-			me.eqn = Line2Eqn(me.line,me.eqn_form);
+			me.eqn = Line2Eqn(me.line,me.eqn_form,p);
 			//getEqnForm(me.eqn,me.eqn_form);
 		//Get effective size and complexity
 			me.eff_size=0;
@@ -1222,6 +1226,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 			if(!me.eqn.compare("unwriteable")==0){
 				
 				vector<float> float_stack;
+				vector<bool> bin_stack;
 				me.output.clear();
 				me.output_v.clear();
 				
@@ -1267,7 +1272,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 						for(int k=0;k<me.line.size();++k){
 							if (me.line.at(k).on){
 								//me.line.at(k)->eval(float_stack);
-								eval(me.line.at(k),float_stack);
+								eval(me.line.at(k),float_stack,bin_stack);
 								++ptevals;}
 						}
 

@@ -18,16 +18,36 @@ public:
 	string varname;
 	int c; // complexity
 	bool intron; // behavioral intron declaration (used in getComplexity())
-	node() {type=0; on=1; arity=0; intron = 0;}
+	bool op_returns_bool; // whether or not node returns a boolean value
+	bool op_takes_bool;  // whether or not the node takes a boolean as its first input
+	node() {type=0; on=1; arity=0; intron = 0;op_takes_bool=0;op_returns_bool=0;}
 	//node(int set) {type=set;on=1;}
 	//operator with specified arity
-	node(char stype,int sarity){type=stype; arity=sarity; on=1; setComplexity(); intron = 0;}
+	node(char stype,int sarity){type=stype; arity=sarity; on=1; setComplexity(); intron = 0;op_takes_bool=0;op_returns_bool=0;}
 	//operator with arity lookup
 	node(char stype)
 	{
 		type=stype;
-		if (type=='s' || type=='c' || type=='e' || type=='l' || type=='q')
+		if (type=='s' || type=='c' || type=='e' || type=='l' || type=='q'){
 			arity = 1;
+			op_returns_bool=0;
+			op_takes_bool=0;
+		}
+		else if (type=='<' || type=='>' || type=='{' || type=='}'){
+			arity=2;
+			op_takes_bool=0;
+			op_returns_bool=1;
+		}
+		else if (type=='i'){
+			arity=2;
+			op_takes_bool=1;
+			op_returns_bool=0;
+		}
+		else if (type=='t'){
+			arity=3;
+			op_takes_bool=1;
+			op_returns_bool=0;
+		}
 		else
 			arity = 2;
 
@@ -38,9 +58,9 @@ public:
 		intron = 0;
 	}
 	//number
-	node(float svalue){type='n'; value=svalue; on=1; arity=0; c=1;intron = 0;}
+	node(float svalue){type='n'; value=svalue; on=1; arity=0; c=1;intron = 0;op_takes_bool=0;op_returns_bool=0;}
 	//variable
-	node(string& vname){type='v';varname=vname;on=1;arity=0; c=1;intron = 0;}
+	node(string& vname){type='v';varname=vname;on=1;arity=0; c=1;intron = 0;op_takes_bool=0;op_returns_bool=0;}
 	//set pointer for variables
 	void setpt(float* set)
 	{
@@ -53,11 +73,16 @@ private:
 	void setComplexity()
 	{
 		// assign complexity
-		if (type=='^') c = 5;
-		else if (type=='e' || type=='l') c = 4; 
-		else if (type=='s' || type=='c' ) c = 3;
-		else if (type=='/' || type=='q') c = 2;
-		else c = 1;
+		if (type=='^' || type=='i' || type=='t') 
+			c = 5;
+		else if (type=='e' || type=='l') 
+			c = 4; 
+		else if (type=='s' || type=='c' ) 
+			c = 3;
+		else if (type=='/' || type=='q' || type=='<' || type=='>' || type=='{' || type=='}' ) 
+			c = 2;
+		else 
+			c = 1;
 	}
 	//void eval(vector<float> & float_stack)=0;
 	/*node* clone() const

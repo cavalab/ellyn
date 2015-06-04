@@ -149,6 +149,9 @@ struct params {
 	//pareto survival setting
 	int PS_sel;
 	
+	//classification
+	bool classification;
+
 	// number of threads
 	params(){ //default values
 		g=100; // number of generations (limited by default)
@@ -256,6 +259,9 @@ struct params {
 		
 		//pareto survival setting
 		PS_sel=1;
+
+		// classification
+		classification = 0;
 
 	}
 	~params(){}

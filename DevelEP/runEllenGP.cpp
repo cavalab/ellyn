@@ -636,6 +636,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.AR_lookahead;
 		else if(varname.compare("align_dev") ==0)
 			ss>>p.align_dev;
+		else if(varname.compare("classification")==0)
+			ss>>p.classification;
 		else{}
     }
 	p.allvars = p.intvars;
@@ -702,6 +704,46 @@ void load_params(params &p, std::ifstream& fs)
 		{
 			p.op_choice.push_back(11);
 			p.op_arity.push_back(1);
+		}
+		else if (p.op_list.at(i).compare("=")==0)
+		{
+			p.op_choice.push_back(12);
+			p.op_arity.push_back(2);
+		}
+		else if (p.op_list.at(i).compare("!")==0)
+		{
+			p.op_choice.push_back(13);
+			p.op_arity.push_back(2);
+		}
+		else if (p.op_list.at(i).compare("<")==0)
+		{
+			p.op_choice.push_back(14);
+			p.op_arity.push_back(2);
+		}
+		else if (p.op_list.at(i).compare(">")==0)
+		{
+			p.op_choice.push_back(15);
+			p.op_arity.push_back(2);
+		}
+		else if (p.op_list.at(i).compare("<=")==0)
+		{
+			p.op_choice.push_back(16);
+			p.op_arity.push_back(2);
+		}
+		else if (p.op_list.at(i).compare(">=")==0)
+		{
+			p.op_choice.push_back(17);
+			p.op_arity.push_back(2);
+		}
+		else if (p.op_list.at(i).compare("if-then")==0)
+		{
+			p.op_choice.push_back(18);
+			p.op_arity.push_back(2);
+		}
+		else if (p.op_list.at(i).compare("if-then-else")==0)
+		{
+			p.op_choice.push_back(19);
+			p.op_arity.push_back(3);
 		}
 		else 
 			cout << "bad command (load params op_choice)" << "\n";
