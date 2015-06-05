@@ -196,6 +196,36 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 			case 11: //sqrt
 				newind.line.push_back(node('q'));
 				break;
+			case 12: // equals
+				newind.line.push_back(node('='));
+				break;
+			case 13: // does not equal
+				newind.line.push_back(node('!'));
+				break;
+			case 14: // less than
+				newind.line.push_back(node('<'));
+				break;
+			case 15: // greater than
+				newind.line.push_back(node('>'));
+				break;
+			case 16: //less than or equal to
+				newind.line.push_back(node('{'));
+				break;
+			case 17: //greater than or equal to
+				newind.line.push_back(node('}'));
+				break;
+			case 18: //if-then
+				newind.line.push_back(node('i'));
+				break;
+			case 19: //if-then-else
+				newind.line.push_back(node('t'));
+				break;
+			case 20: // and
+				newind.line.push_back(node('&'));
+				break;
+			case 21: //or
+				newind.line.push_back(node('|'));
+				break;
 			}
 	}
 	/*while (newind.line.back()->type=='n'||newind.line.back()->type=='v')
@@ -337,6 +367,36 @@ void push_back_node(vector <node>& line, int choice, params& p,vector<Randclass>
 			//line.push_back(shared_ptr<node>(new n_log()));
 			line.push_back(node('q'));
 			break;
+		case 12: // equals
+			line.push_back(node('='));
+			break;
+		case 13: // does not equal
+			line.push_back(node('!'));
+			break;
+		case 14: // less than
+			line.push_back(node('<'));
+			break;
+		case 15: // greater than
+			line.push_back(node('>'));
+			break;
+		case 16: //less than or equal to
+			line.push_back(node('{'));
+			break;
+		case 17: //greater than or equal to
+			line.push_back(node('}'));
+			break;
+		case 18: //if-then
+			line.push_back(node('i'));
+			break;
+		case 19: //if-then-else
+			line.push_back(node('t'));
+			break;
+		case 20: // and
+			line.push_back(node('&'));
+			break;
+		case 21: //or
+			line.push_back(node('|'));
+			break;
 	}
 }
 void push_front_node(vector <node>& line, int choice, params& p,vector<Randclass>& r)
@@ -415,6 +475,36 @@ void push_front_node(vector <node>& line, int choice, params& p,vector<Randclass
 			break;
 		case 11: // sqrt
 			line.insert(line.begin(),node('q'));
+			break;
+		case 12: // equals
+			line.insert(line.begin(),node('='));
+			break;
+		case 13: // does not equal
+			line.insert(line.begin(),node('!'));
+			break;
+		case 14: // less than
+			line.insert(line.begin(),node('<'));
+			break;
+		case 15: // greater than
+			line.insert(line.begin(),node('>'));
+			break;
+		case 16: //less than or equal to
+			line.insert(line.begin(),node('{'));
+			break;
+		case 17: //greater than or equal to
+			line.insert(line.begin(),node('}'));
+			break;
+		case 18: //if-then
+			line.insert(line.begin(),node('i'));
+			break;
+		case 19: //if-then-else
+			line.insert(line.begin(),node('t'));
+			break;
+		case 20: //and
+			line.insert(line.begin(),node('&'));
+			break;
+		case 21: //or
+			line.insert(line.begin(),node('|'));
 			break;
 	}
 }

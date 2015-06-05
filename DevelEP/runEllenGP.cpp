@@ -636,6 +636,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.AR_lookahead;
 		else if(varname.compare("align_dev") ==0)
 			ss>>p.align_dev;
+		else if(varname.compare("classification")==0)
+			ss>>p.classification;
 		else{}
     }
 	p.allvars = p.intvars;
@@ -702,6 +704,56 @@ void load_params(params &p, std::ifstream& fs)
 		{
 			p.op_choice.push_back(11);
 			p.op_arity.push_back(1);
+		}
+		else if (p.op_list.at(i).compare("=")==0)
+		{
+			p.op_choice.push_back(12);
+			p.op_arity.push_back(2);
+		}
+		else if (p.op_list.at(i).compare("!")==0)
+		{
+			p.op_choice.push_back(13);
+			p.op_arity.push_back(2);
+		}
+		else if (p.op_list.at(i).compare("<")==0)
+		{
+			p.op_choice.push_back(14);
+			p.op_arity.push_back(2);
+		}
+		else if (p.op_list.at(i).compare(">")==0)
+		{
+			p.op_choice.push_back(15);
+			p.op_arity.push_back(2);
+		}
+		else if (p.op_list.at(i).compare("<=")==0)
+		{
+			p.op_choice.push_back(16);
+			p.op_arity.push_back(2);
+		}
+		else if (p.op_list.at(i).compare(">=")==0)
+		{
+			p.op_choice.push_back(17);
+			p.op_arity.push_back(2);
+		}
+		else if (p.op_list.at(i).compare("if-then")==0)
+		{
+			p.op_choice.push_back(18);
+			p.op_arity.push_back(2);
+		}
+		else if (p.op_list.at(i).compare("if-then-else")==0)
+		{
+			p.op_choice.push_back(19);
+			p.op_arity.push_back(3);
+		}
+		else if (p.op_list.at(i).compare("&")==0)
+		{
+			p.op_choice.push_back(20);
+			p.op_arity.push_back(3);
+		}
+		else if (p.op_list.at(i).compare("|")==0)
+		{
+			p.op_choice.push_back(21);
+			p.op_arity.push_back(3);
 		}
 		else 
 			cout << "bad command (load params op_choice)" << "\n";
@@ -1294,18 +1346,19 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			for (int q = 0; q<num_islands; ++q)
 				T[q].pop.assign(World.pop.begin()+q*subpops,World.pop.begin()+(q+1)*subpops);
 		}
-		else
+		else // initialize population from random 
 		{
 			if (p.init_validate_on)
 			{
 				s.out << "Initial validation..."; 
 			
+				
+				#pragma omp parallel for
+				for(int i=0;i<num_islands;++i)
+					InitPop(T.at(i).pop,p,r);
+
 				if (p.EstimateFitness)
 				{
-					#pragma omp parallel for
-					for(int i=0;i<num_islands;++i)
-						InitPop(T.at(i).pop,p,r);
-				
 					// construct world population
 					for(int j=0;j<T.size();++j){
 						for(int k=0;k<T[0].pop.size();++k){
