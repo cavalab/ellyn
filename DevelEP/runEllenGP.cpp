@@ -745,6 +745,16 @@ void load_params(params &p, std::ifstream& fs)
 			p.op_choice.push_back(19);
 			p.op_arity.push_back(3);
 		}
+		else if (p.op_list.at(i).compare("&")==0)
+		{
+			p.op_choice.push_back(20);
+			p.op_arity.push_back(3);
+		}
+		else if (p.op_list.at(i).compare("|")==0)
+		{
+			p.op_choice.push_back(21);
+			p.op_arity.push_back(3);
+		}
 		else 
 			cout << "bad command (load params op_choice)" << "\n";
 	}
@@ -1329,18 +1339,19 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			for (int q = 0; q<num_islands; ++q)
 				T[q].pop.assign(World.pop.begin()+q*subpops,World.pop.begin()+(q+1)*subpops);
 		}
-		else
+		else // initialize population from random 
 		{
 			if (p.init_validate_on)
 			{
 				s.out << "Initial validation..."; 
 			
+				
+				#pragma omp parallel for
+				for(int i=0;i<num_islands;++i)
+					InitPop(T.at(i).pop,p,r);
+
 				if (p.EstimateFitness)
 				{
-					#pragma omp parallel for
-					for(int i=0;i<num_islands;++i)
-						InitPop(T.at(i).pop,p,r);
-				
 					// construct world population
 					for(int j=0;j<T.size();++j){
 						for(int k=0;k<T[0].pop.size();++k){

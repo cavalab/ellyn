@@ -193,7 +193,7 @@ int getComplexity(vector<node>& line)
 			
 			complexity += line[i].c;
 			--a;
-			a += line[i].arity;
+			a += line[i].arity_float;
 		}
 		--i;
 	}
@@ -271,207 +271,135 @@ int getEffSize(vector<node>& line)
 	}
 	return eff_size;
 }
-void eval(node& n,vector<float>& float_stack,vector<bool>& bin_stack)
+void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 {
-	switch(n.type) 
-	{
-	case 'n':
-		float_stack.push_back(n.value);
-		break;
-	case 'v':
-		/*if (n.valpt==NULL)
-			cout<<"problem";
-		else*/
-		float_stack.push_back(*n.valpt);
-		break;
-	case '+':
-		if(float_stack.size()>=2){
-				float n1 = float_stack.back(); float_stack.pop_back();
-				float n2 = float_stack.back(); float_stack.pop_back();
-
-				float_stack.push_back(n2+n1);
-				n.intron=false;
-		}
-		else 
-			n.intron=true;
-		break;
-	case '-':
-		if(float_stack.size()>=2){
-				float n1 = float_stack.back(); float_stack.pop_back();
-				float n2 = float_stack.back(); float_stack.pop_back();
-
-				float_stack.push_back(n2-n1);
-				n.intron=false;
-		}
-		else 
-			n.intron=true;
-		break;
-	case '*':
-		if(float_stack.size()>=2){
-				float n1 = float_stack.back(); float_stack.pop_back();
-				float n2 = float_stack.back(); float_stack.pop_back();
-
-				float_stack.push_back(n2*n1);
-				n.intron=false;
-		}
-		else 
-			n.intron=true;
-		break;
-	case '/':
-		if(float_stack.size()>=2){
-				float n1 = float_stack.back(); float_stack.pop_back();
-				float n2 = float_stack.back(); float_stack.pop_back();
-				if(abs(n1)<0.000001)
-					float_stack.push_back(1);
-				else
-					float_stack.push_back(n2/n1);
-				n.intron=false;
-		}
-		else 
-			n.intron=true;
-		break;
-	case 's':
-		if(float_stack.size()>=1){
-				float n1 = float_stack.back(); float_stack.pop_back();
-				float_stack.push_back(sin(n1));
-				n.intron=false;
-		}
-		else 
-			n.intron=true;
-		break;
-	case 'c':
-		if(float_stack.size()>=1){
-				float n1 = float_stack.back(); float_stack.pop_back();
-				float_stack.push_back(cos(n1));
-				n.intron=false;
-		}
-		else 
-			n.intron=true;
-		break;
-	case 'e':
-		if(float_stack.size()>=1){
-				float n1 = float_stack.back(); float_stack.pop_back();
-				float_stack.push_back(exp(n1));
-				n.intron=false;
-		}
-		else 
-			n.intron=true;
-		break;
-	case 'l':
-		if(float_stack.size()>=1){
-				float n1 = float_stack.back(); float_stack.pop_back();
-				if (abs(n1)<0.000001)
-					float_stack.push_back(0);
-				else 
-					// safe log of absolute value of n1
-					//float_stack.push_back(log(abs(n1)));
-					// unsafe log of real value
-					float_stack.push_back(log(n1));
-				n.intron=false;
-		}
-		else 
-			n.intron=true;
-		break;
-	case 'q':
-		if(float_stack.size()>=1){
-				float n1 = float_stack.back(); float_stack.pop_back();
-				// safe sqrt of absolute value of n1
-				if (n1<0)
-					float_stack.push_back(0);
-				else
-					float_stack.push_back(sqrt(n1));
-				n.intron=false;
-		}
-		else 
-			n.intron=true;
-		break;
-	case '=': // equals
-		if(float_stack.size()>=2){
-			float n1 = float_stack.back(); float_stack.pop_back();
-			float n2 = float_stack.back(); float_stack.pop_back();
-			bin_stack.push_back(n1==n2);
-			n.intron=false;
-		}
-		else
-			n.intron=true;
-		break;
-	case '!': // does not equal
-		if(float_stack.size()>=2){
-			float n1 = float_stack.back(); float_stack.pop_back();
-			float n2 = float_stack.back(); float_stack.pop_back();
-			bin_stack.push_back(n1!=n2);
-			n.intron=false;
-		}
-		else
-			n.intron=true;
-		break;
-	case '>': //greater than
-		if(float_stack.size()>=2){
-			float n1 = float_stack.back(); float_stack.pop_back();
-			float n2 = float_stack.back(); float_stack.pop_back();
-			bin_stack.push_back(n2 > n1);
-			n.intron=false;
-		}
-		else
-			n.intron=true;
-		break;
-	case '<': //less than
-		if(float_stack.size()>=2){
-			float n1 = float_stack.back(); float_stack.pop_back();
-			float n2 = float_stack.back(); float_stack.pop_back();
-			bin_stack.push_back(n2 < n1);
-			n.intron=false;
-		}
-		else
-			n.intron=true;
-		break;
-	case '}': //greater than or equal
-		if(float_stack.size()>=2){
-			float n1 = float_stack.back(); float_stack.pop_back();
-			float n2 = float_stack.back(); float_stack.pop_back();
-			bin_stack.push_back(n2 >= n1);
-			n.intron=false;
-		}
-		else
-			n.intron=true;
-		break;
-	case '{': //less than
-		if(float_stack.size()>=2){
-			float n1 = float_stack.back(); float_stack.pop_back();
-			float n2 = float_stack.back(); float_stack.pop_back();
-			bin_stack.push_back(n2 <= n1);
-			n.intron=false;
-		}
-		else
-			n.intron=true;
-		break;
-	case 'i': // if (arity 2). if bin_stack true, leave top element of floating stack. otherwise, pop it.
-		if(bin_stack.size()>=1 && float_stack.size()>=1){
-			bool b1 = bin_stack.back(); bin_stack.pop_back();
+	float n1,n2;
+	bool b1,b2;
+	if (stack_float.size()>=n.arity_float && stack_bool.size()>=n.arity_bool){
+		n.intron=false;
+		switch(n.type) 
+		{
+		case 'n':
+			stack_float.push_back(n.value);
+			break;
+		case 'v':
+			stack_float.push_back(*n.valpt);
+			break;
+		case '+':
+			n1 = stack_float.back(); stack_float.pop_back();
+			n2 = stack_float.back(); stack_float.pop_back();
+			stack_float.push_back(n2+n1);
+			break;
+		case '-':
+			n1 = stack_float.back(); stack_float.pop_back();
+			n2 = stack_float.back(); stack_float.pop_back();
+			stack_float.push_back(n2-n1);
+			break;
+		case '*':
+			n1 = stack_float.back(); stack_float.pop_back();
+			n2 = stack_float.back(); stack_float.pop_back();
+			stack_float.push_back(n2*n1);
+			break;
+		case '/':
+			n1 = stack_float.back(); stack_float.pop_back();
+			n2 = stack_float.back(); stack_float.pop_back();
+			if(abs(n1)<0.000001)
+				stack_float.push_back(1);
+			else
+				stack_float.push_back(n2/n1);
+			break;
+		case 's':
+			n1 = stack_float.back(); stack_float.pop_back();
+			stack_float.push_back(sin(n1));
+			break;
+		case 'c':
+			n1 = stack_float.back(); stack_float.pop_back();
+			stack_float.push_back(cos(n1));
+			break;
+		case 'e':
+			n1 = stack_float.back(); stack_float.pop_back();
+			stack_float.push_back(exp(n1));
+			break;
+		case 'l':
+			n1 = stack_float.back(); stack_float.pop_back();
+			if (abs(n1)<0.000001)
+				stack_float.push_back(0);
+			else 
+				// safe log of absolute value of n1
+				//stack_float.push_back(log(abs(n1)));
+				// unsafe log of real value
+				stack_float.push_back(log(n1));
+			break;
+		case 'q':
+			n1 = stack_float.back(); stack_float.pop_back();
+			// safe sqrt of absolute value of n1
+			if (n1<0)
+				stack_float.push_back(0);
+			else
+				stack_float.push_back(sqrt(n1));
+			break;
+		case '=': // equals			
+			n1 = stack_float.back(); stack_float.pop_back();
+			n2 = stack_float.back(); stack_float.pop_back();
+			stack_bool.push_back(n1==n2);		
+			break;
+		case '!': // does not equal			
+			b1 = stack_bool.back(); stack_bool.pop_back();
+			stack_bool.push_back(!b1);
+			break;
+		case '>': //greater than
+			n1 = stack_float.back(); stack_float.pop_back();
+			n2 = stack_float.back(); stack_float.pop_back();
+			stack_bool.push_back(n2 > n1);
+			break;
+		case '<': //less than			
+			n1 = stack_float.back(); stack_float.pop_back();
+			n2 = stack_float.back(); stack_float.pop_back();
+			stack_bool.push_back(n2 < n1);		
+			break;
+		case '}': //greater than or equal
+			n1 = stack_float.back(); stack_float.pop_back();
+			n2 = stack_float.back(); stack_float.pop_back();
+			stack_bool.push_back(n2 >= n1);
+			break;
+		case '{': //less than or equal
+			n1 = stack_float.back(); stack_float.pop_back();
+			n2 = stack_float.back(); stack_float.pop_back();
+			stack_bool.push_back(n2 <= n1);
+			break;
+		case 'i': // if (arity 2). if stack_bool true, leave top element of floating stack. otherwise, pop it.
+			b1 = stack_bool.back(); stack_bool.pop_back();
 			if (!b1)
-				float_stack.pop_back();
-			n.intron=false;
-		}
-		else
-			n.intron=true;
-		break;
-	case 't': // if-then-else (arity 3). if bin_stack true, leave 2nd element of floating stack and pop first. otherwise, pop 2nd and leave first.
-		if(bin_stack.size()>=1 && float_stack.size()>=2){
-			bool b1 = bin_stack.back(); bin_stack.pop_back();
-			//float n1 = float_stack.back(); float_stack.pop_back();
-			//float n2 = float_stack.back(); float_stack.pop_back();
+				stack_float.pop_back();
+			break;
+		case 't': // if-then-else (arity 3). if stack_bool true, leave 2nd element of floating stack and pop first. otherwise, pop 2nd and leave first.
+			b1 = stack_bool.back(); stack_bool.pop_back();
+			//n1 = stack_float.back(); stack_float.pop_back();
+			//n2 = stack_float.back(); stack_float.pop_back();
 			if (b1)
-				float_stack.pop_back();
+				stack_float.pop_back();
 			else{
-				swap(float_stack[float_stack.size()-2],float_stack.back());
-				float_stack.pop_back();
+				swap(stack_float[stack_float.size()-2],stack_float.back());
+				stack_float.pop_back();
 			}
-			n.intron=false;
+			break;
+		case '&':
+			b1 = stack_bool.back(); stack_bool.pop_back();
+			b2 = stack_bool.back(); stack_bool.pop_back();
+			stack_bool.push_back(b1 && b2);
+			break;
+		case '|':
+			b1 = stack_bool.back(); stack_bool.pop_back();
+			b2 = stack_bool.back(); stack_bool.pop_back();
+			stack_bool.push_back(b1 || b2);
+			break;
+		default:
+			cout << "eval error\n";
+			break;
 		}
-		else
-			n.intron=true;
-		break;
 	}
+	else
+		n.intron=true;
 
 }
 void FitnessEstimate(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE);
@@ -580,8 +508,8 @@ void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,uno
 }
 void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s)
 {		
-	vector<float> float_stack;
-	vector<bool> bin_stack;
+	vector<float> stack_float;
+	vector<bool> stack_bool;
 	me.output.resize(0); 
 	me.output_v.resize(0); 
 	float SStot=0;
@@ -609,18 +537,18 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 	}
 	me.output.reserve(ndata_t);
 	me.output_v.reserve(ndata_v);
-	//if (p.eHC_on && p.eHC_slim){ me.float_stack.resize(0); me.float_stack.reserve((me.eff_size)*vals.size());}
+	//if (p.eHC_on && p.eHC_slim){ me.stack_float.resize(0); me.stack_float.reserve((me.eff_size)*vals.size());}
 	if (p.eHC_on && p.eHC_slim)
 	{ 
-		me.float_stack.resize((me.eff_size)*vals.size());
-		me.float_stacklen.resize(0);
-		me.float_stacklen.reserve(me.eff_size);
+		me.stack_float.resize((me.eff_size)*vals.size());
+		me.stack_floatlen.resize(0);
+		me.stack_floatlen.reserve(me.eff_size);
 	}
-	//float_stack.reserve(me.eff_size/2);
+	//stack_float.reserve(me.eff_size/2);
 	 
 	for(unsigned int sim=0;sim<vals.size();++sim)
 		{
-			//if (p.eHC_slim) me.float_stack.push_back(vector<float>());
+			//if (p.eHC_slim) me.stack_float.push_back(vector<float>());
 			int k_eff=0;
 
 			for (unsigned int j=0; j<p.allvars.size()-p.AR_n;++j) //wgl: add time delay of output variable here 
@@ -648,32 +576,32 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 						cout<<"WTF";
 				}*/
 				if (me.line.at(k).on){
-					//me.line.at(k).eval(float_stack);
-					eval(me.line.at(k),float_stack,bin_stack);
+					//me.line.at(k).eval(stack_float);
+					eval(me.line.at(k),stack_float,stack_bool);
 					++ptevals;
 					if (p.eHC_on && p.eHC_slim) // stack tracing
 					{
-						if(!float_stack.empty()) me.float_stack[k_eff*vals.size() + sim] = float_stack.back();
-						else me.float_stack[k_eff*vals.size() + sim] = 0;
-						if (sim==0) me.float_stacklen.push_back(float_stack.size());
-						/*if(!float_stack.empty()) me.float_stack.push_back(float_stack.back());
-						else me.float_stack.push_back(0);*/
+						if(!stack_float.empty()) me.stack_float[k_eff*vals.size() + sim] = stack_float.back();
+						else me.stack_float[k_eff*vals.size() + sim] = 0;
+						if (sim==0) me.stack_floatlen.push_back(stack_float.size());
+						/*if(!stack_float.empty()) me.stack_float.push_back(stack_float.back());
+						else me.stack_float.push_back(0);*/
 					}
 					++k_eff;
 					/*else
 						cout << "hm";*/
 				}
 			}
-			/*if (float_stack.size()>1)
+			/*if (stack_float.size()>1)
 				cout << "non-tree\n";*/
 
-			if(!(!p.classification && float_stack.empty()) && !(p.classification && bin_stack.empty())){
+			if(!(!p.classification && stack_float.empty()) && !(p.classification && stack_bool.empty())){
 				
 
 				if (p.train){
 					if(sim<ndata_t){
-						if (p.classification) me.output.push_back(float(bin_stack.back()));
-						else me.output.push_back(float_stack.back());
+						if (p.classification) me.output.push_back(float(stack_bool.back()));
+						else me.output.push_back(stack_float.back());
 						me.abserror += abs(target.at(sim)-me.output.at(sim));
 						meantarget += target.at(sim);
 						meanout += me.output[sim];
@@ -681,8 +609,8 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 					}
 					else
 					{
-						if (p.classification) me.output_v.push_back(float(bin_stack.back()));
-						else me.output_v.push_back(float_stack.back());
+						if (p.classification) me.output_v.push_back(float(stack_bool.back()));
+						else me.output_v.push_back(stack_float.back());
 						me.abserror_v += abs(target.at(sim)-me.output_v.at(sim-ndata_t));
 						meantarget_v += target.at(sim);
 						meanout_v += me.output_v[sim-ndata_t];
@@ -691,8 +619,8 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 
 				}
 				else {
-					if (p.classification) me.output.push_back(float(bin_stack.back()));
-					else me.output.push_back(float_stack.back());
+					if (p.classification) me.output.push_back(float(stack_bool.back()));
+					else me.output.push_back(stack_float.back());
 					me.abserror += abs(target.at(sim)-me.output.at(sim));
 					meantarget += target.at(sim);
 					meanout += me.output[sim];
@@ -702,11 +630,12 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 				pass=false;
 				break;
 				}
-			//float_stack.clear();
-			float_stack.resize(0);
+			//stack_float.clear();
+			stack_float.resize(0);
+			stack_bool.resize(0);
 		}
 		if (pass){
-			
+			assert(me.output.size()==ndata_t);
 			// mean absolute error
 			me.abserror = me.abserror/ndata_t;
 			meantarget = meantarget/ndata_t;
@@ -755,6 +684,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 			if (!pass){
 				me.corr = 0;
 				me.VAF = 0;
+				me.abserror = p.max_fit;
 			}
 						
 
@@ -850,8 +780,8 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 
 bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s,int linestart, float orig_fit)
 {
-	vector<float> float_stack;// = init_stack;
-	vector<bool> bin_stack;
+	vector<float> stack_float;// = init_stack;
+	vector<bool> stack_bool;
 	me.output.clear();
 	me.output_v.clear();
 	float SStot=0;
@@ -880,28 +810,28 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 	// initialize stack for new individual from old stack
 	
 	/*for(int i=0;i<vals.size();++i){
-		me.float_stack.push_back(vector<float>());
+		me.stack_float.push_back(vector<float>());
 		for(int j=0;j<outstart;++j)
-			me.float_stack[i].push_back(init_stack[i].at(j));
+			me.stack_float[i].push_back(init_stack[i].at(j));
 	}*/
-	int outstart = int(me.float_stack.size()/vals.size());
-	me.float_stack.resize(me.eff_size*vals.size());
+	int outstart = int(me.stack_float.size()/vals.size());
+	me.stack_float.resize(me.eff_size*vals.size());
 	int k_eff = outstart;
 	int k_fill = outstart;
-	me.float_stacklen.reserve(me.eff_size);
-	//if(!me.float_stacklen.empty()) float_stack.reserve(*std::max(me.float_stacklen.begin(),me.float_stacklen.end()));
+	me.stack_floatlen.reserve(me.eff_size);
+	//if(!me.stack_floatlen.empty()) stack_float.reserve(*std::max(me.stack_floatlen.begin(),me.stack_floatlen.end()));
 	for(unsigned int sim=0;sim<vals.size();++sim)
 		{
-			//initialize float_stack with correct number of elements
-			if (me.float_stacklen.size()>0 && outstart>0){
-				for (unsigned int i=me.float_stacklen.at(outstart-1);i>0;--i) 
-					float_stack.push_back(me.float_stack[(outstart-i)*vals.size()+sim]);
+			//initialize stack_float with correct number of elements
+			if (me.stack_floatlen.size()>0 && outstart>0){
+				for (unsigned int i=me.stack_floatlen.at(outstart-1);i>0;--i) 
+					stack_float.push_back(me.stack_float[(outstart-i)*vals.size()+sim]);
 			}
 			
 			/*if (outstart>0)
-				float_stack.push_back(init_stack[sim][outstart-1]);*/
+				stack_float.push_back(init_stack[sim][outstart-1]);*/
 
-			//me.float_stack.push_back(vector<float>());
+			//me.stack_float.push_back(vector<float>());
 
 			for (unsigned int j=0; j<p.allvars.size();++j)
 				dattovar.at(j)= vals[sim][j];
@@ -913,23 +843,23 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 						cout<<"WTF";
 				}*/
 				if (me.line.at(k).on){
-					//me.line.at(k).eval(float_stack);
-					eval(me.line.at(k),float_stack, bin_stack);
+					//me.line.at(k).eval(stack_float);
+					eval(me.line.at(k),stack_float, stack_bool);
 					++ptevals;
-					if(!float_stack.empty()) me.float_stack[k_eff*vals.size() + sim] = float_stack.back(); 
-					else me.float_stack[k_eff*vals.size() + sim] = 0;
-					/*if(!float_stack.empty()) me.float_stack.push_back(float_stack.back());
-					else me.float_stack.push_back(0);*/
-					if (sim==0) me.float_stacklen.push_back(float_stack.size());
+					if(!stack_float.empty()) me.stack_float[k_eff*vals.size() + sim] = stack_float.back(); 
+					else me.stack_float[k_eff*vals.size() + sim] = 0;
+					/*if(!stack_float.empty()) me.stack_float.push_back(stack_float.back());
+					else me.stack_float.push_back(0);*/
+					if (sim==0) me.stack_floatlen.push_back(stack_float.size());
 					++k_eff;
 				}
 					
 			}
 
-			if(!float_stack.empty()){
+			if(!stack_float.empty()){
 				if (p.train){
 					if(sim<ndata_t){
-						me.output.push_back(float_stack.back());
+						me.output.push_back(stack_float.back());
 						me.abserror += abs(target.at(sim)-me.output.at(sim));
 						if(me.abserror/vals.size() > orig_fit)
 							return 0;
@@ -939,7 +869,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 					}
 					else
 					{
-						me.output_v.push_back(float_stack.back());
+						me.output_v.push_back(stack_float.back());
 						me.abserror_v += abs(target.at(sim)-me.output_v.at(sim-ndata_t));
 						meantarget_v += target.at(sim);
 						meanout_v += me.output_v[sim-ndata_t];
@@ -948,7 +878,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 
 				}
 				else {
-					me.output.push_back(float_stack.back());
+					me.output.push_back(stack_float.back());
 					me.abserror += abs(target.at(sim)-me.output.at(sim));
 					if(me.abserror/vals.size() > orig_fit)
 							return 0;
@@ -959,8 +889,8 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 			else{
 				return 0;
 				}
-			//float_stack.clear();
-			float_stack.resize(0);
+			//stack_float.clear();
+			stack_float.resize(0);
 		}
 		if (!pass) return 0;
 		else
@@ -1225,8 +1155,8 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 			bool pass=true;
 			if(!me.eqn.compare("unwriteable")==0){
 				
-				vector<float> float_stack;
-				vector<bool> bin_stack;
+				vector<float> stack_float;
+				vector<bool> stack_bool;
 				me.output.clear();
 				me.output_v.clear();
 				
@@ -1271,17 +1201,17 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 
 						for(int k=0;k<me.line.size();++k){
 							if (me.line.at(k).on){
-								//me.line.at(k)->eval(float_stack);
-								eval(me.line.at(k),float_stack,bin_stack);
+								//me.line.at(k)->eval(stack_float);
+								eval(me.line.at(k),stack_float,stack_bool);
 								++ptevals;}
 						}
 
-						if(!float_stack.empty()){
+						if(!stack_float.empty()){
 							if (p.train){
 								if(sim<ndata_t){
-									me.output.push_back(float_stack.back());
+									me.output.push_back(stack_float.back());
 									tarlex.push_back(d.targetlex[lex][sim]);
-									outlex[lex].push_back(float_stack.back());
+									outlex[lex].push_back(stack_float.back());
 
 									me.abserror += abs(d.targetlex[lex].at(sim)-me.output.back());
 									errorlex[lex]+=abs(d.targetlex[lex].at(sim)-me.output.back());
@@ -1294,9 +1224,9 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 								}
 								else
 								{
-									me.output_v.push_back(float_stack.back());
+									me.output_v.push_back(stack_float.back());
 									tarlex_v.push_back(d.targetlex[lex][sim]);
-									//outlex_v[lex].push_back(float_stack.back());
+									//outlex_v[lex].push_back(stack_float.back());
 									me.abserror_v += abs(d.targetlex[lex].at(sim)-me.output_v.back());
 									//errorlex_v[lex]+=abs(d.targetlex[lex]lex[lex].at(sim)-me.output.at(sim-ndata_t));
 									meantarget_v += d.targetlex[lex][sim];
@@ -1307,9 +1237,9 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 								}
 							}
 							else {
-								me.output.push_back(float_stack.back());
+								me.output.push_back(stack_float.back());
 								tarlex.push_back(d.targetlex[lex][sim]);
-								outlex[lex].push_back(float_stack.back());
+								outlex[lex].push_back(stack_float.back());
 								me.abserror += abs(d.targetlex[lex].at(sim)-me.output.back());
 								errorlex[lex]+=abs(d.targetlex[lex].at(sim)-me.output.back());
 								meantarget += d.targetlex[lex].at(sim);
@@ -1322,7 +1252,7 @@ void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
 							pass=false;
 							break;
 							}
-						float_stack.clear();
+						stack_float.clear();
 					}//for(unsigned int sim=0;sim<d.lexvals[lex].size();++sim)
 
 					if (pass){

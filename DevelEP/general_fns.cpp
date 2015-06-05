@@ -148,6 +148,39 @@ void MutInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,data& d)
 		//	}
 		//	tmpstack.clear();
 		//	break;
+		case 11: // sqrt
+			newind.line.at(loc) = node('q');
+			break;
+		case 12: // equals
+			newind.line.at(loc) = node('=');
+			break;
+		case 13: // does not equal
+			newind.line.at(loc) = node('!');
+			break;
+		case 14: // less than
+			newind.line.at(loc) = node('<');
+			break;
+		case 15: // greater than
+			newind.line.at(loc) = node('>');
+			break;
+		case 16: //less than or equal to
+			newind.line.at(loc) = node('{');
+			break;
+		case 17: //greater than or equal to
+			newind.line.at(loc) = node('}');
+			break;
+		case 18: //if-then
+			newind.line.at(loc) = node('i');
+			break;
+		case 19: //if-then-else
+			newind.line.at(loc) = node('t');
+			break;
+		case 20: //and
+			newind.line.at(loc) = node('&');
+			break;
+		case 21: //or
+			newind.line.at(loc) = node('|');
+			break;
 		}
 		
 
@@ -291,6 +324,39 @@ void InsInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 		//	}
 		//	tmpstack.clear();
 		//	break;
+		case 11: // sqrt
+			newind.line.insert(it+loc,node('q'));
+			break;
+		case 12: // equals
+			newind.line.insert(it+loc,node('='));
+			break;
+		case 13: // does not equal
+			newind.line.insert(it+loc,node('!'));
+			break;
+		case 14: // less than
+			newind.line.insert(it+loc,node('<'));
+			break;
+		case 15: // greater than
+			newind.line.insert(it+loc,node('>'));
+			break;
+		case 16: //less than or equal to
+			newind.line.insert(it+loc,node('{'));
+			break;
+		case 17: //greater than or equal to
+			newind.line.insert(it+loc,node('}'));
+			break;
+		case 18: //if-then
+			newind.line.insert(it+loc,node('i'));
+			break;
+		case 19: //if-then-else
+			newind.line.insert(it+loc,node('t'));
+			break;
+		case 20: //and
+			newind.line.insert(it+loc,node('&'));
+			break;
+		case 21: //or
+			newind.line.insert(it+loc,node('|'));
+			break;
 		}
 		
 
