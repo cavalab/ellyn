@@ -75,7 +75,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 	case 3: // lexicase
 		{
 			vector<unsigned int> parloc(pop.size());
-			LexicaseSelect(pop,parloc,p,r);
+			LexicaseSelect(pop,parloc,p,r,d);
 			//if (p.lex_age) vector<ind> tmppop(pop);
 
 			ApplyGenetics(pop,parloc,p,r,d,s,FE);

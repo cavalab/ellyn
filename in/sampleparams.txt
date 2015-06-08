@@ -6,7 +6,8 @@ max_evals			50000000000 // max point evaluations
 //PS_sel				3
 
 // Generation Settings 
-sel					4	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
+sel					3	// 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
+lexpool				1 // percent of population to use for lexicase selection events
 tourn_size			2
 rt_rep				0.0
 rt_cross			0.8
@@ -96,5 +97,5 @@ prto_arch_size		100
 prto_sel_on			1
 
 // island model
-islands				1
+islands				0
 island_gens			10

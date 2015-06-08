@@ -10,7 +10,7 @@
 using std::swap;
 void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
 {
-	assert (pop.size()== p.popsize) ;
+	//assert (pop.size()== p.popsize) ;
 	//boost::progress_timer timer;
 	float choice;
 	
@@ -84,7 +84,7 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 
 	while(tmppop.size()>pop.size())
 		tmppop.pop_back();
-    assert (tmppop.size()== p.popsize) ;
+//    assert (tmppop.size()== p.popsize) ;
     //EDIT: looks like UMGHPCC build is going into this loop. is lexage initialized?
 	if (p.sel==4 || (p.sel==3 && p.lexage)) // insert new pop into old pop
 	{
@@ -97,5 +97,5 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 	}
 	else //replace pop with tmppop
 		pop = tmppop;
-	assert (pop.size()== p.popsize) ;
+	//assert (pop.size()== p.popsize) ;
 }

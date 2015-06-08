@@ -25,7 +25,7 @@ struct ind {
 	vector <node> line;
 	vector<float> output;
 	vector<float> output_v;
-	vector<float> fitlex; // fitnesses for lexicase selection
+	vector<float> error; // fitnesses for lexicase selection
 	vector<float> f; // vector of objectives for multi-objective implementations (PS_sel)
 	std::vector<unsigned int> stack_floatlen;
 	std::vector<float> stack_float; // linearized stack_float
@@ -91,7 +91,7 @@ struct ind {
 		line.swap(s.line);						// vectors
 		output.swap(s.output);
 		output_v.swap(s.output_v);
-		fitlex.swap(s.fitlex);
+		error.swap(s.error);
 		f.swap(s.f);
 		stack_floatlen.swap(s.stack_floatlen);
 		stack_float.swap(s.stack_float);		
@@ -148,6 +148,7 @@ struct ind {
 		eqn_form="";
 		output.clear();
 		output_v.clear();
+		error.clear();
 		genty = 1;
 		//stack_float.clear();
 		// nominal model must be encased in set of parenthesis. the pointer points to that which is encased.

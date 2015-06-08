@@ -14,5 +14,5 @@ void EpiHC(ind&,params&,vector<Randclass>& r,data& d,state& s,FitnessEstimator& 
 void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state&,FitnessEstimator& FE);
 void AgeFitSurvival(vector<ind>& pop,params& p,vector<Randclass>& r);
 void AgeFitGenSurvival(vector<ind>& pop,params& p,vector<Randclass>& r);
-void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r);
+void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r,data& d);
 #endif

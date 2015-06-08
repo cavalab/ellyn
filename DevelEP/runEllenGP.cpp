@@ -791,6 +791,8 @@ void load_params(params &p, std::ifstream& fs)
 		p.AR_lookahead= 0;
 	}
 
+	// set train pct to 1 if train is zero
+	if (!p.train) p.train_pct=1;
 }
 void load_data(data &d, std::ifstream& fs,params& p)
 {
@@ -950,7 +952,7 @@ void load_lexdata(data &d, std::ifstream& fs,params& p)
 		}
     }
 	// set number of cases
-	p.numcases = c+1;
+	//p.numcases = c+1;
 	// pop end in case of extra blank lines in data file
 	while(d.vals.back().empty())
 	{
@@ -1162,8 +1164,9 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			cerr << "Error: couldn't open data file " + datafile << "\n";
 			exit(1);
 		}
-	if (p.sel == 3) load_lexdata(d,ds,p);
-	else load_data(d,ds,p);
+	//if (p.sel == 3) load_lexdata(d,ds,p);
+	//else 
+	load_data(d,ds,p);
 	// load AR variables if necessary
 	if (p.AR)
 	{
@@ -1236,18 +1239,18 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	 // get evolutionary method
 	 s.out << "Evolutionary Method: ";
 	 switch(p.sel){
-	 case 1:
-		 s.out << "Standard Tournament\n";
-		 break;
-	 case 2:
-		 s.out << "Deterministic Crowding\n";
-		 break;
-	 case 3:
-		 s.out << "Lexicase Selection\n";
-		 break;
-	 case 4:
-		 s.out << "Age-Fitness Pareto\n";
-		 break;
+		 case 1:
+			 s.out << "Standard Tournament\n";
+			 break;
+		 case 2:
+			 s.out << "Deterministic Crowding\n";
+			 break;
+		 case 3:
+			 s.out << "Lexicase Selection\n";
+			 break;
+		 case 4:
+			 s.out << "Age-Fitness Pareto\n";
+			 break;
 	 }
 	 s.out << "ERC: " << p.ERC << "\n";
 	 s.out << "Parameter Hill Climber: " << p.pHC_on <<"\n";

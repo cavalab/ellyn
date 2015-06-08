@@ -134,9 +134,8 @@ struct params {
 	int seed;
 
 	// lexicase selection
-	int numcases;
-	int lexpool;
-	bool lexage;
+	float lexpool; // percent of population to use for lexicase selection events
+	bool lexage;// include age as case
 	
 	//print initial population
 	bool print_init_pop;
@@ -252,8 +251,7 @@ struct params {
 		seed = 0;
 
 		// lexicase selection
-		numcases = 0;
-		lexpool = 0;
+		lexpool = 1;
 		lexage = 0;
 		
 		
