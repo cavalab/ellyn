@@ -875,6 +875,13 @@ void load_data(data &d, std::ifstream& fs,params& p)
 		d.vals.pop_back();
 	}
 
+	if (p.classification && !p.class_binary){
+		// set p.num_cases based on unique elements in target
+		vector<float> tmp = d.target;
+		sort(tmp.begin(),tmp.end());
+		tmp.erase(unique(tmp.begin(),tmp.end()),tmp.end());
+		p.number_of_classes = tmp.size();
+	}
 	
 	
 
