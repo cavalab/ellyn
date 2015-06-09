@@ -150,6 +150,8 @@ struct params {
 	
 	//classification
 	bool classification;
+	bool class_binary; // use binary or multiclass
+	int number_of_classes; // number of unique classes
 
 	// number of threads
 	params(){ //default values
@@ -260,7 +262,9 @@ struct params {
 
 		// classification
 		classification = 0;
-
+		class_binary = 0;
+		//class_multiclass=0; // use multiclass 
+		number_of_classes=1; //for use with multiclass
 	}
 	~params(){}
 

@@ -25,12 +25,12 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		vector<unsigned int> parloc(pop.size());
 		//if (p.loud ) fcout << "     Tournament...";
 		Tournament(pop,parloc,p,r);		
-		assert (pop.size()== p.popsize) ;
+		//assert (pop.size()== p.popsize) ;
 		//if (p.loud ) fcout << "     Apply Genetics...";
 		try
 		{
 			ApplyGenetics(pop,parloc,p,r,d,s,FE);
-			assert (pop.size()== p.popsize) ;
+			//assert (pop.size()== p.popsize) ;
 		}
 		catch(...)
 				{

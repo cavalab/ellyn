@@ -7,6 +7,8 @@
 #include "Line2Eqn.h"
 #include "EvalEqnStr.h"
 #include <unordered_map>
+#include <bitset>
+#include <math.h>  
 //#include "runEllenGP.h"
 
 #if defined(_WIN32)
@@ -52,6 +54,13 @@ public:
 //    //std::cout << result;
 //	//std::cout << eqn << "\t" << eqn_form <<"\n";
 //}
+
+const int bitlen( int n )  
+{  //return bitstring length needed to represent n
+    // log(n)/log(2) is log2.  
+    return ceil(log( double(n) ) / log( float(2.0) ));  
+}
+
 void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s);
 float getCorr(vector<float>& output,vector<float>& target,float meanout,float meantarget,int off,float& target_std)
 {
@@ -599,21 +608,58 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 			if(!(!p.classification && stack_float.empty()) && !(p.classification && stack_bool.empty())){
 				
 
-				if (p.train){
-					if(sim<ndata_t){
-						if (p.classification) me.output.push_back(float(stack_bool.back()));
-						else me.output.push_back(stack_float.back());
-						me.abserror += abs(target.at(sim)-me.output.at(sim));
+				if ((p.train && sim<ndata_t) || (!p.train)){
+						if (p.classification && p.class_binary) // binary classification
+							me.output.push_back(float(stack_bool.back()));
+						else if (p.classification){
+							//const size_t tmp = bitlen(p.number_of_classes);
+							std::bitset<4> bitout;//(p.number_of_classes,0);
+							for (int i = 0;i<bitlen(p.number_of_classes); ++i){
+								if (stack_bool.size()>i) bitout.set(i,stack_bool[i]); 
+							}
+							me.output.push_back(float(bitout.to_ulong()));
+						}
+						else
+							me.output.push_back(stack_float.back());
+						if(!(p.classification && !p.class_binary)){ // for regression and binary classification:
+							me.abserror += abs(target.at(sim)-me.output.at(sim));
+							if (p.sel==3) // lexicase error vector
+								me.error.push_back(abs(target.at(sim)-me.output.at(sim)));
+						}
+						else{ // for multiclass classification, error should be based solely on whether or not the right class was assigned
+							if (target[sim]!=me.output[sim]){
+								++me.abserror;
+								if (p.sel==3) // lexicase error vector
+									me.error.push_back(1);
+							}
+							else
+								me.error.push_back(0);
+						}
 						meantarget += target.at(sim);
 						meanout += me.output[sim];
-						if (p.sel==3) // lexicase error vector
-							me.error.push_back(abs(target.at(sim)-me.output.at(sim)));
 					}
-					else
+					else //validation set
 					{
-						if (p.classification) me.output_v.push_back(float(stack_bool.back()));
-						else me.output_v.push_back(stack_float.back());
-						me.abserror_v += abs(target.at(sim)-me.output_v.at(sim-ndata_t));
+						if (p.classification && p.class_binary) // binary classification
+							me.output_v.push_back(float(stack_bool.back()));
+						else if (p.classification){
+							//const size_t tmp = bitlen(p.number_of_classes);
+							std::bitset<4> bitout; //(p.number_of_classes,0);
+							for (int i = 0;i<bitlen(p.number_of_classes); ++i){
+								if (stack_bool.size()>i) bitout.set(i,stack_bool[i]); 
+							}
+							me.output_v.push_back(float(bitout.to_ulong()));
+						}
+						else
+							me.output_v.push_back(stack_float.back());
+
+						//assign error
+						if(!(p.classification && !p.class_binary)) // for regression and binary classification:
+							me.abserror_v += abs(target[sim]-me.output_v[sim-ndata_t]);
+						else{ // for multiclass classification, error should be based solely on whether or not the right class was assigned
+							if (target[sim]!=me.output_v[sim-ndata_t])
+								++me.abserror_v;													
+						}
 						meantarget_v += target.at(sim);
 						meanout_v += me.output_v[sim-ndata_t];
 						//if (p.sel==3) // lexicase error vector
@@ -621,16 +667,16 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 
 					}
 
-				}
-				else {
-					if (p.classification) me.output.push_back(float(stack_bool.back()));
-					else me.output.push_back(stack_float.back());
-					me.abserror += abs(target.at(sim)-me.output.at(sim));
-					meantarget += target.at(sim);
-					meanout += me.output[sim];
-					if (p.sel==3) // lexicase error vector
-							me.error.push_back(abs(target.at(sim)-me.output.at(sim)));
-				}
+				//}
+				//else {
+				//	if (p.binary_classification) me.output.push_back(float(stack_bool.back()));
+				//	else me.output.push_back(stack_float.back());
+				//	me.abserror += abs(target.at(sim)-me.output.at(sim));
+				//	meantarget += target.at(sim);
+				//	meanout += me.output[sim];
+				//	if (p.sel==3) // lexicase error vector
+				//			me.error.push_back(abs(target.at(sim)-me.output.at(sim)));
+				//}
 			}
 			else{
 				pass=false;

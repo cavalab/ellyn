@@ -17,8 +17,6 @@ struct paretoarchive{
 	{
 		vector <ind> tmppop;
 
-		
-		
 		pop.insert(pop.end(),newpop.begin(),newpop.end());
 		//shrink pareto population by discarding outputs
 		for (int i=pop.size()-newpop.size();i<pop.size();i++) {

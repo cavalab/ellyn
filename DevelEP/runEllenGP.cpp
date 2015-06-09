@@ -638,6 +638,12 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.align_dev;
 		else if(varname.compare("classification")==0)
 			ss>>p.classification;
+		else if(varname.compare("class_binary")==0)
+			ss>>p.class_binary;
+		/*else if(varname.compare("class_multiclass")==0)
+			ss>>p.multiclass;*/
+		else if(varname.compare("number_of_classes")==0)
+			ss>>p.number_of_classes;
 		else{}
     }
 	p.allvars = p.intvars;
@@ -1025,8 +1031,8 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s)
 	vector<int> shuffler;
 	vector<float> newtarget;
 	vector<vector<float>> newvals;
-	if (p.sel!=3) 
-	{
+	//if (p.sel!=3) 
+	//{
 		for(int i=0;i<d.vals.size();++i)
 			shuffler.push_back(i);
 
@@ -1052,37 +1058,37 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s)
 		std::swap(d.target,newtarget);
 		std::swap(d.vals,newvals);
 
-	}
-	else // lexicase selection
-	{
-		
-		vector<vector<float>> newtarlex(d.lexvals.size());
-		vector<vector<vector<float>>> newlexvals(d.lexvals.size());
-		for (int h=0; h<d.lexvals.size();++h)
-		{
-			shuffler.clear();
-			for(int i=0;i<d.lexvals[h].size();++i)
-				shuffler.push_back(i);
+	//}
+	//else // lexicase selection
+	//{
+	//	
+	//	vector<vector<float>> newtarlex(d.lexvals.size());
+	//	vector<vector<vector<float>>> newlexvals(d.lexvals.size());
+	//	for (int h=0; h<d.lexvals.size();++h)
+	//	{
+	//		shuffler.clear();
+	//		for(int i=0;i<d.lexvals[h].size();++i)
+	//			shuffler.push_back(i);
 
-			std::random_shuffle(shuffler.begin(),shuffler.end(),r[omp_get_thread_num()]);
-			
-			for(int i=0;i<d.lexvals[h].size();++i)
-			{
-				//for (int j =0; j<d.lexvals[h][i].size();++j){
-					newtarlex[h].push_back(d.targetlex[h][shuffler.at(i)]);
-					newlexvals[h].push_back(d.lexvals[h][shuffler.at(i)]);
+	//		std::random_shuffle(shuffler.begin(),shuffler.end(),r[omp_get_thread_num()]);
+	//		
+	//		for(int i=0;i<d.lexvals[h].size();++i)
+	//		{
+	//			//for (int j =0; j<d.lexvals[h][i].size();++j){
+	//				newtarlex[h].push_back(d.targetlex[h][shuffler.at(i)]);
+	//				newlexvals[h].push_back(d.lexvals[h][shuffler.at(i)]);
 
-					newtarget.push_back(newtarlex[h].back());
-					newvals.push_back(newlexvals[h].back());
-				//}
-			}
-		}
-		using std::swap;
-		swap(d.target,newtarget);
-		swap(d.vals,newvals);
-		swap(d.targetlex,newtarlex);
-		swap(d.lexvals,newlexvals);
-	}
+	//				newtarget.push_back(newtarlex[h].back());
+	//				newvals.push_back(newlexvals[h].back());
+	//			//}
+	//		}
+	//	}
+	//	using std::swap;
+	//	swap(d.target,newtarget);
+	//	swap(d.vals,newvals);
+	//	swap(d.targetlex,newtarlex);
+	//	swap(d.lexvals,newlexvals);
+	//}
 	
 }
 bool stopcondition(tribe& T,params p,data& d,state& s,FitnessEstimator& FE)
