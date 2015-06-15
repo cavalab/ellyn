@@ -605,19 +605,24 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 			/*if (stack_float.size()>1)
 				cout << "non-tree\n";*/
 
-			if(!(!p.classification && stack_float.empty()) && !(p.classification && stack_bool.empty())){
-				
+			//if(!(!p.classification && stack_float.empty()) && !(p.classification && stack_bool.empty())){
+			  if(!stack_float.empty()){	
 
 				if ((p.train && sim<ndata_t) || (!p.train)){
 						if (p.classification && p.class_binary) // binary classification
 							me.output.push_back(float(stack_bool.back()));
 						else if (p.classification){
 							//const size_t tmp = bitlen(p.number_of_classes);
-							std::bitset<4> bitout;//(p.number_of_classes,0);
-							for (int i = 0;i<bitlen(p.number_of_classes); ++i){
-								if (stack_bool.size()>i) bitout.set(i,stack_bool[i]); 
-							}
-							me.output.push_back(float(bitout.to_ulong()));
+							//std::bitset<4> bitout;//(p.number_of_classes,0);
+							//for (int i = 0;i<bitlen(p.number_of_classes); ++i){
+							//	if (stack_bool.size()>i) bitout.set(i,stack_bool[i]); 
+							//}
+							//me.output.push_back(float(bitout.to_ulong()));
+							// take largest floating point stack as the output 
+							
+							vector<float>::iterator it = max_element(stack_float.begin(),stack_float.end());
+							me.output.push_back(float(it - stack_float.begin()));
+							
 						}
 						else
 							me.output.push_back(stack_float.back());
@@ -643,12 +648,16 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 						if (p.classification && p.class_binary) // binary classification
 							me.output_v.push_back(float(stack_bool.back()));
 						else if (p.classification){
-							//const size_t tmp = bitlen(p.number_of_classes);
-							std::bitset<4> bitout; //(p.number_of_classes,0);
-							for (int i = 0;i<bitlen(p.number_of_classes); ++i){
-								if (stack_bool.size()>i) bitout.set(i,stack_bool[i]); 
-							}
-							me.output_v.push_back(float(bitout.to_ulong()));
+							////const size_t tmp = bitlen(p.number_of_classes);
+							//std::bitset<4> bitout; //(p.number_of_classes,0);
+							//for (int i = 0;i<bitlen(p.number_of_classes); ++i){
+							//	if (stack_bool.size()>i) bitout.set(i,stack_bool[i]); 
+							//}
+							//me.output_v.push_back(float(bitout.to_ulong()));
+							// class is index of largest element in floating point stack
+							vector<float>::iterator it = max_element(stack_float.begin(),stack_float.end());
+							me.output_v.push_back(float(it - stack_float.begin()));
+							
 						}
 						else
 							me.output_v.push_back(stack_float.back());

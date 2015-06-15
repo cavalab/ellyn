@@ -132,18 +132,19 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
 			}	
 		}
 	}
-	if ((eqn_floatstack.empty() && !p.classification) || (eqn_boolstack.empty() && p.classification) )
+	//if ((eqn_floatstack.empty() && !p.classification) || (eqn_boolstack.empty() && p.classification) )
+	if (eqn_floatstack.empty())	
 	{
 		eqnForm = "unwriteable";
 		//cout << "equation stack empty.\n";
 		return "unwriteable";
 	}
-	if (p.classification){
+	/*if (p.classification){
 		eqnForm = form_boolstack.back();
 		return eqn_boolstack.back();
 	}
-	else{
+	else{*/
 		eqnForm = form_floatstack.back();
 		return eqn_floatstack.back();
-	}
+	//}
 }
