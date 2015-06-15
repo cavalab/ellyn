@@ -64,6 +64,11 @@ public:
 			arity_float=2;
 			return_type='f';
 		}
+		else if (type=='m'){ //class operator
+			arity_bool=0;
+			arity_float=1;
+			return_type='c';
+		}// class operators
 		else{
 			std::cerr << "error in op_node: node type not specified";
 			throw;
@@ -73,6 +78,9 @@ public:
 		setComplexity();
 		intron = 0;
 	}
+	//class
+	node(int svalue){
+		type='m'; value=float(svalue); on=1; arity_float=1;arity_bool=0; c=1;intron = 0;return_type='c';}
 	//number
 	node(float svalue){type='n'; value=svalue; on=1; arity_float=0;arity_bool=0; c=1;intron = 0;return_type='f';}
 	//variable

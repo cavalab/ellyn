@@ -761,10 +761,16 @@ void load_params(params &p, std::ifstream& fs)
 			p.op_choice.push_back(21);
 			p.op_arity.push_back(3);
 		}
+		
 		else 
 			cout << "bad command (load params op_choice)" << "\n";
 	}
-	
+	if (p.classification) // class label instructions
+	{
+		p.op_choice.push_back(22);
+		p.op_arity.push_back(1);
+		p.op_weight.push_back(p.number_of_classes);
+	}
 	p.rep_wheel.push_back(p.rt_rep);
 	p.rep_wheel.push_back(p.rt_cross);
 	p.rep_wheel.push_back(p.rt_mut);

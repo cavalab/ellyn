@@ -181,6 +181,9 @@ void MutInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,data& d)
 		case 21: //or
 			newind.line.at(loc) = node('|');
 			break;
+		case 22: //class label
+			newind.line[loc] = node(r[omp_get_thread_num()].rnd_int(0,p.number_of_classes-1));
+			break;
 		}
 		
 
@@ -356,6 +359,9 @@ void InsInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 			break;
 		case 21: //or
 			newind.line.insert(it+loc,node('|'));
+			break;
+		case 22: //class label
+			newind.line.insert(it+loc,node(r[omp_get_thread_num()].rnd_int(0,p.number_of_classes-1)));
 			break;
 		}
 		

@@ -226,6 +226,9 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 			case 21: //or
 				newind.line.push_back(node('|'));
 				break;
+			case 22: //class label
+				newind.line.push_back(node(r[omp_get_thread_num()].rnd_int(0,p.number_of_classes-1)));
+				break;
 			}
 	}
 	/*while (newind.line.back()->type=='n'||newind.line.back()->type=='v')
@@ -397,6 +400,9 @@ void push_back_node(vector <node>& line, int choice, params& p,vector<Randclass>
 		case 21: //or
 			line.push_back(node('|'));
 			break;
+		case 22: //class label
+			line.push_back(node(r[omp_get_thread_num()].rnd_int(0,p.number_of_classes-1)));
+			break;
 	}
 }
 void push_front_node(vector <node>& line, int choice, params& p,vector<Randclass>& r)
@@ -505,6 +511,9 @@ void push_front_node(vector <node>& line, int choice, params& p,vector<Randclass
 			break;
 		case 21: //or
 			line.insert(line.begin(),node('|'));
+			break;
+		case 22: //class label
+			line.insert(line.begin(),node(r[omp_get_thread_num()].rnd_int(0,p.number_of_classes-1)));
 			break;
 	}
 }

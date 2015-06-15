@@ -7,8 +7,10 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
 {
 	vector<string> eqn_floatstack;
 	vector<string> eqn_boolstack;
+	vector<string> eqn_classstack;
 	vector<string> form_floatstack;
 	vector<string> form_boolstack;
+	vector<string> form_classstack;
 	string s1,s1f,s2,s2f,b1,b1f,b2,b2f;
 	for(unsigned int i=0;i<line.size();++i)
 	{
@@ -63,6 +65,9 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
 						break;
 					case '=':
 						sop="==";
+						break;
+					case 'm':
+						sop = "class_" + to_string(static_cast<long long>(line[i].value));
 						break;
 					default:
 						sop = string(&line[i].type);
@@ -125,6 +130,10 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
 						else
 							cout << "missed something";
 					}
+					else if (line[i].return_type=='c'){ //class label
+						eqn_classstack.push_back(sop + "(" + s1 + ")");
+						form_classstack.push_back(sop + "(" + s1f + ")");
+					}
 					else
 							cout << "missed something";
 					
@@ -133,18 +142,25 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
 		}
 	}
 	//if ((eqn_floatstack.empty() && !p.classification) || (eqn_boolstack.empty() && p.classification) )
-	if (eqn_floatstack.empty())	
+	if (eqn_floatstack.empty() || (p.classification && eqn_classstack.empty()))	
 	{
 		eqnForm = "unwriteable";
 		//cout << "equation stack empty.\n";
 		return "unwriteable";
 	}
-	/*if (p.classification){
-		eqnForm = form_boolstack.back();
-		return eqn_boolstack.back();
+	if (p.classification){ //MAKE THIS OUTPUT ALL STACK ELEMENTS SEPARATED BY COMMAS
+		eqnForm="";
+		string eqn="";
+		for (int i =0;i<eqn_classstack.size();++i){
+			eqn += "[" + eqn_classstack[i] + "]";
+			eqnForm += "[" + form_classstack[i] + "]";
+		}
+		//eqnForm = form_classstack.back();
+		//return eqn_classstack.back();
+		return eqn;
 	}
-	else{*/
+	else{
 		eqnForm = form_floatstack.back();
 		return eqn_floatstack.back();
-	//}
+	}
 }

@@ -280,7 +280,7 @@ int getEffSize(vector<node>& line)
 	}
 	return eff_size;
 }
-void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
+void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool,vector<float>& stack_class)
 {
 	float n1,n2;
 	bool b1,b2;
@@ -402,6 +402,10 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 			b2 = stack_bool.back(); stack_bool.pop_back();
 			stack_bool.push_back(b1 || b2);
 			break;
+		case 'm':
+			n1 = stack_float.back(); stack_float.pop_back();
+			stack_class[int(n.value)] += n1;
+			break;
 		default:
 			cout << "eval error\n";
 			break;
@@ -519,6 +523,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 {		
 	vector<float> stack_float;
 	vector<bool> stack_bool;
+	vector<float> stack_class(p.number_of_classes,0); 
 	me.output.resize(0); 
 	me.output_v.resize(0);
 	if (p.sel==3) me.error.resize(0);
@@ -587,7 +592,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 				}*/
 				if (me.line.at(k).on){
 					//me.line.at(k).eval(stack_float);
-					eval(me.line.at(k),stack_float,stack_bool);
+					eval(me.line.at(k),stack_float,stack_bool,stack_class);
 					++ptevals;
 					if (p.eHC_on && p.eHC_slim) // stack tracing
 					{
@@ -606,7 +611,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 				cout << "non-tree\n";*/
 
 			//if(!(!p.classification && stack_float.empty()) && !(p.classification && stack_bool.empty())){
-			  if(!stack_float.empty()){	
+			  if(!stack_float.empty() || (p.classification && !stack_class.empty())){	
 
 				if ((p.train && sim<ndata_t) || (!p.train)){
 						if (p.classification && p.class_binary) // binary classification
@@ -620,8 +625,10 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 							//me.output.push_back(float(bitout.to_ulong()));
 							// take largest floating point stack as the output 
 							
-							vector<float>::iterator it = max_element(stack_float.begin(),stack_float.end());
-							me.output.push_back(float(it - stack_float.begin()));
+							/*vector<float>::iterator it = max_element(stack_float.begin(),stack_float.end());
+							me.output.push_back(float(it - stack_float.begin()));*/
+							vector<float>::iterator it = max_element(stack_class.begin(),stack_class.end());
+							me.output.push_back(float(it - stack_class.begin()));
 							
 						}
 						else
@@ -655,8 +662,10 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 							//}
 							//me.output_v.push_back(float(bitout.to_ulong()));
 							// class is index of largest element in floating point stack
-							vector<float>::iterator it = max_element(stack_float.begin(),stack_float.end());
-							me.output_v.push_back(float(it - stack_float.begin()));
+							/*vector<float>::iterator it = max_element(stack_float.begin(),stack_float.end());
+							me.output_v.push_back(float(it - stack_float.begin()));*/
+							vector<float>::iterator it = max_element(stack_class.begin(),stack_class.end());
+							me.output_v.push_back(float(it - stack_class.begin()));
 							
 						}
 						else
@@ -694,6 +703,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 			//stack_float.clear();
 			stack_float.resize(0);
 			stack_bool.resize(0);
+			for (int z=0;z<stack_class.size();++z) stack_class[z] = 0; 
 		}
 		if (pass){
 			assert(me.output.size()==ndata_t);
@@ -843,6 +853,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 {
 	vector<float> stack_float;// = init_stack;
 	vector<bool> stack_bool;
+	vector<float> stack_class(p.number_of_classes,0); 
 	me.output.clear();
 	me.output_v.clear();
 	me.error.clear();
@@ -906,7 +917,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 				}*/
 				if (me.line.at(k).on){
 					//me.line.at(k).eval(stack_float);
-					eval(me.line.at(k),stack_float, stack_bool);
+					eval(me.line.at(k),stack_float, stack_bool,stack_class);
 					++ptevals;
 					if(!stack_float.empty()) me.stack_float[k_eff*vals.size() + sim] = stack_float.back(); 
 					else me.stack_float[k_eff*vals.size() + sim] = 0;
