@@ -139,12 +139,18 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
 		//cout << "equation stack empty.\n";
 		return "unwriteable";
 	}
-	/*if (p.classification){
-		eqnForm = form_boolstack.back();
-		return eqn_boolstack.back();
+	if (p.classification){
+		eqnForm="";
+		string eqn="";
+		for (int i =0; i<eqn_floatstack.size();++i){
+			eqn += "[" + eqn_floatstack[i] + "]";
+			eqnForm += "[" + form_floatstack[i] + "]";
+		}
+
+		return eqn;
 	}
-	else{*/
+	else{
 		eqnForm = form_floatstack.back();
 		return eqn_floatstack.back();
-	//}
+	}
 }
