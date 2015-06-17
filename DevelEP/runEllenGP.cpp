@@ -160,19 +160,30 @@ s.out << "Bad Genetics: " << s.getBadCrossPct() << "%\n";
 //		totalshares+=float(T.pop.at(i).line.at(j).use_count()); c1++;}
 //}
 //s.out << "Average shared pointer use count: " << totalshares/(c1) << "\n";
-s.out << "MAE \t R^2 \t Fitness \t Equation \n";
-vector <sub_ind> besteqns;
-T.topTen(besteqns);
-//for(unsigned int j=0;j<min(10,int(A.pop.size()));++j)
-//	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
-for(unsigned int j=0;j<besteqns.size();++j){
-	s.out <<besteqns.at(j).abserror << "\t" << besteqns.at(j).corr << "\t" << besteqns.at(j).fitness << "\t" << besteqns.at(j).eqn <<"\n";
-	/*if(boost::math::isnan(besteqns.at(j).abserror))
-	{
-		cout << "equation with NaN error: " + besteqns.at(j).eqn + "\n";	
-	}*/
+if (p.classification){
+	s.out << "Fitness \t Equation \n";
+	vector <sub_ind> besteqns;
+	T.topTen(besteqns);
+	//for(unsigned int j=0;j<min(10,int(A.pop.size()));++j)
+	//	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
+	for(unsigned int j=0;j<besteqns.size();++j)
+		s.out << besteqns.at(j).fitness << "\t" << besteqns.at(j).eqn <<"\n";
+	
 }
-
+else{
+	s.out << "MAE \t R^2 \t Fitness \t Equation \n";
+	vector <sub_ind> besteqns;
+	T.topTen(besteqns);
+	//for(unsigned int j=0;j<min(10,int(A.pop.size()));++j)
+	//	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
+	for(unsigned int j=0;j<besteqns.size();++j){
+		s.out <<besteqns.at(j).abserror << "\t" << besteqns.at(j).corr << "\t" << besteqns.at(j).fitness << "\t" << besteqns.at(j).eqn <<"\n";
+		/*if(boost::math::isnan(besteqns.at(j).abserror))
+		{
+			cout << "equation with NaN error: " + besteqns.at(j).eqn + "\n";	
+		}*/
+	}
+}
 s.out << "-------------------------------------------------------------------------------" << "\n";
 }
 //void printstatsP(tribe T,int &i,state s,params& p,paretoarchive A)
@@ -640,8 +651,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.classification;
 		else if(varname.compare("class_binary")==0)
 			ss>>p.class_binary;
-		/*else if(varname.compare("class_multiclass")==0)
-			ss>>p.multiclass;*/
+		else if(varname.compare("class_m3gp")==0)
+			ss>>p.class_m3gp;
 		else if(varname.compare("number_of_classes")==0)
 			ss>>p.number_of_classes;
 		else{}

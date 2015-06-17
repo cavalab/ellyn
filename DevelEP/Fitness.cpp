@@ -9,6 +9,10 @@
 #include <unordered_map>
 #include <bitset>
 #include <math.h>  
+#include "matrix.h"
+#include <Eigen/Dense>
+using Eigen::MatrixXf;
+using Eigen::ArrayXf;
 //#include "runEllenGP.h"
 
 #if defined(_WIN32)
@@ -62,6 +66,8 @@ const int bitlen( int n )
 }
 
 void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s);
+void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s);
+void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s);
 float getCorr(vector<float>& output,vector<float>& target,float meanout,float meantarget,int off,float& target_std)
 {
 	float v1,v2;
@@ -473,14 +479,18 @@ void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,uno
 							
 // calculate error 
 		if(!p.EstimateFitness){
-			CalcOutput(me,p,d.vals,dattovar,d.target,s);
+			if(p.classification && p.class_m3gp)  Calc_M3GP_Output(me,p,d.vals,dattovar,d.target,s);
+			else if (p.classification)  CalcClassOutput(me,p,d.vals,dattovar,d.target,s);
+			else CalcOutput(me,p,d.vals,dattovar,d.target,s);
 		} // if not estimate fitness 
 		else{ 
 // use fitness estimator subset of d.vals ===========================================================	
 			vector<vector<float>> FEvals;
 			vector<float> FEtarget;
 			setFEvals(FEvals,FEtarget,FE,d);
-			CalcOutput(me,p,FEvals,dattovar,FEtarget,s);
+			if(p.classification && p.class_m3gp)  Calc_M3GP_Output(me,p,FEvals,dattovar,FEtarget,s);
+			else if(p.classification) CalcClassOutput(me,p,FEvals,dattovar,FEtarget,s);
+			else CalcOutput(me,p,FEvals,dattovar,FEtarget,s);
 		} // if estimate fitness
 		if (p.estimate_generality || p.PS_sel==2){
 				if (me.fitness == p.max_fit || me.fitness_v== p.max_fit || boost::math::isnan(me.fitness_v) || boost::math::isinf(me.fitness_v))
@@ -838,7 +848,542 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 			int tmp = omp_get_thread_num();
 		s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
 }
+void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s)
+{
+	vector<float> stack_float;
+	vector<bool> stack_bool;
+	
+	
+	me.output.resize(0); 
+	me.output_v.resize(0);
+	if (p.sel==3) me.error.resize(0);
+	float var_target = 0;
+	float var_ind = 0;
+	bool pass = true;
+	int ptevals=0;
+	unsigned int ndata_t,ndata_v; // training and validation data sizes
+	if (p.train){
+		ndata_t = vals.size()*p.train_pct;
+		ndata_v = vals.size()-ndata_t;
+	}
+	else{
+		ndata_t = vals.size();
+		ndata_v=0;
+	}
+	me.output.reserve(ndata_t);
+	me.output_v.reserve(ndata_v);
+	//if (p.eHC_on && p.eHC_slim){ me.stack_float.resize(0); me.stack_float.reserve((me.eff_size)*vals.size());}
+	if (p.eHC_on && p.eHC_slim)
+	{ 
+		me.stack_float.resize((me.eff_size)*vals.size());
+		me.stack_floatlen.resize(0);
+		me.stack_floatlen.reserve(me.eff_size);
+	}
+	//stack_float.reserve(me.eff_size/2);
 
+	//vector<vector<float>> Z; // n_t x d output for m3gp
+	MatrixXf Z(ndata_t,1);
+	//vector<vector<float>> Z_v; // n_v x d output for m3gp
+	MatrixXf Z_v(ndata_v,1);
+	vector<MatrixXf> K(p.number_of_classes); // output subsets by class label
+	
+	// Calculate Output
+	for(unsigned int sim=0;sim<vals.size();++sim)
+		{
+			//if (p.eHC_slim) me.stack_float.push_back(vector<float>());
+			int k_eff=0;
+
+			for (unsigned int j=0; j<p.allvars.size();++j) 
+				dattovar.at(j)= vals[sim][j];
+			
+			for(int k=0;k<me.line.size();++k){
+				if (me.line.at(k).on){
+					eval(me.line.at(k),stack_float,stack_bool);
+					++ptevals;
+					if (p.eHC_on && p.eHC_slim) // stack tracing
+					{
+						if(!stack_float.empty()) me.stack_float[k_eff*vals.size() + sim] = stack_float.back();
+						else me.stack_float[k_eff*vals.size() + sim] = 0;
+						if (sim==0) me.stack_floatlen.push_back(stack_float.size());
+						/*if(!stack_float.empty()) me.stack_float.push_back(stack_float.back());
+						else me.stack_float.push_back(0);*/
+					}
+					++k_eff;
+					/*else
+						cout << "hm";*/
+				}
+			}
+			/*if (stack_float.size()>1)
+				cout << "non-tree\n";*/
+
+			//if(!(!p.classification && stack_float.empty()) && !(p.classification && stack_bool.empty())){
+			if(!stack_float.empty()){	
+				Z.resize(ndata_t,stack_float.size());
+				if ((p.train && sim<ndata_t) || (!p.train)){
+																	
+							//Z.push_back(vector<float>());
+							for (int z =0;z<stack_float.size();++z){
+								//Z[sim].push_back(stack_float[z]);	
+								Z(sim,z) = stack_float[z];
+								//K[target[sim]].push_back(stack_float[z]);	
+							}
+							//VectorXf Kadd;
+							
+							
+							/*cout << K[target[sim]], 
+								         Z.row(sim);*/
+							K[target[sim]].resize(K[target[sim]].rows(),Z.cols());
+
+					//		cout << "K size: " << K[target[sim]].rows() << " x " <<  K[target[sim]].cols() << endl;
+							
+					//		cout << "K new size: " << K[target[sim]].rows() << " x " <<  K[target[sim]].cols() << endl;
+					//		cout << "Z: " << Z.row(sim) << endl;
+							MatrixXf Kadd(K[target[sim]].rows()+1,Z.cols());
+							Kadd << K[target[sim]], 
+								    Z.row(sim); 
+					//		cout << "Kadd: " << Kadd <<endl;
+							//K[target[sim]].bottomRows(1) = Z.row(sim);
+							K[target[sim]].swap(Kadd);
+							//K[target[sim]].set( (MatrixXd(K[target[sim]].rows()+1,Z) << mat, vec.transpose()).finished() );
+					//		cout << "K: " << K[target[sim]] << endl;
+							//K[target[sim]].set( (MatrixXf(
+							//K[target[sim]] << K[target[sim]], 
+								              //Z.row(sim);
+			// for multiclass classification, error should be based solely on whether or not the right class was assigned						
+						
+					}
+					else //validation set
+					{
+						Z_v.resize(ndata_v,stack_float.size());
+						//Z_v.push_back(vector<float>());
+						for (int z =0;z<stack_float.size();++z)
+							//Z_v[sim-ndata_t].push_back(stack_float[z]);	
+							Z_v(sim-ndata_t,z) = stack_float[z];
+
+					}
+			}
+			else{
+				pass=false;
+				break;
+				}
+			//stack_float.clear();
+			stack_float.resize(0);
+			stack_bool.resize(0);
+		}
+	// Calculate Covariance and Centroids of model output data by class 
+	/////////////////////////////////////////////////////////////////////
+	me.M.resize(p.number_of_classes,Z.cols());
+	for (int i = 0; i<p.number_of_classes; ++i){
+		me.C.push_back(MatrixXf(Z.cols(),Z.cols()));
+		//me.M.push_back(vector<float>());
+		//cout << K[i].colwise().mean() << endl;
+		me.M.row(i) << K[i].colwise().mean();
+		//cout << "M centroids for class " << i << ":\n" << me.M.row(i) << endl;
+		s.out << "/////////////////////////////\n";
+		s.out << "K(" << i << ")\n";
+		s.out << K[i] << "\n";
+		cov(K[i],me.C[i]);
+		
+	}
+	//vector<float> D; // mahalanobis distance on training set
+	//vector<float> D_v; // mahalanobis distance on validation set
+	VectorXf D(p.number_of_classes);
+	VectorXf D_v(p.number_of_classes);
+	// Calculate Fitness
+	////////////////////////////////////////////////////////////////////////
+	for (int sim=0;sim<vals.size();++sim){
+		if ((p.train && sim<ndata_t) || (!p.train)){
+			//D.resize(0);
+			//training set mahalanobis distance
+			
+			MahalanobisDistance(Z.row(sim),me.C,me.M,D);
+			for (unsigned z=0;z<D.size();++z){
+				if(!boost::math::isfinite(D(z)))
+					D(z) = p.max_fit;
+			}
+
+			s.out << "Z:\n";
+			s.out << Z.row(sim) << "\n"; 
+			s.out << "D:\n";
+			s.out << D << "\n";
+			//assign class based on minimum distance 
+			//vector<float>::iterator it = min_element(D.begin(),D.end());
+			MatrixXf::Index min_i;
+			float min = D.minCoeff(&min_i);
+			//float ans = min_i;
+			me.output.push_back(float(min_i));
+
+			// assign error
+			if (target[sim]!=me.output[sim]){
+				++me.abserror;
+				if (p.sel==3) // lexicase error vector
+					me.error.push_back(1);
+			}
+			else if (p.sel==3)
+				me.error.push_back(0);
+		//assign error
+		}
+		else{	
+			D_v.resize(0);
+			//validation set mahalanobis distance
+			MahalanobisDistance(Z_v.row(sim),me.C,me.M,D_v);
+			for (unsigned z=0;z<D_v.size();++z){
+				if(!boost::math::isfinite(D_v(z)))
+					D_v(z) = p.max_fit;
+			}
+			//assign class based on minimum distance in D_v[sim]
+			//vector<float>::iterator it = min_element(D_v.begin(),D_v.end());
+			//me.output_v.push_back(float(it - D_v.begin()));
+			MatrixXf::Index min_i;
+			float min = D_v.minCoeff(&min_i);
+			//float ans = (min_i);
+			me.output.push_back(float(min_i));
+
+			if (target[sim]!=me.output_v[sim-ndata_t])
+					++me.abserror_v;													
+						
+		
+		}
+	}
+		/////////////////////////////////////////////////////////////////////////////////
+		if (pass){
+			assert(me.output.size()==ndata_t);
+			// mean absolute error
+			me.abserror = me.abserror/ndata_t;
+			
+			if (p.train)//mean absolute error
+				me.abserror_v = me.abserror_v/ndata_v;
+			
+		}
+
+			if (!pass){
+				me.abserror = p.max_fit;
+			}
+
+
+		    if(me.output.empty())
+				me.fitness=p.max_fit;
+			else if ( boost::math::isnan(me.abserror) || boost::math::isinf(me.abserror) )
+				me.fitness=p.max_fit;
+			else{
+				if (p.fit_type!=1){
+					s.out << "warning: fit_type not set to error. using error anyway (because classification is being output)\n";
+					p.fit_type=1;
+				}
+				me.fitness = me.abserror;
+									
+				/*if (p.norm_error)
+					me.fitness = me.fitness/target_std;*/
+			}
+
+		
+			if(me.fitness>p.max_fit)
+				me.fitness=p.max_fit;
+			else if(me.fitness<p.min_fit)
+				(me.fitness=p.min_fit);
+
+			if(p.train){ //assign validation fitness
+				
+				if(me.output_v.empty())
+					me.fitness_v=p.max_fit;
+				/*else if (*std::max_element(me.output_v.begin(),me.output_v.end())==*std::min_element(me.output_v.begin(),me.output_v.end()))
+					me.fitness_v=p.max_fit;*/
+				else if ( boost::math::isnan(me.abserror_v) || boost::math::isinf(me.abserror_v))
+					me.fitness_v=p.max_fit;
+				else{
+					if (p.fit_type!=1){
+						s.out << "WARNING: fit_type not set to error. using error anyway (because classification is being output)\n";
+						p.fit_type=1;
+					}
+					me.fitness_v = me.abserror_v;
+					/*if (p.norm_error)
+						me.fitness_v = me.fitness_v/target_std_v;*/
+
+				}
+
+		
+				if(me.fitness_v>p.max_fit)
+					me.fitness_v=p.max_fit;
+				else if(me.fitness_v<p.min_fit)
+					(me.fitness_v=p.min_fit);
+			}
+			else{ // if not training, assign copy of regular fitness to the validation fitness variables
+				me.abserror_v=me.abserror;
+				me.fitness_v=me.fitness;
+			}
+			//if (p.estimate_generality || p.PS_sel==2){
+			//	if (me.fitness == p.max_fit || me.fitness_v== p.max_fit)
+			//		me.genty = p.max_fit;
+			//	else{
+			//		if (p.G_sel==1) // MAE
+			//			me.genty = abs(me.abserror-me.abserror_v)/me.abserror;
+			//		else if (p.G_sel==2) // R2
+			//			me.genty = abs(me.corr-me.corr_v)/me.corr;
+			//		else if (p.G_sel==3) // MAE R2 combo
+			//			me.genty = abs(me.abserror/me.corr-me.abserror_v/me.corr_v)/(me.abserror/me.corr);
+			//		else if (p.G_sel==3) // VAF
+			//			me.genty = abs(me.VAF-me.VAF_v)/me.VAF;
+			//	}
+			//}
+			int tmp = omp_get_thread_num();
+		s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
+}
+
+void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s)
+{		
+	vector<float> stack_float;
+	vector<bool> stack_bool;
+	vector<vector<float>> Z; // n x d output for m3gp
+	vector<vector<float>> K; // output subsets by class label
+	me.output.resize(0); 
+	me.output_v.resize(0);
+	if (p.sel==3) me.error.resize(0);
+	float SStot=0;
+	float SSreg=0;
+	float SSres=0;
+	float q = 0;
+	float var_target = 0;
+	float var_ind = 0;
+	bool pass = true;
+	float meanout=0;
+	float meantarget=0;
+	float meanout_v=0;
+	float meantarget_v=0;
+	float target_std=1000;
+	float target_std_v=1000;
+	int ptevals=0;
+	unsigned int ndata_t,ndata_v; // training and validation data sizes
+	if (p.train){
+		ndata_t = vals.size()*p.train_pct;
+		ndata_v = vals.size()-ndata_t;
+	}
+	else{
+		ndata_t = vals.size();
+		ndata_v=0;
+	}
+	me.output.reserve(ndata_t);
+	me.output_v.reserve(ndata_v);
+	//if (p.eHC_on && p.eHC_slim){ me.stack_float.resize(0); me.stack_float.reserve((me.eff_size)*vals.size());}
+	if (p.eHC_on && p.eHC_slim)
+	{ 
+		me.stack_float.resize((me.eff_size)*vals.size());
+		me.stack_floatlen.resize(0);
+		me.stack_floatlen.reserve(me.eff_size);
+	}
+	//stack_float.reserve(me.eff_size/2);
+	 
+	for(unsigned int sim=0;sim<vals.size();++sim)
+		{
+			//if (p.eHC_slim) me.stack_float.push_back(vector<float>());
+			int k_eff=0;
+
+			for (unsigned int j=0; j<p.allvars.size();++j) //wgl: add time delay of output variable here 
+				dattovar.at(j)= vals[sim][j];
+			
+			for(int k=0;k<me.line.size();++k){
+				if (me.line.at(k).on){
+					eval(me.line.at(k),stack_float,stack_bool);
+					++ptevals;
+					if (p.eHC_on && p.eHC_slim) // stack tracing
+					{
+						if(!stack_float.empty()) me.stack_float[k_eff*vals.size() + sim] = stack_float.back();
+						else me.stack_float[k_eff*vals.size() + sim] = 0;
+						if (sim==0) me.stack_floatlen.push_back(stack_float.size());
+						/*if(!stack_float.empty()) me.stack_float.push_back(stack_float.back());
+						else me.stack_float.push_back(0);*/
+					}
+					++k_eff;
+					/*else
+						cout << "hm";*/
+				}
+			}
+			/*if (stack_float.size()>1)
+				cout << "non-tree\n";*/
+
+			//if(!(!p.classification && stack_float.empty()) && !(p.classification && stack_bool.empty())){
+			if((p.class_binary && !stack_bool.empty()) || !stack_float.empty()){	
+
+				if ((p.train && sim<ndata_t) || (!p.train)){
+						if (p.class_binary) // binary classification
+							me.output.push_back(float(stack_bool.back()));
+						else if (p.class_m3gp){
+							//const size_t tmp = bitlen(p.number_of_classes);
+							//std::bitset<4> bitout;//(p.number_of_classes,0);
+							//for (int i = 0;i<bitlen(p.number_of_classes); ++i){
+							//	if (stack_bool.size()>i) bitout.set(i,stack_bool[i]); 
+							//}
+							//me.output.push_back(float(bitout.to_ulong()));
+							// take largest floating point stack as the output 
+							
+								Z.push_back(vector<float>());
+								for (int z =0;z<stack_float.size();++z){
+									Z[sim].push_back(stack_float[z]);	
+									K[target[sim]].push_back(stack_float[z]);	
+								}
+							
+						}
+						else{
+							vector<float>::iterator it = max_element(stack_float.begin(),stack_float.end());
+							me.output.push_back(float(it - stack_float.begin()));
+						}
+							
+						if(p.class_binary){ // for binary classification:
+							me.abserror += abs(target.at(sim)-me.output.at(sim));
+							if (p.sel==3) // lexicase error vector
+								me.error.push_back(abs(target.at(sim)-me.output.at(sim)));
+						}
+						else{ // for multiclass classification, error should be based solely on whether or not the right class was assigned
+							if (target[sim]!=me.output[sim]){
+								++me.abserror;
+								if (p.sel==3) // lexicase error vector
+									me.error.push_back(1);
+							}
+							else
+								me.error.push_back(0);
+						}
+						meantarget += target.at(sim);
+						meanout += me.output[sim];
+					}
+					else //validation set
+					{
+						if (p.classification && p.class_binary) // binary classification
+							me.output_v.push_back(float(stack_bool.back()));
+						else if (p.classification){
+							////const size_t tmp = bitlen(p.number_of_classes);
+							//std::bitset<4> bitout; //(p.number_of_classes,0);
+							//for (int i = 0;i<bitlen(p.number_of_classes); ++i){
+							//	if (stack_bool.size()>i) bitout.set(i,stack_bool[i]); 
+							//}
+							//me.output_v.push_back(float(bitout.to_ulong()));
+							// class is index of largest element in floating point stack
+							vector<float>::iterator it = max_element(stack_float.begin(),stack_float.end());
+							me.output_v.push_back(float(it - stack_float.begin()));
+							
+						}
+						else
+							me.output_v.push_back(stack_float.back());
+
+						//assign error
+						if(!(p.classification && !p.class_binary)) // for regression and binary classification:
+							me.abserror_v += abs(target[sim]-me.output_v[sim-ndata_t]);
+						else{ // for multiclass classification, error should be based solely on whether or not the right class was assigned
+							if (target[sim]!=me.output_v[sim-ndata_t])
+								++me.abserror_v;													
+						}
+						meantarget_v += target.at(sim);
+						meanout_v += me.output_v[sim-ndata_t];
+						//if (p.sel==3) // lexicase error vector
+						//	me.error.push_back(abs(target.at(sim)-me.output_v.at(sim-ndata_t)));
+
+					}
+
+				//}
+				//else {
+				//	if (p.binary_classification) me.output.push_back(float(stack_bool.back()));
+				//	else me.output.push_back(stack_float.back());
+				//	me.abserror += abs(target.at(sim)-me.output.at(sim));
+				//	meantarget += target.at(sim);
+				//	meanout += me.output[sim];
+				//	if (p.sel==3) // lexicase error vector
+				//			me.error.push_back(abs(target.at(sim)-me.output.at(sim)));
+				//}
+			}
+			else{
+				pass=false;
+				break;
+				}
+			//stack_float.clear();
+			stack_float.resize(0);
+			stack_bool.resize(0);
+		}
+		if (pass){
+			assert(me.output.size()==ndata_t);
+			// mean absolute error
+			me.abserror = me.abserror/ndata_t;
+			meantarget = meantarget/ndata_t;
+			meanout = meanout/ndata_t;
+			
+			if (p.train)
+			{
+				// mean absolute error
+				me.abserror_v = me.abserror_v/ndata_v;
+				meantarget_v = meantarget_v/ndata_v;
+				meanout_v = meanout_v/ndata_v;
+			}
+		}
+
+			if (!pass){
+				me.abserror = p.max_fit;
+			}
+
+
+		    if(me.output.empty())
+				me.fitness=p.max_fit;
+			else if ( boost::math::isnan(me.abserror) || boost::math::isinf(me.abserror) )
+				me.fitness=p.max_fit;
+			else{
+				if (p.fit_type!=1){
+					s.out << "warning: fit_type not set to error. using error anyway (because classification is being output)\n";
+					p.fit_type=1;
+				}
+				me.fitness = me.abserror;
+									
+				/*if (p.norm_error)
+					me.fitness = me.fitness/target_std;*/
+			}
+
+		
+			if(me.fitness>p.max_fit)
+				me.fitness=p.max_fit;
+			else if(me.fitness<p.min_fit)
+				(me.fitness=p.min_fit);
+
+			if(p.train){ //assign validation fitness
+				
+				if(me.output_v.empty())
+					me.fitness_v=p.max_fit;
+				/*else if (*std::max_element(me.output_v.begin(),me.output_v.end())==*std::min_element(me.output_v.begin(),me.output_v.end()))
+					me.fitness_v=p.max_fit;*/
+				else if ( boost::math::isnan(me.abserror_v) || boost::math::isinf(me.abserror_v))
+					me.fitness_v=p.max_fit;
+				else{
+					if (p.fit_type!=1){
+						s.out << "WARNING: fit_type not set to error. using error anyway (because classification is being output)\n";
+						p.fit_type=1;
+					}
+					me.fitness_v = me.abserror_v;
+					/*if (p.norm_error)
+						me.fitness_v = me.fitness_v/target_std_v;
+*/
+				}
+
+		
+				if(me.fitness_v>p.max_fit)
+					me.fitness_v=p.max_fit;
+				else if(me.fitness_v<p.min_fit)
+					(me.fitness_v=p.min_fit);
+			}
+			else{ // if not training, assign copy of regular fitness to the validation fitness variables
+				me.abserror_v=me.abserror;
+				me.fitness_v=me.fitness;
+			}
+			//if (p.estimate_generality || p.PS_sel==2){
+			//	if (me.fitness == p.max_fit || me.fitness_v== p.max_fit)
+			//		me.genty = p.max_fit;
+			//	else{
+			//		if (p.G_sel==1) // MAE
+			//			me.genty = abs(me.abserror-me.abserror_v)/me.abserror;
+			//		else if (p.G_sel==2) // R2
+			//			me.genty = abs(me.corr-me.corr_v)/me.corr;
+			//		else if (p.G_sel==3) // MAE R2 combo
+			//			me.genty = abs(me.abserror/me.corr-me.abserror_v/me.corr_v)/(me.abserror/me.corr);
+			//		else if (p.G_sel==3) // VAF
+			//			me.genty = abs(me.VAF-me.VAF_v)/me.VAF;
+			//	}
+			//}
+			int tmp = omp_get_thread_num();
+		s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
+}
 bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s,int linestart, float orig_fit)
 {
 	vector<float> stack_float;// = init_stack;

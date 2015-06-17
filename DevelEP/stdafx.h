@@ -29,7 +29,8 @@
 	#include <sys/stat.h>
 	#include <unistd.h>
 #endif
-
+#include <Eigen/Dense>
+using Eigen::MatrixXf;
 
 //#include <stdlib.h>
 #include <cstdlib>

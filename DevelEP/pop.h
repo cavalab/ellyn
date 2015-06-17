@@ -10,6 +10,9 @@
 #include "op_node.h"
 #include "rnd.h"
 #include "strdist.h"
+//#include <Eigen/Dense>
+using Eigen::MatrixXf;
+using Eigen::VectorXf;
 //#include "general_fns.h"
 //#include "pareto.h"
 
@@ -30,6 +33,8 @@ struct ind {
 	std::vector<unsigned int> stack_floatlen;
 	std::vector<float> stack_float; // linearized stack_float
 	std::vector<int> dominated; //for spea2 strength
+	std::vector<MatrixXf> C; // covariance matrices for M3GP
+	MatrixXf M; // centroids for M3GP
 	std::string eqn;
 	std::string eqn_form; // equation form for string distance comparison to other forms	
 	float abserror;
@@ -95,12 +100,15 @@ struct ind {
 		f.swap(s.f);
 		stack_floatlen.swap(s.stack_floatlen);
 		stack_float.swap(s.stack_float);		
+		C.swap(s.C);
+		
 		dominated.swap(dominated);
 		eqn.swap(s.eqn);						// strings
 		eqn_form.swap(s.eqn_form);
 
 		using std::swap;
-		
+
+		swap(this->M,s.M);
 		swap(this->abserror,s.abserror);		// floats
 		swap(this->abserror_v,s.abserror_v);
 		swap(this->corr,s.corr);
@@ -149,6 +157,8 @@ struct ind {
 		output.clear();
 		output_v.clear();
 		error.clear();
+		C.clear();
+		M.resize(0,0);
 		genty = 1;
 		//stack_float.clear();
 		// nominal model must be encased in set of parenthesis. the pointer points to that which is encased.
