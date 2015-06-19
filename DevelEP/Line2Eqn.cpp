@@ -142,11 +142,18 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
 	if (p.classification){
 		eqnForm="";
 		string eqn="";
-		for (int i =0; i<eqn_floatstack.size();++i){
-			eqn += "[" + eqn_floatstack[i] + "]";
-			eqnForm += "[" + form_floatstack[i] + "]";
+		if (p.class_bool){
+			for (int i =0; i<eqn_boolstack.size();++i){
+				eqn += "[" + eqn_boolstack[i] + "]";
+				eqnForm += "[" + form_boolstack[i] + "]";
+			}
 		}
-
+		else{
+			for (int i =0; i<eqn_floatstack.size();++i){
+				eqn += "[" + eqn_floatstack[i] + "]";
+				eqnForm += "[" + form_floatstack[i] + "]";
+			}
+		}
 		return eqn;
 	}
 	else{

@@ -28,6 +28,7 @@ struct params {
 	float mut_ar;
 	int cross; // 1: ultra; 2: one point
 	bool align_dev; // on or off - adds alignment deviation via gaussian random variable
+	bool elitism; // on or off - if on, saves best individual each generation
 	//float stoperror; // stop condition / convergence condition
 	
 	// Data settings
@@ -81,12 +82,14 @@ struct params {
 	int numERC;
 
 	//vector <float> target;
-	
+	// Fitness Settings 
+
 	int fit_type; // 1: error, 2: corr, 3: combo
 	bool norm_error; // normalize fitness by the standard deviation of the target output
 	float max_fit;
 	float min_fit;
 
+	// Operator Settings
 	vector <string> op_list;
 	vector <int> op_choice; // map op list to pointer location in makeline() pointer function
 	vector <float> op_weight;
@@ -95,7 +98,8 @@ struct params {
 
 	int min_len;
 	int max_len;
-	
+	int max_len_init; // initial max len
+
 	int complex_measure; // 1: genotype size; 2: symbolic size; 3: effective genotype size
 
 
@@ -150,7 +154,7 @@ struct params {
 	
 	//classification
 	bool classification;
-	bool class_binary; // use binary or multiclass
+	bool class_bool; // use binary or multiclass
 	bool class_m3gp; // use m3gp fitness
 	int number_of_classes; // number of unique classes
 
@@ -171,6 +175,7 @@ struct params {
 		mut_ar=0.025;
 		cross=2; // 1: ultra; 2: one point
 		align_dev = 0;
+		elitism = 0;
 
 		// Data settings
 		init_validate_on=0; // initial fitness validation of individuals
@@ -216,7 +221,8 @@ struct params {
 		
 		min_len = 3;
 		max_len = 10;
-		
+		max_len_init = 0;
+
 		complex_measure=1; // 1: genotype size; 2: symbolic size; 3: effective genotype size
 
 
@@ -263,7 +269,7 @@ struct params {
 
 		// classification
 		classification = 0;
-		class_binary = 0;
+		class_bool = 0;
 		class_m3gp = 0;
 		//class_multiclass=0; // use multiclass 
 		number_of_classes=1; //for use with multiclass

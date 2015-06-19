@@ -241,7 +241,7 @@ void cov(const MatrixBase<DerivedA>& A, MatrixBase<DerivedB>& C)
 
  
 template <typename DerivedA,typename DerivedC,typename DerivedD>
-void MahalanobisDistance(const MatrixBase<DerivedA>& Z,const std::vector<MatrixXf>& C, const MatrixBase<DerivedC>& M, MatrixBase<DerivedD>& D)
+void MahalanobisDistance(const MatrixBase<DerivedA>& Z,const std::vector<MatrixXf>& Cinv, const MatrixBase<DerivedC>& M, MatrixBase<DerivedD>& D,state& s)
 	//void MahalanobisDistance(const MatrixXf& Z,const vector<MatrixXf>& C, const MatrixXf& M, VectorXf& D)
 {
 	// returns the Mahalanobis Distance, D (1xm) , of Z (1xd) from the set of centroid M (1xd) with covariance matrix C (dxd)
@@ -262,11 +262,11 @@ void MahalanobisDistance(const MatrixBase<DerivedA>& Z,const std::vector<MatrixX
 		//cout << Z << endl;
 	    assert(Z.rows() == 1);
 		assert(Z.cols() == M.cols());
-		assert(M.cols() == C[0].cols());
+		assert(M.cols() == Cinv[0].cols());
 
 		MatrixXf ZM(Z.rows(),Z.cols());
-		MatrixXf CT(C[0].rows(),C[0].cols());
-		for (unsigned i = 0; i<C.size();++i){
+		//MatrixXf CT(C[0].rows(),C[0].cols());
+		for (unsigned i = 0; i<Cinv.size();++i){
 			ZM << Z - M.row(i);
 			/*cout << "Z size: " << Z.rows() << "x" << Z.cols() << endl;
 			cout << "M size: " << M.rows() << "x" << M.cols() << endl;
@@ -277,8 +277,10 @@ void MahalanobisDistance(const MatrixBase<DerivedA>& Z,const std::vector<MatrixX
 			//cout << ZM * C[i].inverse() * ZM.transpose() << endl;
 			//cout << "\n";
 			//cout << "calc = " << "x" << D.cols() << "=" << ZM.rows() << "x" << ZM.cols() << " X " << C[i].cols() << "x" << C[i].rows() << " X " << ZM.cols() << "x" << ZM.rows() << endl;
-			CT = C[i].inverse();
-			D.row(i) = ZM * CT * ZM.transpose();
+			//CT = C[i].inverse();
+			/*s.out << "C[" << i << "]^-1:\n";
+			s.out << CT << "\n";*/
+			D.row(i) = ZM * Cinv[i] * ZM.transpose();
 		}
 		
 		

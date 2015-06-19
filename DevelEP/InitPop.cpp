@@ -14,7 +14,7 @@ using namespace std;
 		calculate fitness
 */
 void makeline(ind&,params& p,vector<Randclass>& r);
-void makeline_rec(ind&,params& p,vector<Randclass>& r,int linelen);
+void makeline_rec(vector<node>&,params& p,vector<Randclass>& r,int linelen);
 int maketree(vector <node>& line, int level, bool exactlevel, int lastnode,params& p,vector<Randclass>& r);
 float round(float d)
 {
@@ -27,7 +27,7 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 
 	for(int i=0;i<pop.size();++i)
 	{
-		if (!p.init_trees){
+		if (!p.init_trees){ // random initialization
 			makeline(pop.at(i),p,r);
 			if (p.eHC_on)
 			{
@@ -42,11 +42,11 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 				}
 			}
 		}
-		else{
-			int linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len);
+		else{ // init trees
+			int linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len_init);
 			if (p.eHC_on){
 				int onlen = int(linelen*p.eHC_init);
-				makeline_rec(pop.at(i),p,r,onlen);
+				makeline_rec(pop.at(i).line,p,r,onlen);
 				int offlen = linelen-onlen;
 				for (int j=0;j<offlen;++j){
 					int loc = r[omp_get_thread_num()].rnd_int(0,pop.at(i).line.size()-1);
@@ -54,8 +54,35 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 					pop.at(i).line[loc].on=false;
 				}
 			}
-			else
-				makeline_rec(pop.at(i),p,r,linelen);
+			else if (p.classification){
+				// choose dimensions of trees between min length and line length
+				int dims;
+
+				if (p.class_m3gp)
+					dims = r[omp_get_thread_num()].rnd_int(1,linelen);
+				else
+					dims = p.number_of_classes;
+
+				int remain_len = linelen;
+				vector<node> tmp_line;
+				//int default_size = remain_len/dims;
+				// create dims trees and push them together 
+				for (unsigned j=0; j<dims; ++j){
+					int treelen = remain_len/(dims-j);// + r[omp_get_thread_num()].gasdev();
+					if (treelen<1) 
+						treelen=1;
+					else if (treelen>p.max_len_init)
+						treelen=p.max_len_init;
+
+					makeline_rec(tmp_line,p,r,treelen);
+					pop[i].line.insert(pop[i].line.end(),tmp_line.begin(),tmp_line.end());
+					remain_len -= tmp_line.size();
+					tmp_line.clear();
+				}
+				
+			}
+			else // make normal trees
+				makeline_rec(pop.at(i).line,p,r,linelen);
 		}
 		//remove dangling numbers and variables from end
 		/*while((pop.at(i).line.back()->type=='n' || pop.at(i).line.back()->type=='v') && pop.at(i).line.size()>1)
@@ -73,7 +100,7 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 void makeline(ind& newind,params& p,vector<Randclass>& r)
 {
 	// construct line 
-	int linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len);
+	int linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len_init);
 	
 	int choice=0;
 	
@@ -186,7 +213,7 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 				
 				for(int i=0;i<tmpstack.size(); ++i)
 				{
-					if (x<p.max_len){
+					if (x<p.max_len_init){
 						newind.line.push_back(tmpstack[i]);
 						x++;
 					}
@@ -231,7 +258,7 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 	/*while (newind.line.back()->type=='n'||newind.line.back()->type=='v')
 		newind.line.pop_back();*/
 }
-void makeline_rec(ind& newind,params& p,vector<Randclass>& r, int linelen)
+void makeline_rec(vector<node>& line,params& p,vector<Randclass>& r, int linelen)
 {
 	// recursive version of makeline that creates lines that are complete with respect to stack operations
 	// in other words the entire line is guaranteed to be a valid syntax tree
@@ -241,7 +268,7 @@ void makeline_rec(ind& newind,params& p,vector<Randclass>& r, int linelen)
 	
 	int choice=0;
 	
-	int tmp = maketree(newind.line,linelen,1,0,p,r);
+	int tmp = maketree(line,linelen,1,0,p,r);
 
 }
 void getChoice(int& choice, int min_arity, int max_arity, params& p,vector<Randclass>& r)
@@ -559,7 +586,7 @@ int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,params
 //	// random number generator
 //	//mt19937_64 engine(p.seed);
 //	
-//	int linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len);
+//	int linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len_init);
 //	
 //	vector <string> load_choices(p.allblocks);
 //

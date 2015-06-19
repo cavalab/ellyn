@@ -3,7 +3,7 @@
 #include "params.h"
 #include "rnd.h"
 
-void Tournament(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r)
+void Tournament(const vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r)
 {
 	//boost::progress_timer timer;
 	vector<float> fitcompare(p.tourn_size);

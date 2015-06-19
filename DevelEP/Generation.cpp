@@ -25,20 +25,27 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		vector<unsigned int> parloc(pop.size());
 		//if (p.loud ) fcout << "     Tournament...";
 		Tournament(pop,parloc,p,r);		
+
+		ind best;
+		if (p.elitism){ // save best ind
+			vector<ind>::iterator it_add = std::min_element(pop.begin(),pop.end(),SortFit());
+			ind best = *it_add;
+		}
 		//assert (pop.size()== p.popsize) ;
 		//if (p.loud ) fcout << "     Apply Genetics...";
-		try
-		{
-			ApplyGenetics(pop,parloc,p,r,d,s,FE);
+		/*try
+		{*/
+		ApplyGenetics(pop,parloc,p,r,d,s,FE);
 			//assert (pop.size()== p.popsize) ;
-		}
+		/*}
 		catch(...)
 				{
 					cout<<"error in ApplyGenetics\n";
 					throw;
-				}
+				}*/
 		//if (p.loud ) fcout << "     Gen 2 Phen...";
 		//if (p.loud ) fcout << "     Fitness...";
+		
 
 		// epigenetic mutation
 		if (p.eHC_on && p.eHC_mut){ 
@@ -50,6 +57,10 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		//get mutation/crossover stats
 		s.setCrossPct(pop);
 
+		if (p.elitism){ // replace worst ind with best ind
+			vector<ind>::iterator it_rm = std::max_element(pop.begin(),pop.end(),SortFit());
+			pop[it_rm-pop.begin()] = best;
+		}
 		/*if (p.pHC_on && p.ERC)
 		{
 				for(int i=0; i<pop.size(); ++i)
@@ -78,6 +89,12 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 			LexicaseSelect(pop,parloc,p,r,d);
 			//if (p.lex_age) vector<ind> tmppop(pop);
 
+			ind best;
+			if (p.elitism){ // save best ind
+				vector<ind>::iterator it_add = std::min_element(pop.begin(),pop.end(),SortFit());
+				ind best = *it_add;
+			}
+
 			ApplyGenetics(pop,parloc,p,r,d,s,FE);
 			//FitnessLex(pop,parloc,p,r,d);
 			
@@ -103,6 +120,10 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 				pop.push_back(tmppop[0]);
 				// select new population with tournament size 2, based on pareto age-fitness
 				AgeFitSurvival(pop,p,r);
+			}
+			if (p.elitism){ // replace worst ind with best ind
+				vector<ind>::iterator it_rm = std::max_element(pop.begin(),pop.end(),SortFit());
+				pop[it_rm-pop.begin()] = best;
 			}
 			break;
 		}

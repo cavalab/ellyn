@@ -85,7 +85,6 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 	while(tmppop.size()>pop.size())
 		tmppop.pop_back();
 //    assert (tmppop.size()== p.popsize) ;
-    //EDIT: looks like UMGHPCC build is going into this loop. is lexage initialized?
 	if (p.sel==4 || (p.sel==3 && p.lexage)) // insert new pop into old pop
 	{
 		//get tmppop fitness 

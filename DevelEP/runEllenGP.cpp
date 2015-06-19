@@ -184,6 +184,16 @@ else{
 		}*/
 	}
 }
+//if (p.classification && p.class_m3gp){
+//	ind best_ind;
+//	T.getbestind(best_ind);
+//	s.out << "best M:\n";
+//	s.out << best_ind.M << "\n";
+//	for (unsigned i = 0; i<p.number_of_classes; ++i){
+//		s.out << "best C[" << i << "]:\n";
+//		s.out << best_ind.C[i] << "\n";
+//	}
+//}
 s.out << "-------------------------------------------------------------------------------" << "\n";
 }
 //void printstatsP(tribe T,int &i,state s,params& p,paretoarchive A)
@@ -272,6 +282,14 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	fout << "origin: " << best.origin << "\n";
 	fout << "age: " << best.age << "\n";
 	fout << "eqn form: " << best.eqn_form << "\n";
+	if (p.classification && p.class_m3gp){
+		fout << "M:\n";
+		fout << best.M << "\n";
+		for (unsigned i = 0; i<p.number_of_classes; ++i){
+			fout << "C[" << i << "]:\n";
+			fout << best.C[i] << "\n";
+		}	
+	}
 	/*fout << "output: ";
 	for(unsigned int i =0;i<best.output.size();++i)
 	{
@@ -527,6 +545,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.min_len;
 		else if(varname.compare("max_len") == 0)
 			ss>>p.max_len;
+		else if(varname.compare("max_len_init") == 0)
+			ss>>p.max_len_init;
 		//~ else if(varname.compare("max_dev_len") == 0)
 			//~ ss>>p.max_dev_len;
 		else if(varname.compare("complex_measure") == 0)
@@ -649,12 +669,14 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.align_dev;
 		else if(varname.compare("classification")==0)
 			ss>>p.classification;
-		else if(varname.compare("class_binary")==0)
-			ss>>p.class_binary;
+		else if(varname.compare("class_bool")==0)
+			ss>>p.class_bool;
 		else if(varname.compare("class_m3gp")==0)
 			ss>>p.class_m3gp;
 		else if(varname.compare("number_of_classes")==0)
 			ss>>p.number_of_classes;
+		else if(varname.compare("elitism")==0)
+			ss>>p.elitism;
 		else{}
     }
 	p.allvars = p.intvars;
@@ -664,6 +686,9 @@ void load_params(params &p, std::ifstream& fs)
 	p.allblocks.insert(p.allblocks.end(),p.seeds.begin(),p.seeds.end());
 
 	p.seed = time(0);
+
+	if (p.max_len_init == 0)
+		p.max_len_init = p.max_len;
 	
 	for (unsigned int i=0; i<p.op_list.size(); ++i)
 	{
@@ -800,6 +825,23 @@ void load_params(params &p, std::ifstream& fs)
 		float sumweight = accumulate(p.op_weight.begin(),p.op_weight.end(),0.0);
 		for(unsigned int i=0;i<p.op_weight.size();++i)
                         p.op_weight.at(i) = p.op_weight.at(i)/sumweight;
+		vector<int>::iterator io = p.op_choice.begin();
+		vector<int>::iterator ia = p.op_arity.begin();
+		vector<string>::iterator il = p.op_list.begin();
+		for (vector<float>::iterator it = p.op_weight.begin() ; it != p.op_weight.end();){
+			if (*it == 0){
+				it = p.op_weight.erase(it);
+				io = p.op_choice.erase(io);
+				ia = p.op_arity.erase(ia);
+				il = p.op_list.erase(il);
+			}
+			else{
+				++it;
+				++io;
+				++ia;
+				++il;
+			}	
+		}
 	}
 
 	// turn off AR_n if AR is not being used
@@ -886,12 +928,18 @@ void load_data(data &d, std::ifstream& fs,params& p)
 		d.vals.pop_back();
 	}
 
-	if (p.classification && !p.class_binary){
+	if (p.classification){
 		// set p.num_cases based on unique elements in target
 		vector<float> tmp = d.target;
 		sort(tmp.begin(),tmp.end());
 		tmp.erase(unique(tmp.begin(),tmp.end()),tmp.end());
 		p.number_of_classes = tmp.size();
+		// set lowest class equal to zero
+		int offset  = *std::min_element(d.target.begin(),d.target.end());
+		if (offset>0){
+			for (unsigned i=0;i<d.target.size();++i) 
+				d.target[i] -= offset;
+		}
 	}
 	
 	
