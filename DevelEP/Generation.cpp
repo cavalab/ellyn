@@ -29,7 +29,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		ind best;
 		if (p.elitism){ // save best ind
 			vector<ind>::iterator it_add = std::min_element(pop.begin(),pop.end(),SortFit());
-			ind best = *it_add;
+			best = *it_add;
 		}
 		//assert (pop.size()== p.popsize) ;
 		//if (p.loud ) fcout << "     Apply Genetics...";
@@ -90,9 +90,9 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 			//if (p.lex_age) vector<ind> tmppop(pop);
 
 			ind best;
-			if (p.elitism){ // save best ind
+			if (p.elitism){ // save (aggregate) best ind
 				vector<ind>::iterator it_add = std::min_element(pop.begin(),pop.end(),SortFit());
-				ind best = *it_add;
+				best = *it_add;
 			}
 
 			ApplyGenetics(pop,parloc,p,r,d,s,FE);
@@ -121,7 +121,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 				// select new population with tournament size 2, based on pareto age-fitness
 				AgeFitSurvival(pop,p,r);
 			}
-			if (p.elitism){ // replace worst ind with best ind
+			if (p.elitism){ // replace (aggregate) worst ind with (aggregate) best ind
 				vector<ind>::iterator it_rm = std::max_element(pop.begin(),pop.end(),SortFit());
 				pop[it_rm-pop.begin()] = best;
 			}
