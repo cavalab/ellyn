@@ -29,6 +29,8 @@
 #include <omp.h>
 //#include <direct.h>
 #include <exception>
+#include <Eigen/Dense>
+using Eigen::MatrixXf;
 /*#include "pop.h"
 #include "pareto.h"
 #include "p_archive.h"

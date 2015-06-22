@@ -1,5 +1,5 @@
 CC=mpicxx
-CFLAGS= -c -I $(BOOST_ROOT) -I /home/wl90a/DevelEP -fopenmp -std=c++0x -Ofast
+CFLAGS= -c -I $(BOOST_ROOT) -I /home/wl90a/DevelEP -I /home/wl90a/include/eigen/ -fopenmp -std=c++0x -Ofast
 LDFLAGS= -I $(BOOST_ROOT) -I /home/wl90a/DevelEP -fopenmp -std=c++0x -Ofast
 LDFLAGS2= -Bstatic -L$(LIBRARY_PATH) -L$(LD_LIBRARY_PATH) -lboost_regex 
 SOURCES= stdafxRTMPI.cpp RunTrialsMPI.cpp ../DevelEP/stdafx.cpp ../DevelEP/AgeBreed.cpp ../DevelEP/AgeFitSurvival.cpp ../DevelEP/AgeFitGenSurvival.cpp ../DevelEP/ApplyGenetics.cpp ../DevelEP/BruteforceAlgo.cpp ../DevelEP/Crossover.cpp ../DevelEP/Datapoint.cpp ../DevelEP/DC.cpp ../DevelEP/EpiHC.cpp ../DevelEP/EpiMut.cpp ../DevelEP/Eqn2Line.cpp ../DevelEP/Fitness.cpp ../DevelEP/FitnessEstimator.cpp ../DevelEP/general_fns.cpp ../DevelEP/Generation.cpp ../DevelEP/HillClimb.cpp ../DevelEP/InitPop.cpp ../DevelEP/LexicaseSelect.cpp ../DevelEP/Line2Eqn.cpp ../DevelEP/Mutate.cpp ../DevelEP/NondominatedsortAlgo.cpp ../DevelEP/pareto.cpp ../DevelEP/pareto_fc.cpp ../DevelEP/ParetoSurvival.cpp ../DevelEP/runEllenGP.cpp ../DevelEP/StablesortAlgo.cpp ../DevelEP/strdist.cpp ../DevelEP/Tournament.cpp 
