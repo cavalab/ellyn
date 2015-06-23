@@ -61,8 +61,6 @@ g	|	100	|	 number of generations
 popsize	|	500	|	population size
 limit_evals	|	0	|	 limit evals instead of number of generations
 max_evals	|	0	|	 max point evaluations
-	|		|	
-	|		|	
  Generation Settings 	|		|	
 sel	|	1	|	 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 lexage	|	0	|	 use age survival with lexicase selection
@@ -84,7 +82,7 @@ shuffle_data	|	0	|	 shuffle the data
 pop_restart	|	0	|	restart run from previous population specified by pop_restart_path
 pop_restart_path	|	""	|	filename of restart population with path
 	|		|	
- Results and Printing Options	
+ Results and Printing Options	|		|	
 resultspath	|	""	|	path where results are saved
 print_every_pop	|	0	|	  save printout of population at every generation
 print_genome	|	0	|	prints genome for visualization in paraview
@@ -101,13 +99,11 @@ seeds	|	none	|	seed partial solutions
 AR	|	0	|	include auto-regressive output variables
 AR_n 	|	1	|	  order of auto-regression (number of time-steps back)
 AR_lookahead	|	0	|	 just predict one output ahead
-	|		|	
 ERC	|	1	|	 ephemeral random constants
 ERCints	|	0	|	
 maxERC	|	1	|	
 minERC	|	-1	|	
 numERC	|	1	|	
-	|		|	
 fitness settings	|		|	
 fit_type	|	1	|	 1: mean absolute error, 2: corr, 3: combo, 4: VAF
 norm_error	|	0	|	  normalize error by the standard deviation of the target data being u
@@ -122,7 +118,6 @@ FE_rank	|	0	|	 use rank for FE fitness rather than error
 estimate_generality	|	0	|	estimate how well the solutions generalize using the validation portion of the fitness estimator
 G_sel	|	0	|	which fit_type to use to test generality
 G_shuffle	|	0	|	shuffles data each generation
-	|		|	
 op_list	|	n,v,+,-,*,/	|	available operators: n
 op_weight	|	empty	|	4
 weight_ops_on	|	0	|	weight the operators differently
@@ -130,17 +125,11 @@ min_len	|	3	|	minimum program length
 max_len	|	20	|	maximum length a program is allowed to be
 max_len_init	|	max_len	|	option to specify different max length for initial population
 init_trees	|		|	 initialize genotypes as syntactically valid trees rather than randomized stacks
-	|		|	
 complex_measure	|	2	|	 1: genotype size 2: symbolic size 3: effective genotype size
-	|		|	
-	|		|	
  Hill Climbing Settings	|		|	
-	|		|	
-	|		|	
  parameter Hill Climber	|		|	
 pHC_on	|	0	|	parameter hill climbing each generation
 pHC_its	|	1	|	number of iterations
-	|		|	
  epigenetic Hill Climber	|		|	
 eHC_on	|	0	|	epigenetic hill climbing
 eHC_its	|	1	|	number of iterations
@@ -148,11 +137,9 @@ eHC_prob	|	0.1	|	probability of a gene being switched
 eHC_init	|	0.5	|	 percent of expressed genes in initial genotypes
 eHC_slim	|	0	|	  minimize point evaluations as much as possible
 eHC_mut	|	0	|	do mutation rather than hill climbing
-	|		|	
  Pareto settings	|		|	
 prto_arch_on	|	0	|	
 prto_arch_size	|	20	|	
-	|		|	
  island model	|		|	
 islands	|	0	|	use multiple island populations, one for each core. 
 island_gens	|	100	|	number of generations until island populations are shuffled
