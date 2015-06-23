@@ -84,7 +84,7 @@ shuffle_data	|	0	|	 shuffle the data
 pop_restart	|	0	|	restart run from previous population specified by pop_restart_path
 pop_restart_path	|	""	|	filename of restart population with path
 	|		|	
- Results and Printing Options	|		|	
+ Results and Printing Options	
 resultspath	|	""	|	path where results are saved
 print_every_pop	|	0	|	  save printout of population at every generation
 print_genome	|	0	|	prints genome for visualization in paraview
