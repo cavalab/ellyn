@@ -56,7 +56,7 @@ Settings
 Here is a comprehensive list of all of the options that you can include in the parameter file. 
 
 Setting | Default | Description
-======= | ======= | ===========
+------- | ------- | -----------
 g	|	100	|	 number of generations
 popsize	|	500	|	population size
 limit_evals	|	0	|	 limit evals instead of number of generations
