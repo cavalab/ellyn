@@ -124,7 +124,7 @@ weight_ops_on	|	0	|	weight the operators differently
 min_len	|	3	|	minimum program length
 max_len	|	20	|	maximum length a program is allowed to be
 max_len_init	|	max_len	|	option to specify different max length for initial population
-init_trees	|		|	 initialize genotypes as syntactically valid trees rather than randomized stacks
+init_trees	|	0	|	 initialize genotypes as syntactically valid trees rather than randomized stacks
 complex_measure	|	2	|	 1: genotype size 2: symbolic size 3: effective genotype size
  Hill Climbing Settings	|		|	
  parameter Hill Climber	|		|	
