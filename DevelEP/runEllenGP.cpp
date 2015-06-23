@@ -490,11 +490,11 @@ void load_params(params &p, std::ifstream& fs)
 			while (ss>>tmps)
 				p.intvars.push_back(tmps);
 		}
-		else if(varname.compare(0,7,"extvars") == 0)
+		/*else if(varname.compare(0,7,"extvars") == 0)
 		{
 			while (ss>>tmps)
 				p.extvars.push_back(tmps);
-		}
+		}*/
 		/*else if(varname.compare("cons") == 0)
 		{
 			while (ss>>tmps)
@@ -611,8 +611,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.train;
 		else if(varname.compare("train_pct") ==0)
 			ss>>p.train_pct;
-		else if(varname.compare("printeverypop") == 0)
-			ss>>p.printeverypop;
+		else if(varname.compare("print_every_pop") == 0)
+			ss>>p.print_every_pop;
 		else if(varname.compare("estimate_fitness") == 0)
 			ss>>p.EstimateFitness;
 		else if(varname.compare("FE_pop_size") == 0)
@@ -680,7 +680,7 @@ void load_params(params &p, std::ifstream& fs)
 		else{}
     }
 	p.allvars = p.intvars;
-	p.allvars.insert(p.allvars.end(), p.extvars.begin(), p.extvars.end());
+	//p.allvars.insert(p.allvars.end(), p.extvars.begin(), p.extvars.end());
 	p.allblocks = p.allvars;
 	p.allblocks.insert(p.allblocks.end(),p.cons.begin(),p.cons.end());
 	p.allblocks.insert(p.allblocks.end(),p.seeds.begin(),p.seeds.end());
@@ -689,7 +689,15 @@ void load_params(params &p, std::ifstream& fs)
 
 	if (p.max_len_init == 0)
 		p.max_len_init = p.max_len;
-	
+	// op_list
+	if (p.op_list.empty()){ // set default operator list
+		op_list.push_back("n"); 
+		op_list.push_back("v");
+		op_list.push_back("+"); 
+		op_list.push_back("-"); 
+		op_list.push_back("*"); 
+		op_list.push_back("/"); 
+	}
 	for (unsigned int i=0; i<p.op_list.size(); ++i)
 	{
 		if (p.op_list.at(i).compare("n")==0 )//&& ( p.ERC || !p.cvals.empty() ) )
@@ -1643,7 +1651,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		//				break;
 			//		case 2: // print out 
 			//			printstatsP(World,gen,s,p,A);
-			//			if (p.printeverypop) printpop(World.pop,p,s,logname,2);
+			//			if (p.print_every_pop) printpop(World.pop,p,s,logname,2);
 			//			s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
 			//			s.out << "Total Evals: " << s.totalevals() << "\n";
 			//			s.out << "Point Evals: " << s.totalptevals() << "\n";
@@ -1822,7 +1830,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 						}
 						if (!p.limit_evals || s.totalptevals() >= print_trigger){
 							printdatafile(World,s,p,r,dfout,gen);
-							if (p.printeverypop) printpop(World.pop,p,s,logname,2);
+							if (p.print_every_pop) printpop(World.pop,p,s,logname,2);
 							if (p.print_log) {
 								printstats(World,gen,s,p,A);
 								s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
@@ -2046,7 +2054,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 				}
 				if (!p.limit_evals || s.totalptevals() >= print_trigger){ 
 					printdatafile(T,s,p,r,dfout,counter);
-					if (p.printeverypop) printpop(T.pop,p,s,logname,2);
+					if (p.print_every_pop) printpop(T.pop,p,s,logname,2);
 					if (p.print_log){
 						printstats(T,counter,s,p,A);
 						s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";

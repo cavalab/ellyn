@@ -94,11 +94,13 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 						head=r1;
 						//offset=r[omp_get_thread_num()].gasdev()*parents[head].line.size()*p.cross_ar;
 					}
-					if (p.align_dev) offset=r[omp_get_thread_num()].gasdev();//*parents[head].line.size()*p.cross_ar;
+					if (p.align_dev) 
+						offset=r[omp_get_thread_num()].gasdev();//*parents[head].line.size()*p.cross_ar;
 				}
 				
 
-				if (i+offset>=parents[head].line.size() || i+offset <= 0) offset = 0;
+				if (i+offset>=parents[head].line.size() || i+offset <= 0) 
+					offset = 0;
 
 				if (i < parents[head].line.size() && kids.at(r1).line.size() < p.max_len) 
 					kids.at(r1).line.push_back(parents[head].line.at(i+offset));
@@ -230,8 +232,7 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 			int end2 = pt2;
 			sum_arity = parents[r2].line[pt2].arity_float;
 			while (sum_arity > 0 && pt2 > 0)
-			{
-				
+			{				
 				--pt2;
 				--sum_arity;
 				sum_arity+=parents[r2].line[pt2].arity_float;

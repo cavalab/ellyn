@@ -56,12 +56,12 @@ struct params {
 	bool G_shuffle;
 
 
-	bool printeverypop;
+	bool print_every_pop;
 	bool print_genome;
 	bool print_epigenome;
 	// Problem information
 	vector <string> intvars; // internal variables
-	vector <string> extvars; // external variables (external forces)
+	//vector <string> extvars; // external variables (external forces)
 	vector <string> cons;
 	vector <float> cvals;
 	vector <string> seeds;
@@ -161,7 +161,7 @@ struct params {
 	// number of threads
 	params(){ //default values
 		g=100; // number of generations (limited by default)
-		popsize=100; //population size
+		popsize=500; //population size
 		limit_evals=false; // limit evals instead of generations
 		max_evals=0; // maximum number of evals before termination (only active if limit_evals is true)
 		init_trees=1;
@@ -177,7 +177,7 @@ struct params {
 		align_dev = 0;
 		elitism = 0;
 
-		// Data settings
+		// ===============   Data settings
 		init_validate_on=0; // initial fitness validation of individuals
 		train=0; // choice to turn on training for splitting up the data set
 		train_pct=0.5; // default split of data is 50/50
@@ -185,10 +185,12 @@ struct params {
 		pop_restart = 0; // restart from previous population
 		pop_restart_path=""; // restart population file path
 		AR = 0;
-		AR_n = 0;
+		AR_n = 1;
 		AR_lookahead = 0;
-		// Results and printing
+		// ================ Results and printing
 		resultspath="";
+		//print every population
+		print_every_pop=0;
 		//print initial population
 		print_init_pop = 0;
 		// print homology 
@@ -202,6 +204,11 @@ struct params {
 		// print csv files of epigenome each print cycle
 		print_epigenome = 0;
 
+		// ============ Fitness settings
+		fit_type = 1; // 1: error, 2: corr, 3: combo
+		norm_error = 0 ; // normalize fitness by the standard deviation of the target output
+		max_fit = 100000000000000000000;
+		min_fit = 0.00000000000000000001;
 		// Fitness estimators
 		EstimateFitness=0; 
 		FE_pop_size=0;
@@ -209,7 +216,6 @@ struct params {
 		FE_train_size=0;
 		FE_train_gens=0;
 		FE_rank=0;
-
 		estimate_generality=0;
 		G_sel=1; 
 		G_shuffle=0;
@@ -217,10 +223,16 @@ struct params {
 		//bool parallel;
 		//int numcores;
 
-		printeverypop=0;
 		
+		// =========== Program Settings
+		ERC = 1; // ephemeral random constants
+		ERCints =0 ;
+		maxERC = 1;
+		minERC = -1;
+		numERC = 1;
+
 		min_len = 3;
-		max_len = 10;
+		max_len = 20;
 		max_len_init = 0;
 
 		complex_measure=1; // 1: genotype size; 2: symbolic size; 3: effective genotype size
@@ -235,26 +247,26 @@ struct params {
 			// parameter Hill Climber
 		pHC_on = 0;
 		//pHC_size;
-		pHC_its = 0;
+		pHC_its = 1;
 		pHC_gauss = 0;
 
 			// epigenetic Hill Climber
 		eHC_on = 0;
-		eHC_its = 0;
-		eHC_prob = 0;
-		eHC_init = 0;
+		eHC_its = 1;
+		eHC_prob = 0.1;
+		eHC_init = 0.5;
 		eHC_mut = 0; // epigenetic mutation rather than hill climbing
 		eHC_slim = 0; // use SlimFitness
 		
 		// Pareto settings
 
 		prto_arch_on = 0;
-		prto_arch_size = 0;
+		prto_arch_size = 20;
 		prto_sel_on = 0;
 
 		//island model
 		islands = 0;
-		island_gens = 0;
+		island_gens = 100;
 		nt = 1;
 
 		seed = 0;

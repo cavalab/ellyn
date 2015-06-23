@@ -797,6 +797,8 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 	me.output.resize(0); 
 	me.output_v.resize(0);
 	if (p.sel==3) me.error.resize(0);
+	else if (p.sel==4 && p.PS_sel==4) // each class is an objective
+		me.error.assign(p.number_of_classes,0);
 	float var_target = 0;
 	float var_ind = 0;
 	bool pass = true;
@@ -981,6 +983,9 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 						++me.abserror;
 						if (p.sel==3) // lexicase error vector
 							me.error.push_back(1);
+						else if (p.sel==4 && p.PS_sel==4) // each class is an objective
+							++me.error[target[sim]];
+
 					}
 					else if (p.sel==3)
 						me.error.push_back(0);
@@ -1110,6 +1115,8 @@ void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>
 	me.abserror = 0;
 	me.abserror_v = 0;
 	if (p.sel==3) me.error.resize(0);
+	else if (p.sel==4 && p.PS_sel==4) // each class is an objective
+		me.error.assign(p.number_of_classes,0);
 	float SStot=0;
 	float SSreg=0;
 	float SSres=0;
@@ -1197,6 +1204,8 @@ void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>
 							++me.abserror;
 							if (p.sel==3) // lexicase error vector
 								me.error.push_back(1);
+							else if (p.sel==4 && p.PS_sel==4) // each class is an objective
+								++me.error[target[sim]];
 						}
 						else
 							me.error.push_back(0);						

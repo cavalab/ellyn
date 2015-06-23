@@ -119,7 +119,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 				Fitness(tmppop,p,d,s,FE);
 				pop.push_back(tmppop[0]);
 				// select new population with tournament size 2, based on pareto age-fitness
-				AgeFitSurvival(pop,p,r);
+				ParetoSurvival(pop,p,r,s);
 			}
 			if (p.elitism){ // replace (aggregate) worst ind with (aggregate) best ind
 				vector<ind>::iterator it_rm = std::max_element(pop.begin(),pop.end(),SortFit());
@@ -127,7 +127,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 			}
 			break;
 		}
-	case 4: //age-fitness pareto front
+	case 4: //Pareto survival
 		{   //scheme:
 			// produce a new population equal in size to the old
 			// pool all individuals from both populations

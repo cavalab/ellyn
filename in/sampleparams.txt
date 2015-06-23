@@ -58,6 +58,7 @@ FE_ind_size			4	// number of fitness cases for FE to use
 FE_train_size		10	// trainer population size
 FE_train_gens		10 // number of generations between trainer selections
 FE_rank				1	// use rank for FE fitness rather than error  
+estimate_generality	0 // use part of the FE to estimate generality
 
 //available operators: n	v	+	-	*	/	sin	cos	exp	log	sqrt	
 //index                0	1	2	3	4	5	6	7	8	9	10
