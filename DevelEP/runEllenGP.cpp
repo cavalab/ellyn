@@ -677,6 +677,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.number_of_classes;
 		else if(varname.compare("elitism")==0)
 			ss>>p.elitism;
+		else if(varname.compare("stop_condition")==0)
+			ss>>p.stop_condition;
 		else{}
     }
 	p.allvars = p.intvars;
@@ -1167,6 +1169,8 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s)
 }
 bool stopcondition(tribe& T,params p,data& d,state& s,FitnessEstimator& FE)
 {
+	if (!p.stop_condition)
+		return false;
 	if (!p.EstimateFitness){
 		if (T.bestFit() <= 0.000001){
 			s.out << "best fitness criterion achieved: " << T.bestFit() <<"\n";

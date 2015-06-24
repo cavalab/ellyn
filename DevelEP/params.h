@@ -159,6 +159,9 @@ struct params {
 	bool class_m3gp; // use m3gp fitness
 	int number_of_classes; // number of unique classes
 
+	// stop condition
+	bool stop_condition; 
+
 	// number of threads
 	params(){ //default values
 		g=100; // number of generations (limited by default)
@@ -286,6 +289,8 @@ struct params {
 		class_m3gp = 0;
 		//class_multiclass=0; // use multiclass 
 		number_of_classes=1; //for use with multiclass
+
+		stop_condition=1;
 	}
 	~params(){}
 
