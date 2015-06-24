@@ -691,12 +691,12 @@ void load_params(params &p, std::ifstream& fs)
 		p.max_len_init = p.max_len;
 	// op_list
 	if (p.op_list.empty()){ // set default operator list
-		op_list.push_back("n"); 
-		op_list.push_back("v");
-		op_list.push_back("+"); 
-		op_list.push_back("-"); 
-		op_list.push_back("*"); 
-		op_list.push_back("/"); 
+		p.op_list.push_back("n"); 
+		p.op_list.push_back("v");
+		p.op_list.push_back("+"); 
+		p.op_list.push_back("-"); 
+		p.op_list.push_back("*"); 
+		p.op_list.push_back("/"); 
 	}
 	for (unsigned int i=0; i<p.op_list.size(); ++i)
 	{

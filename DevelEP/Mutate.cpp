@@ -22,7 +22,7 @@ void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)
 	}
 	for(unsigned int j=0;j<ichange.size();++j)
 	{
-		if(kid[0].line.at(ichange.at(j)).type=='n') // insert function
+		if(kid[0].line.at(ichange.at(j)).type=='n') // perturb constant
 		{
 			if (p.ERC)
 			{

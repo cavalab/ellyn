@@ -140,7 +140,8 @@ struct params {
 	// lexicase selection
 	float lexpool; // percent of population to use for lexicase selection events
 	bool lexage;// include age as case
-	
+	bool lex_class; // use class-based fitness objectives instead of raw error 
+
 	//print initial population
 	bool print_init_pop;
 	// print homology 
@@ -207,7 +208,7 @@ struct params {
 		// ============ Fitness settings
 		fit_type = 1; // 1: error, 2: corr, 3: combo
 		norm_error = 0 ; // normalize fitness by the standard deviation of the target output
-		max_fit = 100000000000000000000;
+		max_fit = 1.0E20;
 		min_fit = 0.00000000000000000001;
 		// Fitness estimators
 		EstimateFitness=0; 
@@ -274,7 +275,7 @@ struct params {
 		// lexicase selection
 		lexpool = 1;
 		lexage = 0;
-		
+		lex_class = 0;
 		
 		//pareto survival setting
 		PS_sel=1;

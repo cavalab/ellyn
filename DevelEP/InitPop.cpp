@@ -27,6 +27,8 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 
 	for(int i=0;i<pop.size();++i)
 	{
+		// WGL: need to edit this to work with EHC and classification both ON
+
 		if (!p.init_trees){ // random initialization
 			makeline(pop.at(i),p,r);
 			if (p.eHC_on)
