@@ -4,6 +4,7 @@
 #include "rnd.h"
 #include "data.h"
 #include "general_fns.h"
+#include "InitPop.h"
 //#include "RPN_class.h"
 //extern params p;
 //extern vector<Randclass> r;
@@ -13,9 +14,7 @@ using namespace std;
 		genotype to phenotype
 		calculate fitness
 */
-void makeline(ind&,params& p,vector<Randclass>& r);
-void makeline_rec(vector<node>&,params& p,vector<Randclass>& r,int linelen);
-int maketree(vector <node>& line, int level, bool exactlevel, int lastnode,params& p,vector<Randclass>& r);
+
 float round(float d)
 {
   return floor(d + 0.5);

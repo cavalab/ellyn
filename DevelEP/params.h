@@ -27,6 +27,7 @@ struct params {
 	float cross_ar; //crossover alternation rate
 	float mut_ar;
 	int cross; // 1: ultra; 2: one point
+	int mutate; // 1: uniform point mutation; 2: sub-tree mutation 
 	bool align_dev; // on or off - adds alignment deviation via gaussian random variable
 	bool elitism; // on or off - if on, saves best individual each generation
 	//float stoperror; // stop condition / convergence condition
@@ -56,9 +57,7 @@ struct params {
 	bool G_shuffle;
 
 
-	bool print_every_pop;
-	bool print_genome;
-	bool print_epigenome;
+	
 	// Problem information
 	vector <string> intvars; // internal variables
 	//vector <string> extvars; // external variables (external forces)
@@ -142,12 +141,18 @@ struct params {
 	bool lexage;// include age as case
 	bool lex_class; // use class-based fitness objectives instead of raw error 
 
+	// ==== Printing Options === //
 	//print initial population
 	bool print_init_pop;
 	// print homology 
 	bool print_homology;
-	//print log
-	bool print_log;
+	
+	bool print_log; //print log
+	bool print_every_pop; // print pop every generation
+	bool print_genome; // print genome every generation
+	bool print_epigenome; // print epigenome every generation
+	bool print_novelty; // print novelty in data file
+
 	// number of log points to print (with eval limitation)
 	int num_log_pts;
 	//pareto survival setting
@@ -157,6 +162,7 @@ struct params {
 	bool classification;
 	bool class_bool; // use binary or multiclass
 	bool class_m3gp; // use m3gp fitness
+	bool class_prune; // prune dimensions of best individual each generation
 	int number_of_classes; // number of unique classes
 
 	// stop condition
@@ -178,6 +184,7 @@ struct params {
 		cross_ar=0.025; //crossover alternation rate
 		mut_ar=0.025;
 		cross=2; // 1: ultra; 2: one point
+		mutate=1;
 		align_dev = 0;
 		elitism = 0;
 
@@ -287,6 +294,7 @@ struct params {
 		classification = 0;
 		class_bool = 0;
 		class_m3gp = 0;
+		class_prune = 0;
 		//class_multiclass=0; // use multiclass 
 		number_of_classes=1; //for use with multiclass
 

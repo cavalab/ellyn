@@ -70,28 +70,29 @@ rt_rep	|	0	|	rate of reproduction
 rt_cross	|	0.8	|	rate of crossover
 rt_mut	|	0.2	|	rate of mutation
 cross	|	2	|	 1: ultra 2: one point1 3: sub-tree
+mutate	|	1	|	1: point mutation; 2: subtree mutation
 cross_ar	|	0.025	|	 crossover alternation rate (ultra only)
 mut_ar	|	0.025	|	mutation alternation rate 
 align_dev	|	0	|	 on or off; adds gaussian alignment deviation to crossover 
 elitism	|	0	|	 save best individual each generation
-	|		|	
+stop_condition	|	1	| if on, run will terminate when an fitness < 1e-6 is reached.
 init_validate_on	|	0	|	 initial fitness validation of starting population
+||Data Options
 train	|	0	|	 split data into training and validation sets
 train_pct	|	0.5	|	  percent of data to be used in training
 shuffle_data	|	0	|	 shuffle the data 
 pop_restart	|	0	|	restart run from previous population specified by pop_restart_path
-pop_restart_path	|	""	|	filename of restart population with path
-	|		|	
- Results and Printing Options	|		|	
+pop_restart_path	|	""	|	filename of restart population with path	
+|| Results and Printing Options		
 resultspath	|	""	|	path where results are saved
 print_every_pop	|	0	|	  save printout of population at every generation
 print_genome	|	0	|	prints genome for visualization in paraview
 num_log_pts	|	0	|	number of log points to print (0 means print each generation)
-	|		|	
+|| Classification Options	
 classification	|	0	|	defines a classification, rather than regression, problem
 class_bool	|	0	|	interpret class labels as bit-string conversion of boolean stack output
 class_m3gp	|	0	|	use mahalanobis distance classification fitness
- Problem information	|		|	
+|| Problem information	
 intvars	|	none	|	variables in data file to use in programs
 cons     	|	none	|	constants to use
 cvals	|	none	|	values of constants defined in cons
@@ -104,7 +105,7 @@ ERCints	|	0	|
 maxERC	|	1	|	
 minERC	|	-1	|	
 numERC	|	1	|	
-fitness settings	|		|	
+|| Fitness Settings	
 fit_type	|	1	|	 1: mean absolute error, 2: corr, 3: combo, 4: VAF
 norm_error	|	0	|	  normalize error by the standard deviation of the target data being u
 max_fit	|	1.00E+20	|	maximum fitness possible
@@ -126,18 +127,18 @@ max_len	|	20	|	maximum length a program is allowed to be
 max_len_init	|	max_len	|	option to specify different max length for initial population
 init_trees	|	0	|	 initialize genotypes as syntactically valid trees rather than randomized stacks
 complex_measure	|	2	|	 1: genotype size 2: symbolic size 3: effective genotype size
- Hill Climbing Settings	|		|	
- parameter Hill Climber	|		|	
+|| Hill Climbing Settings		
+|| parameters	
 pHC_on	|	0	|	parameter hill climbing each generation
 pHC_its	|	1	|	number of iterations
- epigenetic Hill Climber	|		|	
+|| epigenetics	
 eHC_on	|	0	|	epigenetic hill climbing
 eHC_its	|	1	|	number of iterations
 eHC_prob	|	0.1	|	probability of a gene being switched
 eHC_init	|	0.5	|	 percent of expressed genes in initial genotypes
 eHC_slim	|	0	|	  minimize point evaluations as much as possible
 eHC_mut	|	0	|	do mutation rather than hill climbing
- Pareto settings	|		|	
+|| Pareto Settings
 prto_arch_on	|	0	|	
 prto_arch_size	|	20	|	
  island model	|		|	

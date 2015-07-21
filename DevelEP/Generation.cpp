@@ -10,6 +10,7 @@
 #include "InitPop.h"
 #include "EpiMut.h"
 #include "ParetoSurvival.hpp"
+#include "Prune.h"
 
 void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
 {
@@ -150,10 +151,25 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		break;
 
 		}
+	case 5: // random search
+		{
+			vector<unsigned int> parloc(pop.size());
+			for (unsigned i = 0; i<parloc.size(); ++i){
+				parloc[i] = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
+			}
+			//if (p.loud ) fcout << "     Tournament...";
+			ApplyGenetics(pop,parloc,p,r,d,s,FE);
+
+			Fitness(pop,p,d,s,FE);
+			break;
+		}
 	default:
 		cout << "Bad p.sel parameter. " << endl;
 		break;
 	}
+	if (p.classification && p.class_m3gp && p.class_prune)
+		Prune(pop,p,r,d,s,FE);
+
 	//if (p.loud ) fcout << "  Gentime...";
 }
 

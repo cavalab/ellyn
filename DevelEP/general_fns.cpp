@@ -4,6 +4,28 @@
 #include "rnd.h"
 #include "data.h"
 #include <locale>
+
+void find_root_nodes(vector<node>& line, vector<unsigned>& roots)
+{
+	// find "root" nodes of floating point program, where roots are final values that output something directly to the stack
+	int total_arity = -1; //end node is always a root
+	
+
+	for (vector<node>::iterator i = line.end()-1; i!=line.begin(); --i){
+		if ((*i).on){
+			if (total_arity <= 0 ){ // root node
+				roots.push_back(i-line.begin());
+				total_arity=0;
+			}
+			else
+				--total_arity;
+		
+			total_arity += (*i).arity_float; 
+		}
+	}
+	if (roots.empty())
+		roots.push_back(line.size()-1);
+}
 bool is_number(const std::string& s)
 {
 	std::locale loc;

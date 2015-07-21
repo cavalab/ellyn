@@ -216,7 +216,24 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 			else
 				r2=0;
 
-			int pt1 = r[omp_get_thread_num()].rnd_int(0,parents[r1].line.size()-1);
+			int pt1, pt2;
+
+			// specialization for m3gp
+			if (p.classification && p.class_m3gp && r[omp_get_thread_num()].rnd_flt(0.0,1.0) > 0.5){
+				// find root nodes of r1
+				vector<unsigned> roots_r1;
+				find_root_nodes(parents[r1].line, roots_r1);
+				pt1 = roots_r1[r[omp_get_thread_num()].rnd_int(0,roots_r1.size()-1)];
+
+				vector<unsigned> roots_r2;
+				find_root_nodes(parents[r2].line, roots_r2);
+				pt2 = roots_r2[r[omp_get_thread_num()].rnd_int(0,roots_r2.size()-1)];
+			}
+			else{
+				pt1 = r[omp_get_thread_num()].rnd_int(0,parents[r1].line.size()-1);
+				pt2 = r[omp_get_thread_num()].rnd_int(0,parents[r2].line.size()-1);
+			}
+
 			int end1 = pt1;
 			int sum_arity = parents[r1].line[pt1].arity_float;
 			while (sum_arity > 0 && pt1 > 0)
@@ -228,7 +245,6 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 			}
 			int begin1 = pt1;
 
-			int pt2 = r[omp_get_thread_num()].rnd_int(0,parents[r2].line.size()-1);
 			int end2 = pt2;
 			sum_arity = parents[r2].line[pt2].arity_float;
 			while (sum_arity > 0 && pt2 > 0)
@@ -245,6 +261,9 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 			kids[r1].line.assign(parents[r1].line.begin(),parents[r1].line.begin()+begin1);
 			kids[r1].line.insert(kids[r1].line.end(),parents[r2].line.begin()+begin2,parents[r2].line.begin()+end2+1);
 			kids[r1].line.insert(kids[r1].line.end(),parents[r1].line.begin()+end1+1,parents[r1].line.end());
+
+			if (kids[r1].line.size()>p.max_len)
+				kids[r1].line = parents[r1].line;
 		}
 		
 		

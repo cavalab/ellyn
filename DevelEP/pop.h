@@ -54,6 +54,7 @@ struct ind {
 	int age;
 	int rank;
 	int complexity;
+	int dim;
 	char origin; // x: crossover, m: mutation, i: initialization
 
 	/* 
@@ -126,6 +127,7 @@ struct ind {
 		swap(this->age,s.age);
 		swap(this->rank,s.rank);
 		swap(this->complexity,s.complexity);
+		swap(this->dim,s.dim);
 		
 		swap(this->origin,s.origin);			// chars
 		
@@ -181,6 +183,7 @@ struct sub_ind
 	string eqn;
 	int age;
 	int complexity;
+	int dim;
 	sub_ind(){}
 	void init(ind& x){
 		fitness = x.fitness; 
@@ -193,6 +196,7 @@ struct sub_ind
 		eqn = x.eqn; 
 		age=x.age; 
 		complexity = x.complexity;
+		dim = x.dim;
 	}
 	~sub_ind(){}
 };
@@ -222,6 +226,14 @@ struct sameSizeFit{	bool operator() (ind& i,ind& j) { return (i.fitness==j.fitne
 
 struct sameFit{	bool operator() (ind& i,ind& j) { return (i.fitness==j.fitness);} };
 struct sameFit2{	bool operator() (sub_ind& i,sub_ind& j) { return (i.fitness==j.fitness);} };
+
+struct sameOutput{	bool operator() (ind& i, ind& j) { 
+	if (i.output.size()==j.output.size())
+		return std::equal(i.output.begin(),i.output.end(),j.output.begin());
+	else
+		return 0;
+} };
+
 struct sameComplexity{bool operator() (const ind& i,const ind& j) { return (i.complexity==j.complexity);} };
 
 struct sameFitComplexity{bool operator() (const ind& i,const ind& j) { return (i.fitness==j.fitness && i.complexity==j.complexity);} };
@@ -424,6 +436,20 @@ struct tribe{
 	void sortpop_age()
 	{
 		sort(pop.begin(),pop.end(),SortAge());
+	}
+	void novelty(float& novelty)
+	{ // calculate novelty, where novelty is defined as the percent of unique errors in population
+		/*vector<sub_ind> subpop(pop.size());
+		for (int i = 0;i<pop.size();++i) 
+			subpop[i].init(pop.at(i));
+		std::sort(subpop.begin(),subpop.end(),SortFit2());
+		subpop.erase(unique(subpop.begin(),subpop.end(),sameFit2()),subpop.end());
+		novelty = float(subpop.size())/float(pop.size());*/
+		// novelty instead defined as the number of unique error vectors
+		vector<ind> tmppop = pop;
+		std::sort(tmppop.begin(),tmppop.end(),SortFit());
+		tmppop.erase(unique(tmppop.begin(),tmppop.end(),sameOutput()),tmppop.end());
+		novelty = float(tmppop.size())/float(pop.size());
 	}
 	void hom(vector<Randclass>& r, float& tot_hom, float& on_hom, float& off_hom)
 	{

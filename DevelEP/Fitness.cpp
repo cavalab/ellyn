@@ -441,6 +441,9 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 
 		//if(p.sel!=3){
 		StandardFitness(pop.at(count),p,d,s,FE,datatable,dattovar);		
+
+		if (p.classification && p.class_m3gp)
+			pop[count].dim = pop[count].M.cols();
 		//} // if p.sel!=3
 		//else //LEXICASE FITNESS 
 		//{

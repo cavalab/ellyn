@@ -58,14 +58,25 @@ void printGenome(tribe& T,int gen,string& logname,data& d,params& p)
 	// x y gene
 	// gene encoding: +:1,-:2,*:3,/:4,sin:5,cos:6,exp:7,log:8,constant:9,vars:10-length(vars)
 
-	 std::ofstream gout;
-	 string filename = logname.substr(0,logname.size()-4)+"_g.csv."+std::to_string(static_cast<long long>(gen));
-	 gout.open(filename);
-	 gout << "x,y,fit,age,g,e\n";
+	//total genes
+	 std::ofstream gout_all;
+	 string filename0 = logname.substr(0,logname.size()-4)+"_g_all.csv."+std::to_string(static_cast<long long>(gen));
+	 gout_all.open(filename0);
+	 gout_all << "x,y,fit,age,g,e\n";
+	// on genes
+	 std::ofstream gout_on;
+	 string filename = logname.substr(0,logname.size()-4)+"_g_on.csv."+std::to_string(static_cast<long long>(gen));
+	 gout_on.open(filename);
+	 gout_on << "x,y,fit,age,g,e\n";
+	 // off genes
+	 std::ofstream gout_off;
+	 string filename2 = logname.substr(0,logname.size()-4)+"_g_off.csv."+std::to_string(static_cast<long long>(gen));
+	 gout_off.open(filename2);
+	 gout_off << "x,y,fit,age,g,e\n";
 	 string out;
 	 string tmp;
 	 int k;
-	 float y;
+	 float y,y_on, y_off;
 	 float max_fit=0;
 	 float min_fit=10000;
 	 float max_age=0;
@@ -87,6 +98,8 @@ void printGenome(tribe& T,int gen,string& logname,data& d,params& p)
 	
 	 for (size_t i=0; i<T.pop.size(); ++i){
 		 y=0;
+		 y_on=0;
+		 y_off=0;
 		 for (int j=T.pop[i].line.size()-1; j>=0; --j){
 			 switch(T.pop[i].line[j].type){
 			 case '+':
@@ -124,11 +137,23 @@ void printGenome(tribe& T,int gen,string& logname,data& d,params& p)
 				 out = tmp;
 				 break;
 			 }
-			 gout << float(float(i)/float(T.pop.size())) << "," << y/p.max_len << "," << (log(1+T.pop[i].fitness)-min_fit)/(max_fit-min_fit) << "," << (float(T.pop[i].age)-min_age)/(max_age-min_age) << "," << out << "," << T.pop[i].line[j].on << "\n";
-			++y;
+			  gout_all << float(float(i)/float(T.pop.size())) << "," << y/p.max_len << "," << (log(1+T.pop[i].fitness)-min_fit)/(max_fit-min_fit) << "," << (float(T.pop[i].age)-min_age)/(max_age-min_age) << "," << out << "," << T.pop[i].line[j].on << "\n";
+			 ++y;
+
+			 if (T.pop[i].line[j].on){
+			 gout_on << float(float(i)/float(T.pop.size())) << "," << y_on/p.max_len << "," << (log(1+T.pop[i].fitness)-min_fit)/(max_fit-min_fit) << "," << (float(T.pop[i].age)-min_age)/(max_age-min_age) << "," << out << "," << T.pop[i].line[j].on << "\n";
+			 ++y_on;
+			 }
+			 else{
+			  gout_off << float(float(i)/float(T.pop.size())) << "," << y_off/p.max_len << "," << (log(1+T.pop[i].fitness)-min_fit)/(max_fit-min_fit) << "," << (float(T.pop[i].age)-min_age)/(max_age-min_age) << "," << out << "," << T.pop[i].line[j].on << "\n";
+			  ++y_off;
+			 }
+			//++y;
 		}
 	 }
-	 gout.close();
+	 gout_on.close();
+	 gout_off.close();
+	 gout_all.close();
 }
 void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A)
 {
@@ -297,13 +322,20 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	}
 	fout<<"\n";*/
 }
-void initdatafile(std::ofstream& dfout,string & logname)
+void initdatafile(std::ofstream& dfout,string & logname,params& p)
 {
 	string dataname = logname.substr(0,logname.size()-4)+".data";
 	dfout.open(dataname,std::ofstream::out | std::ofstream::app);
 	//dfout.open(dataname,std::ofstream::app);
 	//dfout << "pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t best_R2 \t best_R2_v \t best_VAF \t best_VAF_v \t size \t eff_size \t pHC_pct \t eHC_pct \t good_g_pct \t neut_g_pct \t bad_g_pct \t tot_hom \t on_hom \t off_hom\n";
-	dfout << "gen \t pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t best_R2 \t best_R2_v \t best_VAF \t best_VAF_v \t size \t eff_size \t pHC_pct \t eHC_pct \t good_g_pct \t neut_g_pct \t bad_g_pct \t tot_hom \t on_hom \t off_hom\n";
+	dfout << "gen \t pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t best_R2 \t best_R2_v \t best_VAF \t best_VAF_v \t size \t eff_size \t pHC_pct \t eHC_pct \t good_g_pct \t neut_g_pct \t bad_g_pct ";
+	if (p.print_homology)
+		dfout << "\t tot_hom \t on_hom \t off_hom";
+	if (p.classification && p.class_m3gp) 
+		dfout << "\t dimension" ;
+	if (p.print_novelty)
+		dfout << "\t novelty" ;
+	dfout << "\n";
 	//fout.close(dataname);
 }
 void printdatafile(tribe& T,state& s,params& p, vector<Randclass>& r,std::ofstream& dfout, int gen)
@@ -322,6 +354,14 @@ void printdatafile(tribe& T,state& s,params& p, vector<Randclass>& r,std::ofstre
 		T.hom(r,tot_hom,on_hom,off_hom);
 		dfout << "\t" << tot_hom << "\t" << on_hom << "\t" << off_hom;
 	}
+	if (p.classification && p.class_m3gp) 
+		dfout << "\t" << best_ind.dim ;
+	if (p.print_novelty){
+		float novelty;
+		T.novelty(novelty);
+		dfout << "\t" << novelty;
+	}
+
 	dfout <<"\n";
 
 	//s.clearCross();
@@ -400,6 +440,7 @@ void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
 		fout << "origin: " << pop.at(h).origin << "\n";
 		fout << "age: " << pop.at(h).age << "\n";
 		fout << "eqn form: " << pop.at(h).eqn_form << "\n";
+		if (p.classification && p.class_m3gp) fout << "dimensions: " << pop[h].dim << "\n";
 		/*fout << "output: ";
 		for(unsigned int i =0;i<pop.at(h).output.size();++i)
 		{
@@ -673,12 +714,18 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.class_bool;
 		else if(varname.compare("class_m3gp")==0)
 			ss>>p.class_m3gp;
+		else if(varname.compare("class_prune")==0)
+			ss>>p.class_prune;
 		else if(varname.compare("number_of_classes")==0)
 			ss>>p.number_of_classes;
 		else if(varname.compare("elitism")==0)
 			ss>>p.elitism;
 		else if(varname.compare("stop_condition")==0)
 			ss>>p.stop_condition;
+		else if(varname.compare("mutate")==0)
+			ss>>p.mutate;
+		else if(varname.compare("print_novelty")==0)
+			ss>>p.print_novelty;
 		else{}
     }
 	p.allvars = p.intvars;
@@ -821,6 +868,8 @@ void load_params(params &p, std::ifstream& fs)
 	{
 		p.op_choice.push_back(10); // include seeds in operation choices
 		p.op_weight.push_back(1); // include opweight if used
+		p.op_list.push_back("seed");
+		p.op_arity.push_back(0);
 
 		for (int i=0; i<p.seeds.size();++i)
 		{
@@ -920,7 +969,7 @@ void load_data(data &d, std::ifstream& fs,params& p)
 		d.vals.push_back(vector<float>());
 		// get variable data
 		
-		while(ss2 >> tmpf && varcount<=d.label.size())
+		while(ss2 >> tmpf && cur_col<d_col.size())
 		{
 			if (varcount == d_col[cur_col]){ 
 				d.vals[rownum].push_back(tmpf);
@@ -952,8 +1001,37 @@ void load_data(data &d, std::ifstream& fs,params& p)
 		}
 	}
 	
-	
-
+	if (p.AR){ // make auto-regressive variables
+		// add data columns to d.vals 
+		int numvars = d.vals[0].size();
+		for (unsigned i = 0; i<p.AR_n; ++i){
+			for (unsigned j = 0; j<d.vals.size(); ++j){
+				for (unsigned k = 0; k<numvars;++k){
+					if(j>i) 
+						d.vals[j].push_back(d.vals[j-i-1][k]);
+					else 
+						d.vals[j].push_back(0.0);
+				}
+			}
+		}
+		// add data labels to d.label and p.allvars
+			int tmp = d.label.size();
+			for (unsigned i = 0; i<p.AR_n; ++i){ 
+				d.vals.erase(d.vals.begin()); // erase zero padding from data
+				d.target.erase(d.target.begin()); //erase zero padding from target
+				for (unsigned k=0; k<tmp;++k){ // add delay variable names
+					d.label.push_back(d.label[k] + "_" + to_string(static_cast<long long>(i+1)));
+					p.allvars.push_back(d.label[k] + "_" + to_string(static_cast<long long>(i+1)));
+				}
+			}
+			// load AR variables if necessary
+		
+			for (int i=0;i<p.AR_n;++i){
+				p.allvars.push_back(d.target_var + "_" + to_string(static_cast<long long>(i+1)));
+				d.label.push_back(d.target_var + "_" + to_string(static_cast<long long>(i+1)));
+			}
+		
+	}
 	//d.dattovar.resize(p.allvars.size());
 	//d.mapdata();
 }
@@ -1251,14 +1329,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	//if (p.sel == 3) load_lexdata(d,ds,p);
 	//else 
 	load_data(d,ds,p);
-	// load AR variables if necessary
-	if (p.AR)
-	{
-		for (int i=0;i<p.AR_n;++i){
-			p.allvars.push_back(d.target_var + to_string(static_cast<long long>(i)));
-			d.label.push_back(d.target_var + to_string(static_cast<long long>(i)));
-		}
-	}
+	
 	std::time_t t =  std::time(NULL);
     
 
@@ -1308,7 +1379,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		 exit(1);
 	 }
 	 std::ofstream dfout;
-	 initdatafile(dfout,logname);
+	 initdatafile(dfout,logname,p);
 	 s.out << "_______________________________________________________________________________ \n";
 	 s.out << "                                    ellenGP                                     \n";
 	 s.out << "_______________________________________________________________________________ \n";
