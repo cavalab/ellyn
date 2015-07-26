@@ -138,8 +138,9 @@ struct params {
 
 	// lexicase selection
 	float lexpool; // percent of population to use for lexicase selection events
-	bool lexage;// include age as case
+	bool lexage;// include age as meta-case
 	bool lex_class; // use class-based fitness objectives instead of raw error 
+	vector<string> lex_metacases; // extra cases to be used for lexicase selection
 
 	// ==== Printing Options === //
 	//print initial population

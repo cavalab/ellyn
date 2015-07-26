@@ -25,7 +25,7 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 			parloc.push_back(i);
 	}
 	std::random_shuffle(parloc.begin(),parloc.end(),r[omp_get_thread_num()]);
-	while(tmppop.size()<pop.size())
+	while(tmppop.size()<parloc.size())
 	{
 		
 		choice = r[omp_get_thread_num()].rnd_flt(0,1);
@@ -82,10 +82,10 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 		
 	}
 
-	while(tmppop.size()>pop.size())
+	while(tmppop.size()>parloc.size())
 		tmppop.pop_back();
 //    assert (tmppop.size()== p.popsize) ;
-	if (p.sel==4 || (p.sel==3 && p.lexage)) // insert new pop into old pop
+	if (p.sel==4) // insert new pop into old pop for pareto survival
 	{
 		//get tmppop fitness 
 		Fitness(tmppop,p,d,s,FE);

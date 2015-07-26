@@ -190,7 +190,7 @@ float std_dev(vector<float>& target,float& meantarget)
 	s = s/(target.size()-1);
 	return sqrt(s);
 }
-int getComplexity(vector<node>& line)
+int getComplexity(ind& me, params& p)
 {	
 	int complexity = 0;
 	/*for (int i = 0; i<line.size(); ++i){
@@ -199,16 +199,18 @@ int getComplexity(vector<node>& line)
 		}
 	}
 	return complexity;*/
-
+	if (p.classification && p.class_m3gp)
+		return me.dim;
+	
 	int a = 1;
-	int i = line.size()-1;
+	int i = me.line.size()-1;
 	while (a > 0 && i >= 0)
 	{
-		if (line[i].on && !line[i].intron){
+		if (me.line[i].on && !me.line[i].intron){
 			
-			complexity += line[i].c;
+			complexity += me.line[i].c;
 			--a;
-			a += line[i].arity_float;
+			a += me.line[i].arity_float;
 		}
 		--i;
 	}
@@ -449,7 +451,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 		//{
 		//	LexicaseFitness(pop.at(count),p,d,s,FE);
 		//}//LEXICASE FITNESS
-		pop.at(count).complexity= getComplexity(pop.at(count).line);
+		pop.at(count).complexity= getComplexity(pop.at(count),p);
 		/*if (p.estimate_generality && pop.at(count).genty != abs(pop[count].fitness-pop[count].fitness_v)/pop[count].fitness && pop.at(count).genty != p.max_fit) 
 			std::cerr << "genty error, line 300 Fitness.cpp\n";*/
 	}//for(int count = 0; count<pop.size(); ++count)
@@ -806,7 +808,7 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 		else
 			me.error.resize(0);
 	}
-	else if (p.sel==4 && p.PS_sel==4) // each class is an objective
+	else if (p.sel==4 && p.PS_sel>=4) // each class is an objective
 		me.error.assign(p.number_of_classes,0);
 
 	float var_target = 0;
@@ -997,11 +999,11 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 							else
 								me.error.push_back(1);
 						}
-						else if (p.sel==4 && p.PS_sel==4) // each class is an objective
+						else if (p.sel==4 && p.PS_sel>=4) // each class is an objective
 							++me.error[target[sim]];
 
 					}
-					else if (p.sel==3)
+					else if (p.sel==3 && !p.lex_class)
 						me.error.push_back(0);
 				//assign error
 				}
@@ -1135,7 +1137,7 @@ void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>
 		else
 			me.error.resize(0);
 	}
-	else if (p.sel==4 && p.PS_sel==4) // each class is an objective
+	else if (p.sel==4 && p.PS_sel>=4) // each class is an objective
 		me.error.assign(p.number_of_classes,0);
 
 	float SStot=0;
@@ -1229,10 +1231,10 @@ void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>
 								else
 									me.error.push_back(1);
 							}
-							else if (p.sel==4 && p.PS_sel==4) // each class is an objective
+							else if (p.sel==4 && p.PS_sel>=4) // each class is an objective
 								++me.error[target[sim]];
 						}
-						else
+						else if (p.sel==3 && !p.lex_class)
 							me.error.push_back(0);						
 					}
 					else //validation set
@@ -1633,7 +1635,7 @@ bool SlimFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE, int li
 
 	bool pass = getSlimFit(me,p,d,s,FE,linestart,orig_fit);
 	
-	me.complexity= getComplexity(me.line);
+	me.complexity= getComplexity(me,p);
 	s.numevals[omp_get_thread_num()]=s.numevals[omp_get_thread_num()]+1;
 	return pass;
 }

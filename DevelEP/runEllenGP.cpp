@@ -636,8 +636,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.eHC_slim;
 		else if(varname.compare("lexpool") == 0)
 			ss>>p.lexpool;
-		else if(varname.compare("lexage") == 0)
-			ss>>p.lexage;
+		/*else if(varname.compare("lexage") == 0)
+			ss>>p.lexage;*/ // removed lexage from input. it is now used internally for age as a metacase.
 		else if(varname.compare("prto_arch_on") == 0)
 			ss>>p.prto_arch_on;
 		else if(varname.compare("prto_arch_size") == 0)
@@ -726,6 +726,15 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.mutate;
 		else if(varname.compare("print_novelty")==0)
 			ss>>p.print_novelty;
+		else if(varname.compare("lex_metacases")==0)
+		{
+			while (ss>>tmps)
+				p.lex_metacases.push_back(tmps);
+		}
+		else if(varname.compare("lex_class")==0)
+		{
+			ss >> p.lex_class;
+		}
 		else{}
     }
 	p.allvars = p.intvars;
@@ -911,6 +920,14 @@ void load_params(params &p, std::ifstream& fs)
 
 	// set train pct to 1 if train is zero
 	if (!p.train) p.train_pct=1;
+
+	// add lexage flag if age is a metacase
+	p.lexage=false;
+	for (unsigned i = 0; i<p.lex_metacases.size(); ++i)
+	{	
+		if (p.lex_metacases[i].compare("age")==0)
+			p.lexage=true;
+	}
 }
 void load_data(data &d, std::ifstream& fs,params& p)
 {

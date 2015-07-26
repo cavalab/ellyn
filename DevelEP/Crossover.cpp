@@ -208,7 +208,7 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 	}
 	else if (p.cross == 3) // sub-tree-like crossover
 	{	
-		// NOT TESTED YET: UNDER DEVELOPMENT
+		
 		for (int r1=0; r1 < 2; ++r1)
 		{
 			if(r1==0)

@@ -27,6 +27,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		//if (p.loud ) fcout << "     Tournament...";
 		Tournament(pop,parloc,p,r);		
 
+		//elitism
 		ind best;
 		if (p.elitism){ // save best ind
 			vector<ind>::iterator it_add = std::min_element(pop.begin(),pop.end(),SortFit());
@@ -58,6 +59,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		//get mutation/crossover stats
 		s.setCrossPct(pop);
 
+		//elitism
 		if (p.elitism){ // replace worst ind with best ind
 			vector<ind>::iterator it_rm = std::max_element(pop.begin(),pop.end(),SortFit());
 			pop[it_rm-pop.begin()] = best;
@@ -86,10 +88,26 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 		}
 	case 3: // lexicase
 		{
+			
+			
+
 			vector<unsigned int> parloc(pop.size());
+
+			if (p.lexage) // if age is a metacase
+			{
+				// add one new individual
+				vector<ind> tmppop(1);
+				tmppop[0].age=0;
+				InitPop(tmppop,p,r);
+				Fitness(tmppop,p,d,s,FE);
+				pop.push_back(tmppop[0]);
+			}
+
+			
 			LexicaseSelect(pop,parloc,p,r,d);
 			//if (p.lex_age) vector<ind> tmppop(pop);
 
+			//elitism
 			ind best;
 			if (p.elitism){ // save (aggregate) best ind
 				vector<ind>::iterator it_add = std::min_element(pop.begin(),pop.end(),SortFit());
@@ -105,23 +123,13 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s
 					EpiMut(pop.at(i),p,r);
 			}
 
-			if (!p.lexage)
-			{
-				Fitness(pop,p,d,s,FE);
-				//get mutation/crossover stats
-				s.setCrossPct(pop);
-			}
-			else
-			{
-				// add one new individual
-				vector<ind> tmppop(1);
-				tmppop[0].age=0;
-				InitPop(tmppop,p,r);
-				Fitness(tmppop,p,d,s,FE);
-				pop.push_back(tmppop[0]);
-				// select new population with tournament size 2, based on pareto age-fitness
-				ParetoSurvival(pop,p,r,s);
-			}
+			// EDIT: this should be updated. "lexage" is confusing. in future release this will be 
+			// changed to something different
+			Fitness(pop,p,d,s,FE);
+			//get mutation/crossover stats
+			s.setCrossPct(pop);
+			
+			//elitism
 			if (p.elitism){ // replace (aggregate) worst ind with (aggregate) best ind
 				vector<ind>::iterator it_rm = std::max_element(pop.begin(),pop.end(),SortFit());
 				pop[it_rm-pop.begin()] = best;

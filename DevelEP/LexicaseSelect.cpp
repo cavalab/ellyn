@@ -10,14 +10,28 @@
 
 void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r,data& d)
 {
+	// add metacases if needed
+	for (unsigned i = 0; i<p.lex_metacases.size(); ++i)
+	{	
+		if (p.lex_metacases[i].compare("age")==0){
+			for (unsigned j=0;j<pop.size(); ++j) 
+				pop[j].error.push_back(pop[j].age);
+		}
+		else if (p.lex_metacases[i].compare("complexity")==0){
+			for (unsigned j=0;j<pop.size(); ++j) 
+				pop[j].error.push_back(pop[j].complexity);
+		}
+	}
 	//boost::progress_timer timer;
 	//vector<float> fitcompare;
 	vector<int> pool; // pool from which to choose parent. normally it is set to the whole population.
 	int numcases;
-	if (p.EstimateFitness)
-		numcases = p.FE_ind_size*p.train_pct;
+	if (p.lex_class)
+		numcases = p.number_of_classes + p.lex_metacases.size();
+	else if (p.EstimateFitness)
+		numcases = p.FE_ind_size*p.train_pct + p.lex_metacases.size();
 	else
-		numcases = d.vals.size()*p.train_pct;
+		numcases = d.vals.size()*p.train_pct + p.lex_metacases.size();
 	
 	if (p.lexpool==1){
 		for (int i=0;i<pop.size();++i){
@@ -37,11 +51,13 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 	int h;
 	
 	int tmp;
-	for (int i=0;i<pop.size();++i)
+	// for each selection event:
+	for (int i=0;i<parloc.size();++i)
 	{
 		//shuffle test cases
 		std::random_shuffle(case_order.begin(),case_order.end(),r[omp_get_thread_num()]);
 		
+		// select a subset of the population if lexpool is being used
 		if (p.lexpool!=1){
 			for (int j=0;j<p.lexpool*pop.size();++j){
 				tmp = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
@@ -50,18 +66,19 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 				pool.push_back(tmp);
 			}
 		}
-		else 
+		else //otherwise use the whole population for selection
 			pool = starting_pool;
 
 		pass=true;
 		h=0;
 		
-		while ( pass && h<case_order.size())
+		while ( pass && h<case_order.size()) //while there are remaining cases and more than 1 unique choice
 		{
 			//reset winner and minfit for next case
 			winner.resize(0);
 			minfit=p.max_fit;
 
+			// loop through the individuals and pick out the elites
 			for (int j=0;j<pool.size();++j)
 			{
 				
@@ -81,6 +98,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 				//}
 
 			}
+			// if there is more than one elite individual and still more cases to consider
 			if(winner.size()>1 && h<case_order.size()-1) 
 			{
 				pass=true;
@@ -90,20 +108,20 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 				
 				/*for (int i=0; i<fitindex.size();++i)
 					fitcompare.push_back(pop.at(fitindex[i]).error[case_order[h]]);*/
-			}
+			} // otherwise, a parent has been chosen or has to be chosen randomly from the remaining pool
 			else 
 				pass=false;
 		}
-		//get lowest fitness, return pop.at(fitindex.at(lowest)).id
+		//if more than one winner, pick randomly
 		if(winner.size()>1)
 			parloc[i]=winner[r[omp_get_thread_num()].rnd_int(0,winner.size()-1)];
-		else if (winner.size()==1)
+		else if (winner.size()==1) // otherwise make the winner a parent
 			parloc[i]=winner[0];
 		/*else if (winner.empty())
 			parloc[i]=pool[r[omp_get_thread_num()].rnd_int(0,pool.size()-1)];*/
-		else
+		else // otherwise throw an ??
 			cout << "??";
-
+		// reset minfit
 		minfit=p.max_fit;
 	}//for (int i=0;i<pop.size();++i)
 
