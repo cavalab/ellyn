@@ -99,7 +99,7 @@ struct params {
 	int max_len;
 	int max_len_init; // initial max len
 
-	int complex_measure; // 1: genotype size; 2: symbolic size; 3: effective genotype size
+	int complex_measure; // currently not used
 
 
 	// Hill Climbing Settings
@@ -138,7 +138,7 @@ struct params {
 
 	// lexicase selection
 	float lexpool; // percent of population to use for lexicase selection events
-	bool lexage;// include age as meta-case
+	bool lexage;// currently not used; up for deletion
 	bool lex_class; // use class-based fitness objectives instead of raw error 
 	vector<string> lex_metacases; // extra cases to be used for lexicase selection
 
