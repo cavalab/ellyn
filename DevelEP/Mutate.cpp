@@ -72,9 +72,13 @@ void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)
 			}
 			//else if (p.classification && p.class_m3gp) //just add tree to end				
 			//	action = 3;
-			else
+			else{
 				pt1 = r[omp_get_thread_num()].rnd_int(0,kid[0].line.size()-1);
-				
+				if(kid[0].line.size()<p.max_len)
+					action = 2;
+				else
+					action = r[omp_get_thread_num()].rnd_int(1,2);
+			}
 
 			if (action!=3){
 				end1 = pt1;

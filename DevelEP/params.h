@@ -134,7 +134,7 @@ struct params {
 	int island_gens;
 	int nt; // number of threads
 
-	int seed;
+	//int seed;
 
 	// lexicase selection
 	float lexpool; // percent of population to use for lexicase selection events
@@ -184,8 +184,8 @@ struct params {
 		rt_mut=0.2;
 		cross_ar=0.025; //crossover alternation rate
 		mut_ar=0.025;
-		cross=2; // 1: ultra; 2: one point
-		mutate=1;
+		cross=3; // 1: ultra; 2: one point; 3: subtree
+		mutate=2; // 1: one point; 2: subtree
 		align_dev = 0;
 		elitism = 0;
 
@@ -215,6 +215,8 @@ struct params {
 		print_genome = 0;
 		// print csv files of epigenome each print cycle
 		print_epigenome = 0;
+		// print number of unique output vectors
+		print_novelty = 0;
 
 		// ============ Fitness settings
 		fit_type = 1; // 1: error, 2: corr, 3: combo
@@ -249,6 +251,7 @@ struct params {
 
 		complex_measure=1; // 1: genotype size; 2: symbolic size; 3: effective genotype size
 
+		weight_ops_on=0;
 
 		// Hill Climbing Settings
 
@@ -281,7 +284,7 @@ struct params {
 		island_gens = 100;
 		nt = 1;
 
-		seed = 0;
+		//seed = 0;
 
 		// lexicase selection
 		lexpool = 1;

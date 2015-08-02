@@ -74,8 +74,8 @@ tourn_size				|	2		|	number  of individuals in each tournament
 rt_rep					|	0		|	rate of reproduction
 rt_cross				|	0.8		|	rate of crossover
 rt_mut					|	0.2		|	rate of mutation
-cross					|	2		|	 1: ultra 2: one point1 3: sub-tree
-mutate					|	1		|	1: point mutation; 2: subtree mutation
+cross					|	3		|	 1: ultra 2: one point1 3: sub-tree
+mutate					|	2		|	1: point mutation; 2: subtree mutation
 cross_ar				|	0.025	|	 crossover alternation rate (ultra only)
 mut_ar					|	0.025	|	mutation alternation rate 
 align_dev				|	0		|	 on or off; adds gaussian alignment deviation to crossover 
@@ -92,6 +92,8 @@ pop_restart_path		|	""		|	filename of restart population with path
 resultspath				|	""		|	path where results are saved
 print_every_pop			|	0		|	  save printout of population at every generation
 print_genome			|	0		|	prints genome for visualization in paraview
+print_novelty			|	0		|	print number of unique output vectors
+print_homology			|	0		|	print genetic homology in programs		
 num_log_pts				|	0		|	number of log points to print (0 means print each generation)
 ||	Classification Options	
 classification			|	0		|	defines a classification, rather than regression, problem
@@ -100,14 +102,13 @@ class_m3gp				|	0		|	use mahalanobis distance classification fitness
 class_prune				|	0		| 	prunes the dimensions of the best individual each generation
 ||	Problem information	
 intvars					|	none	|	variables in data file to use in programs
-cons     				|	none	|	constants to use
-cvals					|	none	|	values of constants defined in cons
-seeds					|	none	|	seed partial solutions
+cvals					|	none	|	seed the initial population with certain constant values 
+seeds					|	none	|	seed partial solutions, e.g. (x+y)
 AR						|	0		|	include auto-regressive output variables
 AR_n 					|	1		|	  order of auto-regression (number of time-steps back)
 AR_lookahead			|	0		|	 just predict one output ahead
 ERC						|	1		|	 ephemeral random constants
-ERCints					|	0		|	
+ERCints					|	0		|	make the ERCs integer valued rather than floats
 maxERC					|	1		|	
 minERC					|	-1		|	
 numERC					|	1		|	
