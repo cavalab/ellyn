@@ -67,7 +67,7 @@ op_list				n	v	+	-	*	/
 op_weight			4	4	1	1	1	1				
 weight_ops_on		1
 min_len				3
-max_len				10
+max_len				100
 init_trees			1  // initialize genotypes as syntactically valid trees rather than randomized stacks
 
 complex_measure		2	// 1: genotype size 2: symbolic size 3: effective genotype size
@@ -84,8 +84,8 @@ pHC_its				1
 pHC_gauss			1
 
 // epigenetic Hill Climber
-eHC_on				0
-eHC_its				0
+eHC_on				1
+eHC_its				1
 eHC_prob			0.1
 eHC_size			1
 eHC_init			.50 // percent of expressed genes in initial genotypes

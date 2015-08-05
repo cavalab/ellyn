@@ -184,8 +184,8 @@ struct params {
 		rt_mut=0.2;
 		cross_ar=0.025; //crossover alternation rate
 		mut_ar=0.025;
-		cross=3; // 1: ultra; 2: one point; 3: subtree
-		mutate=2; // 1: one point; 2: subtree
+		cross=1; // 1: ultra; 2: one point; 3: subtree
+		mutate=1; // 1: one point; 2: subtree
 		align_dev = 0;
 		elitism = 0;
 

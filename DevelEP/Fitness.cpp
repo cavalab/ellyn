@@ -190,6 +190,26 @@ float std_dev(vector<float>& target,float& meantarget)
 	s = s/(target.size()-1);
 	return sqrt(s);
 }
+
+int recComplexity(vector<node>& line,int i)
+{
+	int added = 0;
+	if (line[i].arity_float == 0)
+		return line[i].c;
+	else{
+		int comp = 0; 
+		while (added<line[i].arity_float){
+			if (line[i].on && !line[i].intron && i>0){
+					++added;
+					comp += line[i].c * recComplexity(line,i-added);			
+			}
+			else
+				--i;
+		}
+		comp += line[i].c;
+		return comp;
+	}
+}
 int getComplexity(ind& me, params& p)
 {	
 	int complexity = 0;
@@ -204,7 +224,7 @@ int getComplexity(ind& me, params& p)
 	
 	int a = 1;
 	int i = me.line.size()-1;
-	while (a > 0 && i >= 0)
+	/*while (a > 0 && i >= 0)
 	{
 		if (me.line[i].on && !me.line[i].intron){
 			
@@ -213,9 +233,11 @@ int getComplexity(ind& me, params& p)
 			a += me.line[i].arity_float;
 		}
 		--i;
-	}
+	}*/
+	complexity = recComplexity(me.line,i);
 	return complexity;
 }
+
 //int getComplexity(string& eqn)
 //{
 //	int complexity=0;
@@ -343,9 +365,9 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 				stack_float.push_back(0);
 			else 
 				// safe log of absolute value of n1
-				//stack_float.push_back(log(abs(n1)));
+				stack_float.push_back(log(abs(n1)));
 				// unsafe log of real value
-				stack_float.push_back(log(n1));
+				//stack_float.push_back(log(n1));
 			break;
 		case 'q':
 			n1 = stack_float.back(); stack_float.pop_back();
@@ -451,7 +473,10 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 		//{
 		//	LexicaseFitness(pop.at(count),p,d,s,FE);
 		//}//LEXICASE FITNESS
-		pop.at(count).complexity= getComplexity(pop.at(count),p);
+		if (pop[count].eqn.compare("unwriteable")==0)
+			pop[count].complexity=p.max_fit;
+		else
+			pop.at(count).complexity= getComplexity(pop.at(count),p);
 		/*if (p.estimate_generality && pop.at(count).genty != abs(pop[count].fitness-pop[count].fitness_v)/pop[count].fitness && pop.at(count).genty != p.max_fit) 
 			std::cerr << "genty error, line 300 Fitness.cpp\n";*/
 	}//for(int count = 0; count<pop.size(); ++count)
@@ -578,7 +603,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 			int k_eff=0;
 
 			for (unsigned int j=0; j<p.allvars.size()-p.AR_n;++j) //wgl: add time delay of output variable here 
-				dattovar.at(j)= vals[sim][j];
+				dattovar.at(j) = vals[sim][j]; // can we replace this with a pointer to the data so we don't have to copy the whole thing every time?
 			if (p.AR){ // auto-regressive output variables
 				int ARstart = p.allvars.size()-p.AR_n; 
 				for (unsigned int h=0; h<p.AR_n; ++h){
