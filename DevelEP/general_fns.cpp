@@ -5,6 +5,11 @@
 #include "data.h"
 #include <locale>
 
+float round(float d)
+{
+  return floor(d + 0.5);
+}
+
 void find_root_nodes(vector<node>& line, vector<unsigned>& roots)
 {
 	// find "root" nodes of floating point program, where roots are final values that output something directly to the stack

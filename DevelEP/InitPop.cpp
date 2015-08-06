@@ -15,10 +15,7 @@ using namespace std;
 		calculate fitness
 */
 
-float round(float d)
-{
-  return floor(d + 0.5);
-}
+
 void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 {
 	//boost::progress_timer timer;

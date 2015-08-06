@@ -5,8 +5,9 @@
 #include "data.h"
 #include "general_fns.h"
 #include "InitPop.h"
+#include "general_fns.h"
 
-void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)
+void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, data& d)
 {
 	vector<unsigned int> ichange;
 	vector<ind> kid(1,par);
@@ -15,7 +16,7 @@ void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)
 	kid[0].parentfitness=par.fitness;
 	kid[0].clrPhen();
 		
-	if (p.mutate==1){
+	if (p.mutate==1){ // point mutation
 		for(unsigned int i = 0;i<kid[0].line.size();++i)
 		{
 			if(r[omp_get_thread_num()].rnd_flt(0,1)<=p.mut_ar)
@@ -42,7 +43,6 @@ void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)
 				MutInstruction(kid[0],ichange.at(j),p,r,d);
 				//inherit epigenetic state of gene location
 				kid[0].line.at(ichange.at(j)).on=onstate;
-
 			}
 		}
 	}
@@ -73,11 +73,20 @@ void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)
 			//else if (p.classification && p.class_m3gp) //just add tree to end				
 			//	action = 3;
 			else{
-				pt1 = r[omp_get_thread_num()].rnd_int(0,kid[0].line.size()-1);
-				if(kid[0].line.size()<p.max_len)
+				// choose action
+				if(kid[0].line.size()<p.min_len) // if kid is small, make a swap
 					action = 2;
 				else
 					action = r[omp_get_thread_num()].rnd_int(1,2);
+				// choose point of mutation
+				if (action==1){ // if deletion, don't choose the head
+					int tmp = 2;
+					while (!kid[0].line[kid[0].line.size()-tmp].on) 
+						--tmp;
+					pt1 = r[omp_get_thread_num()].rnd_int(0,kid[0].line.size()-tmp);
+				}
+				else if (action==2)
+					pt1 = r[omp_get_thread_num()].rnd_int(0,kid[0].line.size()-1);
 			}
 
 			if (action!=3){
@@ -87,8 +96,7 @@ void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)
 				{
 					--pt1;
 					--sum_arity;
-					sum_arity+=kid[0].line[pt1].arity_float;
-				
+					sum_arity+=kid[0].line[pt1].arity_float;				
 				}
 				begin1 = pt1;
 			}
@@ -97,11 +105,11 @@ void Mutate(ind& par,vector<ind>& tmppop,params& p,vector<Randclass>& r,data& d)
 			else{ // create new subtree
 				vector<node> st; 
 				int linelen;
-				if (action==3){
+				if (action==3){ // add a tree that does not violate max program size
 					linelen = r[omp_get_thread_num()].rnd_int(1,p.max_len-kid[0].line.size());
 				}
-				else 
-					linelen = r[omp_get_thread_num()].rnd_int(1,end1-(begin1-1));
+				else // swap tree with one within a normal distribution of the current tree size with std dev = 1/2 tree size
+					linelen = std::max(1, end1-(begin1-1) + int(round(r[omp_get_thread_num()].gasdev() * 0.5 * (end1-(begin1-1)))));
 					//linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len-kid[0].line.size()+end1-(begin1-1));
 				
 
