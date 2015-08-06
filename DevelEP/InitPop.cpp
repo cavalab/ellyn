@@ -43,7 +43,7 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 		else{ // init trees
 			int linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len_init);
 			if (p.eHC_on){
-				int onlen = int(linelen*p.eHC_init);
+				int onlen = max(p.min_len, int(linelen*p.eHC_init));
 				makeline_rec(pop.at(i).line,p,r,onlen);
 				int offlen = linelen-onlen;
 				for (int j=0;j<offlen;++j){
@@ -89,7 +89,7 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 		pop.at(i).origin = 'i';
 		
 		assert(!pop.at(i).line.empty());
-
+		//assert(pop[i].line.size() >= p.min_len);
 
 	}
 	//cout <<"\nInit Pop time: ";

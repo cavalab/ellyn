@@ -74,10 +74,11 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, data
 			//	action = 3;
 			else{
 				// choose action
-				if(kid[0].line.size()<p.min_len) // if kid is small, make a swap
-					action = 2;
-				else
-					action = r[omp_get_thread_num()].rnd_int(1,2);
+				action = 2;
+				//if(kid[0].line.size()<p.min_len) // if kid is small, make a swap
+				//	action = 2;
+				//else
+				//	action = r[omp_get_thread_num()].rnd_int(1,2);
 				// choose point of mutation
 				if (action==1){ // if deletion, don't choose the head
 					int tmp = 2;
@@ -100,7 +101,7 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, data
 				}
 				begin1 = pt1;
 			}
-			if(action==1)// delete subtree
+			if(action==1 && kid[0].line.size()-(end1-(begin1-1)) >= p.min_len)// delete subtree
 				kid[0].line.erase(kid[0].line.begin()+begin1,kid[0].line.begin()+end1+1);
 			else{ // create new subtree
 				vector<node> st; 
@@ -108,12 +109,22 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, data
 				if (action==3){ // add a tree that does not violate max program size
 					linelen = r[omp_get_thread_num()].rnd_int(1,p.max_len-kid[0].line.size());
 				}
-				else // swap tree with one within a normal distribution of the current tree size with std dev = 1/2 tree size
-					linelen = std::max(1, end1-(begin1-1) + int(round(r[omp_get_thread_num()].gasdev() * 0.5 * (end1-(begin1-1)))));
+				else{ // swap tree with one within a normal distribution of the current tree size with std dev = 1/2 tree size
+					linelen = std::max(p.min_len - (int(kid[0].line.size()) - (end1-(begin1-1))), end1-(begin1-1) + int(round(r[omp_get_thread_num()].gasdev() * 0.5 * (end1-(begin1-1)))));
+					// new tree should at least result in the size of the final tree being the minimum length
+					//linelen = std::max(linelen, );
+
+				}
 					//linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len-kid[0].line.size()+end1-(begin1-1));
 				
-
+				int tmp = p.min_len - (int(kid[0].line.size()) - (end1-(begin1-1)));
+				
 				makeline_rec(st,p,r,linelen);
+				while (st.size()+(int(kid[0].line.size()) - (end1-(begin1-1))) < p.min_len){
+					++linelen;
+					st.clear();
+					makeline_rec(st,p,r,linelen);
+				}
 
 				if (action==2){ // swap new subtree
 					kid[0].line.erase(kid[0].line.begin()+begin1,kid[0].line.begin()+end1+1);
@@ -121,8 +132,11 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, data
 				}
 			    else if (action==3) // add tree to end (m3gp only)
 					kid[0].line.insert(kid[0].line.end(),st.begin(),st.end());
-			}
 
+				//assert(kid[0].line.size() >= p.min_len);
+			}
+			
+			
 	}
 	
 	tmppop.push_back(kid[0]);

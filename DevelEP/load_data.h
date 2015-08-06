@@ -49,8 +49,10 @@ void load_data(data &d, std::ifstream& fs,params& p)
 		pass=0;
 		index=0;
 	}
-	if (useall) // assign data labels to p.allvars
+	if (useall){ // assign data labels to p.allvars
 		p.allvars = d.label;
+		p.allblocks = d.label;
+	}
 	int varcount=0;
 	int cur_col=0;
 	vector<int> shuffler;

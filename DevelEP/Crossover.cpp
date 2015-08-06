@@ -275,6 +275,8 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 	//	cout << "size mismatch" << endl;
 	assert(~kids[0].line.empty() && ~kids[1].line.empty());
 		
+	/*assert(kids[0].line.size() >= p.min_len);
+	assert(kids[1].line.size() >= p.min_len);*/
 
 	tmpinssize=0;
 

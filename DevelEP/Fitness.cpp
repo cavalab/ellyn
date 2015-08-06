@@ -193,6 +193,9 @@ float std_dev(vector<float>& target,float& meantarget)
 
 int recComplexity(vector<node>& line,int i)
 {
+	while (!line[i].on || line[i].intron) 
+		--i;
+
 	int added = 0;
 	if (line[i].arity_float == 0)
 		return line[i].c;
