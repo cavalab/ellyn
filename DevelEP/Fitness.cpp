@@ -375,10 +375,7 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 		case 'q':
 			n1 = stack_float.back(); stack_float.pop_back();
 			// safe sqrt of absolute value of n1
-			if (n1<0)
-				stack_float.push_back(0);
-			else
-				stack_float.push_back(sqrt(n1));
+			stack_float.push_back(sqrt(abs(n1));
 			break;
 		case '=': // equals			
 			n1 = stack_float.back(); stack_float.pop_back();

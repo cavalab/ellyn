@@ -120,6 +120,7 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, data
 				int tmp = p.min_len - (int(kid[0].line.size()) - (end1-(begin1-1)));
 				
 				makeline_rec(st,p,r,linelen);
+				// if the subtree is too small, make it bigger
 				while (st.size()+(int(kid[0].line.size()) - (end1-(begin1-1))) < p.min_len){
 					++linelen;
 					st.clear();
