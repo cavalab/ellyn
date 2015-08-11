@@ -289,6 +289,8 @@ void load_params(params &p, std::ifstream& fs)
 		{
 			ss >> p.lex_class;
 		}
+		else if(varname.compare("weight_error")==0)
+			ss >> p.weight_error;
 		else{}
     }
 	p.allvars = p.intvars;

@@ -87,7 +87,8 @@ struct params {
 	bool norm_error; // normalize fitness by the standard deviation of the target output
 	float max_fit;
 	float min_fit;
-
+	bool weight_error; // weight error vector by predefined weights from data file
+	vector<float> error_weight; // vector of error weights
 	// Operator Settings
 	vector <string> op_list;
 	vector <int> op_choice; // map op list to pointer location in makeline() pointer function
@@ -221,8 +222,10 @@ struct params {
 		// ============ Fitness settings
 		fit_type = 1; // 1: error, 2: corr, 3: combo
 		norm_error = 0 ; // normalize fitness by the standard deviation of the target output
+		weight_error = 0; // weight error vector by predefined weights from data file
 		max_fit = 1.0E20;
 		min_fit = 0.00000000000000000001;
+		
 		// Fitness estimators
 		EstimateFitness=0; 
 		FE_pop_size=0;

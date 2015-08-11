@@ -375,7 +375,7 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 		case 'q':
 			n1 = stack_float.back(); stack_float.pop_back();
 			// safe sqrt of absolute value of n1
-			stack_float.push_back(sqrt(abs(n1));
+			stack_float.push_back(sqrt(abs(n1)));
 			break;
 		case '=': // equals			
 			n1 = stack_float.back(); stack_float.pop_back();
@@ -652,7 +652,11 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 				if ((p.train && sim<ndata_t) || (!p.train)){
 						me.output.push_back(stack_float.back());						
 						
-						me.abserror += abs(target.at(sim)-me.output.at(sim));
+						if (p.weight_error)
+							me.abserror += p.error_weight[sim]*abs(target.at(sim)-me.output.at(sim));
+						else
+							me.abserror += abs(target.at(sim)-me.output.at(sim));
+
 						if (p.sel==3) // lexicase error vector
 							me.error.push_back(abs(target.at(sim)-me.output.at(sim)));						
 						
@@ -663,7 +667,10 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 					{
 						me.output_v.push_back(stack_float.back());
 
-						me.abserror_v += abs(target[sim]-me.output_v[sim-ndata_t]);
+						if(p.weight_error)
+							me.abserror_v += p.error_weight[sim]*abs(target[sim]-me.output_v[sim-ndata_t]);
+						else
+							me.abserror_v += abs(target[sim]-me.output_v[sim-ndata_t]);
 						
 						meantarget_v += target.at(sim);
 						meanout_v += me.output_v[sim-ndata_t];

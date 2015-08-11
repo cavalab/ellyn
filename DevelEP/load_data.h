@@ -27,7 +27,7 @@ void load_data(data &d, std::ifstream& fs,params& p)
 	// if intvars is not specified, set it to all variables in data file
 	if (p.allvars.empty())
 		useall = true;
-	
+	int w_index = 0;
 	while (ss>>tmps)
 	{
 		while (!pass && (useall || index<p.allvars.size()))
@@ -36,6 +36,13 @@ void load_data(data &d, std::ifstream& fs,params& p)
 			{
 				d.label.push_back(tmps); // populate data labels from all vars based on column location
 				pass=1;
+				d_col.push_back(d_index);
+				++d_index;
+			}
+			else if (p.weight_error && tmps.compare("weights")==0)
+			{
+				pass=1;
+				w_index = d_index;
 				d_col.push_back(d_index);
 				++d_index;
 			}
@@ -73,7 +80,10 @@ void load_data(data &d, std::ifstream& fs,params& p)
 		while(ss2 >> tmpf && cur_col<d_col.size())
 		{
 			if (varcount == d_col[cur_col]){ 
-				d.vals[rownum].push_back(tmpf);
+				if (p.weight_error && varcount==w_index)				
+					p.error_weight.push_back(tmpf);				
+				else
+					d.vals[rownum].push_back(tmpf);
 				++cur_col;
 			}
 			++varcount;

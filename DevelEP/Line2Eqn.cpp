@@ -10,12 +10,14 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
 	vector<string> form_floatstack;
 	vector<string> form_boolstack;
 	string s1,s1f,s2,s2f,b1,b1f,b2,b2f;
+	int num_cons=0;
 	for(unsigned int i=0;i<line.size();++i)
 	{
 		if(line.at(i).on){
 			if(line.at(i).type=='n'){
 				eqn_floatstack.push_back(to_string(static_cast<long double>(line.at(i).value)));
-				form_floatstack.push_back("n");
+				form_floatstack.push_back("n_" + to_string(static_cast<long double>(num_cons)));
+				++num_cons;
 			}
 			else if(line.at(i).type=='v'){
 				eqn_floatstack.push_back(line.at(i).varname);
