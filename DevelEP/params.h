@@ -169,7 +169,8 @@ struct params {
 
 	// stop condition
 	bool stop_condition; 
-
+	//print protected operators
+	bool print_protected_operators;
 	// number of threads
 	params(){ //default values
 		g=100; // number of generations (limited by default)
@@ -306,6 +307,8 @@ struct params {
 		number_of_classes=1; //for use with multiclass
 
 		stop_condition=1;
+
+		print_protected_operators = 0;
 	}
 	~params(){}
 

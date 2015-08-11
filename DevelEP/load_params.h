@@ -291,6 +291,8 @@ void load_params(params &p, std::ifstream& fs)
 		}
 		else if(varname.compare("weight_error")==0)
 			ss >> p.weight_error;
+		else if(varname.compare("print_protected_operators")==0)
+			ss >> p.print_protected_operators;
 		else{}
     }
 	p.allvars = p.intvars;

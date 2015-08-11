@@ -31,7 +31,10 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
 					
 					switch (line.at(i).type){
 					case 'l':
-						sop="log";
+						if (p.print_protected_operators)
+							sop = "logs";
+						else
+							sop="log";
 						break;
 					case 's':
 						sop="sin";
@@ -43,7 +46,10 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
 						sop="exp";
 						break;
 					case 'q':
-						sop="sqrt";
+						if (p.print_protected_operators)
+							sop = "sqrts";
+						else
+							sop="sqrt";
 						break;
 					case '{':
 						sop = "<=";
@@ -101,7 +107,11 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
 							form_floatstack.push_back(sop + "("+b1f+","+s1f+")");
 						}
 						else if (line[i].arity_float==2 && line[i].arity_bool==0){
-							eqn_floatstack.push_back("("+s2+sop+s1+")");
+							if (p.print_protected_operators && line[i].type=='/'){
+								eqn_floatstack.push_back("divs("+s2+","+s1+")");
+							}
+							else
+								eqn_floatstack.push_back("("+s2+sop+s1+")");
 							form_floatstack.push_back("("+s2f+sop+s1f+")");
 						}
 						else if (line[i].arity_float==2 && line[i].arity_bool==1){
