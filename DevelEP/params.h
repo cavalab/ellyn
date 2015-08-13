@@ -145,10 +145,8 @@ struct params {
 
 	// ==== Printing Options === //
 	//print initial population
-	bool print_init_pop;
-	// print homology 
-	bool print_homology;
-	
+	bool print_init_pop; 
+	bool print_homology; // print homology
 	bool print_log; //print log
 	bool print_every_pop; // print pop every generation
 	bool print_genome; // print genome every generation
