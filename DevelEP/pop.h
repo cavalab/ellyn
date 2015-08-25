@@ -34,9 +34,11 @@ struct ind {
 	std::vector<float> stack_float; // linearized stack_float
 	std::vector<int> dominated; //for spea2 strength
 	std::vector<MatrixXf> C; // covariance matrices for M3GP
-	MatrixXf M; // centroids for M3GP
+	
 	std::string eqn;
 	std::string eqn_form; // equation form for string distance comparison to other forms	
+
+	MatrixXf M; // centroids for M3GP
 	float abserror;
 	float abserror_v;
 	float corr;
@@ -100,10 +102,11 @@ struct ind {
 		error.swap(s.error);
 		f.swap(s.f);
 		stack_floatlen.swap(s.stack_floatlen);
-		stack_float.swap(s.stack_float);		
+		stack_float.swap(s.stack_float);	
+		dominated.swap(dominated);
 		C.swap(s.C);
 		
-		dominated.swap(dominated);
+		
 		eqn.swap(s.eqn);						// strings
 		eqn_form.swap(s.eqn_form);
 

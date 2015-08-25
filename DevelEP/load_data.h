@@ -96,6 +96,7 @@ void load_data(data &d, std::ifstream& fs,params& p)
 	while(d.vals.back().empty())
 	{
 		d.vals.pop_back();
+		d.target.pop_back();
 	}
 
 	if (p.classification){
@@ -145,6 +146,7 @@ void load_data(data &d, std::ifstream& fs,params& p)
 	}
 	//d.dattovar.resize(p.allvars.size());
 	//d.mapdata();
+	assert(d.target.size() == d.vals.size());
 }
 
 #endif
