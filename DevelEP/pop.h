@@ -37,7 +37,7 @@ struct ind {
 	
 	std::string eqn;
 	std::string eqn_form; // equation form for string distance comparison to other forms	
-
+	std::string eqn_matlab; // equation for matlab (elementwise and protected operators)
 	MatrixXf M; // centroids for M3GP
 	float abserror;
 	float abserror_v;
@@ -109,6 +109,7 @@ struct ind {
 		
 		eqn.swap(s.eqn);						// strings
 		eqn_form.swap(s.eqn_form);
+		eqn_matlab.swap(s.eqn_matlab);
 
 		using std::swap;
 
@@ -184,6 +185,7 @@ struct sub_ind
 	float corr_v;
 	float VAF_v;
 	string eqn;
+	string eqn_matlab;
 	int age;
 	int complexity;
 	int dim;
@@ -197,6 +199,7 @@ struct sub_ind
 		VAF = x.VAF;
 		VAF_v = x.VAF_v;
 		eqn = x.eqn; 
+		eqn_matlab = x.eqn_matlab;
 		age=x.age; 
 		complexity = x.complexity;
 		dim = x.dim;

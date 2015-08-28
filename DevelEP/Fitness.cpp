@@ -458,7 +458,14 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 	//#pragma omp parallel for private(e)
 	for(int count = 0; count<pop.size(); ++count)
 	{
-		pop.at(count).eqn = Line2Eqn(pop.at(count).line,pop.at(count).eqn_form,p);
+		if (p.print_protected_operators){
+			pop.at(count).eqn_matlab = Line2Eqn(pop.at(count).line,pop.at(count).eqn_form,p);
+			p.print_protected_operators = false;
+			pop.at(count).eqn = Line2Eqn(pop.at(count).line,pop.at(count).eqn_form,p);
+			p.print_protected_operators = true;
+		}
+		else
+			pop.at(count).eqn = Line2Eqn(pop.at(count).line,pop.at(count).eqn_form,p);
 		//getEqnForm(pop.at(count).eqn,pop.at(count).eqn_form);
 		
 		pop.at(count).eff_size = getEffSize(pop.at(count).line);

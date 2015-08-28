@@ -75,10 +75,14 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
 					case '*':
 						if (p.print_protected_operators)
 							sop=".*";
+						else
+							sop="*";
 						break;
 					case '^':
 						if (p.print_protected_operators)
 							sop=".^";
+						else
+							sop="^";
 						break;
 					default:
 						sop = string(&line[i].type);

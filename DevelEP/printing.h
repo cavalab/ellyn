@@ -59,12 +59,12 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 			fout << best.C[i] << "\n";
 		}	
 	}
-	/*fout << "output: ";
+	fout << "output:\n";
 	for(unsigned int i =0;i<best.output.size();++i)
 	{
-		fout << best.output.at(i) << " ";
+		fout << best.output.at(i) << "\n";
 	}
-	fout<<"\n";*/
+	//fout<<"\n";
 }
 void initdatafile(std::ofstream& dfout,string & logname,params& p)
 {
@@ -79,6 +79,8 @@ void initdatafile(std::ofstream& dfout,string & logname,params& p)
 		dfout << "\t dimension" ;
 	if (p.print_novelty)
 		dfout << "\t novelty" ;
+	if (p.print_protected_operators)
+		dfout << "\t best_eqn_matlab";
 	dfout << "\n";
 	//fout.close(dataname);
 }
@@ -105,6 +107,8 @@ void printdatafile(tribe& T,state& s,params& p, vector<Randclass>& r,std::ofstre
 		T.novelty(novelty);
 		dfout << "\t" << novelty;
 	}
+	if (p.print_protected_operators)
+		dfout << "\t " + best_ind.eqn_matlab;
 
 	dfout <<"\n";
 
