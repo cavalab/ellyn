@@ -199,25 +199,27 @@ int recComplexity(vector<node>& line,int i, int &j)
 	j = i;
 	int added = 0;
 	if (line[i].arity_float == 0){
-		cout << line[i].c ;
+		//cout << line[i].c ;
 		return line[i].c;
 	}
 	else{
 		int comp = 0; 
 		while (added<line[i].arity_float){
-			if (line[i].on && !line[i].intron && i>0){
+			//if (line[i].on && !line[i].intron && i>0){
 					++added; // can't guarantee that updated i-added will traverse the last value added. need better way to do this...				
 					//if (j != i)
 						//cout << "";
 
-					cout << "+" << line[i].c << "*(";
+					//cout << "+" << line[i].c << "*(";
 					comp += line[i].c * recComplexity(line,j-1,j);
-					cout << ")";
-			}
-			else
+					//cout << ")";
+			/*}
+			else{
 				--i;
+				--j;
+			} */
 		}
-		cout << "+" << line[i].c ;
+		//cout << "+" << line[i].c ;
 		comp += line[i].c;
 		j=i;
 		return comp;
@@ -247,12 +249,12 @@ int getComplexity(ind& me, params& p)
 		}
 		--i;
 	}*/
-	cout << me.eqn_form << ", c = ";
+	//cout << me.eqn_form << ", c = ";
 	int j = 0;
 	complexity = recComplexity(me.line,i,j);
-	cout << "=" << complexity << "\n";
-	if (complexity < me.eff_size)
-		cout << "complexity error";
+	//cout << "=" << complexity << "\n";
+	/*if (complexity < me.eff_size)
+		cout << "complexity error";*/
 
 	return complexity;
 }
