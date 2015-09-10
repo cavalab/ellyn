@@ -191,25 +191,35 @@ float std_dev(vector<float>& target,float& meantarget)
 	return sqrt(s);
 }
 
-int recComplexity(vector<node>& line,int i)
+int recComplexity(vector<node>& line,int i, int &j)
 {
 	while (!line[i].on || line[i].intron) 
 		--i;
-
+	
+	j = i;
 	int added = 0;
-	if (line[i].arity_float == 0)
+	if (line[i].arity_float == 0){
+		cout << line[i].c ;
 		return line[i].c;
+	}
 	else{
 		int comp = 0; 
 		while (added<line[i].arity_float){
 			if (line[i].on && !line[i].intron && i>0){
-					++added;
-					comp += line[i].c * recComplexity(line,i-added);			
+					++added; // can't guarantee that updated i-added will traverse the last value added. need better way to do this...				
+					//if (j != i)
+						//cout << "";
+
+					cout << "+" << line[i].c << "*(";
+					comp += line[i].c * recComplexity(line,j-1,j);
+					cout << ")";
 			}
 			else
 				--i;
 		}
+		cout << "+" << line[i].c ;
 		comp += line[i].c;
+		j=i;
 		return comp;
 	}
 }
@@ -237,7 +247,13 @@ int getComplexity(ind& me, params& p)
 		}
 		--i;
 	}*/
-	complexity = recComplexity(me.line,i);
+	cout << me.eqn_form << ", c = ";
+	int j = 0;
+	complexity = recComplexity(me.line,i,j);
+	cout << "=" << complexity << "\n";
+	if (complexity < me.eff_size)
+		cout << "complexity error";
+
 	return complexity;
 }
 
@@ -308,7 +324,7 @@ int getEffSize(vector<node>& line)
 {
 	int eff_size=0;
 	for(int m=0;m<line.size();++m){
-		if(line.at(m).on)
+		if(line.at(m).on && !line[m].intron)
 			++eff_size;
 	}
 	return eff_size;
