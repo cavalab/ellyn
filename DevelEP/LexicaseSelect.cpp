@@ -21,6 +21,10 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 			for (unsigned j=0;j<pop.size(); ++j) 
 				pop[j].error.push_back(pop[j].complexity);
 		}
+		else if (p.lex_metacases[i].compare("dimensionality") == 0) {
+			for (unsigned j = 0; j<pop.size(); ++j)
+				pop[j].error.push_back(pop[j].dim);
+		}
 	}
 	//boost::progress_timer timer;
 	//vector<float> fitcompare;
