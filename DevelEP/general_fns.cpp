@@ -5,7 +5,7 @@
 #include "data.h"
 #include <locale>
 
-float round(float d)
+float Round(float d)
 {
   return floor(d + 0.5);
 }
@@ -39,7 +39,7 @@ bool is_number(const std::string& s)
     return !s.empty() && it == s.end();
 }
 
-void MutInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,data& d)
+void MutInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,Data& d)
 {
 	
 	vector <string> load_choices(p.allblocks);

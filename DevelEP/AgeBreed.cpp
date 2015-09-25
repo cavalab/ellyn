@@ -13,7 +13,7 @@
 #include "Fitness.h"
 #include "EpiMut.h"
 
-void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
+void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s,FitnessEstimator& FE)
 {
 	//boost::progress_timer timer;
 	float choice;
@@ -39,8 +39,9 @@ void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,F
 				//update ages
 				tmppop.back().age=max(pop.at(numits).age,pop.at(numits+1).age);
 				tmppop.at(tmppop.size()-2).age=max(pop.at(numits).age,pop.at(numits+1).age);
-				pop.at(numits).age++;
-				pop.at(numits+1).age++;
+				// note: if these parents are picked multiple times, their age will increase by more than one per generation!
+				++pop.at(numits).age;
+				++pop.at(numits+1).age;
 				
 				numits+=2;
 				
@@ -53,8 +54,8 @@ void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,F
 				tmppop.at(tmppop.size()-2).age = pop.at(numits).age;
 				tmppop.back().age = pop.at(numits+1).age;
 				
-				pop.at(numits).age++;
-				pop.at(numits+1).age++;
+				++pop.at(numits).age;
+				++pop.at(numits+1).age;
 
 				numits+=2;
 			}
@@ -64,9 +65,9 @@ void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,F
 			Mutate(pop.at(numits),tmppop,p,r,d);
 			//update ages
 			tmppop.back().age=pop.at(numits).age;
-			pop.at(numits).age++;
+			++pop.at(numits).age;
 
-			numits++;
+			++numits;
 		}
 		counter++;
 	}

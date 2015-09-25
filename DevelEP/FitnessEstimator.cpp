@@ -14,7 +14,7 @@
 //	vector <float> TrainerFit; // fitness on trainer population
 //	float fitness; // self fitness across trainers
 //
-//	FitnessEstimator(int length,vector<Randclass>& r,data& d)
+//	FitnessEstimator(int length,vector<Randclass>& r,Data& d)
 //	{
 //		for (int i=0;i<length;++i){
 //			FEpts.push_back(r[omp_get_thread_num()].rnd_int(0,d.vals.size()));
@@ -29,7 +29,7 @@ struct SortFE{
 struct SortGE{
 	bool operator() (const FitnessEstimator& i,const FitnessEstimator& j) { return (i.genty<j.genty);} 
 };
-void setFEvals(vector<vector<float>>& FEvals, vector<float>& FEtarget,FitnessEstimator& FE, data& d)
+void setFEvals(vector<vector<float>>& FEvals, vector<float>& FEtarget,FitnessEstimator& FE, Data& d)
 {
 	FEvals.resize(0); FEvals.reserve(FE.FEpts.size());
 	FEtarget.resize(0); FEtarget.reserve(FE.FEpts.size());
@@ -39,7 +39,7 @@ void setFEvals(vector<vector<float>>& FEvals, vector<float>& FEtarget,FitnessEst
 		FEtarget.push_back(d.target[FE.FEpts[i]]);
 	}
 };
-void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,data& d,state& s)
+void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,Data& d,state& s)
 {
 	// calculate fitness of each Fitness Estimator on each trainer. 
 	/*vector<float> exactfit(trainers.size());
@@ -234,7 +234,7 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,d
 	}
 	
 };
-void InitPopFE(vector <FitnessEstimator>& FE,vector<ind> &pop,vector<ind>& trainers,params p,vector<Randclass>& r,data& d,state& s)
+void InitPopFE(vector <FitnessEstimator>& FE,vector<ind> &pop,vector<ind>& trainers,params p,vector<Randclass>& r,Data& d,state& s)
 {
 	//vector <FitnessEstimator> FE; //fitness estimator population 
 	//initialize estimator population
@@ -270,7 +270,7 @@ void InitPopFE(vector <FitnessEstimator>& FE,vector<ind> &pop,vector<ind>& train
 };
 
 
-void PickTrainers(vector<ind> pop, vector <FitnessEstimator>& FE,vector <ind>& trainers,params p,data& d,state& s)
+void PickTrainers(vector<ind> pop, vector <FitnessEstimator>& FE,vector <ind>& trainers,params p,Data& d,state& s)
 {
 	vector <vector<float>> FEfits; //rows: predictors, cols: population
 	vector<float> meanfits(pop.size());
@@ -479,7 +479,7 @@ void crossFE(vector <FitnessEstimator>& FE,params& p, vector<Randclass>& r)
 	sort(FE.begin(),FE.end(),SortFE());
 	FE.erase(FE.begin()+newFE.size(),FE.end());*/
 };
-void mutateFE(vector <FitnessEstimator>& FE,params p,data& d,vector<Randclass>& r)
+void mutateFE(vector <FitnessEstimator>& FE,params p,Data& d,vector<Randclass>& r)
 {
 	int pt;
 	int lastpt;
@@ -491,7 +491,7 @@ void mutateFE(vector <FitnessEstimator>& FE,params p,data& d,vector<Randclass>& 
 		FE[i].FEpts[pt] = r[omp_get_thread_num()].rnd_int(0,lastpt);
 	}
 };
-void EvolveFE(vector<ind> &pop, vector <FitnessEstimator>& FE,vector <ind>& trainers,params p,data& d,state& s,vector<Randclass>& r) 
+void EvolveFE(vector<ind> &pop, vector <FitnessEstimator>& FE,vector <ind>& trainers,params p,Data& d,state& s,vector<Randclass>& r) 
 {
 	vector <float> FEfitness(FE.size()); //fitness of Fitness Estimators
 	
@@ -527,4 +527,4 @@ void EvolveFE(vector<ind> &pop, vector <FitnessEstimator>& FE,vector <ind>& trai
 	PickTrainers(pop,FE,trainers,p,d,s);
 	*/
 };
-//void EvolveGE(vector<ind> &pop, vector <FitnessEstimator>& FE,vector <ind>& trainers,params p,data& d,state& s,vector<Randclass>& r)
+//void EvolveGE(vector<ind> &pop, vector <FitnessEstimator>& FE,vector <ind>& trainers,params p,Data& d,state& s,vector<Randclass>& r)

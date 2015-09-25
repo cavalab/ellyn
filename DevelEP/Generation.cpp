@@ -12,7 +12,7 @@
 #include "ParetoSurvival.hpp"
 #include "Prune.h"
 
-void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
+void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s,FitnessEstimator& FE)
 {
 	
 	//ind (*parloc)[p.popsize-1] = &pop;

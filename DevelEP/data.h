@@ -8,7 +8,7 @@ using namespace std;
 
 //typedef exprtk::parser_error::type error_t;
 
-struct data {
+struct Data {
 
 
 	vector<string> label; // variables corresponding to those defined in parameters 
@@ -30,7 +30,7 @@ struct data {
 	//vector<int> lexicase;
 	string target_var; //target variable
 
-	data(){}
+	Data(){}
 	void clear()
 	{
 		label.clear();
@@ -44,7 +44,7 @@ struct data {
 		for (unsigned int i=0;i<label.size(); ++i)
 			datatable.insert(pair<string,float*>(label[i],&dattovar[i]));
 	}*/
-	~data() 
+	~Data() 
 	{
 		//I think the data pointed to by the map should be destroyed
 		//in here (datatable) as well as the pointer, since both are contained within the class.

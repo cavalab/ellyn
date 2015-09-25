@@ -9,7 +9,7 @@
 #include "Gen2Phen.h"
 #include "general_fns.h"
 
-void EpiHC(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
+void EpiHC(ind& oldind,params& p,vector<Randclass>& r,Data& d,state& s,FitnessEstimator& FE)
 {
 	////#pragma omp parallel for
 	//for (int i=0; i<pop.size(); ++i) // for each individual

@@ -12,7 +12,7 @@
 #include "ParetoSurvival.hpp"
 #include "general_fns.h"
 
-void Prune(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
+void Prune(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s,FitnessEstimator& FE)
 { // prune dimensions from programs with a hill climber
 		
 		sort(pop.begin(),pop.end(),SortFit());

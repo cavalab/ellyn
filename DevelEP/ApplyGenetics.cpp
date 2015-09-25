@@ -8,7 +8,7 @@
 #include "Generationfns.h"
 #include "Fitness.h"
 using std::swap;
-void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
+void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r,Data& d,state& s,FitnessEstimator& FE)
 {
 	//assert (pop.size()== p.popsize) ;
 	//boost::progress_timer timer;

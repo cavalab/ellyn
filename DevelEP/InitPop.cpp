@@ -556,7 +556,7 @@ int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,params
 	int nodes=0;
 	if (a !=0){
 		level = level-1; // change splitnodes so that all trees aren't symmetric
-		//splitnodes = int(round(float(level)/float(a)));
+		//splitnodes = int(Round(float(level)/float(a)));
 		//splitnodes = r[omp_get_thread_num()].rnd_int(1,level-1);
 	}
 	/*else if (a == 0)

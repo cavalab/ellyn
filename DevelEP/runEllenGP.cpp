@@ -29,18 +29,28 @@
 //#include <crtdbg.h>
 
 using namespace std;
+#if defined(_WIN32)
+	#include <direct.h>
+	#define GetCurrentDir _getcwd
+#else
+	#include <unistd.h>
+	#define GetCurrentDir getcwd
+#endif
+
+
+
 
 // global parameters structure
 
 
 //void load_params(params &p, std::ifstream& is);
-//void load_data(data &d, std::ifstream& is,params&);
-//void load_lexdata(data &d, std::ifstream& fs,params& p);
-//bool stopcondition(tribe& T,params& p,data& d,state& s,FitnessEstimator& FE);
+//void load_data(Data &d, std::ifstream& is,params&);
+//void load_lexdata(Data &d, std::ifstream& fs,params& p);
+//bool stopcondition(tribe& T,params& p,Data& d,state& s,FitnessEstimator& FE);
 //void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A);
 //void printbestind(tribe& T,params& p,state& s,string& logname);
 //void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type);
-//void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s);
+//void shuffle_data(Data& d, params& p, vector<Randclass>& r,state& s);
 
 bool check_genty(vector<ind>& pop,params& p){
 	
@@ -52,29 +62,33 @@ bool check_genty(vector<ind>& pop,params& p){
 	}
 	return 1;
 }
-void printGenome(tribe& T,int gen,string& logname,data& d,params& p)
+void printGenome(tribe& T,int gen,string& logname,Data& d,params& p)
 {
 	// print genome to file in csv format
-	// create data file
+	// create Data file
 	// print format: print in head-to-tail fashion with grid locations
 	// x y gene
 	// gene encoding: +:1,-:2,*:3,/:4,sin:5,cos:6,exp:7,log:8,constant:9,vars:10-length(vars)
 
 	//total genes
 	 std::ofstream gout_all;
+	 std::ofstream gout_on;
+	 std::ofstream gout_off;
 	 string filename0 = logname.substr(0,logname.size()-4)+"_g_all.csv."+std::to_string(static_cast<long long>(gen));
 	 gout_all.open(filename0);
 	 gout_all << "x,y,fit,age,g,e\n";
 	// on genes
-	 std::ofstream gout_on;
-	 string filename = logname.substr(0,logname.size()-4)+"_g_on.csv."+std::to_string(static_cast<long long>(gen));
-	 gout_on.open(filename);
-	 gout_on << "x,y,fit,age,g,e\n";
-	 // off genes
-	 std::ofstream gout_off;
-	 string filename2 = logname.substr(0,logname.size()-4)+"_g_off.csv."+std::to_string(static_cast<long long>(gen));
-	 gout_off.open(filename2);
-	 gout_off << "x,y,fit,age,g,e\n";
+	 if (p.eHC_on){
+		 
+		 string filename = logname.substr(0,logname.size()-4)+"_g_on.csv."+std::to_string(static_cast<long long>(gen));
+		 gout_on.open(filename);
+		 gout_on << "x,y,fit,age,g,e\n";
+		 // off genes
+		 
+		 string filename2 = logname.substr(0,logname.size()-4)+"_g_off.csv."+std::to_string(static_cast<long long>(gen));
+		 gout_off.open(filename2);
+		 gout_off << "x,y,fit,age,g,e\n";
+	 }
 	 string out;
 	 string tmp;
 	 int k;
@@ -141,21 +155,25 @@ void printGenome(tribe& T,int gen,string& logname,data& d,params& p)
 			 }
 			  gout_all << float(float(i)/float(T.pop.size())) << "," << y/p.max_len << "," << (log(1+T.pop[i].fitness)-min_fit)/(max_fit-min_fit) << "," << (float(T.pop[i].age)-min_age)/(max_age-min_age) << "," << out << "," << T.pop[i].line[j].on << "\n";
 			 ++y;
-
-			 if (T.pop[i].line[j].on){
-			 gout_on << float(float(i)/float(T.pop.size())) << "," << y_on/p.max_len << "," << (log(1+T.pop[i].fitness)-min_fit)/(max_fit-min_fit) << "," << (float(T.pop[i].age)-min_age)/(max_age-min_age) << "," << out << "," << T.pop[i].line[j].on << "\n";
-			 ++y_on;
-			 }
-			 else{
-			  gout_off << float(float(i)/float(T.pop.size())) << "," << y_off/p.max_len << "," << (log(1+T.pop[i].fitness)-min_fit)/(max_fit-min_fit) << "," << (float(T.pop[i].age)-min_age)/(max_age-min_age) << "," << out << "," << T.pop[i].line[j].on << "\n";
-			  ++y_off;
-			 }
+			 if (p.eHC_on){
+				 if (T.pop[i].line[j].on){
+				 gout_on << float(float(i)/float(T.pop.size())) << "," << y_on/p.max_len << "," << (log(1+T.pop[i].fitness)-min_fit)/(max_fit-min_fit) << "," << (float(T.pop[i].age)-min_age)/(max_age-min_age) << "," << out << "," << T.pop[i].line[j].on << "\n";
+				 ++y_on;
+				 }
+				 else{
+				  gout_off << float(float(i)/float(T.pop.size())) << "," << y_off/p.max_len << "," << (log(1+T.pop[i].fitness)-min_fit)/(max_fit-min_fit) << "," << (float(T.pop[i].age)-min_age)/(max_age-min_age) << "," << out << "," << T.pop[i].line[j].on << "\n";
+				  ++y_off;
+				 }
 			//++y;
-		}
+			 }
+		 }
 	 }
-	 gout_on.close();
-	 gout_off.close();
 	 gout_all.close();
+	 gout_off.close();
+		 gout_on.close();
+	 /*if (p.eHC_on) {
+		 
+	 }*/
 }
 void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A)
 {
@@ -321,7 +339,7 @@ int load_pop(vector<ind>& pop,params& p,state& s)
 	return i; // size of loaded population
 }
 
-void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s)
+void shuffle_data(Data& d, params& p, vector<Randclass>& r,state& s)
 {
 	vector<int> shuffler;
 	vector<float> newtarget;
@@ -352,7 +370,7 @@ void shuffle_data(data& d, params& p, vector<Randclass>& r,state& s)
 	std::swap(d.target,newtarget);
 	std::swap(d.vals,newvals);	
 }
-bool stopcondition(tribe& T,params p,data& d,state& s,FitnessEstimator& FE)
+bool stopcondition(tribe& T,params p,Data& d,state& s,FitnessEstimator& FE)
 {
 	if (!p.stop_condition)
 		return false;
@@ -417,7 +435,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	=================================== */
 
 	struct params p; 
-	struct data d;
+	struct Data d;
 	struct state s;
 
 	vector <Randclass> r;
@@ -426,6 +444,14 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	ifstream fs(paramfile);
 	if (!fs.is_open()){
 		cerr << "Error: couldn't open parameter file " + paramfile << "\n";
+		/*if (!GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
+		{
+		return errno;
+		}*/
+		char cCurrentPath[FILENAME_MAX];
+		bool tmp = GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
+		cCurrentPath[sizeof(cCurrentPath) - 1] = '\0'; /* not really required */
+		printf ("The current working directory is %s", cCurrentPath);
 		exit(1);
 	}
 	load_params(p, fs);
@@ -433,6 +459,10 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	ifstream ds(datafile);
 	if (!ds.is_open()){
 			cerr << "Error: couldn't open data file " + datafile << "\n";
+			char cCurrentPath[FILENAME_MAX];
+			bool tmp = GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
+			cCurrentPath[sizeof(cCurrentPath) - 1] = '\0'; /* not really required */
+			printf ("The current working directory is %s", cCurrentPath);
 			exit(1);
 		}
 	//if (p.sel == 3) load_lexdata(d,ds,p);

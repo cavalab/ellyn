@@ -9,7 +9,7 @@
 
 #include "general_fns.h"
 // parameter hill climber 
-void HillClimb(ind& oldind,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
+void HillClimb(ind& oldind,params& p,vector<Randclass>& r,Data& d,state& s,FitnessEstimator& FE)
 {
 	//#pragma omp parallel for
 	//for (int i=0; i<pop.size(); ++i) // for each individual

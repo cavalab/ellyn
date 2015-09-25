@@ -12,7 +12,7 @@ public:
 
 	FitnessEstimator(){fitness=0; genty=0;}
 
-	FitnessEstimator(int length,vector<Randclass>& r,data& d,bool train)
+	FitnessEstimator(int length,vector<Randclass>& r,Data& d,bool train)
 	{
 		int lastpt;
 		if (train) lastpt = int(d.vals.size())/2-1;
@@ -27,8 +27,8 @@ public:
 	~FitnessEstimator(){}
 	
 };
-void InitPopFE(vector <FitnessEstimator>& FE,vector<ind> &pop,vector<ind>& trainers,params p,vector<Randclass>& r,data& d,state& s);
-void EvolveFE(vector<ind> &pop, vector <FitnessEstimator>& FE,vector <ind>& trainers,params p,data& d,state& s,vector<Randclass>& r);
-void setFEvals(vector<vector<float> >& FEvals, vector<float>& FEtarget,FitnessEstimator& FE, data& d);
-void PickTrainers(vector<ind> pop, vector <FitnessEstimator>& FE,vector <ind>& trainers,params p,data& d,state& s);
+void InitPopFE(vector <FitnessEstimator>& FE,vector<ind> &pop,vector<ind>& trainers,params p,vector<Randclass>& r,Data& d,state& s);
+void EvolveFE(vector<ind> &pop, vector <FitnessEstimator>& FE,vector <ind>& trainers,params p,Data& d,state& s,vector<Randclass>& r);
+void setFEvals(vector<vector<float> >& FEvals, vector<float>& FEtarget,FitnessEstimator& FE, Data& d);
+void PickTrainers(vector<ind> pop, vector <FitnessEstimator>& FE,vector <ind>& trainers,params p,Data& d,state& s);
 #endif

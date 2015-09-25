@@ -27,7 +27,7 @@ using namespace std;
 
 //// global parameters structure
 //struct params p; 
-//struct data d;
+//struct Data d;
 //struct state s;
 //class logger fcout;
 ////struct evaluator e;
@@ -35,7 +35,7 @@ using namespace std;
 
 
 //void load_params(params &p, std::ifstream& is);
-//void load_data(data &d, std::ifstream& is);
+//void load_data(Data &d, std::ifstream& is);
 //bool stopcondition(float&);
 //void printstats(tribe&,int&,int&);
 

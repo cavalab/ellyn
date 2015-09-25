@@ -3,7 +3,7 @@
 #include "params.h"
 using namespace std;
 
-string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
+string Line2Eqn(vector<node>& line,string& eqnForm,params& p,bool protect)
 {
 	vector<string> eqn_floatstack;
 	vector<string> eqn_boolstack;
@@ -31,7 +31,7 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
 					
 					switch (line.at(i).type){
 					case 'l':
-						if (p.print_protected_operators)
+						if (p.print_protected_operators && protect)
 							sop = "logs";
 						else
 							sop="log";
@@ -46,7 +46,7 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
 						sop="exp";
 						break;
 					case 'q':
-						if (p.print_protected_operators)
+						if (p.print_protected_operators && protect)
 							sop = "sqrts";
 						else
 							sop="sqrt";
@@ -73,13 +73,13 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
 						sop="==";
 						break;
 					case '*':
-						if (p.print_protected_operators)
+						if (p.print_protected_operators && protect)
 							sop=".*";
 						else
 							sop="*";
 						break;
 					case '^':
-						if (p.print_protected_operators)
+						if (p.print_protected_operators && protect)
 							sop=".^";
 						else
 							sop="^";
@@ -119,7 +119,7 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p)
 							form_floatstack.push_back(sop + "("+b1f+","+s1f+")");
 						}
 						else if (line[i].arity_float==2 && line[i].arity_bool==0){
-							if (p.print_protected_operators && line[i].type=='/'){
+							if (p.print_protected_operators && protect && line[i].type=='/'){
 								eqn_floatstack.push_back("divs("+s2+","+s1+")");
 							}
 							else

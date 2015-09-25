@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void load_data(data &d, std::ifstream& fs,params& p)
+void load_data(Data& d, std::ifstream& fs,params& p)
 {
 	string s;
 	string varname;

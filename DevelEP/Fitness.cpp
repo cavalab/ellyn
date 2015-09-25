@@ -11,6 +11,7 @@
 #include <math.h>  
 #include "matrix.h"
 #include <Eigen/Dense>
+#include "general_fns.h"
 using Eigen::MatrixXf;
 using Eigen::ArrayXf;
 //#include "runEllenGP.h"
@@ -221,7 +222,7 @@ int recComplexity(vector<node>& line,int i, int &j)
 		}
 		//cout << "+" << line[i].c ;
 		comp += line[i].c;
-		j=i;
+		//j=i;
 		return comp;
 	}
 }
@@ -234,8 +235,7 @@ int getComplexity(ind& me, params& p)
 		}
 	}
 	return complexity;*/
-	if (p.classification && p.class_m3gp)
-		return me.dim;
+	
 	
 	int a = 1;
 	int i = me.line.size()-1;
@@ -251,7 +251,19 @@ int getComplexity(ind& me, params& p)
 	}*/
 	//cout << me.eqn_form << ", c = ";
 	int j = 0;
-	complexity = recComplexity(me.line,i,j);
+	
+	if (p.classification && p.class_m3gp){
+		complexity = 0;
+		vector<unsigned> roots;
+		find_root_nodes(me.line, roots);
+		for (int i = 0; i < roots.size(); ++i) {
+			j = roots[i];
+			complexity += recComplexity(me.line, int(roots[i]), j);
+		}
+	}
+	else
+		complexity = recComplexity(me.line, i, j);
+
 	//cout << "=" << complexity << "\n";
 	/*if (complexity < me.eff_size)
 		cout << "complexity error";*/
@@ -326,7 +338,7 @@ int getEffSize(vector<node>& line)
 {
 	int eff_size=0;
 	for(int m=0;m<line.size();++m){
-		if(line.at(m).on && !line[m].intron)
+		if(line.at(m).on)
 			++eff_size;
 	}
 	return eff_size;
@@ -459,11 +471,11 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 		n.intron=true;
 
 }
-void FitnessEstimate(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE);
-void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE, unordered_map<string,float*>& datatable, vector<float>& dattovar);
-void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE);
+void FitnessEstimate(vector<ind>& pop,params& p,Data& d,state& s,FitnessEstimator& FE);
+void StandardFitness(ind& me,params& p,Data& d,state& s,FitnessEstimator& FE, unordered_map<string,float*>& datatable, vector<float>& dattovar);
+void LexicaseFitness(ind& me,params& p,Data& d,state& s,FitnessEstimator& FE);
 
-void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
+void Fitness(vector<ind>& pop,params& p,Data& d,state& s,FitnessEstimator& FE)
 {
 	////
 	//set up data table for conversion of symbolic variables
@@ -477,13 +489,11 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 	for(int count = 0; count<pop.size(); ++count)
 	{
 		if (p.print_protected_operators){
-			pop.at(count).eqn_matlab = Line2Eqn(pop.at(count).line,pop.at(count).eqn_form,p);
-			p.print_protected_operators = false;
-			pop.at(count).eqn = Line2Eqn(pop.at(count).line,pop.at(count).eqn_form,p);
-			p.print_protected_operators = true;
+			pop.at(count).eqn_matlab = Line2Eqn(pop.at(count).line,pop.at(count).eqn_form,p,true);
+			pop.at(count).eqn = Line2Eqn(pop.at(count).line,pop.at(count).eqn_form,p,false);
 		}
 		else
-			pop.at(count).eqn = Line2Eqn(pop.at(count).line,pop.at(count).eqn_form,p);
+			pop.at(count).eqn = Line2Eqn(pop.at(count).line,pop.at(count).eqn_form,p,true);
 		//getEqnForm(pop.at(count).eqn,pop.at(count).eqn_form);
 		
 		pop.at(count).eff_size = getEffSize(pop.at(count).line);
@@ -508,7 +518,7 @@ void Fitness(vector<ind>& pop,params& p,data& d,state& s,FitnessEstimator& FE)
 	s.numevals[omp_get_thread_num()]=s.numevals[omp_get_thread_num()]+pop.size();
 	//cout << "\nFitness Time: ";
 }
-void StandardFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,unordered_map<string,float*>& datatable, vector<float>& dattovar)
+void StandardFitness(ind& me,params& p,Data& d,state& s,FitnessEstimator& FE,unordered_map<string,float*>& datatable, vector<float>& dattovar)
 {
     
 	me.abserror = 0;
@@ -1635,7 +1645,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 		s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
 		return true;
 }
-bool getSlimFit(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,int linestart, float orig_fit)
+bool getSlimFit(ind& me,params& p,Data& d,state& s,FitnessEstimator& FE,int linestart, float orig_fit)
 	
 {
     //set up data table for conversion of symbolic variables
@@ -1682,10 +1692,10 @@ bool getSlimFit(ind& me,params& p,data& d,state& s,FitnessEstimator& FE,int line
 			} // if not unwriteable equation
 			 
 }
-bool SlimFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE, int linestart,  float orig_fit)
+bool SlimFitness(ind& me,params& p,Data& d,state& s,FitnessEstimator& FE, int linestart,  float orig_fit)
 {
 
-	me.eqn = Line2Eqn(me.line,me.eqn_form,p);
+	me.eqn = Line2Eqn(me.line,me.eqn_form,p,true);
 	//getEqnForm(me.eqn,me.eqn_form);
 	
 	me.eff_size = getEffSize(me.line);
@@ -1696,7 +1706,7 @@ bool SlimFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE, int li
 	s.numevals[omp_get_thread_num()]=s.numevals[omp_get_thread_num()]+1;
 	return pass;
 }
-//void LexicaseFitness(ind& me,params& p,data& d,state& s,FitnessEstimator& FE)
+//void LexicaseFitness(ind& me,params& p,Data& d,state& s,FitnessEstimator& FE)
 //{
 //	//set up data table for conversion of symbolic variables
 //	unordered_map <string,float*> datatable;

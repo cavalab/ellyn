@@ -14,7 +14,7 @@
 // steady-state deterministic crowding algorithm.
 // update_locs are the indices of the update locations for passage to hill climbing. 
 using std::swap;
-void DC(vector<ind>& pop,params& p,vector<Randclass>& r,data& d,state& s,FitnessEstimator& FE)
+void DC(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s,FitnessEstimator& FE)
 {
 	
 	vector <ind> tmppop;

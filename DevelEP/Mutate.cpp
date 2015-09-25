@@ -7,7 +7,7 @@
 #include "InitPop.h"
 #include "general_fns.h"
 
-void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, data& d)
+void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, Data& d)
 {
 	vector<unsigned int> ichange;
 	vector<ind> kid(1,par);
@@ -54,6 +54,8 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, data
 
 				if ( r[omp_get_thread_num()].rnd_flt(0.0,1.0) <= 0.333 && kid[0].line.size()<p.max_len){
 					action=3;
+					begin1 = 1;
+					end1 = 0;
 				}
 				else{
 					// find root nodes of kid[0]
@@ -101,6 +103,8 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, data
 				}
 				begin1 = pt1;
 			}
+			
+
 			if(action==1 && kid[0].line.size()-(end1-(begin1-1)) >= p.min_len)// delete subtree
 				kid[0].line.erase(kid[0].line.begin()+begin1,kid[0].line.begin()+end1+1);
 			else{ // create new subtree
@@ -110,14 +114,14 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, data
 					linelen = r[omp_get_thread_num()].rnd_int(1,p.max_len-kid[0].line.size());
 				}
 				else{ // swap tree with one within a normal distribution of the current tree size with std dev = 1/2 tree size
-					linelen = std::max(p.min_len - (int(kid[0].line.size()) - (end1-(begin1-1))), end1-(begin1-1) + int(round(r[omp_get_thread_num()].gasdev() * 0.5 * (end1-(begin1-1)))));
+					linelen = std::max(p.min_len - (int(kid[0].line.size()) - (end1-(begin1-1))), end1-(begin1-1) + int(Round(r[omp_get_thread_num()].gasdev() * 0.5 * (end1-(begin1-1)))));
 					// new tree should at least result in the size of the final tree being the minimum length
 					//linelen = std::max(linelen, );
 
 				}
 					//linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len-kid[0].line.size()+end1-(begin1-1));
 				
-				int tmp = p.min_len - (int(kid[0].line.size()) - (end1-(begin1-1)));
+				//int tmp = p.min_len - (int(kid[0].line.size()) - (end1-(begin1-1)));
 				
 				makeline_rec(st,p,r,linelen);
 				// if the subtree is too small, make it bigger
