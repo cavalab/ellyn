@@ -22,6 +22,7 @@ struct paretoarchive{
 		for (int i=pop.size()-newpop.size();i<pop.size();i++) {
 			pop.at(i).stack_float.clear();
 			pop.at(i).output.clear();
+			pop[i].output_v.clear();
 			pop.at(i).error.clear();
 		}
 		sort(pop.begin(),pop.end(),SortComplexity());
