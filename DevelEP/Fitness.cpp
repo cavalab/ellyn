@@ -196,7 +196,6 @@ int recComplexity(vector<node>& line,int i, int &j)
 {
 	while (!line[i].on || line[i].intron) 
 		--i;
-	
 	j = i;
 	int added = 0;
 	if (line[i].arity() == 0){
@@ -206,26 +205,44 @@ int recComplexity(vector<node>& line,int i, int &j)
 	else{
 		int comp = 0; 
 		while (added<line[i].arity()){
-			//if (line[i].on && !line[i].intron && i>0){
-					++added; // can't guarantee that updated i-added will traverse the last value added. need better way to do this...				
-					//if (j != i)
-						//cout << "";
-
-					//cout << "+" << line[i].c << "*(";
-					comp += line[i].c * recComplexity(line,j-1,j);
-					//cout << ")";
-			/*}
-			else{
-				--i;
-				--j;
-			} */
+			++added; // can't guarantee that updated i-added will traverse the last value added. need better way to do this...				
+			comp += line[i].c * recComplexity(line,j-1,j);
 		}
-		//cout << "+" << line[i].c ;
 		comp += line[i].c;
-		//j=i;
 		return comp;
 	}
 }
+int recComplexity2(vector<node>& line, int i, int &j,char type)
+{
+	while (!line[i].on || line[i].intron || line[i].return_type!=type)
+		--i;
+
+	j = i;
+	
+	if (line[i].arity() == 0) {
+		//cout << line[i].c ;
+		return line[i].c;
+	}
+	else {
+		
+		int added = 0;
+		int comp = 0;
+		int k = j;
+		while (added<line[i].arity_float) {
+			++added; // can't guarantee that updated i-added will traverse the last value added. need better way to do this...				
+			comp += line[i].c * recComplexity2(line, j - 1, j,'f');
+		}
+		
+		added = 0;
+		while (added<line[i].arity_bool) {
+			++added; // can't guarantee that updated i-added will traverse the last value added. need better way to do this...				
+			comp += line[i].c * recComplexity2(line, k - 1, k, 'b');
+		}
+		comp += line[i].c;
+		return comp;
+	}
+}
+
 int getComplexity(ind& me, params& p)
 {	
 	int complexity = 0;
@@ -262,7 +279,7 @@ int getComplexity(ind& me, params& p)
 		}
 	}
 	else
-		complexity = recComplexity(me.line, i, j);
+		complexity = recComplexity2(me.line, i, j,'f');
 
 	//cout << "=" << complexity << "\n";
 	/*if (complexity < me.eff_size)
@@ -346,7 +363,7 @@ int getEffSize(vector<node>& line)
 void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 {
 	float n1,n2;
-	bool b1,b2;
+	bool b1,b2; 
 	if (stack_float.size()>=n.arity_float && stack_bool.size()>=n.arity_bool){
 		n.intron=false;
 		switch(n.type) 
@@ -468,7 +485,7 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 		}
 	}
 	else
-		n.intron=true;
+		n.intron= n.intron && true; // only set it to intron if it isn't used in any of the execution
 
 }
 void FitnessEstimate(vector<ind>& pop,params& p,Data& d,state& s,FitnessEstimator& FE);
@@ -594,6 +611,7 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 {		
 	vector<float> stack_float;
 	vector<bool> stack_bool;
+	me.reset_introns();
 	me.output.resize(0); 
 	me.output_v.resize(0);
 	if (p.sel==3) 
@@ -866,7 +884,7 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 	vector<float> stack_float;
 	vector<bool> stack_bool;
 	
-	
+	me.reset_introns();
 	me.output.resize(0); 
 	me.output_v.resize(0);
 	if (p.sel==3){ 
@@ -1193,6 +1211,7 @@ void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>
 	vector<bool> stack_bool;
 	vector<vector<float>> Z; // n x d output for m3gp
 	vector<vector<float>> K; // output subsets by class label
+	me.reset_introns();
 	me.output.resize(0); 
 	me.output_v.resize(0);
 	me.abserror = 0;
@@ -1414,6 +1433,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 {
 	vector<float> stack_float;// = init_stack;
 	vector<bool> stack_bool;
+	me.reset_introns();
 	me.output.clear();
 	me.output_v.clear();
 	me.error.clear();

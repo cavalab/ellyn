@@ -147,7 +147,11 @@ struct ind {
 	//	//nominal_model=nom_mod;
 	//	//expression.register_symbol_table(d.symbol_table);
 	//}
-
+	void reset_introns()
+	{
+		for (size_t i = 0; i < line.size(); ++i) // set all introns to true
+			line[i].intron = true;
+	}
 	void clrPhen()
 	{
 		abserror = 0;
@@ -166,6 +170,7 @@ struct ind {
 		C.clear();
 		M.resize(0,0);
 		genty = 1;
+		
 		//stack_float.clear();
 		// nominal model must be encased in set of parenthesis. the pointer points to that which is encased.
 		//ptr[0]= 1;

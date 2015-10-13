@@ -20,10 +20,10 @@ public:
 	int c; // complexity
 	bool intron; // behavioral intron declaration (used in getComplexity())
 	char return_type;
-	node() {type=0; on=1; arity_float=0; arity_bool=0; intron = 0;return_type='f';}
+	node() {type=0; on=1; arity_float=0; arity_bool=0; intron = true;return_type='f';}
 	//node(int set) {type=set;on=1;}
 	//operator with specified arity
-	node(char stype,int sarity){type=stype; arity_float=sarity;arity_bool=0; on=1; setComplexity(); intron = 0;return_type='f';}
+	node(char stype,int sarity){type=stype; arity_float=sarity;arity_bool=0; on=1; setComplexity(); intron = true;return_type='f';}
 	//operator with arity lookup
 	node(char stype)
 	{
@@ -70,7 +70,7 @@ public:
 		on=1;
 		// assign complexity
 		setComplexity();
-		intron = 0;
+		intron = true;
 	}
 	//number
 	node(float svalue){type='n'; value=svalue; on=1; arity_float=0;arity_bool=0; c=1;intron = 0;return_type='f';}
