@@ -580,9 +580,14 @@ int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,char t
 	{
 		if (i==a)
 			newlevel = level-nodes;
-		else
-			newlevel = r[omp_get_thread_num()].rnd_int(1,level-1);
-		//newlevel = integer((level-1)/a + r[omp_get_thread_num()].gasdev());
+		else {
+			// make subtree approximately balanced with normal distribution
+			newlevel = int((level - 1) / a + r[omp_get_thread_num()].gasdev());
+			newlevel = min(newlevel, level - 1);
+			newlevel = max(newlevel, 1);
+			//newlevel = r[omp_get_thread_num()].rnd_int(1, level - 1);
+		}
+			
 		nodes += maketree(line,newlevel,exactlevel,thisnode,types[i-1],p,r);
 	}
 	//for (int i = 1; i <= a_b; ++i)
