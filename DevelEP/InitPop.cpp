@@ -265,18 +265,22 @@ void makeline_rec(vector<node>& line,params& p,vector<Randclass>& r, int linelen
 	
 	
 	int choice=0;
-	
-	int tmp = maketree(line,linelen,1,0,p,r);
+	// set output type based on problem definition ('f' = float, 'b' = boolean)
+	char type = 'f';
+	if (p.classification && p.class_bool)
+		type = 'b';
+
+	int tmp = maketree(line,linelen,1,0,type,p,r);
 
 }
-void getChoice(int& choice, int min_arity, int max_arity, params& p,vector<Randclass>& r)
+void getChoice(int& choice, int min_arity, int max_arity, char type, params& p,vector<Randclass>& r)
 {
 	vector<int> choices;
 	vector<float> op_weight;
 	int tmpchoice;
 	for (int i=0;i<p.op_arity.size();++i)
 	{
-		if (p.op_arity[i] >= min_arity && p.op_arity[i] <= max_arity)
+		if (p.op_arity[i] >= min_arity && p.op_arity[i] <= max_arity && p.return_type[i]==type)
 		{
 			choices.push_back(i);
 			if(p.weight_ops_on)
@@ -533,31 +537,40 @@ void push_front_node(vector <node>& line, int choice, params& p,vector<Randclass
 			break;
 	}
 }
-int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,params& p,vector<Randclass>& r)
+int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,char type,params& p,vector<Randclass>& r)
 {
 	int choice; 
 //	int splitnodes; 
 	int thisnode = lastnode+1;
 	int startsize = line.size();
-	if (level==1) // choose a terminal because of the level limitation
-		getChoice(choice,0,0,p,r); 	
+	if (level == 1) { // choose a terminal because of the level limitation
+		getChoice(choice, 0, 0, type, p, r);
+	}
 	else if (exactlevel){
-		getChoice(choice,1,level-1,p,r);
+		getChoice(choice,1,level-1,type,p,r);
 		if (choice==-1)
-			getChoice(choice,0,0,p,r);
+			getChoice(choice,0,0,type,p,r);
 	}
 	else
-		getChoice(choice,0,level-1,p,r);
-
+		getChoice(choice,0,level-1,type,p,r);
+	while (choice == -1)
+		getChoice(choice, 0, ++level-1, type, p, r);
 	// insert choice into line
 	push_front_node(line,choice,p,r);
-	int a = p.op_arity[choice];
+	//int a = p.op_arity[choice];
+	int a = line[0].arity();
+	vector<char> types(a);
+	for (size_t i = 0; i < a; ++i)
+	{
+		if (i < line[0].arity_float)
+			types[i] = 'f';
+		else
+			types[i] = 'b';
+	}
 	int newlevel;
 	int nodes=0;
 	if (a !=0){
-		level = level-1; // change splitnodes so that all trees aren't symmetric
-		//splitnodes = int(Round(float(level)/float(a)));
-		//splitnodes = r[omp_get_thread_num()].rnd_int(1,level-1);
+		level = max(2,level-1); 
 	}
 	/*else if (a == 0)
 		cout << "debug";*/
@@ -566,14 +579,20 @@ int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,params
 	for (int i=1;i<=a;++i)
 	{
 		if (i==a)
-			//newlevel = level-(splitnodes*(a-1));
-			//newlevel = r[omp_get_thread_num()].rnd_int(1,level-nodes);
 			newlevel = level-nodes;
 		else
-			//newlevel = splitnodes;
 			newlevel = r[omp_get_thread_num()].rnd_int(1,level-1);
-		nodes += maketree(line,newlevel,exactlevel,thisnode,p,r);
+		//newlevel = integer((level-1)/a + r[omp_get_thread_num()].gasdev());
+		nodes += maketree(line,newlevel,exactlevel,thisnode,types[i-1],p,r);
 	}
+	//for (int i = 1; i <= a_b; ++i)
+	//{
+	//	if (i == a_b)
+	//		newlevel = level - nodes;
+	//	else
+	//		newlevel = r[omp_get_thread_num()].rnd_int(1, level - 1);
+	//	nodes += maketree(line, newlevel, exactlevel, thisnode, 'b', p, r);
+	//}
 	return line.size()-startsize;
 }
 //void makestack(ind& newind,params& p,vector<Randclass>& r)

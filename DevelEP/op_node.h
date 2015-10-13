@@ -47,7 +47,6 @@ public:
 			arity_float = 0;
 			arity_bool = 2;
 			return_type='b';
-
 		}
 		else if (type=='!'){
 			arity_float=0;
@@ -77,6 +76,10 @@ public:
 	node(float svalue){type='n'; value=svalue; on=1; arity_float=0;arity_bool=0; c=1;intron = 0;return_type='f';}
 	//variable
 	node(string& vname){type='v';varname=vname;on=1;arity_float=0;arity_bool=0; c=1;intron = 0;return_type='f';}
+	int arity()
+	{
+		return arity_float + arity_bool;
+	}
 	//set pointer for variables
 	void setpt(float* set)
 	{

@@ -43,13 +43,13 @@ using namespace std;
 //int _tmain(int argc, _TCHAR *argv[])
 int main(int argc, char** argv)
 {
-	try 
-	{
+	/*try 
+	{*/
 		string paramfile(argv[1]);
 		string datafile(argv[2]);
 		//runEllenGP(paramfile.c_str(),datafile.c_str(),0);
 		runEllenGP(argv[1],argv[2],0,0);
-	}
+	/*}
 	catch(exception& er) 
 	{
 		cout << "Error: " << er.what() << "\n Exiting in 5 seconds...\n";
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 			sleep(5);
 		#endif
 		exit(1);
-	}
+	}*/
 	
 	return 0;
 }

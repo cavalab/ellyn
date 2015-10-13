@@ -320,106 +320,127 @@ void load_params(params &p, std::ifstream& fs)
 		{
 			p.op_choice.push_back(0);
 			p.op_arity.push_back(0);
+			p.return_type.push_back('f');
 		}
 		else if (p.op_list.at(i).compare("v")==0)
 		{
 			p.op_choice.push_back(1);
 			p.op_arity.push_back(0);
+			p.return_type.push_back('f');
 		}
 		else if (p.op_list.at(i).compare("+")==0)
 		{
 			p.op_choice.push_back(2);
 			p.op_arity.push_back(2);
+			p.return_type.push_back('f');
 		}
 		else if (p.op_list.at(i).compare("-")==0)
 		{
 			p.op_choice.push_back(3);
 			p.op_arity.push_back(2);
+			p.return_type.push_back('f');
 		}
 		else if (p.op_list.at(i).compare("*")==0)
 		{
 			p.op_choice.push_back(4);
 			p.op_arity.push_back(2);
+			p.return_type.push_back('f');
 		}
 		else if (p.op_list.at(i).compare("/")==0)
 		{
 			p.op_choice.push_back(5);
 			p.op_arity.push_back(2);
+			p.return_type.push_back('f');
 		}
 		else if (p.op_list.at(i).compare("sin")==0)
 		{
 			p.op_choice.push_back(6);
 			p.op_arity.push_back(1);
+			p.return_type.push_back('f');
 		}
 		else if (p.op_list.at(i).compare("cos")==0)
 		{
 			p.op_choice.push_back(7);
 			p.op_arity.push_back(1);
+			p.return_type.push_back('f');
 		}
 		else if (p.op_list.at(i).compare("exp")==0)
 		{
 			p.op_choice.push_back(8);
 			p.op_arity.push_back(1);
+			p.return_type.push_back('f');
 		}
 		else if (p.op_list.at(i).compare("log")==0)
 		{
 			p.op_choice.push_back(9);
 			p.op_arity.push_back(1);
+			p.return_type.push_back('f');
 		}
 		else if (p.op_list.at(i).compare("sqrt")==0)
 		{
 			p.op_choice.push_back(11);
 			p.op_arity.push_back(1);
+			p.return_type.push_back('f');
 		}
 		else if (p.op_list.at(i).compare("=")==0)
 		{
 			p.op_choice.push_back(12);
 			p.op_arity.push_back(2);
+			p.return_type.push_back('b');
 		}
 		else if (p.op_list.at(i).compare("!")==0)
 		{
 			p.op_choice.push_back(13);
 			p.op_arity.push_back(2);
+			p.return_type.push_back('b');
 		}
 		else if (p.op_list.at(i).compare("<")==0)
 		{
 			p.op_choice.push_back(14);
 			p.op_arity.push_back(2);
+			p.return_type.push_back('b');
 		}
 		else if (p.op_list.at(i).compare(">")==0)
 		{
 			p.op_choice.push_back(15);
 			p.op_arity.push_back(2);
+			p.return_type.push_back('b');
 		}
 		else if (p.op_list.at(i).compare("<=")==0)
 		{
 			p.op_choice.push_back(16);
 			p.op_arity.push_back(2);
+			p.return_type.push_back('b');
 		}
 		else if (p.op_list.at(i).compare(">=")==0)
 		{
 			p.op_choice.push_back(17);
 			p.op_arity.push_back(2);
+			p.return_type.push_back('b');
 		}
 		else if (p.op_list.at(i).compare("if-then")==0)
 		{
 			p.op_choice.push_back(18);
 			p.op_arity.push_back(2);
+			p.return_type.push_back('f');
 		}
 		else if (p.op_list.at(i).compare("if-then-else")==0)
 		{
 			p.op_choice.push_back(19);
 			p.op_arity.push_back(3);
+			p.return_type.push_back('f');
 		}
 		else if (p.op_list.at(i).compare("&")==0)
 		{
 			p.op_choice.push_back(20);
 			p.op_arity.push_back(3);
+			p.return_type.push_back('b');
 		}
 		else if (p.op_list.at(i).compare("|")==0)
 		{
 			p.op_choice.push_back(21);
 			p.op_arity.push_back(3);
+			p.return_type.push_back('b');
 		}
 		else 
 			cout << "bad command (load params op_choice)" << "\n";

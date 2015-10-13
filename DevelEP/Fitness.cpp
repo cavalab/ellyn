@@ -199,13 +199,13 @@ int recComplexity(vector<node>& line,int i, int &j)
 	
 	j = i;
 	int added = 0;
-	if (line[i].arity_float == 0){
+	if (line[i].arity() == 0){
 		//cout << line[i].c ;
 		return line[i].c;
 	}
 	else{
 		int comp = 0; 
-		while (added<line[i].arity_float){
+		while (added<line[i].arity()){
 			//if (line[i].on && !line[i].intron && i>0){
 					++added; // can't guarantee that updated i-added will traverse the last value added. need better way to do this...				
 					//if (j != i)

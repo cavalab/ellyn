@@ -94,6 +94,7 @@ struct params {
 	vector <int> op_choice; // map op list to pointer location in makeline() pointer function
 	vector <float> op_weight;
 	vector <int> op_arity; // arity list corresponding op_choice for recursive makeline
+	vector <char> return_type; // return type of operators for tree construction
 	bool weight_ops_on;
 
 	int min_len;
