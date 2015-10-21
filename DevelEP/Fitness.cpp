@@ -212,78 +212,92 @@ int recComplexity(vector<node>& line,int i, int &j)
 		return comp;
 	}
 }
-int recComplexity2(vector<node>& line, int i, int &j,char type)
+int recComplexity2(vector<node>& line, int i, int& j, char type)
 {
-	while (!line[i].on || line[i].intron || line[i].return_type!=type)
-		--i;
+	
+	while (!line[i].on || line[i].intron || line[i].return_type != type){
+		if (line[i].return_type != type && !line[i].intron && line[i].on){
+			if (type == 'f' && line[i].arity_float > 0) {
+				i -= line[i].arity_float;
+			}
+			else if (type == 'b' && line[i].arity_bool > 0) {
+				i -= line[i].arity_bool;
+			}
+			else
+				--i;
+		}
+		else
+			--i;
+		assert(i > -1);
+	}
+	int k = i;
 
 	j = i;
 	
-	if (line[i].arity() == 0) {
-		//cout << line[i].c ;
+	if (line[i].arity() == 0) 
 		return line[i].c;
-	}
 	else {
 		
-		int added = 0;
+		//int added = 0;
 		int comp = 0;
-		int k = j;
-		while (added<line[i].arity_float) {
-			++added; // can't guarantee that updated i-added will traverse the last value added. need better way to do this...				
+		//int k = i;		
+		
+		for (int f = 0; f < line[i].arity_float; ++f) {		
 			comp += line[i].c * recComplexity2(line, j - 1, j,'f');
 		}
 		
-		added = 0;
-		while (added<line[i].arity_bool) {
-			++added; // can't guarantee that updated i-added will traverse the last value added. need better way to do this...				
+		if (k != i)
+			cout << "wth\n";
+		for (int b = 0; b < line[i].arity_bool; ++b) {				
 			comp += line[i].c * recComplexity2(line, k - 1, k, 'b');
 		}
 		comp += line[i].c;
 		return comp;
 	}
 }
+void eval_complexity(const node& n, vector<int>& c_float, vector<int>& c_bool)
+{
+	//float n1, n2;
+	//bool b1, b2;
+	if (c_float.size() >= n.arity_float && c_bool.size() >= n.arity_bool) {
+		int c_f = 0;
+		int c_b = 0;
 
+		if (n.type == 'n' || n.type == 'v')
+			c_float.push_back(n.c);
+		else {
+			for (size_t i = 0; i < n.arity_float; ++i) {
+				c_f += c_float.back();
+				c_float.pop_back();
+			}
+			for (size_t i = 0; i < n.arity_bool; ++i) {
+				c_b += c_bool.back();
+				c_bool.pop_back();
+			}
+			if (n.return_type == 'f')
+				c_float.push_back(n.c*(c_f + c_b + 1));
+			else
+				c_bool.push_back(n.c*(c_f + c_b + 1));
+		}
+	}
+
+}
 int getComplexity(ind& me, params& p)
 {	
 	int complexity = 0;
-	/*for (int i = 0; i<line.size(); ++i){
-		if (line[i].on){
-			complexity += line[i].c; 
-		}
-	}
-	return complexity;*/
-	
-	
-	int a = 1;
-	int i = me.line.size()-1;
-	/*while (a > 0 && i >= 0)
-	{
-		if (me.line[i].on && !me.line[i].intron){
-			
-			complexity += me.line[i].c;
-			--a;
-			a += me.line[i].arity_float;
-		}
-		--i;
-	}*/
-	//cout << me.eqn_form << ", c = ";
-	int j = 0;
-	
-	if (p.classification && p.class_m3gp){
-		complexity = 0;
-		vector<unsigned> roots;
-		find_root_nodes(me.line, roots);
-		for (int i = 0; i < roots.size(); ++i) {
-			j = roots[i];
-			complexity += recComplexity(me.line, int(roots[i]), j);
-		}
-	}
-	else
-		complexity = recComplexity2(me.line, i, j,'f');
 
-	//cout << "=" << complexity << "\n";
-	/*if (complexity < me.eff_size)
-		cout << "complexity error";*/
+	vector<int> c_float;
+	vector<int> c_bool;
+
+	for (size_t i = 0; i < me.line.size(); ++i) 
+		if (me.line[i].on) eval_complexity(me.line[i], c_float, c_bool);
+
+	if (c_float.empty())
+		complexity = p.max_fit;
+	else if (p.classification && p.class_m3gp) 
+		complexity = accumulate(c_float.begin(), c_float.end(), 0);
+	else
+		complexity = c_float.back();
 
 	return complexity;
 }
@@ -488,6 +502,7 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 		n.intron= n.intron && true; // only set it to intron if it isn't used in any of the execution
 
 }
+
 void FitnessEstimate(vector<ind>& pop,params& p,Data& d,state& s,FitnessEstimator& FE);
 void StandardFitness(ind& me,params& p,Data& d,state& s,FitnessEstimator& FE, unordered_map<string,float*>& datatable, vector<float>& dattovar);
 void LexicaseFitness(ind& me,params& p,Data& d,state& s,FitnessEstimator& FE);

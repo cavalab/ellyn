@@ -303,18 +303,18 @@ int load_pop(vector<ind>& pop,params& p,state& s)
     //s.reserve(is.rdbuf()->in_avail());
 	int i=0;
 	int j=0;
-	while(!fs.eof() && i<p.popsize)
+	while(!fs.eof() && i<=p.popsize)
     {		
 		getline(fs,s0,'\n');
 		istringstream ss(s0);
 		ss >> varname;
 
-		if(varname.compare(0,6,"gline:") == 0)
+		if(varname.compare(0,6,"gline:") == 0 && i<p.popsize)
 		{
 			//pop.push_back(ind());
 			
 			while (ss>>tmps){
-				if (tmps.compare("+")==0 || tmps.compare("-")==0 || tmps.compare("*")==0 || tmps.compare("/")==0 || tmps.compare("s")==0 || tmps.compare("c")==0 || tmps.compare("e")==0 || tmps.compare("l")==0) // operator node
+				if (tmps.compare("+")==0 || tmps.compare("-")==0 || tmps.compare("*")==0 || tmps.compare("/")==0 || tmps.compare("s")==0 || tmps.compare("c")==0 || tmps.compare("e")==0 || tmps.compare("l")==0 || tmps.compare("!") == 0 || tmps.compare("=") == 0 || tmps.compare("<") == 0 || tmps.compare(">") == 0 || tmps.compare("{") == 0 || tmps.compare("}")==0 || tmps.compare("i") == 0 || tmps.compare("t") == 0 || tmps.compare("&") == 0 || tmps.compare("|") == 0) // operator node
 					pop[i].line.push_back(node(char(tmps[0])));
 				else if (isdigit(tmps[0]) || tmps[0]=='-') // constant node
 					pop[i].line.push_back(node(std::stof(tmps)));
