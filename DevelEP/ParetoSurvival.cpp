@@ -451,7 +451,7 @@ int getNN(int index, int k, int size, SPEA2& S,vector<ind>& pop)
 
 		for (i = 0; i < size; i++)
 		{
-			double my_dist = S.dist[index][i];
+			my_dist = S.dist[index][i];
 			//my_dist = calcDistance(pop[index],pop[i]);
 			/*if (S.dist[index][i]!=-1) 
 				my_dist = S.dist[index][i];
@@ -461,12 +461,11 @@ int getNN(int index, int k, int size, SPEA2& S,vector<ind>& pop)
 			}*/
 			if (my_dist < min_dist && index != i)
 			{
-			if (my_dist > prev_min_dist ||
-				(my_dist == prev_min_dist && i > prev_min_index))
-			{
-				min_dist = my_dist;
-				min_index = i;
-			}
+				if (my_dist > prev_min_dist || (my_dist == prev_min_dist && i > prev_min_index))
+				{
+					min_dist = my_dist;
+					min_index = i;
+				}
 			}
 		}
 		/*if (min_index==-1)

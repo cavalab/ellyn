@@ -65,8 +65,8 @@ const int bitlen( int n )
     // log(n)/log(2) is log2.  
     return ceil(log( double(n) ) / log( float(2.0) ));  
 }
-
-void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s);
+void CalcFitness(ind& me, params& p, vector<vector<float>>& vals, vector<float>& dattovar, vector<float>& target, state& s, bool pass);
+bool CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s);
 void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s);
 void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s);
 float getCorr(vector<float>& output,vector<float>& target,float meanout,float meantarget,int off,float& target_std)
@@ -192,69 +192,69 @@ float std_dev(vector<float>& target,float& meantarget)
 	return sqrt(s);
 }
 
-int recComplexity(vector<node>& line,int i, int &j)
-{
-	while (!line[i].on || line[i].intron) 
-		--i;
-	j = i;
-	int added = 0;
-	if (line[i].arity() == 0){
-		//cout << line[i].c ;
-		return line[i].c;
-	}
-	else{
-		int comp = 0; 
-		while (added<line[i].arity()){
-			++added; // can't guarantee that updated i-added will traverse the last value added. need better way to do this...				
-			comp += line[i].c * recComplexity(line,j-1,j);
-		}
-		comp += line[i].c;
-		return comp;
-	}
-}
-int recComplexity2(vector<node>& line, int i, int& j, char type)
-{
-	
-	while (!line[i].on || line[i].intron || line[i].return_type != type){
-		if (line[i].return_type != type && !line[i].intron && line[i].on){
-			if (type == 'f' && line[i].arity_float > 0) {
-				i -= line[i].arity_float;
-			}
-			else if (type == 'b' && line[i].arity_bool > 0) {
-				i -= line[i].arity_bool;
-			}
-			else
-				--i;
-		}
-		else
-			--i;
-		assert(i > -1);
-	}
-	int k = i;
-
-	j = i;
-	
-	if (line[i].arity() == 0) 
-		return line[i].c;
-	else {
-		
-		//int added = 0;
-		int comp = 0;
-		//int k = i;		
-		
-		for (int f = 0; f < line[i].arity_float; ++f) {		
-			comp += line[i].c * recComplexity2(line, j - 1, j,'f');
-		}
-		
-		if (k != i)
-			cout << "wth\n";
-		for (int b = 0; b < line[i].arity_bool; ++b) {				
-			comp += line[i].c * recComplexity2(line, k - 1, k, 'b');
-		}
-		comp += line[i].c;
-		return comp;
-	}
-}
+//int recComplexity(vector<node>& line,int i, int &j)
+//{
+//	while (!line[i].on || line[i].intron) 
+//		--i;
+//	j = i;
+//	int added = 0;
+//	if (line[i].arity() == 0){
+//		//cout << line[i].c ;
+//		return line[i].c;
+//	}
+//	else{
+//		int comp = 0; 
+//		while (added<line[i].arity()){
+//			++added; // can't guarantee that updated i-added will traverse the last value added. need better way to do this...				
+//			comp += line[i].c * recComplexity(line,j-1,j);
+//		}
+//		comp += line[i].c;
+//		return comp;
+//	}
+//}
+//int recComplexity2(vector<node>& line, int i, int& j, char type)
+//{
+//	
+//	while (!line[i].on || line[i].intron || line[i].return_type != type){
+//		if (line[i].return_type != type && !line[i].intron && line[i].on){
+//			if (type == 'f' && line[i].arity_float > 0) {
+//				i -= line[i].arity_float;
+//			}
+//			else if (type == 'b' && line[i].arity_bool > 0) {
+//				i -= line[i].arity_bool;
+//			}
+//			else
+//				--i;
+//		}
+//		else
+//			--i;
+//		assert(i > -1);
+//	}
+//	int k = i;
+//
+//	j = i;
+//	
+//	if (line[i].arity() == 0) 
+//		return line[i].c;
+//	else {
+//		
+//		//int added = 0;
+//		int comp = 0;
+//		//int k = i;		
+//		
+//		for (int f = 0; f < line[i].arity_float; ++f) {		
+//			comp += line[i].c * recComplexity2(line, j - 1, j,'f');
+//		}
+//		
+//		if (k != i)
+//			cout << "wth\n";
+//		for (int b = 0; b < line[i].arity_bool; ++b) {				
+//			comp += line[i].c * recComplexity2(line, k - 1, k, 'b');
+//		}
+//		comp += line[i].c;
+//		return comp;
+//	}
+//}
 void eval_complexity(const node& n, vector<int>& c_float, vector<int>& c_bool)
 {
 	//float n1, n2;
@@ -576,9 +576,14 @@ void StandardFitness(ind& me,params& p,Data& d,state& s,FitnessEstimator& FE,uno
 							
 // calculate error 
 		if(!p.EstimateFitness){
-			if(p.classification && p.class_m3gp)  Calc_M3GP_Output(me,p,d.vals,dattovar,d.target,s);
-			else if (p.classification)  CalcClassOutput(me,p,d.vals,dattovar,d.target,s);
-			else CalcOutput(me,p,d.vals,dattovar,d.target,s);
+			if(p.classification && p.class_m3gp)  
+				Calc_M3GP_Output(me,p,d.vals,dattovar,d.target,s);
+			else if (p.classification)  
+				CalcClassOutput(me,p,d.vals,dattovar,d.target,s);
+			else {
+				pass = CalcOutput(me, p, d.vals, dattovar, d.target, s);
+				CalcFitness(me, p, d.vals, dattovar, d.target, s, pass);
+			}
 		} // if not estimate fitness 
 		else{ 
 // use fitness estimator subset of d.vals ===========================================================	
@@ -622,22 +627,171 @@ void StandardFitness(ind& me,params& p,Data& d,state& s,FitnessEstimator& FE,uno
 			
 			 
 }
-void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s)
+void CalcFitness(ind& me, params& p, vector<vector<float>>& vals, vector<float>& dattovar, vector<float>& target, state& s, bool pass)
+{
+	float q = 0;
+	float var_target = 0;
+	float var_ind = 0;
+	float meanout = 0;
+	float meantarget = 0;
+	float meanout_v = 0;
+	float meantarget_v = 0;
+	float target_std = 1000;
+	float target_std_v = 1000;
+	
+	unsigned int ndata_t, ndata_v; // training and validation data sizes
+	if (p.train) {
+		ndata_t = vals.size()*p.train_pct;
+		ndata_v = vals.size() - ndata_t;
+	}
+	else {
+		ndata_t = vals.size();
+		ndata_v = 0;
+	}
+	
+	if (pass) {
+		for (unsigned int sim = 0; sim<vals.size(); ++sim)
+		{		
+
+			if ((p.train && sim<ndata_t) || (!p.train)) {
+
+				if (p.weight_error)
+					me.abserror += p.error_weight[sim] * abs(target.at(sim) - me.output.at(sim));
+				else
+					me.abserror += abs(target.at(sim) - me.output.at(sim));
+
+				if (p.sel == 3) // lexicase error vector
+					me.error.push_back(abs(target.at(sim) - me.output.at(sim)));
+
+				meantarget += target.at(sim);
+				meanout += me.output[sim];
+			}
+			else //validation set
+			{
+			
+				if (p.weight_error)
+					me.abserror_v += p.error_weight[sim] * abs(target[sim] - me.output_v[sim - ndata_t]);
+				else
+					me.abserror_v += abs(target[sim] - me.output_v[sim - ndata_t]);
+
+				meantarget_v += target.at(sim);
+				meanout_v += me.output_v[sim - ndata_t];
+			}
+		
+		}
+	
+		assert(me.output.size() == ndata_t);
+		// mean absolute error
+		me.abserror = me.abserror / ndata_t;
+		meantarget = meantarget / ndata_t;
+		meanout = meanout / ndata_t;
+		//calculate correlation coefficient
+		me.corr = getCorr(me.output, target, meanout, meantarget, 0, target_std);
+		me.VAF = VAF(me.output, target, meantarget, 0);
+
+		if (p.train) // calc validation fitness
+		{
+			q = 0;
+			var_target = 0;
+			var_ind = 0;
+			// mean absolute error
+			me.abserror_v = me.abserror_v / ndata_v;
+			meantarget_v = meantarget_v / ndata_v;
+			meanout_v = meanout_v / ndata_v;
+			//calculate correlation coefficient
+			me.corr_v = getCorr(me.output_v, target, meanout_v, meantarget_v, ndata_t, target_std_v);
+			me.VAF_v = VAF(me.output_v, target, meantarget_v, ndata_t);
+		}
+	}
+	else {
+		me.corr = 0;
+		me.corr_v = 0;
+		me.VAF = 0;
+		me.VAF_v = 0;
+		me.abserror = p.max_fit;
+	}
+
+
+	if (me.corr < p.min_fit)
+		me.corr = p.min_fit;
+	if (me.VAF < p.min_fit)
+		me.VAF = p.min_fit;
+
+	if (me.output.empty())
+		me.fitness = p.max_fit;
+	else if (boost::math::isnan(me.abserror) || boost::math::isinf(me.abserror) || boost::math::isnan(me.corr) || boost::math::isinf(me.corr))
+		me.fitness = p.max_fit;
+	else {
+		if (p.fit_type == 1)
+			me.fitness = me.abserror;
+		else if (p.fit_type == 2)
+			me.fitness = 1 - me.corr;
+		else if (p.fit_type == 3)
+			me.fitness = me.abserror / me.corr;
+		else if (p.fit_type == 4)
+			me.fitness = 1 - me.VAF / 100;
+		if (p.norm_error)
+			me.fitness = me.fitness / target_std;
+	}
+
+
+	if (me.fitness>p.max_fit)
+		me.fitness = p.max_fit;
+	else if (me.fitness<p.min_fit)
+		(me.fitness = p.min_fit);
+
+	if (p.train) { //assign validation fitness
+
+		if (me.corr_v < p.min_fit)
+			me.corr_v = p.min_fit;
+		if (me.VAF_v < p.min_fit)
+			me.VAF_v = p.min_fit;
+
+		if (me.output_v.empty())
+			me.fitness_v = p.max_fit;
+		else if (boost::math::isnan(me.abserror_v) || boost::math::isinf(me.abserror_v) || boost::math::isnan(me.corr_v) || boost::math::isinf(me.corr_v))
+			me.fitness_v = p.max_fit;
+		else {
+			if (p.fit_type == 1)
+				me.fitness_v = me.abserror_v;
+			else if (p.fit_type == 2)
+				me.fitness_v = 1 - me.corr_v;
+			else if (p.fit_type == 3)
+				me.fitness_v = me.abserror_v / me.corr_v;
+			else if (p.fit_type == 4)
+				me.fitness_v = 1 - me.VAF_v / 100;
+			if (p.norm_error)
+				me.fitness_v = me.fitness_v / target_std_v;
+		}
+
+
+		if (me.fitness_v>p.max_fit)
+			me.fitness_v = p.max_fit;
+		else if (me.fitness_v<p.min_fit)
+			(me.fitness_v = p.min_fit);
+	}
+	else { // if not training, assign copy of regular fitness to the validation fitness variables
+		me.corr_v = me.corr;
+		me.abserror_v = me.abserror;
+		me.VAF_v = me.VAF;
+		me.fitness_v = me.fitness;
+	}
+
+}
+bool CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s)
 {		
 	vector<float> stack_float;
 	vector<bool> stack_bool;
 	me.reset_introns();
 	me.output.resize(0); 
 	me.output_v.resize(0);
+
 	if (p.sel==3) 
 		me.error.resize(0);
-	float SStot=0;
-	float SSreg=0;
-	float SSres=0;
+
 	float q = 0;
 	float var_target = 0;
 	float var_ind = 0;
-	bool pass = true;
 	float meanout=0;
 	float meantarget=0;
 	float meanout_v=0;
@@ -654,20 +808,20 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 		ndata_t = vals.size();
 		ndata_v=0;
 	}
+	//reserve memory for output
 	me.output.reserve(ndata_t);
 	me.output_v.reserve(ndata_v);
-	//if (p.eHC_on && p.eHC_slim){ me.stack_float.resize(0); me.stack_float.reserve((me.eff_size)*vals.size());}
+
 	if (p.eHC_on && p.eHC_slim)
 	{ 
 		me.stack_float.resize((me.eff_size)*vals.size());
 		me.stack_floatlen.resize(0);
 		me.stack_floatlen.reserve(me.eff_size);
 	}
-	//stack_float.reserve(me.eff_size/2);
-	 
+
+	 // loop over data
 	for(unsigned int sim=0;sim<vals.size();++sim)
-		{
-			//if (p.eHC_slim) me.stack_float.push_back(vector<float>());
+		{			
 			int k_eff=0;
 
 			for (unsigned int j=0; j<p.allvars.size()-p.AR_n;++j) //wgl: add time delay of output variable here 
@@ -689,11 +843,9 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 					}
 				}
 			}
+			// evaluate program
 			for(int k=0;k<me.line.size();++k){
-				/*if(me.line.at(k).type=='v'){
-					if (static_pointer_cast<n_sym>(me.line.at(k)).valpt==NULL)
-						cout<<"WTF";
-				}*/
+
 				if (me.line.at(k).on){
 					//me.line.at(k).eval(stack_float);
 					eval(me.line.at(k),stack_float,stack_bool);
@@ -703,196 +855,29 @@ void CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 						if(!stack_float.empty()) me.stack_float[k_eff*vals.size() + sim] = stack_float.back();
 						else me.stack_float[k_eff*vals.size() + sim] = 0;
 						if (sim==0) me.stack_floatlen.push_back(stack_float.size());
-						/*if(!stack_float.empty()) me.stack_float.push_back(stack_float.back());
-						else me.stack_float.push_back(0);*/
+
 					}
 					++k_eff;
-					/*else
-						cout << "hm";*/
 				}
-			}
-			/*if (stack_float.size()>1)
-				cout << "non-tree\n";*/
+			} // program for loop
 
-			//if(!(!p.classification && stack_float.empty()) && !(p.classification && stack_bool.empty())){
-			  if(!stack_float.empty()){	
-
-				if ((p.train && sim<ndata_t) || (!p.train)){
-						me.output.push_back(stack_float.back());						
-						
-						if (p.weight_error)
-							me.abserror += p.error_weight[sim]*abs(target.at(sim)-me.output.at(sim));
-						else
-							me.abserror += abs(target.at(sim)-me.output.at(sim));
-
-						if (p.sel==3) // lexicase error vector
-							me.error.push_back(abs(target.at(sim)-me.output.at(sim)));						
-						
-						meantarget += target.at(sim);
-						meanout += me.output[sim];
-					}
-					else //validation set
-					{
-						me.output_v.push_back(stack_float.back());
-
-						if(p.weight_error)
-							me.abserror_v += p.error_weight[sim]*abs(target[sim]-me.output_v[sim-ndata_t]);
-						else
-							me.abserror_v += abs(target[sim]-me.output_v[sim-ndata_t]);
-						
-						meantarget_v += target.at(sim);
-						meanout_v += me.output_v[sim-ndata_t];
-					}
-			} //stack_float empty check
-			else{
-				pass=false;
-				break;
-				}
+			if (stack_float.empty()) //stack_float empty check
+				return false;
+			else{ // push top of stack to output
+				if ((p.train && sim<ndata_t) || (!p.train))
+						me.output.push_back(stack_float.back());		
+				else //validation set
+					me.output_v.push_back(stack_float.back());
+			} 
+			//reset stacks				
 			stack_float.resize(0);
 			stack_bool.resize(0);
-		}
-		if (pass){
-			assert(me.output.size()==ndata_t);
-			// mean absolute error
-			me.abserror = me.abserror/ndata_t;
-			meantarget = meantarget/ndata_t;
-			meanout = meanout/ndata_t;
-			//calculate correlation coefficient
-			me.corr = getCorr(me.output,target,meanout,meantarget,0,target_std);
-			me.VAF = VAF(me.output,target,meantarget,0);
-			if (me.corr < 0.001 && me.VAF/100 > .7){
-				s.out << "Error in VAF calculation (probably):\n";
-				s.out << me.eqn; 
-				s.out << "meantarget: " << meantarget << "\n";
-				s.out << "corr: " << me.corr << "\n";
-				s.out << "VAF: " << me.VAF << "\n";
-				s.out << "output: \t";
+		} // data for loop
 
-				for (int i = 0; i<me.output.size(); ++i){
-					s.out << me.output[i] << "\t";
-				}
-				s.out << "\ntarget: \t";
-				for (int i = 0; i<me.output.size(); ++i){
-					s.out << target[i] << "\t";
-				}
-				s.out << "\n recalculating with VAF_loud...\n";
-				me.VAF = VAF_loud(me.output,target,meantarget,0,s);
-				s.out << "\n setting VAF = 0 and continuing...\n";
-				me.VAF=0;
-			}
-			if (p.train)
-			{
-				q = 0;
-				var_target = 0;
-				var_ind = 0;
-					// mean absolute error
-				me.abserror_v = me.abserror_v/ndata_v;
-				meantarget_v = meantarget_v/ndata_v;
-				meanout_v = meanout_v/ndata_v;
-				//calculate correlation coefficient
-				me.corr_v = getCorr(me.output_v,target,meanout_v,meantarget_v,ndata_t,target_std_v);
-				me.VAF_v = VAF(me.output_v,target,meantarget_v,ndata_t);
-			}
-		}
-
-		if (me.eqn.compare("1")==0 && me.corr > 0.0001)
-				cout << "caught\n";
-
-			if (!pass){
-				me.corr = 0;
-				me.VAF = 0;
-				me.abserror = p.max_fit;
-			}
-						
-
-			if(me.corr < p.min_fit)
-				me.corr=p.min_fit;
-			if(me.VAF < p.min_fit)
-				me.VAF=p.min_fit;
-
-		    if(me.output.empty())
-				me.fitness=p.max_fit;
-			else if ( boost::math::isnan(me.abserror) || boost::math::isinf(me.abserror) || boost::math::isnan(me.corr) || boost::math::isinf(me.corr))
-				me.fitness=p.max_fit;
-			else{
-				if (p.fit_type==1)
-					me.fitness = me.abserror;
-				else if (p.fit_type==2)
-					me.fitness = 1-me.corr;
-				else if (p.fit_type==3)
-					me.fitness = me.abserror/me.corr;
-				else if (p.fit_type==4)
-					me.fitness = 1-me.VAF/100;
-				if (p.norm_error)
-					me.fitness = me.fitness/target_std;
-			}
-
-		
-			if(me.fitness>p.max_fit)
-				me.fitness=p.max_fit;
-			else if(me.fitness<p.min_fit)
-				(me.fitness=p.min_fit);
-
-			if(p.train){ //assign validation fitness
-				if (!pass){
-					me.corr_v = 0;
-					me.VAF_v = 0;
-				}
-						
-
-				if(me.corr_v < p.min_fit)
-					me.corr_v=p.min_fit;
-				if(me.VAF_v < p.min_fit)
-					me.VAF_v=p.min_fit;
-
-				if(me.output_v.empty())
-					me.fitness_v=p.max_fit;
-				/*else if (*std::max_element(me.output_v.begin(),me.output_v.end())==*std::min_element(me.output_v.begin(),me.output_v.end()))
-					me.fitness_v=p.max_fit;*/
-				else if ( boost::math::isnan(me.abserror_v) || boost::math::isinf(me.abserror_v) || boost::math::isnan(me.corr_v) || boost::math::isinf(me.corr_v))
-					me.fitness_v=p.max_fit;
-				else{
-					if (p.fit_type==1)
-						me.fitness_v = me.abserror_v;
-					else if (p.fit_type==2)
-						me.fitness_v = 1-me.corr_v;
-					else if (p.fit_type==3)
-						me.fitness_v = me.abserror_v/me.corr_v;
-					else if (p.fit_type==4)
-						me.fitness_v = 1-me.VAF_v/100;
-					if (p.norm_error)
-						me.fitness_v = me.fitness_v/target_std_v;
-
-				}
-
-		
-				if(me.fitness_v>p.max_fit)
-					me.fitness_v=p.max_fit;
-				else if(me.fitness_v<p.min_fit)
-					(me.fitness_v=p.min_fit);
-			}
-			else{ // if not training, assign copy of regular fitness to the validation fitness variables
-				me.corr_v=me.corr;
-				me.abserror_v=me.abserror;
-				me.VAF_v = me.VAF;
-				me.fitness_v=me.fitness;
-			}
-			//if (p.estimate_generality || p.PS_sel==2){
-			//	if (me.fitness == p.max_fit || me.fitness_v== p.max_fit)
-			//		me.genty = p.max_fit;
-			//	else{
-			//		if (p.G_sel==1) // MAE
-			//			me.genty = abs(me.abserror-me.abserror_v)/me.abserror;
-			//		else if (p.G_sel==2) // R2
-			//			me.genty = abs(me.corr-me.corr_v)/me.corr;
-			//		else if (p.G_sel==3) // MAE R2 combo
-			//			me.genty = abs(me.abserror/me.corr-me.abserror_v/me.corr_v)/(me.abserror/me.corr);
-			//		else if (p.G_sel==3) // VAF
-			//			me.genty = abs(me.VAF-me.VAF_v)/me.VAF;
-			//	}
-			//}
-			int tmp = omp_get_thread_num();
+		// set point evaluations
 		s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
+
+		return true;
 }
 void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s)
 {
