@@ -101,6 +101,42 @@ float getCorr(vector<float>& output,vector<float>& target,float meanout,float me
 	target_std = sqrt(var_target);
 	return corr;
 }
+void getCorr_lex(vector<float>& output, vector<float>& target, float meanout, float meantarget, vector<float>& err_lex)
+{
+	vector<float> v1, v2;
+	float var_target = 0;
+	float var_ind = 0;
+	float q = 0;
+	float ndata = float(output.size());
+	float corr;
+	bool combo;
+
+	if (err_lex.empty())
+		combo = false;
+	else
+		combo = true;
+
+	//calculate correlation coefficient
+	for (unsigned int c = 0; c < output.size(); ++c)
+	{
+		v1.push_back(target[c] - meantarget);
+		v2.push_back(output[c] - meanout);
+		var_target += pow(v1[c], 2);
+		var_ind += pow(v2[c], 2);
+	}
+	//var_target = var_target / (ndata - 1); //unbiased esimator
+	//var_ind = var_ind / (ndata - 1); //unbiased esimator
+	for (unsigned int c = 0; c < output.size(); ++c)
+	{
+		if (combo) {
+			err_lex[c] /= max(pow(v1[c]*v2[c]/(ndata-1), 2) / (var_target*var_ind), float(0.00000001)); 
+		}
+		else
+			//err_lex.push_back(1-pow(v1[c] * v2[c] / (ndata - 1), 2) / (var_target*var_ind));
+			err_lex.push_back(1-abs(v1[c] * v2[c])/(sqrt(var_target)*sqrt(var_ind)));		
+	}
+	//corr = accumulate(err_lex.begin(), err_lex.end(), 0.0);
+}
 float VAF_loud(vector<float>& output,vector<float>& target,float meantarget,int off,state& s)
 {
 	float v1,v2;
@@ -192,69 +228,6 @@ float std_dev(vector<float>& target,float& meantarget)
 	return sqrt(s);
 }
 
-//int recComplexity(vector<node>& line,int i, int &j)
-//{
-//	while (!line[i].on || line[i].intron) 
-//		--i;
-//	j = i;
-//	int added = 0;
-//	if (line[i].arity() == 0){
-//		//cout << line[i].c ;
-//		return line[i].c;
-//	}
-//	else{
-//		int comp = 0; 
-//		while (added<line[i].arity()){
-//			++added; // can't guarantee that updated i-added will traverse the last value added. need better way to do this...				
-//			comp += line[i].c * recComplexity(line,j-1,j);
-//		}
-//		comp += line[i].c;
-//		return comp;
-//	}
-//}
-//int recComplexity2(vector<node>& line, int i, int& j, char type)
-//{
-//	
-//	while (!line[i].on || line[i].intron || line[i].return_type != type){
-//		if (line[i].return_type != type && !line[i].intron && line[i].on){
-//			if (type == 'f' && line[i].arity_float > 0) {
-//				i -= line[i].arity_float;
-//			}
-//			else if (type == 'b' && line[i].arity_bool > 0) {
-//				i -= line[i].arity_bool;
-//			}
-//			else
-//				--i;
-//		}
-//		else
-//			--i;
-//		assert(i > -1);
-//	}
-//	int k = i;
-//
-//	j = i;
-//	
-//	if (line[i].arity() == 0) 
-//		return line[i].c;
-//	else {
-//		
-//		//int added = 0;
-//		int comp = 0;
-//		//int k = i;		
-//		
-//		for (int f = 0; f < line[i].arity_float; ++f) {		
-//			comp += line[i].c * recComplexity2(line, j - 1, j,'f');
-//		}
-//		
-//		if (k != i)
-//			cout << "wth\n";
-//		for (int b = 0; b < line[i].arity_bool; ++b) {				
-//			comp += line[i].c * recComplexity2(line, k - 1, k, 'b');
-//		}
-//		comp += line[i].c;
-//		return comp;
-//	}
-//}
 void eval_complexity(const node& n, vector<int>& c_float, vector<int>& c_bool)
 {
 	//float n1, n2;
@@ -660,7 +633,7 @@ void CalcFitness(ind& me, params& p, vector<vector<float>>& vals, vector<float>&
 				else
 					me.abserror += abs(target.at(sim) - me.output.at(sim));
 
-				if (p.sel == 3) // lexicase error vector
+				if (p.sel == 3 && p.fit_type==1 || p.fit_type==3) // lexicase error vector
 					me.error.push_back(abs(target.at(sim) - me.output.at(sim)));
 
 				meantarget += target.at(sim);
@@ -679,12 +652,20 @@ void CalcFitness(ind& me, params& p, vector<vector<float>>& vals, vector<float>&
 			}
 		
 		}
-	
+		
 		assert(me.output.size() == ndata_t);
 		// mean absolute error
 		me.abserror = me.abserror / ndata_t;
 		meantarget = meantarget / ndata_t;
 		meanout = meanout / ndata_t;
+		// lexicase fitness 
+		if (p.sel == 3 && p.fit_type != 1) {
+			if (p.fit_type == 2 || 3) //correlation
+				getCorr_lex(me.output, target, meanout, meantarget, me.error);
+			//else if (p.fit_type == 4 )
+				//VAF_lex(me.output, target, meanout, meantarget, me.error);
+				
+		}
 		//calculate correlation coefficient
 		me.corr = getCorr(me.output, target, meanout, meantarget, 0, target_std);
 		me.VAF = VAF(me.output, target, meantarget, 0);
@@ -1204,7 +1185,6 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 			int tmp = omp_get_thread_num();
 		s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
 }
-
 void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s)
 {		
 	vector<float> stack_float;

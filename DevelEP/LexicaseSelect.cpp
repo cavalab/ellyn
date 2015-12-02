@@ -8,6 +8,19 @@
 #include "Generationfns.h"
 #include "Fitness.h"
 
+float std_dev(vector<float>& x) {
+	
+	// get mean of x
+	float mean = std::accumulate(x.begin(), x.end(), 0.0)/x.size();
+	//calculate variance
+	float var = 0;
+	for (vector<float>::iterator it = x.begin(); it != x.end(); ++it)
+		var += pow(*it - mean,2);
+
+	var /= (x.size()-1);
+	return sqrt(var);
+
+}
 void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r,Data& d)
 {
 	// add metacases if needed
@@ -26,6 +39,8 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 				pop[j].error.push_back(pop[j].dim);
 		}
 	}
+	
+	
 	//boost::progress_timer timer;
 	//vector<float> fitcompare;
 	vector<int> pool; // pool from which to choose parent. normally it is set to the whole population.
@@ -43,6 +58,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 				pool.push_back(i);
 		}
 	}
+
 	vector <int> starting_pool = pool;
 	vector <int> case_order;
 	for(int i=0;i<pop[pool[0]].error.size();++i)
@@ -55,6 +71,72 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 	int h;
 	
 	int tmp;
+
+	// epsilon lexicase implementations
+	if (p.lex_eps_error) // errors within episilon of the best error are pass, otherwise fail
+	{
+		// get minimum error on each case
+		vector<float> min_error(numcases - p.lex_metacases.size(),p.max_fit);
+
+		for (size_t i = 0; i < numcases - p.lex_metacases.size(); ++i) {
+			for (size_t j = 0; j < pool.size(); ++j) {
+				if (pop[pool[j]].error[i] < min_error[i])
+					min_error[i] = pop[pool[j]].error[i];
+			}
+		}
+		for (size_t i = 0; i < pool.size(); ++i) {
+			// check if error is within epsilon
+			for (size_t j = 0; j < numcases - p.lex_metacases.size(); ++j) {
+				if (pop[pool[i]].error[j] <= (1+p.lex_epsilon)*min_error[j])
+					pop[pool[i]].error[j] = 0;
+				else
+					pop[pool[i]].error[j] = 1;
+			}
+
+		}
+
+	}
+	else if (p.lex_eps_target) // errors within epsilon of the target are pass, otherwise fail
+	{
+		for (size_t i = 0; i < pool.size(); ++i) {
+			// check if error is within epsilon
+			for (size_t j = 0; j < numcases - p.lex_metacases.size(); ++j) {
+				if (pop[pool[i]].error[j] <= p.lex_epsilon)
+					pop[pool[i]].error[j] = 0;
+				else
+					pop[pool[i]].error[j] = 1;
+			}
+
+		}
+	}
+	else if (p.lex_eps_std) // errors in a standard dev of the best are pass, otherwise fail
+	{
+		// get minimum error on each case
+		vector<float> min_error(numcases - p.lex_metacases.size(), p.max_fit);
+		vector<float> std_error(numcases - p.lex_metacases.size());
+
+		for (size_t i = 0; i < numcases - p.lex_metacases.size(); ++i) {
+			vector<float> case_error(pool.size());
+			for (size_t j = 0; j < pool.size(); ++j) {
+				if (pop[pool[j]].error[i] < min_error[i])
+					min_error[i] = pop[pool[j]].error[i];
+
+				case_error[j] = pop[pool[j]].error[i];
+			}
+			std_error[i] = 0.95*std_dev(case_error)/sqrt(float(pool.size()));
+		}
+		for (size_t i = 0; i < pool.size(); ++i) {
+			// check if error is within epsilon
+			for (size_t j = 0; j < numcases - p.lex_metacases.size(); ++j) {
+				if (pop[pool[i]].error[j] <= min_error[j]+std_error[j])
+					pop[pool[i]].error[j] = 0;
+				else
+					pop[pool[i]].error[j] = 1;
+			}
+
+		}
+	}
+
 	// for each selection event:
 	for (int i=0;i<parloc.size();++i)
 	{

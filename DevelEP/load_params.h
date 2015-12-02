@@ -286,13 +286,19 @@ void load_params(params &p, std::ifstream& fs)
 				p.lex_metacases.push_back(tmps);
 		}
 		else if(varname.compare("lex_class")==0)
-		{
 			ss >> p.lex_class;
-		}
 		else if(varname.compare("weight_error")==0)
 			ss >> p.weight_error;
 		else if(varname.compare("print_protected_operators")==0)
 			ss >> p.print_protected_operators;
+		else if (varname.compare("lex_eps_error") == 0)
+			ss >> p.lex_eps_error;
+		else if (varname.compare("lex_eps_target") == 0)
+			ss >> p.lex_eps_target;
+		else if (varname.compare("lex_eps_std") == 0)
+			ss >> p.lex_eps_std;
+		else if (varname.compare("lex_epsilon") == 0)
+			ss >> p.lex_epsilon;
 		else{}
     }
 	p.allvars = p.intvars;

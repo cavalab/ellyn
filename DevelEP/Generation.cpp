@@ -87,9 +87,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s
 			break;
 		}
 	case 3: // lexicase
-		{
-			
-			
+		{		
 
 			vector<unsigned int> parloc(pop.size());
 

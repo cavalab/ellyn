@@ -143,6 +143,10 @@ struct params {
 	bool lexage;// currently not used; up for deletion
 	bool lex_class; // use class-based fitness objectives instead of raw error 
 	vector<string> lex_metacases; // extra cases to be used for lexicase selection
+	bool lex_eps_error; // errors within episilon of the best error are pass, otherwise fail
+	bool lex_eps_target; // errors within epsilon of the target are pass, otherwise fail
+	bool lex_eps_std; // errors in a standard dev of the best are pass, otherwise fail
+	float lex_epsilon; 
 
 	// ==== Printing Options === //
 	//print initial population
@@ -293,7 +297,10 @@ struct params {
 		lexpool = 1;
 		lexage = 0;
 		lex_class = 0;
-		
+		lex_eps_error = false; // errors within episilon of the best error are pass, otherwise fail
+		lex_eps_target = false; // errors within epsilon of the target are pass, otherwise fail
+		lex_eps_std = false; // errors in a standard dev of the best are pass, otherwise fail
+		lex_epsilon = 0.1;
 		//pareto survival setting
 		PS_sel=1;
 

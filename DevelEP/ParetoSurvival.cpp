@@ -81,7 +81,17 @@ int irand(int range);
 void truncate_nondominated(vector<int>& marked_inds, vector<ind>& pop, int& alpha, SPEA2& S);
 void truncate_dominated(vector<int>& marked_inds, vector<ind>& pop, int& alpha, SPEA2& S);
 
+float var(vector<float>& x) {
+	// get mean of x
+	float mean = std::accumulate(x.begin(), x.end(), 0.0) / x.size();
+	//calculate variance
+	float var = 0;
+	for (vector<float>::iterator it = x.begin(); it != x.end(); ++it)
+		var += pow(*it - mean, 2);
 
+	var /= (x.size() - 1);
+	return var;
+}
 void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
 {	
 	// implements SPEA2 environmental selection based on pareto strength and fitness
@@ -113,7 +123,16 @@ void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
 				max_error[j] = pop[i].error[j];
 		}
 	}
-	if(p.PS_sel==6 && p.classification) // objectives are the class-based fitnesses and dimensionality
+	if (p.PS_sel == 7) // age, fitness, variance
+	{
+		for (size_t i = 0; i<pop.size(); ++i) {
+			pop[i].f.resize(0);
+			pop[i].f.push_back(pop[i].fitness / max_fit);
+			pop[i].f.push_back(pop[i].age / max_age);
+			pop[i].f.push_back(var(pop[i].output));
+		}
+	}
+	else if(p.PS_sel==6 && p.classification) // objectives are the class-based fitnesses and dimensionality
 	{ 
 		
 		for (size_t i = 0; i<pop.size(); ++i){
