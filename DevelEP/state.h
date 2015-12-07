@@ -14,6 +14,7 @@ struct state{
 	vector <float> fit_med;
 	vector <float> fit_std;
 	vector <float> size_mean;
+	vector<float> mean_lex_cases;
 	vector <int> size_med;
 	vector <float> size_std;
 	vector <float> eff_size;
@@ -29,7 +30,7 @@ struct state{
 	float good_cross_pct;
 	float neut_cross_pct;
 	float bad_cross_pct; 
-
+	
 	logger out; 
 
 	state()
@@ -42,6 +43,7 @@ struct state{
 		ptevals.assign(nt,0);
 		//ptevals.resize(nt);
 		//numevals.resize(nt);
+		mean_lex_cases.assign(nt, 0);
 		numevals.assign(nt,0);
 		genevals.push_back(0);
 		eHC_updates.assign(nt,0);
@@ -82,6 +84,10 @@ struct state{
 		for(unsigned int i = 0;i<ptevals.size();++i)
 			te+=ptevals.at(i);
 		return te;
+	}
+	float get_mean_lex_cases()
+	{
+		return accumulate(mean_lex_cases.begin(),mean_lex_cases.end(),0.0)/mean_lex_cases.size();
 	}
 	int setPHCupdates()
 	{

@@ -102,7 +102,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s
 			}
 
 			
-			LexicaseSelect(pop,parloc,p,r,d);
+			LexicaseSelect(pop,parloc,p,r,d,s);
 			//if (p.lex_age) vector<ind> tmppop(pop);
 
 			//elitism

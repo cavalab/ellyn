@@ -21,7 +21,7 @@ float std_dev(vector<float>& x) {
 	return sqrt(var);
 
 }
-void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r,Data& d)
+void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r,Data& d,state& s)
 {
 	// add metacases if needed
 	for (unsigned i = 0; i<p.lex_metacases.size(); ++i)
@@ -123,7 +123,9 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 
 				case_error[j] = pop[pool[j]].error[i];
 			}
-			std_error[i] = 0.95*std_dev(case_error)/sqrt(float(pool.size()));
+			//std_error[i] = 0.5*std_dev(case_error)/sqrt(float(pool.size()));
+			std_error[i] = std_dev(case_error);
+
 		}
 		for (size_t i = 0; i < pool.size(); ++i) {
 			// check if error is within epsilon
@@ -136,7 +138,8 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 
 		}
 	}
-
+	// measure average number of cases used
+	float hmean = 0;
 	// for each selection event:
 	for (int i=0;i<parloc.size();++i)
 	{
@@ -191,7 +194,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 				++h;
 				//reduce pool to elite individuals on case case_oder[h]
 				pool = winner; 
-				
+				++hmean;
 				/*for (int i=0; i<fitindex.size();++i)
 					fitcompare.push_back(pop.at(fitindex[i]).error[case_order[h]]);*/
 			} // otherwise, a parent has been chosen or has to be chosen randomly from the remaining pool
@@ -209,6 +212,11 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 			cout << "??";
 		// reset minfit
 		minfit=p.max_fit;
-	}//for (int i=0;i<pop.size();++i)
+	}//for (int i=0;i<parloc.size();++i)
+
+	hmean /= parloc.size();
+	// store mean lex cases used, normalized by the number of cases
+	s.mean_lex_cases[omp_get_thread_num()] = hmean/case_order.size();
+	//cout << "mean num cases used: " << hmean << "\n";
 
 }

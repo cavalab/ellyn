@@ -222,7 +222,7 @@ else{
 	//for(unsigned int j=0;j<min(10,int(A.pop.size()));++j)
 	//	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
 	for(unsigned int j=0;j<besteqns.size();++j){
-		s.out <<besteqns.at(j).abserror << "\t" << besteqns.at(j).corr << "\t" << besteqns.at(j).fitness << "\t" << besteqns.at(j).eqn <<"\n";
+		s.out << setprecision(3) << besteqns.at(j).abserror << "\t" << setprecision(3) << besteqns.at(j).corr << "\t" << setprecision(3) << besteqns.at(j).fitness << "\t" << besteqns.at(j).eqn <<"\n";
 		/*if(boost::math::isnan(besteqns.at(j).abserror))
 		{
 			cout << "equation with NaN error: " + besteqns.at(j).eqn + "\n";	
