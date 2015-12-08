@@ -14,7 +14,8 @@ struct state{
 	vector <float> fit_med;
 	vector <float> fit_std;
 	vector <float> size_mean;
-	vector<float> mean_lex_cases;
+	vector<float> median_lex_cases;
+	vector<float> median_lex_pool;
 	vector <int> size_med;
 	vector <float> size_std;
 	vector <float> eff_size;
@@ -43,7 +44,8 @@ struct state{
 		ptevals.assign(nt,0);
 		//ptevals.resize(nt);
 		//numevals.resize(nt);
-		mean_lex_cases.assign(nt, 0);
+		median_lex_cases.assign(nt, 0);
+		median_lex_pool.assign(nt, 0);
 		numevals.assign(nt,0);
 		genevals.push_back(0);
 		eHC_updates.assign(nt,0);
@@ -85,9 +87,13 @@ struct state{
 			te+=ptevals.at(i);
 		return te;
 	}
-	float get_mean_lex_cases()
+	float get_median_lex_cases()
 	{
-		return accumulate(mean_lex_cases.begin(),mean_lex_cases.end(),0.0)/mean_lex_cases.size();
+		return accumulate(median_lex_cases.begin(),median_lex_cases.end(),0.0)/median_lex_cases.size();
+	}
+	float get_median_lex_pool()
+	{
+		return accumulate(median_lex_pool.begin(), median_lex_pool.end(), 0.0) / median_lex_pool.size();
 	}
 	int setPHCupdates()
 	{

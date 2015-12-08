@@ -81,8 +81,10 @@ void initdatafile(std::ofstream& dfout,string & logname,params& p)
 		dfout << "\t novelty" ;
 	if (p.print_protected_operators)
 		dfout << "\t best_eqn_matlab";
-	if (p.sel == 3)
-		dfout << "\t mean_lex_cases";
+	if (p.sel == 3) {
+		dfout << "\t median_lex_cases";
+		dfout << "\t median_lex_pool";
+	}
 	dfout << "\n";
 	//fout.close(dataname);
 }
@@ -111,8 +113,10 @@ void printdatafile(tribe& T,state& s,params& p, vector<Randclass>& r,std::ofstre
 	}
 	if (p.print_protected_operators)
 		dfout << "\t " + best_ind.eqn_matlab;
-	if (p.sel == 3)
-		dfout << "\t" << s.get_mean_lex_cases();
+	if (p.sel == 3) {
+		dfout << "\t" << s.get_median_lex_cases();
+		dfout << "\t" << s.get_median_lex_pool();
+	}
 	dfout <<"\n";
 
 	//s.clearCross();

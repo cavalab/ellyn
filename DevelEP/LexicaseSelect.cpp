@@ -138,8 +138,10 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 
 		}
 	}
-	// measure average number of cases used
-	float hmean = 0;
+	// measure median number of cases used
+	vector<float> hmedian;
+	// measure median pool size at selection
+	vector<float> sel_size;
 	// for each selection event:
 	for (int i=0;i<parloc.size();++i)
 	{
@@ -194,7 +196,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 				++h;
 				//reduce pool to elite individuals on case case_oder[h]
 				pool = winner; 
-				++hmean;
+				
 				/*for (int i=0; i<fitindex.size();++i)
 					fitcompare.push_back(pop.at(fitindex[i]).error[case_order[h]]);*/
 			} // otherwise, a parent has been chosen or has to be chosen randomly from the remaining pool
@@ -212,11 +214,26 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 			cout << "??";
 		// reset minfit
 		minfit=p.max_fit;
+		hmedian.push_back(h);
+		sel_size.push_back(winner.size());
 	}//for (int i=0;i<parloc.size();++i)
 
-	hmean /= parloc.size();
-	// store mean lex cases used, normalized by the number of cases
-	s.mean_lex_cases[omp_get_thread_num()] = hmean/case_order.size();
+	sort(hmedian.begin(), hmedian.end());
+	sort(sel_size.begin(), sel_size.end());
+	float tmp3 = hmedian[int(floor(float(hmedian.size() / 2)))];
+	float tmp2 = hmedian[int(ceil(float(hmedian.size() / 2)))];
+	float tmp4 = (hmedian[int(floor(float(hmedian.size() / 2)))] + hmedian[int(ceil(float(hmedian.size() / 2)))]) / (2 * case_order.size());
+	// store median lex cases used, normalized by the number of cases
+	if (hmedian.size() %2 ==0)
+		s.median_lex_cases[omp_get_thread_num()] = hmedian[(hmedian.size() / 2)]/case_order.size();
+	else
+		s.median_lex_cases[omp_get_thread_num()] = (hmedian[int(floor(float(hmedian.size() / 2)))] + hmedian[int(ceil(float(hmedian.size() / 2)))])/(2*case_order.size());
+
+	// store median lex pool size at selection, normalized by the population size
+	if (sel_size.size() % 2 == 0)
+		s.median_lex_pool[omp_get_thread_num()] = sel_size[(sel_size.size() / 2)]/pop.size();
+	else
+		s.median_lex_pool[omp_get_thread_num()] = (sel_size[int(floor(float(sel_size.size() / 2)))] + sel_size[int(ceil(float(sel_size.size() / 2)))]) / (2*pop.size());
 	//cout << "mean num cases used: " << hmean << "\n";
 
 }
