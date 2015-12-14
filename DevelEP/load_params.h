@@ -299,6 +299,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss >> p.lex_eps_std;
 		else if (varname.compare("lex_epsilon") == 0)
 			ss >> p.lex_epsilon;
+		else if (varname.compare("test_at_end") == 0)
+			ss >> p.test_at_end;
 		else{}
     }
 	p.allvars = p.intvars;

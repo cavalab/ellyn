@@ -8,6 +8,7 @@
 //#include <random>
 //#include <array>
 #include "op_node.h"
+#include "data.h"
 using namespace std;
 
 struct params {
@@ -37,6 +38,7 @@ struct params {
 	bool train; // choice to turn on training for splitting up the data set
 	float train_pct; // percent of data to use for training (validation pct = 1-train_pct)
 	bool shuffle_data; // shuffle the data
+	bool test_at_end; // only run the test fitness on the population at the end of a run
 
 	bool pop_restart; // restart from previous population
 	string pop_restart_path; // restart population file path 
@@ -89,6 +91,8 @@ struct params {
 	float min_fit;
 	bool weight_error; // weight error vector by predefined weights from data file
 	vector<float> error_weight; // vector of error weights
+	vector<float> class_w; // vector of class weights (proportion of training samples with class n) 
+	vector<float> class_w_v; // vector of class weights (proportion of test samples with class n)
 	// Operator Settings
 	vector <string> op_list;
 	vector <int> op_choice; // map op list to pointer location in makeline() pointer function
@@ -199,6 +203,7 @@ struct params {
 		train=0; // choice to turn on training for splitting up the data set
 		train_pct=0.5; // default split of data is 50/50
 		shuffle_data=0; // shuffle the data
+		test_at_end = 0; // only run the test fitness on the population at the end of a run
 		pop_restart = 0; // restart from previous population
 		pop_restart_path=""; // restart population file path
 		AR = 0;
@@ -318,6 +323,25 @@ struct params {
 	}
 	~params(){}
 
+	void define_class_weights(Data& d) {
+
+		class_w.assign(number_of_classes,0);
+		class_w_v.assign(number_of_classes, 0);
+		for (unsigned int i = 0; i < d.target.size(); ++i) {
+			if (train && i >= d.target.size()*train_pct)
+				++class_w_v[d.target[i]];
+			else
+				++class_w[d.target[i]];
+		}
+		for (unsigned int i = 0; i < number_of_classes; ++i) {
+			if (train) {
+				class_w[i] /= d.target.size()*train_pct;
+				class_w_v[i] /= d.target.size()*(1-train_pct);
+			}
+			else
+				class_w[i] /= d.target.size();
+		}
+	}
 	
 	//void clear()
 	//{

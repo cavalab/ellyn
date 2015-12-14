@@ -129,7 +129,7 @@ void getCorr_lex(vector<float>& output, vector<float>& target, float meanout, fl
 	for (unsigned int c = 0; c < output.size(); ++c)
 	{
 		if (combo) {
-			err_lex[c] /= max(pow(v1[c]*v2[c]/(ndata-1), 2) / (var_target*var_ind), float(0.00000001)); 
+			//err_lex[c] /= std::max(pow(v1[c]*v2[c]/(ndata-1), 2) / (var_target*var_ind), float(0.00000001)); 
 		}
 		else
 			//err_lex.push_back(1-pow(v1[c] * v2[c] / (ndata - 1), 2) / (var_target*var_ind));
@@ -611,11 +611,13 @@ void CalcFitness(ind& me, params& p, vector<vector<float>>& vals, vector<float>&
 	float meantarget_v = 0;
 	float target_std = 1000;
 	float target_std_v = 1000;
-	
+	int sim_size = vals.size();
 	unsigned int ndata_t, ndata_v; // training and validation data sizes
 	if (p.train) {
 		ndata_t = vals.size()*p.train_pct;
 		ndata_v = vals.size() - ndata_t;
+		if (p.test_at_end) // don't run the validation data
+			sim_size = ndata_t;
 	}
 	else {
 		ndata_t = vals.size();
@@ -623,7 +625,7 @@ void CalcFitness(ind& me, params& p, vector<vector<float>>& vals, vector<float>&
 	}
 	
 	if (pass) {
-		for (unsigned int sim = 0; sim<vals.size(); ++sim)
+		for (unsigned int sim = 0; sim<sim_size; ++sim)
 		{		
 
 			if ((p.train && sim<ndata_t) || (!p.train)) {
@@ -670,7 +672,7 @@ void CalcFitness(ind& me, params& p, vector<vector<float>>& vals, vector<float>&
 		me.corr = getCorr(me.output, target, meanout, meantarget, 0, target_std);
 		me.VAF = VAF(me.output, target, meantarget, 0);
 
-		if (p.train) // calc validation fitness
+		if (p.train && !p.test_at_end) // calc validation fitness
 		{
 			q = 0;
 			var_target = 0;
@@ -721,7 +723,7 @@ void CalcFitness(ind& me, params& p, vector<vector<float>>& vals, vector<float>&
 	else if (me.fitness<p.min_fit)
 		(me.fitness = p.min_fit);
 
-	if (p.train) { //assign validation fitness
+	if (p.train && !p.test_at_end) { //assign validation fitness
 
 		if (me.corr_v < p.min_fit)
 			me.corr_v = p.min_fit;
@@ -780,10 +782,13 @@ bool CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 	float target_std=1000;
 	float target_std_v=1000;
 	int ptevals=0;
+	int sim_size = vals.size();
 	unsigned int ndata_t,ndata_v; // training and validation data sizes
 	if (p.train){
 		ndata_t = vals.size()*p.train_pct;
 		ndata_v = vals.size()-ndata_t;
+		if (p.test_at_end) // don't run the validation data
+			sim_size = ndata_t;
 	}
 	else{
 		ndata_t = vals.size();
@@ -801,7 +806,7 @@ bool CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 	}
 
 	 // loop over data
-	for(unsigned int sim=0;sim<vals.size();++sim)
+	for(unsigned int sim=0;sim<sim_size;++sim)
 		{			
 			int k_eff=0;
 
@@ -881,10 +886,13 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 	float var_ind = 0;
 	bool pass = true;
 	int ptevals=0;
+	int sim_size = vals.size();
 	unsigned int ndata_t,ndata_v; // training and validation data sizes
 	if (p.train){
 		ndata_t = vals.size()*p.train_pct;
 		ndata_v = vals.size()-ndata_t;
+		if (p.test_at_end) // don't run the validation data
+			sim_size = ndata_t;
 	}
 	else{
 		ndata_t = vals.size();
@@ -908,7 +916,7 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 	vector<MatrixXf> K(p.number_of_classes); // output subsets by class label
 	
 	// Calculate Output
-	for(unsigned int sim=0;sim<vals.size();++sim)
+	for(unsigned int sim=0;sim<sim_size;++sim)
 		{
 			//if (p.eHC_slim) me.stack_float.push_back(vector<float>());
 			int k_eff=0;
@@ -993,13 +1001,23 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 	/////////////////////////////////////////////////////////////////////
 	VectorXf D(p.number_of_classes);
 	VectorXf D_v(p.number_of_classes);
-	if (pass){
-		bool pass2=true; // pass check for invertible covariance matrix
-		me.M.resize(p.number_of_classes,Z.cols());
-		
-		std::vector<MatrixXf> Cinv(p.number_of_classes, MatrixXf(Z.cols(),Z.cols()));
-		for (int i = 0; i<p.number_of_classes; ++i){
-			me.C.push_back(MatrixXf(Z.cols(),Z.cols()));
+
+	// True postives, false positives, false negatives
+	vector<float> TP(p.number_of_classes, 0);
+	vector<float> FP(p.number_of_classes, 0);
+	vector<float> FN(p.number_of_classes, 0);
+
+	vector<float> TP_v(p.number_of_classes, 0);
+	vector<float> FP_v(p.number_of_classes, 0);
+	vector<float> FN_v(p.number_of_classes, 0);
+
+	if (pass) {
+		bool pass2 = true; // pass check for invertible covariance matrix
+		me.M.resize(p.number_of_classes, Z.cols());
+
+		std::vector<MatrixXf> Cinv(p.number_of_classes, MatrixXf(Z.cols(), Z.cols()));
+		for (int i = 0; i < p.number_of_classes; ++i) {
+			me.C.push_back(MatrixXf(Z.cols(), Z.cols()));
 			//me.M.push_back(vector<float>());
 			//cout << K[i].colwise().mean() << endl;
 			me.M.row(i) << K[i].colwise().mean();
@@ -1008,45 +1026,49 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 			s.out << "K(" << i << ")\n";
 			s.out << K[i] << "\n";*/
 
-			cov(K[i],me.C[i]);
+			cov(K[i], me.C[i]);
 			Eigen::FullPivLU<MatrixXf> check(me.C[i]);
-			if (check.isInvertible()){
+			if (check.isInvertible()) {
 				//s.out << "C: \n";
 				//s.out << me.C[i] << "\n";
 				Cinv[i] = me.C[i].inverse();
 				//s.out << "C^-1:\n";
 				//s.out << Cinv[i] << "\n";
 			}
-			else{
+			else {
 				//s.out << "C: \n";
 				//s.out << me.C[i] << "\n";
 				//Cinv[i] = me.C[i].inverse();
-				Cinv[i] = MatrixXf::Identity(Cinv[i].rows(),Cinv[i].cols());
+				Cinv[i] = MatrixXf::Identity(Cinv[i].rows(), Cinv[i].cols());
 				//s.out << "C^-1:\n";
 				//s.out << Cinv[i] << "\n";
 				//pass=false;
 				//pass2=false;
 			}
-		 
-		
-		
+
+
+
 		}
 		//vector<float> D; // mahalanobis distance on training set
 		//vector<float> D_v; // mahalanobis distance on validation set
-		
+
 		// Calculate Fitness
 		////////////////////////////////////////////////////////////////////////
-		if (pass2){
-			for (int sim=0;sim<vals.size();++sim){
-				if ((p.train && sim<ndata_t) || (!p.train)){
+		
+
+		if (pass2) {
+
+
+			for (int sim = 0; sim < sim_size; ++sim) {
+				if ((p.train && sim < ndata_t) || (!p.train)) {
 					//D.resize(0);
 					//training set mahalanobis distance
-			
-					MahalanobisDistance(Z.row(sim),Cinv,me.M,D,s);
-			
+
+					MahalanobisDistance(Z.row(sim), Cinv, me.M, D, s);
+
 
 					/*s.out << "Z:\n";
-					s.out << Z.row(sim) << "\n"; 
+					s.out << Z.row(sim) << "\n";
 					s.out << "D:\n";
 					s.out << D << "\n";*/
 					//assign class based on minimum distance 
@@ -1057,27 +1079,34 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 					me.output.push_back(float(min_i));
 
 					// assign error
-					if (target[sim]!=me.output[sim]){
+
+					if (target[sim] != me.output[sim]) {
 						++me.abserror;
-						if (p.sel==3){ // lexicase error vector
-							if (p.lex_class) 
+						++FP[me.output[sim]]; // false positives
+						++FN[target[sim]]; // false negatives
+						if (p.sel == 3) { // lexicase error vector
+							if (p.lex_class)
 								++me.error[target[sim]];
 							else
 								me.error.push_back(1);
 						}
-						else if (p.sel==4 && p.PS_sel>=4) // each class is an objective
+						else if (p.sel == 4 && p.PS_sel >= 4) // each class is an objective
 							++me.error[target[sim]];
 
 					}
-					else if (p.sel==3 && !p.lex_class)
-						me.error.push_back(0);
-				//assign error
+					else {
+						++TP[target[sim]]; // true positives
+						if (p.sel == 3 && !p.lex_class)
+							me.error.push_back(0);
+					}
+
+
 				}
-				else{	
+				else {
 					//D_v.resize(0);
 					//validation set mahalanobis distance
-					MahalanobisDistance(Z_v.row(sim-ndata_t),Cinv,me.M,D_v,s);
-			
+					MahalanobisDistance(Z_v.row(sim - ndata_t), Cinv, me.M, D_v, s);
+
 					//assign class based on minimum distance in D_v[sim]
 					//vector<float>::iterator it = min_element(D_v.begin(),D_v.end());
 					//me.output_v.push_back(float(it - D_v.begin()));
@@ -1086,104 +1115,145 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 					//float ans = (min_i);
 					me.output_v.push_back(float(min_i));
 
-					if (target[sim]!=me.output_v[sim-ndata_t])
-							++me.abserror_v;													
-						
-		
-				}
-			}
-		}
-	}
-		/////////////////////////////////////////////////////////////////////////////////
-		if (pass){
-			assert(me.output.size()==ndata_t);
-			// mean absolute error
-			me.abserror = me.abserror/ndata_t;
-			
-			if (p.train)//mean absolute error
-				me.abserror_v = me.abserror_v/ndata_v;
-			
-		}
-
-			if (!pass){
-				me.abserror = p.max_fit;
-			}
-
-
-		    if(me.output.empty())
-				me.fitness=p.max_fit;
-			else if ( boost::math::isnan(me.abserror) || boost::math::isinf(me.abserror) )
-				me.fitness=p.max_fit;
-			else{
-				if (p.fit_type!=1){
-					s.out << "warning: fit_type not set to error. using error anyway (because classification is being output)\n";
-					p.fit_type=1;
-				}
-				me.fitness = me.abserror;
-									
-				/*if (p.norm_error)
-					me.fitness = me.fitness/target_std;*/
-			}
-
-			for (unsigned z=0;z<D.size();++z){
-				if(!boost::math::isfinite(D(z)))
-					me.fitness = p.max_fit;
-			}
-			if(me.fitness>p.max_fit)
-				me.fitness=p.max_fit;
-			else if(me.fitness<p.min_fit)
-				(me.fitness=p.min_fit);
-
-			if(p.train){ //assign validation fitness
-				
-				for (unsigned z=0;z<D_v.size();++z){
-				if(!boost::math::isfinite(D_v(z)))
-					me.fitness = p.max_fit;
-				}
-
-				if(me.output_v.empty())
-					me.fitness_v=p.max_fit;
-				/*else if (*std::max_element(me.output_v.begin(),me.output_v.end())==*std::min_element(me.output_v.begin(),me.output_v.end()))
-					me.fitness_v=p.max_fit;*/
-				else if ( boost::math::isnan(me.abserror_v) || boost::math::isinf(me.abserror_v))
-					me.fitness_v=p.max_fit;
-				else{
-					if (p.fit_type!=1){
-						s.out << "WARNING: fit_type not set to error. using error anyway (because classification is being output)\n";
-						p.fit_type=1;
+					if (target[sim] != me.output_v[sim - ndata_t]) {
+						++me.abserror_v;
+						++FP_v[me.output_v[sim-ndata_t]]; // false positives
+						++FN_v[target[sim]]; // false negatives
 					}
-					me.fitness_v = me.abserror_v;
-					/*if (p.norm_error)
-						me.fitness_v = me.fitness_v/target_std_v;*/
+					else
+						++TP_v[target[sim]]; // true positives
+
 
 				}
+			}
+		} // if pass2
+
+		/////////////////////////////////////////////////////////////////////////////////
+		
+		assert(me.output.size() == ndata_t);
+		// mean absolute error
+		me.abserror = me.abserror / ndata_t;
+
+		if (p.train && !p.test_at_end)//mean absolute error
+			me.abserror_v = me.abserror_v / ndata_v;
 
 		
-				if(me.fitness_v>p.max_fit)
-					me.fitness_v=p.max_fit;
-				else if(me.fitness_v<p.min_fit)
-					(me.fitness_v=p.min_fit);
+	} // if pass
+	else {
+		me.abserror = p.max_fit;
+	} 
+			
+	
+	if(me.output.empty())
+		me.fitness=p.max_fit;
+	else if ( boost::math::isnan(me.abserror) || boost::math::isinf(me.abserror) )
+		me.fitness=p.max_fit;
+	else{
+		if (p.fit_type ==1){
+			me.fitness = me.abserror;
+		}
+		else if (p.fit_type == 2) {
+			float precision, recall;
+			me.fitness = 0;
+			for (unsigned int i = 0; i < p.number_of_classes; ++i) {
+				if (TP[i] + FP[i] == 0) 
+					precision = 0;				
+				else
+					precision = TP[i] / (TP[i] + FP[i]);
+
+				if (TP[i] + FN[i] == 0)
+					recall = 0;
+				else
+					recall = TP[i] / (TP[i] + FN[i]);
+
+				if (recall + precision != 0)
+					me.fitness += 2 * p.class_w[i] * (precision*recall) / (precision + recall);
 			}
-			else{ // if not training, assign copy of regular fitness to the validation fitness variables
-				me.abserror_v=me.abserror;
-				me.fitness_v=me.fitness;
+			me.fitness = 1 - me.fitness;
+		}
+									
+		/*if (p.norm_error)
+			me.fitness = me.fitness/target_std;*/
+	}
+
+	for (unsigned z=0;z<D.size();++z){
+		if(!boost::math::isfinite(D(z)))
+			me.fitness = p.max_fit;
+	}
+	if(me.fitness>p.max_fit)
+		me.fitness=p.max_fit;
+	else if(me.fitness<p.min_fit)
+		(me.fitness=p.min_fit);
+	else if (boost::math::isnan(me.fitness))
+		me.fitness = p.max_fit;
+
+	if(p.train && !p.test_at_end){ //assign validation fitness
+				
+		for (unsigned z=0;z<D_v.size();++z){
+			if(!boost::math::isfinite(D_v(z)))
+				me.fitness_v = p.max_fit;
+		}
+
+		if(me.output_v.empty())
+			me.fitness_v=p.max_fit;
+		/*else if (*std::max_element(me.output_v.begin(),me.output_v.end())==*std::min_element(me.output_v.begin(),me.output_v.end()))
+			me.fitness_v=p.max_fit;*/
+		else if ( boost::math::isnan(me.abserror_v) || boost::math::isinf(me.abserror_v))
+			me.fitness_v=p.max_fit;
+		else{
+			if (p.fit_type == 1) {
+				me.fitness_v = me.abserror_v;
 			}
-			//if (p.estimate_generality || p.PS_sel==2){
-			//	if (me.fitness == p.max_fit || me.fitness_v== p.max_fit)
-			//		me.genty = p.max_fit;
-			//	else{
-			//		if (p.G_sel==1) // MAE
-			//			me.genty = abs(me.abserror-me.abserror_v)/me.abserror;
-			//		else if (p.G_sel==2) // R2
-			//			me.genty = abs(me.corr-me.corr_v)/me.corr;
-			//		else if (p.G_sel==3) // MAE R2 combo
-			//			me.genty = abs(me.abserror/me.corr-me.abserror_v/me.corr_v)/(me.abserror/me.corr);
-			//		else if (p.G_sel==3) // VAF
-			//			me.genty = abs(me.VAF-me.VAF_v)/me.VAF;
-			//	}
-			//}
-			int tmp = omp_get_thread_num();
-		s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
+			else if (p.fit_type == 2) {
+				float precision, recall;
+				me.fitness_v = 0;
+				for (unsigned int i = 0; i < p.number_of_classes; ++i) {
+				
+					if (TP_v[i] + FP_v[i] == 0)
+						precision = 0;
+					else
+						precision = TP_v[i] / (TP_v[i] + FP_v[i]);
+
+					if (TP_v[i] + FN_v[i] == 0)
+						recall = 0;
+					else
+						recall = TP_v[i] / (TP_v[i] + FN_v[i]);
+
+					if (recall + precision != 0)
+						me.fitness_v += 2 * p.class_w_v[i] * (precision*recall) / (precision + recall);
+				}
+				me.fitness_v = 1 - me.fitness_v;
+			}
+		}
+
+		
+		if(me.fitness_v>p.max_fit)
+			me.fitness_v=p.max_fit;
+		else if(me.fitness_v<p.min_fit)
+			(me.fitness_v=p.min_fit);
+		else if (boost::math::isnan(me.fitness_v))
+			me.fitness_v = p.max_fit;
+	}
+	else{ // if not training, assign copy of regular fitness to the validation fitness variables
+		me.abserror_v=me.abserror;
+		me.fitness_v=me.fitness;
+	}
+	//if (p.estimate_generality || p.PS_sel==2){
+	//	if (me.fitness == p.max_fit || me.fitness_v== p.max_fit)
+	//		me.genty = p.max_fit;
+	//	else{
+	//		if (p.G_sel==1) // MAE
+	//			me.genty = abs(me.abserror-me.abserror_v)/me.abserror;
+	//		else if (p.G_sel==2) // R2
+	//			me.genty = abs(me.corr-me.corr_v)/me.corr;
+	//		else if (p.G_sel==3) // MAE R2 combo
+	//			me.genty = abs(me.abserror/me.corr-me.abserror_v/me.corr_v)/(me.abserror/me.corr);
+	//		else if (p.G_sel==3) // VAF
+	//			me.genty = abs(me.VAF-me.VAF_v)/me.VAF;
+	//	}
+	//}
+	int tmp = omp_get_thread_num();
+s.ptevals[omp_get_thread_num()]=s.ptevals[omp_get_thread_num()]+ptevals;
 }
 void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dattovar,vector<float>& target,state& s)
 {		
@@ -1220,10 +1290,13 @@ void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>
 	float target_std=1000;
 	float target_std_v=1000;
 	int ptevals=0;
+	int sim_size = vals.size();
 	unsigned int ndata_t,ndata_v; // training and validation data sizes
 	if (p.train){
 		ndata_t = vals.size()*p.train_pct;
 		ndata_v = vals.size()-ndata_t;
+		if (p.test_at_end) // don't run the validation data
+			sim_size = ndata_t;
 	}
 	else{
 		ndata_t = vals.size();
@@ -1240,7 +1313,7 @@ void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>
 	}
 	//stack_float.reserve(me.eff_size/2);
 	 
-	for(unsigned int sim=0;sim<vals.size();++sim)
+	for(unsigned int sim=0;sim<sim_size;++sim)
 		{
 			//if (p.eHC_slim) me.stack_float.push_back(vector<float>());
 			int k_eff=0;
@@ -1369,7 +1442,7 @@ void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>
 		else if(me.fitness<p.min_fit)
 			(me.fitness=p.min_fit);
 
-		if(p.train){ //assign validation fitness				
+		if(p.train && !p.test_at_end){ //assign validation fitness				
 			if(me.output_v.empty())
 				me.fitness_v=p.max_fit;
 			else if ( boost::math::isnan(me.abserror_v) || boost::math::isinf(me.abserror_v))
@@ -1431,10 +1504,13 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 	float target_std=1000;
 	float target_std_v=1000;
 	int ptevals=0;
+	int sim_size = vals.size();
 	int ndata_t,ndata_v; // training and validation data sizes
 	if (p.train){
 		ndata_t = vals.size()*p.train_pct;
 		ndata_v = vals.size()-ndata_t;
+		if (p.test_at_end) // don't run the validation data
+			sim_size = ndata_t;
 	}
 	else{
 		ndata_t = vals.size();
@@ -1453,7 +1529,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 	int k_fill = outstart;
 	me.stack_floatlen.reserve(me.eff_size);
 	//if(!me.stack_floatlen.empty()) stack_float.reserve(*std::max(me.stack_floatlen.begin(),me.stack_floatlen.end()));
-	for(unsigned int sim=0;sim<vals.size();++sim)
+	for(unsigned int sim=0;sim<sim_size;++sim)
 		{
 			//initialize stack_float with correct number of elements
 			if (me.stack_floatlen.size()>0 && outstart>0){

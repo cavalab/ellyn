@@ -592,7 +592,11 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	//shuffle data for training
 	if (p.shuffle_data) 
 		shuffle_data(d,p,r,s);
-	
+
+	// define class weights for balanced fitness
+	if (p.classification && p.fit_type == 2) 
+		p.define_class_weights(d);
+
 	boost::timer time;
 	paretoarchive A;
 	if (p.prto_arch_on){
@@ -1096,12 +1100,14 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		} s.out << "exited parallel region ...\n";
 		
 
-		if (p.EstimateFitness){// assign real fitness values to final population and archive
+		if (p.EstimateFitness || p.test_at_end){// assign real fitness values to final population and archive
 			p.EstimateFitness=0;
+			p.test_at_end = 0;
 			Fitness(World.pop,p,d,s,FE[0]);
 			if (p.prto_arch_on) Fitness(A.pop,p,d,s,FE[0]);
 			p.EstimateFitness=1;
 		}
+		
 		printdatafile(World,s,p,r,dfout,gen);
 		printbestind(World,p,s,logname);
 		printpop(World.pop,p,s,logname,0);
@@ -1320,8 +1326,9 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		}
 		
 
-		if (p.EstimateFitness){// assign real fitness values to final population and archive
+		if (p.EstimateFitness || p.test_at_end){// assign real fitness values to final population and archive
 			p.EstimateFitness=0;
+			p.test_at_end = 0;
 			Fitness(T.pop,p,d,s,FE[0]);
 			if (p.prto_arch_on) Fitness(A.pop,p,d,s,FE[0]);
 			p.EstimateFitness=1;
