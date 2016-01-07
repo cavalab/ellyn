@@ -91,7 +91,6 @@ void getTrialSetup(ifstream& fs,int& totaltrials,vector<int>& trialset,vector<st
 	//#else
 	//	using namespace boost;
 	//#endif
-	//regex re("~");
 	int n=0;
     while(!fs.eof())
     {		
@@ -103,11 +102,9 @@ void getTrialSetup(ifstream& fs,int& totaltrials,vector<int>& trialset,vector<st
 		
 			ss >> tmpi;
 			trialset.push_back(tmpi);
-			ss >> tmps;
-			//paramset.push_back(regex_replace(tmps,re," "));
+			ss >> tmps;			
 			paramset.push_back(tmps);
 			ss >> tmps;
-			//dataset.push_back(regex_replace(tmps,re," "));
 			dataset.push_back(tmps);
 			++n;
 		}

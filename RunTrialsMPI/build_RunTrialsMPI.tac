@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # load modules
-module load intel/13.1.1.163
-module load boost/1.51.0
+module load intel/14.0.1.106
+module load boost/1.55.0
 
 # clean build directory
 rm *.o

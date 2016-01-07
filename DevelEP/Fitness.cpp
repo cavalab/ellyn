@@ -16,11 +16,7 @@ using Eigen::MatrixXf;
 using Eigen::ArrayXf;
 //#include "runEllenGP.h"
 
-#if defined(_WIN32)
-	#include <regex>
-#else
-	#include <boost/regex.hpp>
-#endif
+
 #include "FitnessEstimator.h"
 //#include "Fitness.h"
 
@@ -33,32 +29,6 @@ public:
 
 };
 
-//void getEqnForm(std::string& eqn,std::string& eqn_form);
-//float getCorr(vector<float>& output,vector<float>& target,float meanout,float meantarget,int off);
-//int getComplexity(string& eqn);
-
-//void getEqnForm(std::string& eqn,std::string& eqn_form)
-//{
-////replace numbers with the letter c
-//#if defined(_WIN32)
-//	std::regex e ("(([0-9]+)(\\.)([0-9]+))|([0-9]+)");
-//	std::basic_string<char> tmp = "c";
-//	std::regex_replace (std::back_inserter(eqn_form), eqn.begin(), eqn.end(), e,tmp);
-//#else
-//	boost::regex e ("(([0-9]+)(\\.)([0-9]+))|([0-9]+)");
-//	eqn_form = boost::regex_replace(eqn,e,"c");
-//#endif 
-//	//(\d+\.\d+)|(\d+)
-//	//eqn_form = eqn;
-//	//eqn_form=std::tr1::regex_replace(eqn,e,tmp.c_str(),std::tr1::regex_constants::match_default);
-//	//std::string result;
-//
-//
-//	//std::regex_replace(std::back_inserter(eqn_form),eqn.begin(),eqn.end(),e,"c",std::regex_constants::match_default);
-//	//std::regex_replace(std::back_inserter(eqn_form),eqn.begin(),eqn.end(),e,"c",std::tr1::regex_constants::match_default
-//    //std::cout << result;
-//	//std::cout << eqn << "\t" << eqn_form <<"\n";
-//}
 
 const int bitlen( int n )  
 {  //return bitstring length needed to represent n
@@ -108,7 +78,7 @@ void getCorr_lex(vector<float>& output, vector<float>& target, float meanout, fl
 	float var_ind = 0;
 	float q = 0;
 	float ndata = float(output.size());
-	float corr;
+	float corr,cov=0;
 	bool combo;
 
 	if (err_lex.empty())
@@ -123,6 +93,7 @@ void getCorr_lex(vector<float>& output, vector<float>& target, float meanout, fl
 		v2.push_back(output[c] - meanout);
 		var_target += pow(v1[c], 2);
 		var_ind += pow(v2[c], 2);
+		//cov += v1[c]*v2[c];
 	}
 	//var_target = var_target / (ndata - 1); //unbiased esimator
 	//var_ind = var_ind / (ndata - 1); //unbiased esimator
@@ -130,12 +101,19 @@ void getCorr_lex(vector<float>& output, vector<float>& target, float meanout, fl
 	{
 		if (combo) {
 			//err_lex[c] /= std::max(pow(v1[c]*v2[c]/(ndata-1), 2) / (var_target*var_ind), float(0.00000001)); 
+			err_lex[c] /= std::max(float((v1[c] * v2[c]) / (sqrt(var_target)*sqrt(var_ind))), float(0.0000001));
 		}
 		else
 			//err_lex.push_back(1-pow(v1[c] * v2[c] / (ndata - 1), 2) / (var_target*var_ind));
-			err_lex.push_back(1-abs(v1[c] * v2[c])/(sqrt(var_target)*sqrt(var_ind)));		
+			err_lex.push_back(1- float((v1[c] * v2[c]) / (sqrt(var_target)*sqrt(var_ind))));
+		//tmp.push_back(float(pow(v1[c] * v2[c], 2) / (var_target*var_ind)));
 	}
-	//corr = accumulate(err_lex.begin(), err_lex.end(), 0.0);
+	
+	//corr = accumulate(tmp.begin(), tmp.end(), 0.0);
+	/*corr = pow(cov, 2) / (var_target*var_ind);
+	if (corr > 0.1)
+		cout << "pause\n";*/
+
 }
 float VAF_loud(vector<float>& output,vector<float>& target,float meantarget,int off,state& s)
 {
@@ -635,7 +613,7 @@ void CalcFitness(ind& me, params& p, vector<vector<float>>& vals, vector<float>&
 				else
 					me.abserror += abs(target.at(sim) - me.output.at(sim));
 
-				if (p.sel == 3 && p.fit_type==1 || p.fit_type==3) // lexicase error vector
+				if (p.sel == 3 && (p.fit_type==1 || p.fit_type==3)) // lexicase error vector
 					me.error.push_back(abs(target.at(sim) - me.output.at(sim)));
 
 				meantarget += target.at(sim);

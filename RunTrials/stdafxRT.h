@@ -14,15 +14,11 @@
 #include <string>
 #include <fstream>
 #include <boost/random.hpp>
-#include <boost/shared_ptr.hpp>
+//#include <boost/shared_ptr.hpp>
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/timer.hpp>
 #include <boost/progress.hpp>
-#if defined(_WIN32)
-#include <regex>
-#else
-#include <boost/regex.hpp>
-#endif
+
 #include "time.h"
 #include <math.h>
 #include <memory>

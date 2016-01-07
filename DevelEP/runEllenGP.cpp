@@ -34,6 +34,7 @@ using namespace std;
 	#define GetCurrentDir _getcwd
 #else
 	#include <unistd.h>
+	#include <iomanip> 
 	#define GetCurrentDir getcwd
 #endif
 

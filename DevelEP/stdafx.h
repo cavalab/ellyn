@@ -15,14 +15,13 @@
 #include <boost/timer.hpp>
 //#include <boost/timer/timer.hpp>
 //#include <boost/progress.hpp>
-//#include <boost/regex.hpp>
+
 #include <boost/config.hpp>
 #include "time.h"
 #include <math.h>
 #if defined(_WIN32)
 	#include "targetver.h"
 	#include <tchar.h>
-	#include <boost/shared_ptr.hpp>
 	#include <direct.h>
 #else
 	#include <memory>
