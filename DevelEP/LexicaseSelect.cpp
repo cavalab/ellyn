@@ -152,8 +152,11 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 		if (p.lexpool!=1){
 			for (int j=0;j<p.lexpool*pop.size();++j){
 				tmp = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
-				while(pop[tmp].error.empty())
-					tmp = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
+				int n = 0;
+				while (pop[tmp].error.empty() && n < pop.size()) {
+					tmp = r[omp_get_thread_num()].rnd_int(0, pop.size() - 1);
+					n += 1;
+				}
 				pool.push_back(tmp);
 			}
 		}

@@ -15,7 +15,7 @@
 using Eigen::MatrixXf;
 using Eigen::ArrayXf;
 //#include "runEllenGP.h"
-
+#define MAX_FLOAT numeric_limits<float>::max( )
 
 #include "FitnessEstimator.h"
 //#include "Fitness.h"
@@ -253,69 +253,6 @@ int getComplexity(ind& me, params& p)
 	return complexity;
 }
 
-//int getComplexity(string& eqn)
-//{
-//	int complexity=0;
-//	char c;
-//	for(int m=0;m<eqn.size();++m){
-//		c=eqn[m];
-//		
-//		if(c=='/')
-//			complexity=complexity+2;
-//		else if (c=='s'){
-//			
-//			if(m+2<eqn.size()){
-//				if ( eqn[m+1]=='i' && eqn[m+2] == 'n'){
-//					complexity=complexity+3;
-//					m=m+2;
-//				}
-//			}
-//			if (m+3<eqn.size()){ //sqrt
-//				if ( eqn[m+1]=='q' && eqn[m+2] == 'r' && eqn[m+3]=='t'){
-//					complexity=complexity+3;
-//					m=m+2;
-//				}
-//			}
-//			
-//		}
-//		else if (c=='c'){
-//			if(m+2<eqn.size()){
-//				if ( eqn[m+1]=='o' && eqn[m+2] == 's'){
-//					complexity=complexity+3;
-//					m=m+2;
-//				}
-//			}
-//		}
-//		else if (c=='e'){
-//			if(m+2<eqn.size()){
-//				if ( eqn[m+1]=='x' && eqn[m+2] == 'p'){
-//					complexity=complexity+4;
-//					m=m+2;
-//				}
-//			}
-//		}
-//		else if (c=='l'){
-//			if(m+2<eqn.size()){
-//				if ( eqn[m+1]=='o' && eqn[m+2] == 'g'){
-//					complexity=complexity+4;
-//					m=m+2;
-//				}
-//			}
-//		}
-//		else if (isalpha(c) && (m+1)<eqn.size()){
-//			bool pass=true;
-//			while ((m+1)<eqn.size() && pass){
-//				if (isalpha(eqn[m+1]) || isdigit(eqn[m+1])) ++m; 
-//				else pass=0;
-//			}
-//			++complexity;
-//		}
-//		else
-//			++complexity;
-//	}
-//
-//	return complexity;
-//}
 int getEffSize(vector<node>& line)
 {
 	int eff_size=0;
@@ -451,6 +388,11 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 	}
 	else
 		n.intron= n.intron && true; // only set it to intron if it isn't used in any of the execution
+
+		if (boost::math::isinf(abs(stack_float.back())))
+			stack_float[stack_float.size() - 1] = MAX_FLOAT;
+	if (boost::math::isnan(abs(stack_float.back())))
+		cout << "nans in floating stack\n";
 
 }
 
@@ -813,6 +755,7 @@ bool CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 				if (me.line.at(k).on){
 					//me.line.at(k).eval(stack_float);
 					eval(me.line.at(k),stack_float,stack_bool);
+					
 					++ptevals;
 					if (p.eHC_on && p.eHC_slim) // stack tracing
 					{
@@ -828,10 +771,15 @@ bool CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 			if (stack_float.empty()) //stack_float empty check
 				return false;
 			else{ // push top of stack to output
-				if ((p.train && sim<ndata_t) || (!p.train))
-						me.output.push_back(stack_float.back());		
+				if ((p.train && sim < ndata_t) || (!p.train)) {
+					me.output.push_back(stack_float.back());
+					if (boost::math::isnan(abs(me.output[sim])))
+						cout << "nans in output\n";
+				}
 				else //validation set
 					me.output_v.push_back(stack_float.back());
+				
+
 			} 
 			//reset stacks				
 			stack_float.resize(0);

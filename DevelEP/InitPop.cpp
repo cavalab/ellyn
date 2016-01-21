@@ -547,14 +547,17 @@ int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,char t
 		getChoice(choice, 0, 0, type, p, r);
 	}
 	else if (exactlevel){
+		// choose an instruction other than a terminal with arity <= level-1
 		getChoice(choice,1,level-1,type,p,r);
 		if (choice==-1)
 			getChoice(choice,0,0,type,p,r);
 	}
 	else
 		getChoice(choice,0,level-1,type,p,r);
-	while (choice == -1)
+	while (choice == -1 && level <= p.max_len)
 		getChoice(choice, 0, ++level-1, type, p, r);
+	if (choice == -1)
+		cout << "bug\n";
 	// insert choice into line
 	push_front_node(line,choice,p,r);
 	//int a = p.op_arity[choice];
@@ -570,7 +573,8 @@ int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,char t
 	int newlevel;
 	int nodes=0;
 	if (a !=0){
-		level = max(2,level-1); 
+		//level = max(2,level-1);
+		level = level - 1; // subtract one from level to represent the added node
 	}
 	/*else if (a == 0)
 		cout << "debug";*/
