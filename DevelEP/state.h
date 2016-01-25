@@ -39,7 +39,8 @@ struct state{
 		int nt=0;
 		#pragma omp parallel 
 		{
-			nt = omp_get_max_threads();
+			//nt = omp_get_max_threads();
+			nt = omp_get_num_threads();
 		}
 		ptevals.assign(nt,0);
 		//ptevals.resize(nt);
@@ -92,11 +93,29 @@ struct state{
 	}
 	float get_median_lex_cases()
 	{
-		return accumulate(median_lex_cases.begin(),median_lex_cases.end(),0.0)/median_lex_cases.size();
+		int sz = 0;
+		int mlc = 0;
+		for (unsigned int i = 0; i < median_lex_cases.size(); ++i) {
+			if (median_lex_cases[i] > 0) {
+				++sz;
+				mlc += median_lex_cases[i];
+			}
+		}
+		return mlc/sz;
+		//return accumulate(median_lex_cases.begin(),median_lex_cases.end(),0.0)/median_lex_cases.size();
 	}
 	float get_median_lex_pool()
 	{
-		return accumulate(median_lex_pool.begin(), median_lex_pool.end(), 0.0) / median_lex_pool.size();
+		int sz = 0;
+		int mlp = 0;
+		for (unsigned int i = 0; i < median_lex_pool.size(); ++i) {
+			if (median_lex_pool[i] > 0) {
+				++sz;
+				mlp += median_lex_pool[i];
+			}
+		}
+		return mlp / sz;
+		//return accumulate(median_lex_pool.begin(), median_lex_pool.end(), 0.0) / median_lex_pool.size();
 	}
 	int setPHCupdates()
 	{
