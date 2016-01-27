@@ -217,7 +217,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 			cout << "??";
 		// reset minfit
 		minfit=p.max_fit;
-		hmedian.push_back(h);
+		hmedian.push_back(h+1);
 		sel_size.push_back(winner.size());
 	}//for (int i=0;i<parloc.size();++i)
 

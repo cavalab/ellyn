@@ -310,6 +310,7 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 		case 'e':
 			n1 = stack_float.back(); stack_float.pop_back();
 			stack_float.push_back(exp(n1));
+			
 			break;
 		case 'l':
 			n1 = stack_float.back(); stack_float.pop_back();
@@ -389,11 +390,14 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 	else
 		n.intron= n.intron && true; // only set it to intron if it isn't used in any of the execution
 
+	if (!stack_float.empty()) {
 		if (boost::math::isinf(abs(stack_float.back())))
 			stack_float[stack_float.size() - 1] = MAX_FLOAT;
-	if (boost::math::isnan(abs(stack_float.back())))
-		cout << "nans in floating stack\n";
 
+		if (boost::math::isnan(stack_float.back()))
+			cout << "nans in output\n";
+	}
+		
 }
 
 void FitnessEstimate(vector<ind>& pop,params& p,Data& d,state& s,FitnessEstimator& FE);

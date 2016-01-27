@@ -37,11 +37,19 @@ struct state{
 	state()
 	{
 		int nt=0;
-		#pragma omp parallel 
-		{
-			//nt = omp_get_max_threads();
-			nt = omp_get_num_threads();
-		}
+		
+		#if defined(_WIN32)
+			#pragma omp parallel 
+			{
+				nt = omp_get_max_threads();
+			}
+		#else
+			#pragma omp parallel 
+			{
+				nt = omp_get_num_threads();
+			}
+		#endif
+		
 		ptevals.assign(nt,0);
 		//ptevals.resize(nt);
 		//numevals.resize(nt);
@@ -93,8 +101,8 @@ struct state{
 	}
 	float get_median_lex_cases()
 	{
-		int sz = 0;
-		int mlc = 0;
+		float sz = 0;
+		float mlc = 0;
 		for (unsigned int i = 0; i < median_lex_cases.size(); ++i) {
 			if (median_lex_cases[i] > 0) {
 				++sz;
@@ -106,8 +114,8 @@ struct state{
 	}
 	float get_median_lex_pool()
 	{
-		int sz = 0;
-		int mlp = 0;
+		float sz = 0;
+		float mlp = 0;
 		for (unsigned int i = 0; i < median_lex_pool.size(); ++i) {
 			if (median_lex_pool[i] > 0) {
 				++sz;
