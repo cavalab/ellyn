@@ -21,6 +21,41 @@ float std_dev(vector<float>& x) {
 	return sqrt(var);
 
 }
+float median(vector<float> x) {
+	sort(x.begin(), x.end());
+
+	if (x.size() % 2 == 0) {
+		float tmp1 = x[(x.size() / 2) - 1];
+		float tmp2 = x[x.size() / 2];
+		return (tmp1 + tmp2) / 2;
+	}
+	else
+		return x[x.size() / 2];
+}
+float median(vector<int> x) {
+	sort(x.begin(), x.end());
+
+	if (x.size() % 2 == 0) {
+		int tmp1 = x[(x.size() / 2) - 1];
+		int tmp2 = x[x.size() / 2];
+		return float((tmp1 + tmp2) / 2);
+	}
+	else
+		return float(x[x.size() / 2]);
+}
+float mad(vector<float>& x) {
+	// returns median absolute deviation (MAD)
+	// get median of x
+	float x_median = median(x);	
+
+	//calculate absolute deviation from median
+	vector<float> dev;
+	for (vector<float>::iterator it = x.begin(); it != x.end(); ++it)
+		dev.push_back(abs(*it - x_median));
+
+	return median(dev);
+
+}
 void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r,Data& d,state& s)
 {
 	// add metacases if needed
@@ -69,7 +104,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 	bool draw=true;
 	bool pass;
 	int h;
-	
+	vector<int> num_passes(numcases-p.lex_metacases.size()); 
 	int tmp;
 
 	// epsilon lexicase implementations
@@ -87,8 +122,10 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 		for (size_t i = 0; i < pool.size(); ++i) {
 			// check if error is within epsilon
 			for (size_t j = 0; j < numcases - p.lex_metacases.size(); ++j) {
-				if (pop[pool[i]].error[j] <= (1+p.lex_epsilon)*min_error[j])
+				if (pop[pool[i]].error[j] <= (1+p.lex_epsilon)*min_error[j]){
 					pop[pool[i]].error[j] = 0;
+					++num_passes[j];
+				}
 				else
 					pop[pool[i]].error[j] = 1;
 			}
@@ -106,9 +143,9 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 				else
 					pop[pool[i]].error[j] = 1;
 			}
-
 		}
 	}
+	
 	else if (p.lex_eps_std) // errors in a standard dev of the best are pass, otherwise fail
 	{
 		// get minimum error on each case
@@ -136,6 +173,52 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 					pop[pool[i]].error[j] = 1;
 			}
 
+		}
+	}
+	else if (p.lex_eps_target_mad) { // errors within mad of the target pass
+									 // get minimum error on each case
+		vector<float> mad_error(numcases - p.lex_metacases.size());
+
+		for (size_t i = 0; i < numcases - p.lex_metacases.size(); ++i) {
+			vector<float> case_error(pool.size());
+			for (size_t j = 0; j < pool.size(); ++j)
+				case_error[j] = pop[pool[j]].error[i];
+			
+			mad_error[i] = mad(case_error);
+		}
+		for (size_t i = 0; i < pool.size(); ++i) {
+			// check if error is within epsilon
+			for (size_t j = 0; j < numcases - p.lex_metacases.size(); ++j) {
+				if (pop[pool[i]].error[j] <= mad_error[j])
+					pop[pool[i]].error[j] = 0;
+				else
+					pop[pool[i]].error[j] = 1;
+			}
+		}
+	}
+	else if (p.lex_eps_error_mad) { // errors within mad of the target pass
+									 // get minimum error on each case
+		vector<float> min_error(numcases - p.lex_metacases.size(), p.max_fit);
+		vector<float> mad_error(numcases - p.lex_metacases.size());
+
+		for (size_t i = 0; i < numcases - p.lex_metacases.size(); ++i) {
+			vector<float> case_error(pool.size());
+			for (size_t j = 0; j < pool.size(); ++j) {
+				if (pop[pool[j]].error[i] < min_error[i])
+					min_error[i] = pop[pool[j]].error[i];
+
+				case_error[j] = pop[pool[j]].error[i];
+			}
+			mad_error[i] = mad(case_error);
+		}
+		for (size_t i = 0; i < pool.size(); ++i) {
+			// check if error is within epsilon
+			for (size_t j = 0; j < numcases - p.lex_metacases.size(); ++j) {
+				if (pop[pool[i]].error[j] <= min_error[j]+mad_error[j])
+					pop[pool[i]].error[j] = 0;
+				else
+					pop[pool[i]].error[j] = 1;
+			}
 		}
 	}
 	// measure median number of cases used
@@ -223,20 +306,16 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 
 	sort(hmedian.begin(), hmedian.end());
 	sort(sel_size.begin(), sel_size.end());
-	float tmp3 = hmedian[int(floor(float(hmedian.size() / 2)))];
-	float tmp2 = hmedian[int(ceil(float(hmedian.size() / 2)))];
-	float tmp4 = (hmedian[int(floor(float(hmedian.size() / 2)))] + hmedian[int(ceil(float(hmedian.size() / 2)))]) / (2 * case_order.size());
+		
 	// store median lex cases used, normalized by the number of cases
-	if (hmedian.size() %2 ==0)
-		s.median_lex_cases[omp_get_thread_num()] = hmedian[(hmedian.size() / 2)]/case_order.size();
-	else
-		s.median_lex_cases[omp_get_thread_num()] = (hmedian[int(floor(float(hmedian.size() / 2)))] + hmedian[int(ceil(float(hmedian.size() / 2)))])/(2*case_order.size());
+	s.median_lex_cases[omp_get_thread_num()] = median(hmedian)/case_order.size();
+	
+	// store median number of individuals that pass each case
+	s.median_passes_per_case[omp_get_thread_num()] = median(num_passes) / pop.size();
 
 	// store median lex pool size at selection, normalized by the population size
-	if (sel_size.size() % 2 == 0)
-		s.median_lex_pool[omp_get_thread_num()] = sel_size[(sel_size.size() / 2)]/pop.size();
-	else
-		s.median_lex_pool[omp_get_thread_num()] = (sel_size[int(floor(float(sel_size.size() / 2)))] + sel_size[int(ceil(float(sel_size.size() / 2)))]) / (2*pop.size());
+	s.median_lex_pool[omp_get_thread_num()] = median(sel_size)/pop.size();
+	
 	//cout << "mean num cases used: " << hmean << "\n";
 
 }

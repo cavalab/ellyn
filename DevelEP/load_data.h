@@ -114,33 +114,43 @@ void load_data(Data& d, std::ifstream& fs,params& p)
 	}
 	
 	if (p.AR){ // make auto-regressive variables
+		vector<vector<float> > tmp_vals = d.vals;
+		
 		// add data columns to d.vals 
 		int numvars = d.vals[0].size();
-		for (unsigned i = 0; i<p.AR_n; ++i){
-			for (unsigned j = 0; j<d.vals.size(); ++j){
+		for (unsigned i = 0; i<p.AR_nb; ++i){
+			for (unsigned j = 0; j<tmp_vals.size(); ++j){
+				if(i==0)
+					d.vals[j].resize(0);
+
 				for (unsigned k = 0; k<numvars;++k){
-					if(j>i) 
-						d.vals[j].push_back(d.vals[j-i-1][k]);
+					if(j>=i+p.AR_nkb) 
+						d.vals[j].push_back(tmp_vals[j-i-p.AR_nkb][k]);
 					else 
 						d.vals[j].push_back(0.0);
 				}
 			}
 		}
+		
 		// add data labels to d.label and p.allvars
 			int tmp = d.label.size();
-			for (unsigned i = 0; i<p.AR_n; ++i){ 
+			vector<string> tmp_label = d.label;
+			d.label.resize(0);
+			p.allvars.resize(0);
+			for (unsigned i = 0; i < p.AR_nb + p.AR_nkb; ++i) {
 				d.vals.erase(d.vals.begin()); // erase zero padding from data
 				d.target.erase(d.target.begin()); //erase zero padding from target
+			}
+			for (unsigned i = 0; i < p.AR_nb; ++i) {
 				for (unsigned k=0; k<tmp;++k){ // add delay variable names
-					d.label.push_back(d.label[k] + "_" + to_string(static_cast<long long>(i+1)));
-					p.allvars.push_back(d.label[k] + "_" + to_string(static_cast<long long>(i+1)));
+					d.label.push_back(tmp_label[k] + "_" + to_string(static_cast<long long>(i+p.AR_nkb)));
+					p.allvars.push_back(tmp_label[k] + "_" + to_string(static_cast<long long>(i+p.AR_nkb)));
 				}
 			}
-			// load AR variables if necessary
-		
-			for (int i=0;i<p.AR_n;++i){
-				p.allvars.push_back(d.target_var + "_" + to_string(static_cast<long long>(i+1)));
-				d.label.push_back(d.target_var + "_" + to_string(static_cast<long long>(i+1)));
+			// add target AR variables	
+			for (int i=0;i<p.AR_na;++i){
+				p.allvars.push_back(d.target_var + "_" + to_string(static_cast<long long>(i+p.AR_nka)));
+				d.label.push_back(d.target_var + "_" + to_string(static_cast<long long>(i+p.AR_nka)));
 			}
 		
 	}

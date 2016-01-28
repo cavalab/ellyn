@@ -734,21 +734,21 @@ bool CalcOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>& dat
 		{			
 			int k_eff=0;
 
-			for (unsigned int j=0; j<p.allvars.size()-p.AR_n;++j) //wgl: add time delay of output variable here 
+			for (unsigned int j=0; j<p.allvars.size()-p.AR_na;++j) //wgl: add time delay of output variable here 
 				dattovar.at(j) = vals[sim][j]; // can we replace this with a pointer to the data so we don't have to copy the whole thing every time?
 			if (p.AR){ // auto-regressive output variables
-				int ARstart = p.allvars.size()-p.AR_n; 
-				for (unsigned int h=0; h<p.AR_n; ++h){
+				int ARstart = p.allvars.size()-p.AR_na; 
+				for (unsigned int h=0; h<p.AR_na; ++h){
 					if (sim<ndata_t){
-						if (me.output.size()>h) // add distinction for training / validation data
-							if (p.AR_lookahead) dattovar[ARstart+h] = target[sim-1-h];
-							else dattovar[ARstart+h] = me.output[sim-1-h];
+						if (me.output.size() >= h + p.AR_nka) // add distinction for training / validation data
+							if (p.AR_lookahead) dattovar[ARstart+h] = target[sim-h-p.AR_nka];
+							else dattovar[ARstart+h] = me.output[sim-h - p.AR_nka];
 						else dattovar[ARstart+h] = 0;
 					}
 					else{
-						if (me.output_v.size()>h) // add distinction for training / validation data
-							if (p.AR_lookahead) dattovar[ARstart+h] = target[sim-1-h];
-							else dattovar[ARstart+h] = me.output_v[sim-1-h-ndata_t];
+						if (me.output_v.size() >= h + p.AR_nka) // add distinction for training / validation data
+							if (p.AR_lookahead) dattovar[ARstart+h] = target[sim-h - p.AR_nka];
+							else dattovar[ARstart+h] = me.output_v[sim-h-ndata_t - p.AR_nka];
 						else dattovar[ARstart+h] = 0;
 					}
 				}

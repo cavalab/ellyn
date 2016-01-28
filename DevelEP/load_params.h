@@ -23,50 +23,50 @@ void load_params(params &p, std::ifstream& fs)
 	//s.erase();
     //s.reserve(is.rdbuf()->in_avail());
 
-    while(!fs.eof())
-    {		
-		getline(fs,s,'\n');
+	while (!fs.eof())
+	{
+		getline(fs, s, '\n');
 		istringstream ss(s);
-		
+
 		ss >> varname;
 
 		//getline(is,s,'\t');
 
-		if(varname.compare("g") == 0)
+		if (varname.compare("g") == 0)
 		{
 			ss >> p.g;
 			//p.g = tmp;
 		}
-		else if(varname.compare("popsize") == 0)
+		else if (varname.compare("popsize") == 0)
 			ss >> p.popsize;
-		else if(varname.compare("sel") == 0)
-			ss>>p.sel;
-		else if(varname.compare("tourn_size") == 0)
-			ss>>p.tourn_size;
-		else if(varname.compare("rt_rep") == 0)
-			ss>>p.rt_rep;
-		else if(varname.compare("rt_cross") == 0)
-			ss>>p.rt_cross;
-		else if(varname.compare("rt_mut") == 0)
-			ss>>p.rt_mut;
-		else if(varname.compare("cross") == 0)
-			ss>>p.cross;
-		else if(varname.compare("cross_ar") == 0)
-			ss>>p.cross_ar;
-		else if(varname.compare("mut_ar") == 0)
-			ss>>p.mut_ar;
+		else if (varname.compare("sel") == 0)
+			ss >> p.sel;
+		else if (varname.compare("tourn_size") == 0)
+			ss >> p.tourn_size;
+		else if (varname.compare("rt_rep") == 0)
+			ss >> p.rt_rep;
+		else if (varname.compare("rt_cross") == 0)
+			ss >> p.rt_cross;
+		else if (varname.compare("rt_mut") == 0)
+			ss >> p.rt_mut;
+		else if (varname.compare("cross") == 0)
+			ss >> p.cross;
+		else if (varname.compare("cross_ar") == 0)
+			ss >> p.cross_ar;
+		else if (varname.compare("mut_ar") == 0)
+			ss >> p.mut_ar;
 		//~ else if(varname.compare("stoperror") == 0)
 			//~ ss>>p.stoperror;
-		else if(varname.compare("init_validate_on") == 0)
-			ss>>p.init_validate_on;
-		else if(varname.compare(0,11,"resultspath") == 0)
+		else if (varname.compare("init_validate_on") == 0)
+			ss >> p.init_validate_on;
+		else if (varname.compare(0, 11, "resultspath") == 0)
 		{
-			int q=0;
-			while (ss>>tmps)
+			int q = 0;
+			while (ss >> tmps)
 			{
-				if ( q > 0)
+				if (q > 0)
 					p.resultspath = p.resultspath + ' ';
-				p.resultspath.insert(p.resultspath.end(),tmps.begin(),tmps.end());
+				p.resultspath.insert(p.resultspath.end(), tmps.begin(), tmps.end());
 				++q;
 			}
 		}
@@ -76,13 +76,13 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.parallel;
 		else if(varname.compare(0,8,"numcores") == 0)
 			ss>>p.numcores;*/
-		//~ else if(varname.compare(0,11,"sim_nom_mod") == 0)
-			//~ ss>>p.sim_nom_mod;
-		//~ else if(varname.compare(0,7,"nstates") == 0)
-			//~ ss>>p.nstates;
-		else if(varname.compare(0,7,"intvars") == 0)
+			//~ else if(varname.compare(0,11,"sim_nom_mod") == 0)
+				//~ ss>>p.sim_nom_mod;
+			//~ else if(varname.compare(0,7,"nstates") == 0)
+				//~ ss>>p.nstates;
+		else if (varname.compare(0, 7, "intvars") == 0)
 		{
-			while (ss>>tmps)
+			while (ss >> tmps)
 				p.intvars.push_back(tmps);
 		}
 		/*else if(varname.compare(0,7,"extvars") == 0)
@@ -95,79 +95,79 @@ void load_params(params &p, std::ifstream& fs)
 			while (ss>>tmps)
 				p.cons.push_back(tmps);
 		}*/
-		else if(varname.compare("cvals") == 0)
+		else if (varname.compare("cvals") == 0)
 		{
-			while (ss>>tmpf){
+			while (ss >> tmpf) {
 				p.cvals.push_back(tmpf);
 				p.cons.push_back(std::to_string(static_cast<long double>(tmpf)));
 			}
 
 		}
-		else if(varname.compare("seeds") == 0)
+		else if (varname.compare("seeds") == 0)
 		{
-			while (ss>>tmps)
+			while (ss >> tmps)
 				p.seeds.push_back(tmps);
 		}
-		else if(varname.compare("ERC") == 0)
-			ss>>p.ERC;
-		else if(varname.compare("ERCints") == 0)
-			ss>>p.ERCints;
-		else if(varname.compare("maxERC") == 0)
-			ss>>p.maxERC;
-		else if(varname.compare("minERC") == 0)
-			ss>>p.minERC;
-		else if(varname.compare("numERC") == 0)
-			ss>>p.numERC;
-		else if(varname.compare("fit_type") == 0)
-			ss>>p.fit_type;
-		else if(varname.compare("max_fit") == 0)
-			ss>>p.max_fit;
-		else if(varname.compare("min_fit") == 0)
-			ss>>p.min_fit;
-		else if(varname.compare("op_list") == 0)
+		else if (varname.compare("ERC") == 0)
+			ss >> p.ERC;
+		else if (varname.compare("ERCints") == 0)
+			ss >> p.ERCints;
+		else if (varname.compare("maxERC") == 0)
+			ss >> p.maxERC;
+		else if (varname.compare("minERC") == 0)
+			ss >> p.minERC;
+		else if (varname.compare("numERC") == 0)
+			ss >> p.numERC;
+		else if (varname.compare("fit_type") == 0)
+			ss >> p.fit_type;
+		else if (varname.compare("max_fit") == 0)
+			ss >> p.max_fit;
+		else if (varname.compare("min_fit") == 0)
+			ss >> p.min_fit;
+		else if (varname.compare("op_list") == 0)
 		{
-			while (ss>>tmps)
+			while (ss >> tmps)
 				p.op_list.push_back(tmps);
 		}
-		else if(varname.compare("op_weight") == 0)
+		else if (varname.compare("op_weight") == 0)
 		{
-			while(ss>>tmpf)
+			while (ss >> tmpf)
 				p.op_weight.push_back(tmpf);
 		}
-		else if(varname.compare("weight_ops_on") == 0)
-			ss>>p.weight_ops_on;
-		else if(varname.compare("min_len") == 0)
-			ss>>p.min_len;
-		else if(varname.compare("max_len") == 0)
-			ss>>p.max_len;
-		else if(varname.compare("max_len_init") == 0)
-			ss>>p.max_len_init;
+		else if (varname.compare("weight_ops_on") == 0)
+			ss >> p.weight_ops_on;
+		else if (varname.compare("min_len") == 0)
+			ss >> p.min_len;
+		else if (varname.compare("max_len") == 0)
+			ss >> p.max_len;
+		else if (varname.compare("max_len_init") == 0)
+			ss >> p.max_len_init;
 		//~ else if(varname.compare("max_dev_len") == 0)
 			//~ ss>>p.max_dev_len;
-		else if(varname.compare("complex_measure") == 0)
-			ss>>p.complex_measure;
+		else if (varname.compare("complex_measure") == 0)
+			ss >> p.complex_measure;
 		//~ else if(varname.compare("precision") == 0)
 			//~ ss>>p.precision;
-		else if(varname.compare("lineHC_on") == 0)
-			ss>>p.lineHC_on;
-		else if(varname.compare("lineHC_its") == 0)
-			ss>>p.lineHC_its;
-		else if(varname.compare("pHC_on") == 0)
-			ss>>p.pHC_on;
-		else if(varname.compare("pHC_delay_on") == 0)
-			ss>>p.pHC_delay_on;
-		else if(varname.compare("pHC_size") == 0)
-			ss>>p.pHC_size;
-		else if(varname.compare("pHC_its") == 0)
-			ss>>p.pHC_its;
-		else if(varname.compare("pHC_gauss") == 0)
-			ss>>p.pHC_gauss;
-		else if(varname.compare("eHC_on") == 0)
-			ss>>p.eHC_on;
-		else if(varname.compare("eHC_its") == 0)
-			ss>>p.eHC_its;
-		else if(varname.compare("eHC_prob") == 0)
-			ss>>p.eHC_prob;
+		else if (varname.compare("lineHC_on") == 0)
+			ss >> p.lineHC_on;
+		else if (varname.compare("lineHC_its") == 0)
+			ss >> p.lineHC_its;
+		else if (varname.compare("pHC_on") == 0)
+			ss >> p.pHC_on;
+		else if (varname.compare("pHC_delay_on") == 0)
+			ss >> p.pHC_delay_on;
+		else if (varname.compare("pHC_size") == 0)
+			ss >> p.pHC_size;
+		else if (varname.compare("pHC_its") == 0)
+			ss >> p.pHC_its;
+		else if (varname.compare("pHC_gauss") == 0)
+			ss >> p.pHC_gauss;
+		else if (varname.compare("eHC_on") == 0)
+			ss >> p.eHC_on;
+		else if (varname.compare("eHC_its") == 0)
+			ss >> p.eHC_its;
+		else if (varname.compare("eHC_prob") == 0)
+			ss >> p.eHC_prob;
 		//~ else if(varname.compare("eHC_size") == 0)
 			//~ ss>>p.eHC_size;
 		//~ else if(varname.compare("eHC_cluster") == 0)
@@ -176,88 +176,99 @@ void load_params(params &p, std::ifstream& fs)
 			//~ ss>>p.eHC_dev;
 		//~ else if(varname.compare("eHC_best") == 0)
 			//~ ss>>p.eHC_best;
-		else if(varname.compare("eHC_init")==0)
-			ss>>p.eHC_init;
+		else if (varname.compare("eHC_init") == 0)
+			ss >> p.eHC_init;
 		//~ else if(varname.compare("eHC_prob_scale") == 0)
 			//~ ss>>p.eHC_prob_scale;
 		//~ else if(varname.compare("eHC_max_prob") == 0)
 			//~ ss>>p.eHC_max_prob;
 		//~ else if(varname.compare("eHC_min_prob") == 0)
 			//~ ss>>p.eHC_min_prob;
-		else if(varname.compare("eHC_mut") == 0)
-			ss>>p.eHC_mut;
-		else if(varname.compare("eHC_slim") == 0)
-			ss>>p.eHC_slim;
-		else if(varname.compare("lexpool") == 0)
-			ss>>p.lexpool;
+		else if (varname.compare("eHC_mut") == 0)
+			ss >> p.eHC_mut;
+		else if (varname.compare("eHC_slim") == 0)
+			ss >> p.eHC_slim;
+		else if (varname.compare("lexpool") == 0)
+			ss >> p.lexpool;
 		/*else if(varname.compare("lexage") == 0)
 			ss>>p.lexage;*/ // removed lexage from input. it is now used internally for age as a metacase.
-		else if(varname.compare("prto_arch_on") == 0)
-			ss>>p.prto_arch_on;
-		else if(varname.compare("prto_arch_size") == 0)
-			ss>>p.prto_arch_size;
-		else if(varname.compare("prto_sel_on") == 0)
-			ss>>p.prto_sel_on;
-		else if(varname.compare("islands") ==0)
-			ss>>p.islands;
-		else if(varname.compare("island_gens") ==0)
-			ss>>p.island_gens;
-		else if(varname.compare("train") ==0)
-			ss>>p.train;
-		else if(varname.compare("train_pct") ==0)
-			ss>>p.train_pct;
-		else if(varname.compare("print_every_pop") == 0)
-			ss>>p.print_every_pop;
-		else if(varname.compare("estimate_fitness") == 0)
-			ss>>p.EstimateFitness;
-		else if(varname.compare("FE_pop_size") == 0)
-			ss>>p.FE_pop_size;
-		else if(varname.compare("FE_ind_size") == 0)
-			ss>>p.FE_ind_size;
-		else if(varname.compare("FE_train_size") == 0)
-			ss>>p.FE_train_size;
-		else if(varname.compare("FE_train_gens") == 0)
-			ss>>p.FE_train_gens;
-		else if(varname.compare("FE_rank") == 0)
-			ss>>p.FE_rank;
-		else if(varname.compare("estimate_generality") == 0)
-			ss>>p.estimate_generality;
-		else if(varname.compare("G_sel") == 0)
-			ss>>p.G_sel;
-		else if(varname.compare("G_shuffle") == 0)
-			ss>>p.G_shuffle;
-		else if(varname.compare("norm_error") == 0)
-			ss>>p.norm_error;
-		else if(varname.compare("shuffle_data") == 0)
-			ss>>p.shuffle_data;
-		else if(varname.compare("init_trees") == 0)
-			ss>>p.init_trees;
-		else if(varname.compare("limit_evals") == 0)
-			ss>>p.limit_evals;
-		else if(varname.compare("max_evals") == 0)
-			ss>>p.max_evals;
-		else if(varname.compare("print_homology") == 0)
-			ss>>p.print_homology;
-		else if(varname.compare("print_log") == 0)
-			ss>>p.print_log;
-		else if(varname.compare("print_init_pop") == 0)
-			ss>>p.print_init_pop;
-		else if(varname.compare("print_genome") == 0)
-			ss>>p.print_genome;
-		else if(varname.compare("print_epigenome") == 0)
-			ss>>p.print_epigenome;
-		else if(varname.compare("num_log_pts") == 0)
-			ss>>p.num_log_pts;
-		else if(varname.compare("PS_sel") == 0)
-			ss>>p.PS_sel;
-		else if(varname.compare("pop_restart") == 0)
-			ss>>p.pop_restart;
-		else if(varname.compare("pop_restart_path") == 0)
-			ss>>p.pop_restart_path;
-		else if(varname.compare("AR") == 0)
-			ss>>p.AR;
-		else if(varname.compare("AR_n") == 0)
-			ss>>p.AR_n;
+		else if (varname.compare("prto_arch_on") == 0)
+			ss >> p.prto_arch_on;
+		else if (varname.compare("prto_arch_size") == 0)
+			ss >> p.prto_arch_size;
+		else if (varname.compare("prto_sel_on") == 0)
+			ss >> p.prto_sel_on;
+		else if (varname.compare("islands") == 0)
+			ss >> p.islands;
+		else if (varname.compare("island_gens") == 0)
+			ss >> p.island_gens;
+		else if (varname.compare("train") == 0)
+			ss >> p.train;
+		else if (varname.compare("train_pct") == 0)
+			ss >> p.train_pct;
+		else if (varname.compare("print_every_pop") == 0)
+			ss >> p.print_every_pop;
+		else if (varname.compare("estimate_fitness") == 0)
+			ss >> p.EstimateFitness;
+		else if (varname.compare("FE_pop_size") == 0)
+			ss >> p.FE_pop_size;
+		else if (varname.compare("FE_ind_size") == 0)
+			ss >> p.FE_ind_size;
+		else if (varname.compare("FE_train_size") == 0)
+			ss >> p.FE_train_size;
+		else if (varname.compare("FE_train_gens") == 0)
+			ss >> p.FE_train_gens;
+		else if (varname.compare("FE_rank") == 0)
+			ss >> p.FE_rank;
+		else if (varname.compare("estimate_generality") == 0)
+			ss >> p.estimate_generality;
+		else if (varname.compare("G_sel") == 0)
+			ss >> p.G_sel;
+		else if (varname.compare("G_shuffle") == 0)
+			ss >> p.G_shuffle;
+		else if (varname.compare("norm_error") == 0)
+			ss >> p.norm_error;
+		else if (varname.compare("shuffle_data") == 0)
+			ss >> p.shuffle_data;
+		else if (varname.compare("init_trees") == 0)
+			ss >> p.init_trees;
+		else if (varname.compare("limit_evals") == 0)
+			ss >> p.limit_evals;
+		else if (varname.compare("max_evals") == 0)
+			ss >> p.max_evals;
+		else if (varname.compare("print_homology") == 0)
+			ss >> p.print_homology;
+		else if (varname.compare("print_log") == 0)
+			ss >> p.print_log;
+		else if (varname.compare("print_init_pop") == 0)
+			ss >> p.print_init_pop;
+		else if (varname.compare("print_genome") == 0)
+			ss >> p.print_genome;
+		else if (varname.compare("print_epigenome") == 0)
+			ss >> p.print_epigenome;
+		else if (varname.compare("num_log_pts") == 0)
+			ss >> p.num_log_pts;
+		else if (varname.compare("PS_sel") == 0)
+			ss >> p.PS_sel;
+		else if (varname.compare("pop_restart") == 0)
+			ss >> p.pop_restart;
+		else if (varname.compare("pop_restart_path") == 0)
+			ss >> p.pop_restart_path;
+		else if (varname.compare("AR") == 0)
+			ss >> p.AR;
+		else if (varname.compare("AR_na") == 0)
+			ss >> p.AR_na;
+		else if (varname.compare("AR_nka") == 0) {
+			ss >> p.AR_nka;
+			if (p.AR_nka < 1) {
+				cout << "WARNING: AR_nka set to min value of 1\n";
+				p.AR_nka = 1;
+			}
+		}		
+		else if(varname.compare("AR_nb") == 0)
+			ss>>p.AR_nb;
+		else if (varname.compare("AR_nkb") == 0)
+			ss >> p.AR_nkb;
 		else if(varname.compare("AR_lookahead") == 0)
 			ss>>p.AR_lookahead;
 		else if(varname.compare("align_dev") ==0)
@@ -297,6 +308,10 @@ void load_params(params &p, std::ifstream& fs)
 			ss >> p.lex_eps_target;
 		else if (varname.compare("lex_eps_std") == 0)
 			ss >> p.lex_eps_std;
+		else if (varname.compare("lex_eps_target_mad") == 0)
+			ss >> p.lex_eps_target_mad;
+		else if (varname.compare("lex_eps_error_mad") == 0)
+			ss >> p.lex_eps_error_mad;
 		else if (varname.compare("lex_epsilon") == 0)
 			ss >> p.lex_epsilon;
 		else if (varname.compare("test_at_end") == 0)
@@ -499,9 +514,9 @@ void load_params(params &p, std::ifstream& fs)
 		}
 	}
 
-	// turn off AR_n if AR is not being used
+	// turn off AR_nb if AR is not being used
 	if (!p.AR){
-		p.AR_n = 0; 
+		p.AR_nb = 0; 
 		p.AR_lookahead= 0;
 	}
 

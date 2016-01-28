@@ -68,7 +68,10 @@ struct params {
 	vector <string> seeds;
 	vector <vector <node> > seedstacks;
 	bool AR; //auto-regressive output
-	int AR_n; //order of auto-regressive output
+	int AR_na; //order of auto-regressive output
+	int AR_nka; // state delay
+	int AR_nb; //order of inputs
+	int AR_nkb; // input delay
 	bool AR_lookahead; 
 	vector <string> allvars;// = intvars.insert(intvars.end(), extvars.begin(), extvars.end());
 	vector <string> allblocks;// = allvars.insert(allvars.end(),consvals.begin(),convals.end());
@@ -150,6 +153,9 @@ struct params {
 	bool lex_eps_error; // errors within episilon of the best error are pass, otherwise fail
 	bool lex_eps_target; // errors within epsilon of the target are pass, otherwise fail
 	bool lex_eps_std; // errors in a standard dev of the best are pass, otherwise fail
+	bool lex_eps_target_mad; // errors in a standard dev of the best are pass, otherwise fail
+	bool lex_eps_error_mad; // errors in a standard dev of the best are pass, otherwise fail
+
 	float lex_epsilon; 
 
 	// ==== Printing Options === //
@@ -207,7 +213,10 @@ struct params {
 		pop_restart = 0; // restart from previous population
 		pop_restart_path=""; // restart population file path
 		AR = 0;
-		AR_n = 1;
+		AR_nb = 1;
+		AR_nkb = 1;
+		AR_na = 1;
+		AR_nka = 1;
 		AR_lookahead = 0;
 		// ================ Results and printing
 		resultspath="";
@@ -305,6 +314,8 @@ struct params {
 		lex_eps_error = false; // errors within episilon of the best error are pass, otherwise fail
 		lex_eps_target = false; // errors within epsilon of the target are pass, otherwise fail
 		lex_eps_std = false; // errors in a standard dev of the best are pass, otherwise fail
+		lex_eps_target_mad=false; // errors in a standard dev of the best are pass, otherwise fail
+		lex_eps_error_mad=false; // errors in a standard dev of the best are pass, otherwise fail
 		lex_epsilon = 0.1;
 		//pareto survival setting
 		PS_sel=1;

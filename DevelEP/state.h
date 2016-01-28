@@ -16,6 +16,7 @@ struct state{
 	vector <float> size_mean;
 	vector<float> median_lex_cases;
 	vector<float> median_lex_pool;
+	vector<float> median_passes_per_case;
 	vector <int> size_med;
 	vector <float> size_std;
 	vector <float> eff_size;
@@ -55,6 +56,7 @@ struct state{
 		//numevals.resize(nt);
 		median_lex_cases.assign(nt, 0);
 		median_lex_pool.assign(nt, 0);
+		median_passes_per_case.assign(nt, 0);
 		numevals.assign(nt,0);
 		genevals.push_back(0);
 		eHC_updates.assign(nt,0);
@@ -123,6 +125,19 @@ struct state{
 			}
 		}
 		return mlp / sz;
+		//return accumulate(median_lex_pool.begin(), median_lex_pool.end(), 0.0) / median_lex_pool.size();
+	}
+	float get_median_passes_per_case()
+	{
+		float sz = 0;
+		float mpc = 0;
+		for (unsigned int i = 0; i < median_passes_per_case.size(); ++i) {
+			if (median_passes_per_case[i] > 0) {
+				++sz;
+				mpc += median_passes_per_case[i];
+			}
+		}
+		return mpc / sz;
 		//return accumulate(median_lex_pool.begin(), median_lex_pool.end(), 0.0) / median_lex_pool.size();
 	}
 	int setPHCupdates()
