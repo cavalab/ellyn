@@ -159,6 +159,13 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s
 		}
 	case 5: // random search
 		{
+			//elitism
+			ind best;
+			if (p.elitism){ // save (aggregate) best ind
+				vector<ind>::iterator it_add = std::min_element(pop.begin(),pop.end(),SortFit());
+				best = *it_add;
+			}
+			
 			vector<unsigned int> parloc(pop.size());
 			for (unsigned i = 0; i<parloc.size(); ++i){
 				parloc[i] = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
@@ -167,6 +174,12 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s
 			ApplyGenetics(pop,parloc,p,r,d,s,FE);
 
 			Fitness(pop,p,d,s,FE);
+			
+			//elitism
+			if (p.elitism){ // replace (aggregate) worst ind with (aggregate) best ind
+				vector<ind>::iterator it_rm = std::max_element(pop.begin(),pop.end(),SortFit());
+				pop[it_rm-pop.begin()] = best;
+			}
 			break;
 		}
 	default:

@@ -222,7 +222,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 		}
 	}
 	// measure median number of cases used
-	vector<float> hmedian;
+	vector<float> cases_used;
 	// measure median pool size at selection
 	vector<float> sel_size;
 	// for each selection event:
@@ -247,8 +247,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 			pool = starting_pool;
 
 		pass=true;
-		h=0;
-		
+		h=0; // count the number of cases that are used
 		while ( pass && h<case_order.size()) //while there are remaining cases and more than 1 unique choice
 		{
 			//reset winner and minfit for next case
@@ -288,6 +287,8 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 			} // otherwise, a parent has been chosen or has to be chosen randomly from the remaining pool
 			else 
 				pass=false;
+
+			
 		}
 		//if more than one winner, pick randomly
 		if(winner.size()>1)
@@ -300,15 +301,15 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 			cout << "??";
 		// reset minfit
 		minfit=p.max_fit;
-		hmedian.push_back(h+1);
+		cases_used.push_back(h+1);
 		sel_size.push_back(winner.size());
 	}//for (int i=0;i<parloc.size();++i)
 
-	sort(hmedian.begin(), hmedian.end());
-	sort(sel_size.begin(), sel_size.end());
+	std::sort(cases_used.begin(), cases_used.end());
+	std::sort(sel_size.begin(), sel_size.end());
 		
 	// store median lex cases used, normalized by the number of cases
-	s.median_lex_cases[omp_get_thread_num()] = median(hmedian)/case_order.size();
+	s.median_lex_cases[omp_get_thread_num()] = median(cases_used)/case_order.size();
 	
 	// store median number of individuals that pass each case
 	s.median_passes_per_case[omp_get_thread_num()] = median(num_passes) / pop.size();
