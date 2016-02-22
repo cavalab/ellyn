@@ -67,6 +67,7 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,D
 		if (!trainers[j].output.empty()){
 
 			float abserror=0;
+			float sq_error = 0;
 			float meantarget = 0;
 			float meanout = 0;
 			float corr;
@@ -77,6 +78,7 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,D
 			for(unsigned int sim=0;sim<ndata_t;++sim)
 			{	
 				abserror += abs(FEtarget[sim]-trainers[j].output[FE[i].FEpts[sim]]);
+				sq_error += pow(FEtarget[sim] - trainers[j].output[FE[i].FEpts[sim]],2); 
 				meantarget += FEtarget.at(sim);
 				meanout += trainers[j].output[FE[i].FEpts[sim]];
 				tmpoutput.push_back(trainers[j].output[FE[i].FEpts[sim]]);
@@ -84,6 +86,7 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,D
 				
 				// mean absolute error
 				abserror = abserror/ndata_t;
+				sq_error /= ndata_t;
 				meantarget = meantarget/ndata_t;
 				meanout = meanout/ndata_t;
 				//calculate correlation coefficient
@@ -101,14 +104,16 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,D
 				else if ( boost::math::isnan(abserror) || boost::math::isinf(abserror) || boost::math::isnan(corr) || boost::math::isinf(corr))
 					FEness[j]=p.max_fit;
 				else{
-					if (p.fit_type==1)
+					if (!(p.fit_type.compare("1") || p.fit_type.compare("MAE")))
 						FEness[j] = abserror;
-					else if (p.fit_type==2)
+					else if (p.fit_type.compare("2") || p.fit_type.compare("R2"))
 						FEness[j] = 1-corr;
-					else if (p.fit_type==3)
+					else if (p.fit_type.compare("3") || p.fit_type.compare("MAER2"))
 						FEness[j] = abserror/corr;
-					else if (p.fit_type==4)
+					else if (p.fit_type.compare("4") || p.fit_type.compare("VAF"))
 						FEness[j] = 1-vaf;
+					else if (p.fit_type.compare("MSE"))
+						FEness[j] = sq_error;
 					if (p.norm_error)
 						FEness[j] = FEness[j]/target_std;
 				}
@@ -156,6 +161,7 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,D
 			if (!trainers[j].output.empty()){
 
 				float abserror_v=0;
+				float sq_error_v = 0;
 				float meantarget_v = 0;
 				float meanout_v = 0;
 				float corr_v;
@@ -166,6 +172,7 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,D
 				for(unsigned int sim=ndata_t;sim<ndata;++sim)
 				{	
 					abserror_v += abs(FEtarget[sim]-trainers[j].output[FE[i].FEpts[sim]]);
+					sq_error_v += pow(FEtarget[sim] - trainers[j].output[FE[i].FEpts[sim]],2);
 					meantarget_v += FEtarget.at(sim);
 					meanout_v += trainers[j].output[FE[i].FEpts[sim]];
 					tmpoutput_v.push_back(trainers[j].output[FE[i].FEpts[sim]]);
@@ -173,6 +180,7 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,D
 				
 					// mean absolute error
 					abserror_v = abserror_v/ndata_v;
+					sq_error_v /= ndata_v;
 					meantarget_v = meantarget_v/ndata_v;
 					meanout_v = meanout_v/ndata_v;
 					//calculate correlation coefficient
@@ -188,14 +196,16 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,D
 					else if ( boost::math::isnan(abserror_v) || boost::math::isinf(abserror_v) || boost::math::isnan(corr_v) || boost::math::isinf(corr_v))
 						FEness_v[j]=p.max_fit;
 					else{
-						if (p.fit_type==1)
+						if (!(p.fit_type.compare("1") || p.fit_type.compare("MAE")))
 							FEness_v[j] = abserror_v;
-						else if (p.fit_type==2)
+						else if (p.fit_type.compare("2") || p.fit_type.compare("R2"))
 							FEness_v[j] = 1-corr_v;
-						else if (p.fit_type==3)
+						else if (p.fit_type.compare("3") || p.fit_type.compare("MAER2"))
 							FEness_v[j] = abserror_v/corr_v;
-						else if (p.fit_type==4)
+						else if (p.fit_type.compare("4") || p.fit_type.compare("VAF"))
 							FEness_v[j] = 1-vaf_v;
+						else if (p.fit_type.compare("MSE"))
+							FEness_v[j] = sq_error_v;
 						if (p.norm_error)
 							FEness_v[j] = FEness_v[j]/target_std_v;
 					}

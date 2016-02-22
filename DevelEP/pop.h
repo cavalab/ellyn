@@ -41,6 +41,8 @@ struct ind {
 	MatrixXf M; // centroids for M3GP
 	float abserror;
 	float abserror_v;
+	float sq_error;
+	float sq_error_v;
 	float corr;
 	float corr_v;
 	float VAF;
@@ -68,6 +70,7 @@ struct ind {
 	ind()
 	{
 		abserror = 0;
+		sq_error = 0;
 		corr = 0;
 		age = 1;
 		genty = 1;
@@ -116,6 +119,8 @@ struct ind {
 		swap(this->M,s.M);
 		swap(this->abserror,s.abserror);		// floats
 		swap(this->abserror_v,s.abserror_v);
+		swap(this->sq_error, s.sq_error);		// floats
+		swap(this->sq_error_v, s.sq_error_v);
 		swap(this->corr,s.corr);
 		swap(this->corr_v,s.corr_v);
 		swap(this->VAF,s.VAF);
@@ -156,6 +161,8 @@ struct ind {
 	{
 		abserror = 0;
 		abserror_v=0;
+		sq_error = 0;
+		sq_error_v = 0;
 		corr = 0;
 		corr_v=0;
 		fitness=0;
@@ -183,10 +190,12 @@ struct sub_ind
 {
 	float fitness;
 	float abserror;
+	float sq_error;
 	float corr;
 	float VAF;
 
 	float abserror_v;
+	float sq_error_v;
 	float corr_v;
 	float VAF_v;
 	string eqn;
@@ -199,6 +208,8 @@ struct sub_ind
 		fitness = x.fitness; 
 		abserror = x.abserror; 
 		abserror_v = x.abserror_v;
+		sq_error = x.sq_error;
+		sq_error_v = x.sq_error_v;
 		corr = x.corr; 
 		corr_v = x.corr_v; 
 		VAF = x.VAF;

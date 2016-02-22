@@ -40,10 +40,12 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	fout << "size: " << best.line.size() << "\n";
 	fout << "eff size: " << best.eff_size << "\n";
 	fout << "training abs error: " << best.abserror<< "\n";
+	fout << "training square error: " << best.sq_error << "\n";
 	fout << "training correlation: " << best.corr<< "\n";
 	fout << "training fitness: " << best.fitness<< "\n";
 	fout << "training VAF: " << best.VAF <<"\n";
 	fout << "validation abs error: " << best.abserror_v<< "\n";
+	fout << "validation square error: " << best.sq_error_v << "\n";
 	fout << "validation correlation: " << best.corr_v<< "\n";
 	fout << "validation fitness: " << best.fitness_v<< "\n";
 	fout << "validation VAF: " << best.VAF_v <<"\n";
@@ -72,7 +74,7 @@ void initdatafile(std::ofstream& dfout,string & logname,params& p)
 	dfout.open(dataname,std::ofstream::out | std::ofstream::app);
 	//dfout.open(dataname,std::ofstream::app);
 	//dfout << "pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t best_R2 \t best_R2_v \t best_VAF \t best_VAF_v \t size \t eff_size \t pHC_pct \t eHC_pct \t good_g_pct \t neut_g_pct \t bad_g_pct \t tot_hom \t on_hom \t off_hom\n";
-	dfout << "gen \t pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t best_R2 \t best_R2_v \t best_VAF \t best_VAF_v \t size \t eff_size \t pHC_pct \t eHC_pct \t good_g_pct \t neut_g_pct \t bad_g_pct ";
+	dfout << "gen \t pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t \t best_MSE \t best_MSE_v \t best_R2 \t best_R2_v \t best_VAF \t best_VAF_v \t size \t eff_size \t pHC_pct \t eHC_pct \t good_g_pct \t neut_g_pct \t bad_g_pct ";
 	if (p.print_homology)
 		dfout << "\t tot_hom \t on_hom \t off_hom";
 	if (p.classification && p.class_m3gp) 
@@ -99,7 +101,7 @@ void printdatafile(tribe& T,state& s,params& p, vector<Randclass>& r,std::ofstre
 	T.getbestsubind(best_ind);
 
 	/*dfout << s.totalptevals() << "\t" << best_ind.eqn << "\t" << T.bestFit() << "\t" << T.bestFit_v() << "\t" << T.medFit() << "\t" << T.medFit_v() << "\t" << best_ind.abserror << "\t" << best_ind.abserror_v << "\t" << best_ind.corr << "\t" << best_ind.corr_v << "\t" << T.meanSize() << "\t" << T.meanEffSize() << "\t" << s.current_pHC_updates/float(p.popsize)*100.0 << "\t" << s.current_eHC_updates/float(p.popsize)*100.0 << "\t" <<  s.good_cross_pct << "\t" << s.neut_cross_pct << "\t" << s.bad_cross_pct;*/
-	dfout << gen << "\t" << s.totalptevals() << "\t" << best_ind.eqn << "\t" << T.bestFit() << "\t" << T.bestFit_v() << "\t" << T.medFit() << "\t" << T.medFit_v() << "\t" << best_ind.abserror << "\t" << best_ind.abserror_v << "\t" << best_ind.corr << "\t" << best_ind.corr_v << "\t" << best_ind.VAF << "\t" << best_ind.VAF_v << "\t" << T.meanSize() << "\t" << T.meanEffSize() << "\t" << s.current_pHC_updates/float(p.popsize)*100.0 << "\t" << s.current_eHC_updates/float(p.popsize)*100.0 << "\t" <<  s.good_cross_pct << "\t" << s.neut_cross_pct << "\t" << s.bad_cross_pct;
+	dfout << gen << "\t" << s.totalptevals() << "\t" << best_ind.eqn << "\t" << T.bestFit() << "\t" << T.bestFit_v() << "\t" << T.medFit() << "\t" << T.medFit_v() << "\t" << best_ind.abserror << "\t" << best_ind.abserror_v << "\t" << best_ind.sq_error << "\t" << best_ind.sq_error_v << "\t" << best_ind.corr << "\t" << best_ind.corr_v << "\t" << best_ind.VAF << "\t" << best_ind.VAF_v << "\t" << T.meanSize() << "\t" << T.meanEffSize() << "\t" << s.current_pHC_updates/float(p.popsize)*100.0 << "\t" << s.current_eHC_updates/float(p.popsize)*100.0 << "\t" <<  s.good_cross_pct << "\t" << s.neut_cross_pct << "\t" << s.bad_cross_pct;
 	if (p.print_homology){
 		float tot_hom, on_hom, off_hom;
 		T.hom(r,tot_hom,on_hom,off_hom);
@@ -188,6 +190,8 @@ void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
 		fout << "fitness_v: " << pop.at(h).fitness_v<< "\n";
 		fout << "MAE: " << pop.at(h).abserror<< "\n";;
 		fout << "MAE_v: " << pop.at(h).abserror_v<< "\n";
+		fout << "MSE: " << pop.at(h).sq_error << "\n";;
+		fout << "MSE_v: " << pop.at(h).sq_error_v << "\n";
 		fout << "correlation: " << pop.at(h).corr<< "\n";
 		fout << "correlation_v: " << pop.at(h).corr_v<< "\n";
 		fout << "VAF: " << pop.at(h).VAF<< "\n";

@@ -88,7 +88,7 @@ struct params {
 	//vector <float> target;
 	// Fitness Settings 
 
-	int fit_type; // 1: error, 2: corr, 3: combo
+	string fit_type; // MAE(1), R2(2), MAER2(3), VAF(4), MSE
 	bool norm_error; // normalize fitness by the standard deviation of the target output
 	float max_fit;
 	float min_fit;
@@ -238,7 +238,7 @@ struct params {
 		print_novelty = 0;
 
 		// ============ Fitness settings
-		fit_type = 1; // 1: error, 2: corr, 3: combo
+		fit_type = "MSE"; // 1: error, 2: corr, 3: combo
 		norm_error = 0 ; // normalize fitness by the standard deviation of the target output
 		weight_error = 0; // weight error vector by predefined weights from data file
 		max_fit = 1.0E20;
