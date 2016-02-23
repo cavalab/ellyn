@@ -566,7 +566,7 @@ void CalcFitness(ind& me, params& p, vector<vector<float>>& vals, vector<float>&
 					me.sq_error += pow(target.at(sim) - me.output.at(sim), 2);
 				}
 
-				if (p.sel == 3 && (!(p.fit_type.compare("1") || p.fit_type.compare("MAE")) || p.fit_type.compare("3") || p.fit_type.compare("MAER2"))) // lexicase error vector
+				if (p.sel == 3 && (!(p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0) || p.fit_type.compare("3")==0 || p.fit_type.compare("MAER2")==0)) // lexicase error vector
 					me.error.push_back(abs(target.at(sim) - me.output.at(sim)));
 
 				meantarget += target.at(sim);
@@ -597,10 +597,10 @@ void CalcFitness(ind& me, params& p, vector<vector<float>>& vals, vector<float>&
 		meantarget = meantarget / ndata_t;
 		meanout = meanout / ndata_t;
 		// lexicase fitness 
-		if (p.sel == 3 && !(p.fit_type.compare("1") || p.fit_type.compare("MAE"))) {
-			if (p.fit_type.compare("2") || p.fit_type.compare("R2") || p.fit_type.compare("3") || p.fit_type.compare("MAER2")) //correlation
+		if (p.sel == 3 && !(p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0)) {
+			if (p.fit_type.compare("2")==0 || p.fit_type.compare("R2")==0 || p.fit_type.compare("3")==0 || p.fit_type.compare("MAER2")==0) //correlation
 				getCorr_lex(me.output, target, meanout, meantarget, me.error);
-			//else if (p.fit_type.compare("4") || p.fit_type.compare("VAF") )
+			//else if (p.fit_type.compare("4")==0 || p.fit_type.compare("VAF")==0 )
 				//VAF_lex(me.output, target, meanout, meantarget, me.error);
 				
 		}
@@ -643,15 +643,15 @@ void CalcFitness(ind& me, params& p, vector<vector<float>>& vals, vector<float>&
 	else if (boost::math::isnan(me.abserror) || boost::math::isinf(me.abserror) || boost::math::isnan(me.corr) || boost::math::isinf(me.corr))
 		me.fitness = p.max_fit;
 	else {
-		if (p.fit_type.compare("1") || p.fit_type.compare("MAE"))
+		if (p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0)
 			me.fitness = me.abserror;
-		else if (p.fit_type.compare("2") || p.fit_type.compare("R2"))
+		else if (p.fit_type.compare("2")==0 || p.fit_type.compare("R2")==0)
 			me.fitness = 1 - me.corr;
-		else if (p.fit_type.compare("3") || p.fit_type.compare("MAER2"))
+		else if (p.fit_type.compare("3")==0 || p.fit_type.compare("MAER2")==0)
 			me.fitness = me.abserror / me.corr;
-		else if (p.fit_type.compare("4") || p.fit_type.compare("VAF"))
+		else if (p.fit_type.compare("4")==0 || p.fit_type.compare("VAF")==0)
 			me.fitness = 1 - me.VAF / 100;
-		else if (p.fit_type.compare("MSE"))
+		else if (p.fit_type.compare("MSE")==0)
 			me.fitness = me.sq_error;
 		if (p.norm_error)
 			me.fitness = me.fitness / target_std;
@@ -675,15 +675,15 @@ void CalcFitness(ind& me, params& p, vector<vector<float>>& vals, vector<float>&
 		else if (boost::math::isnan(me.abserror_v) || boost::math::isinf(me.abserror_v) || boost::math::isnan(me.corr_v) || boost::math::isinf(me.corr_v))
 			me.fitness_v = p.max_fit;
 		else {
-			if (p.fit_type.compare("1") || p.fit_type.compare("MAE"))
+			if (p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0)
 				me.fitness_v = me.abserror_v;
-			else if (p.fit_type.compare("2") || p.fit_type.compare("R2"))
+			else if (p.fit_type.compare("2")==0 || p.fit_type.compare("R2")==0)
 				me.fitness_v = 1 - me.corr_v;
-			else if (p.fit_type.compare("3") || p.fit_type.compare("MAER2"))
+			else if (p.fit_type.compare("3")==0 || p.fit_type.compare("MAER2")==0)
 				me.fitness_v = me.abserror_v / me.corr_v;
-			else if (p.fit_type.compare("4") || p.fit_type.compare("VAF"))
+			else if (p.fit_type.compare("4")==0 || p.fit_type.compare("VAF")==0)
 				me.fitness_v = 1 - me.VAF_v / 100;
-			else if (p.fit_type.compare("MSE"))
+			else if (p.fit_type.compare("MSE")==0)
 				me.fitness_v = me.sq_error_v;
 			if (p.norm_error)
 				me.fitness_v = me.fitness_v / target_std_v;
@@ -1098,10 +1098,10 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 	else if ( boost::math::isnan(me.abserror) || boost::math::isinf(me.abserror) )
 		me.fitness=p.max_fit;
 	else{
-		if (p.fit_type.compare("1") || p.fit_type.compare("MAE")){
+		if (p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0){
 			me.fitness = me.abserror;
 		}
-		else if (p.fit_type.compare("2") || p.fit_type.compare("FM")) {
+		else if (p.fit_type.compare("2")==0 || p.fit_type.compare("FM")) {
 			float precision, recall;
 			me.fitness = 0;
 			for (unsigned int i = 0; i < p.number_of_classes; ++i) {
@@ -1150,10 +1150,10 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 		else if ( boost::math::isnan(me.abserror_v) || boost::math::isinf(me.abserror_v))
 			me.fitness_v=p.max_fit;
 		else{
-			if (p.fit_type.compare("1") || p.fit_type.compare("MAE")) {
+			if (p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0) {
 				me.fitness_v = me.abserror_v;
 			}
-			else if (p.fit_type.compare("2") || p.fit_type.compare("FM")) {
+			else if (p.fit_type.compare("2")==0 || p.fit_type.compare("FM")) {
 				float precision, recall;
 				me.fitness_v = 0;
 				for (unsigned int i = 0; i < p.number_of_classes; ++i) {
@@ -1379,7 +1379,7 @@ void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>
 		else if ( boost::math::isnan(me.abserror) || boost::math::isinf(me.abserror) )
 			me.fitness=p.max_fit;
 		else{
-			if (!(p.fit_type.compare("1") || p.fit_type.compare("MAE"))){
+			if (!(p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0)){
 				s.out << "warning: fit_type not set to error. using error anyway (because classification is being output)\n";
 				p.fit_type="MAE";
 			}
@@ -1397,7 +1397,7 @@ void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>
 			else if ( boost::math::isnan(me.abserror_v) || boost::math::isinf(me.abserror_v))
 				me.fitness_v=p.max_fit;
 			else{
-				if (!(p.fit_type.compare("1") || p.fit_type.compare("MAE"))){
+				if (!(p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0)){
 					s.out << "WARNING: fit_type not set to error. using error anyway (because classification is being output)\n";
 					p.fit_type="MAE";
 				}
@@ -1605,15 +1605,15 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 				me.VAF = p.min_fit;
 			}
 			else{
-				if (!(p.fit_type.compare("1") || p.fit_type.compare("MAE")))
+				if (!(p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0))
 					me.fitness = me.abserror;
-				else if (p.fit_type.compare("2") || p.fit_type.compare("R2"))
+				else if (p.fit_type.compare("2")==0 || p.fit_type.compare("R2")==0)
 					me.fitness = 1-me.corr;
-				else if (p.fit_type.compare("3") || p.fit_type.compare("MAER2"))
+				else if (p.fit_type.compare("3")==0 || p.fit_type.compare("MAER2")==0)
 					me.fitness = me.abserror/me.corr;
-				else if (p.fit_type.compare("4") || p.fit_type.compare("VAF"))
+				else if (p.fit_type.compare("4")==0 || p.fit_type.compare("VAF")==0)
 					me.fitness = 1-me.VAF/100;
-				else if (p.fit_type.compare("MSE"))
+				else if (p.fit_type.compare("MSE")==0)
 					me.fitness = me.sq_error;
 				if (p.norm_error)
 					me.fitness = me.fitness/target_std;
@@ -1643,15 +1643,15 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 				else if ( boost::math::isnan(me.abserror_v) || boost::math::isinf(me.abserror_v) || boost::math::isnan(me.corr_v) || boost::math::isinf(me.corr_v))
 					me.fitness_v=p.max_fit;
 				else{
-					if (!(p.fit_type.compare("1") || p.fit_type.compare("MAE")))
+					if (!(p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0))
 						me.fitness_v = me.abserror_v;
-					else if (p.fit_type.compare("2") || p.fit_type.compare("R2"))
+					else if (p.fit_type.compare("2")==0 || p.fit_type.compare("R2")==0)
 						me.fitness_v = 1-me.corr_v;
-					else if (p.fit_type.compare("3") || p.fit_type.compare("MAER2"))
+					else if (p.fit_type.compare("3")==0 || p.fit_type.compare("MAER2")==0)
 						me.fitness_v = me.abserror_v/me.corr_v;
-					else if (p.fit_type.compare("4") || p.fit_type.compare("VAF"))
+					else if (p.fit_type.compare("4")==0 || p.fit_type.compare("VAF")==0)
 						me.fitness_v = 1-me.VAF/100;
-					else if (p.fit_type.compare("MSE"))
+					else if (p.fit_type.compare("MSE")==0)
 						me.fitness_v = me.sq_error_v;
 					if (p.norm_error)
 						me.fitness_v = me.fitness_v/target_std_v;

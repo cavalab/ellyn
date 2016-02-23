@@ -104,15 +104,15 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,D
 				else if ( boost::math::isnan(abserror) || boost::math::isinf(abserror) || boost::math::isnan(corr) || boost::math::isinf(corr))
 					FEness[j]=p.max_fit;
 				else{
-					if (!(p.fit_type.compare("1") || p.fit_type.compare("MAE")))
+					if (!(p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0))
 						FEness[j] = abserror;
-					else if (p.fit_type.compare("2") || p.fit_type.compare("R2"))
+					else if (p.fit_type.compare("2")==0 || p.fit_type.compare("R2")==0)
 						FEness[j] = 1-corr;
-					else if (p.fit_type.compare("3") || p.fit_type.compare("MAER2"))
+					else if (p.fit_type.compare("3")==0 || p.fit_type.compare("MAER2")==0)
 						FEness[j] = abserror/corr;
-					else if (p.fit_type.compare("4") || p.fit_type.compare("VAF"))
+					else if (p.fit_type.compare("4")==0 || p.fit_type.compare("VAF")==0)
 						FEness[j] = 1-vaf;
-					else if (p.fit_type.compare("MSE"))
+					else if (p.fit_type.compare("MSE")==0)
 						FEness[j] = sq_error;
 					if (p.norm_error)
 						FEness[j] = FEness[j]/target_std;
@@ -196,15 +196,15 @@ void FitnessFE(vector <FitnessEstimator>& FE, vector <ind>& trainers,params& p,D
 					else if ( boost::math::isnan(abserror_v) || boost::math::isinf(abserror_v) || boost::math::isnan(corr_v) || boost::math::isinf(corr_v))
 						FEness_v[j]=p.max_fit;
 					else{
-						if (!(p.fit_type.compare("1") || p.fit_type.compare("MAE")))
+						if (!(p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0))
 							FEness_v[j] = abserror_v;
-						else if (p.fit_type.compare("2") || p.fit_type.compare("R2"))
+						else if (p.fit_type.compare("2")==0 || p.fit_type.compare("R2")==0)
 							FEness_v[j] = 1-corr_v;
-						else if (p.fit_type.compare("3") || p.fit_type.compare("MAER2"))
+						else if (p.fit_type.compare("3")==0 || p.fit_type.compare("MAER2")==0)
 							FEness_v[j] = abserror_v/corr_v;
-						else if (p.fit_type.compare("4") || p.fit_type.compare("VAF"))
+						else if (p.fit_type.compare("4")==0 || p.fit_type.compare("VAF")==0)
 							FEness_v[j] = 1-vaf_v;
-						else if (p.fit_type.compare("MSE"))
+						else if (p.fit_type.compare("MSE")==0)
 							FEness_v[j] = sq_error_v;
 						if (p.norm_error)
 							FEness_v[j] = FEness_v[j]/target_std_v;

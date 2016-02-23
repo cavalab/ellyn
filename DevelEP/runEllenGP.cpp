@@ -595,7 +595,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		shuffle_data(d,p,r,s);
 
 	// define class weights for balanced fitness
-	if (p.classification && (p.fit_type.compare("2") || p.fit_type.compare("FM"))) 
+	if (p.classification && (p.fit_type.compare("2")==0 || p.fit_type.compare("FM"))) 
 		p.define_class_weights(d);
 
 	boost::timer time;
