@@ -137,10 +137,10 @@ void load_data(Data& d, std::ifstream& fs,params& p)
 			vector<string> tmp_label = d.label;
 			d.label.resize(0);
 			p.allvars.resize(0);
-			for (unsigned i = 0; i < p.AR_nb + p.AR_nkb; ++i) {
-				d.vals.erase(d.vals.begin()); // erase zero padding from data
-				d.target.erase(d.target.begin()); //erase zero padding from target
-			}
+			//for (unsigned i = 0; i < p.AR_nb + p.AR_nkb; ++i) {
+			//	d.vals.erase(d.vals.begin()); // erase zero padding from data
+			//	d.target.erase(d.target.begin()); //erase zero padding from target
+			//}
 			for (unsigned i = 0; i < p.AR_nb; ++i) {
 				for (unsigned k=0; k<tmp;++k){ // add delay variable names
 					d.label.push_back(tmp_label[k] + "_" + to_string(static_cast<long long>(i+p.AR_nkb)));
