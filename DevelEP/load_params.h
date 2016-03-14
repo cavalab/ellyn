@@ -516,7 +516,10 @@ void load_params(params &p, std::ifstream& fs)
 
 	// turn off AR_nb if AR is not being used
 	if (!p.AR){
+		p.AR_na = 0;
 		p.AR_nb = 0; 
+		p.AR_nka = 0;
+		p.AR_nkb = 0;
 		p.AR_lookahead= 0;
 	}
 
