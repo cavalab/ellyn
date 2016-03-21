@@ -1,8 +1,16 @@
 #include "stdafx.h"
 #include "op_node.h"
 #include "params.h"
+
 using namespace std;
 
+//template <typename T>
+//std::string to_string_with_precision(const T a_value, const int n = 6)
+//{
+//	std::ostringstream out;
+//	out << setprecision(n) << a_value;
+//	return out.str();
+//}
 string Line2Eqn(vector<node>& line,string& eqnForm,params& p,bool protect)
 {
 	vector<string> eqn_floatstack;
@@ -16,7 +24,8 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p,bool protect)
 		if(line.at(i).on){
 			if(line.at(i).type=='n'){
 				eqn_floatstack.push_back(to_string(static_cast<long double>(line.at(i).value)));
-				form_floatstack.push_back("n_" + to_string(static_cast<long double>(num_cons)));
+				//form_floatstack.push_back("n_" + to_string_with_precision(num_cons, 1));
+				form_floatstack.push_back("n_" + to_string(static_cast<int>(num_cons)));
 				++num_cons;
 			}
 			else if(line.at(i).type=='v'){

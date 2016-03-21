@@ -388,6 +388,10 @@ void InsInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 		
 
 }
+
+
+
+
 //void makenew(ind& newind)
 //{
 //	for (int i=0;i<newind.line.size();++i)

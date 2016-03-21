@@ -1565,7 +1565,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 			me.corr = getCorr(me.output,target,meanout,meantarget,0,target_std);
 			me.VAF = VAF(me.output,target,meantarget,0);
 
-			if (p.train)
+			if (p.train && !p.test_at_end)
 			{
 				q = 0;
 				var_target = 0;
@@ -1605,7 +1605,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 				me.VAF = p.min_fit;
 			}
 			else{
-				if (!(p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0))
+				if (p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0)
 					me.fitness = me.abserror;
 				else if (p.fit_type.compare("2")==0 || p.fit_type.compare("R2")==0)
 					me.fitness = 1-me.corr;
@@ -1625,7 +1625,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 			else if(me.fitness<p.min_fit)
 				(me.fitness=p.min_fit);
 
-			if(p.train){ //assign validation fitness
+			if(p.train && !p.test_at_end){ //assign validation fitness
 				if (!pass){
 					me.corr_v = 0;
 					me.VAF_v = 0;
@@ -1643,7 +1643,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 				else if ( boost::math::isnan(me.abserror_v) || boost::math::isinf(me.abserror_v) || boost::math::isnan(me.corr_v) || boost::math::isinf(me.corr_v))
 					me.fitness_v=p.max_fit;
 				else{
-					if (!(p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0))
+					if (p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0)
 						me.fitness_v = me.abserror_v;
 					else if (p.fit_type.compare("2")==0 || p.fit_type.compare("R2")==0)
 						me.fitness_v = 1-me.corr_v;

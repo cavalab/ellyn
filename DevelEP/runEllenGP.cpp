@@ -559,7 +559,8 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		s.out << "WARNING: cannot run island populations in trial mode. This trial will run on one core.\n";
 		p.islands = false;
 	 }
-	
+	 s.out << "fitness type: " << p.fit_type << "\n";
+
 	int nt=0;
 	//int ntt=0;	
 
