@@ -21,8 +21,11 @@ struct state{
 	vector <float> size_std;
 	vector <float> eff_size;
 	vector<int> eHC_updates;
+	vector<int> eHC_ties;
 	int total_eHC_updates;
 	float current_eHC_updates;
+	int total_eHC_ties;
+	float current_eHC_ties;
 	vector<int> pHC_updates;
 	float current_pHC_updates;
 	int total_pHC_updates;
@@ -60,12 +63,14 @@ struct state{
 		numevals.assign(nt,0);
 		genevals.push_back(0);
 		eHC_updates.assign(nt,0);
+		eHC_ties.assign(nt, 0);
 		pHC_updates.assign(nt,0);
 		good_cross.assign(nt,0);
 		bad_cross.assign(nt,0);
 		neut_cross.assign(nt,0);
 		total_eHC_updates=0;
 		current_eHC_updates = 0;
+
 		total_pHC_updates=0;
 		current_pHC_updates = 0;
 		good_cross_pct=0;
@@ -164,7 +169,17 @@ struct state{
 		current_eHC_updates = float(val);
 		return val; 
 	}
+	int setEHCties()
+	{
+		int ties = 0;
+		for (unsigned int i = 0; i<eHC_ties.size(); ++i)
+			ties += eHC_ties[i];
 
+		int val = (ties - total_eHC_ties);
+		total_eHC_ties += val;
+		current_eHC_ties = float(val);
+		return val;
+	}
 	float getGoodCrossPct()
 	{
 		

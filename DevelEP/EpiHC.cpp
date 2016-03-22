@@ -115,14 +115,15 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,Data& d,state& s,FitnessEs
 					oldind = tmp_ind[0];
 					updated = true;
 					//tmp_ind.resize(0);
-					s.eHC_updates[omp_get_thread_num()]++;
+					++s.eHC_updates[omp_get_thread_num()];
 				}
 				else if (tmp_ind[0].fitness == oldind.fitness && tmp_ind[0].complexity < oldind.complexity) // if fitness is same but equation is smaller, replace individual
 				{
 					oldind = tmp_ind[0];
 					updated = true;
 					//tmp_ind.resize(0);
-					s.eHC_updates[omp_get_thread_num()]++;
+					++s.eHC_updates[omp_get_thread_num()];
+					++s.eHC_ties[omp_get_thread_num()];
 				}
 				else
 					updated = false;
