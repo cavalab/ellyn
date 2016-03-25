@@ -73,6 +73,8 @@ struct state{
 
 		total_pHC_updates=0;
 		current_pHC_updates = 0;
+		total_eHC_ties = 0;
+
 		good_cross_pct=0;
 		neut_cross_pct=0;
 

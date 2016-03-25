@@ -84,7 +84,7 @@ void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s,F
 
 	// epigenetic mutation
 	if (p.eHC_on && p.eHC_mut){ 
-		s.out << "Applying epigenetic mutations...\n";
+		//s.out << "Applying epigenetic mutations...\n";
 		for (int i = 0; i<tmppop.size(); ++i)
 			EpiMut(tmppop.at(i),p,r);
 	}

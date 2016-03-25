@@ -190,10 +190,11 @@ s.out << "Median Fitness (v): " << T.medFit()<<"\n";
 s.out << "Mean Size: " << T.meanSize() << "\n";
 s.out << "Mean Eff Size: " << T.meanEffSize() << "\n";
 s.out << "Pareto Front Equations: " << A.optimal_size << "\n";
-if(p.pHC_on)
-	s.out << "Parameter updates: " << float(s.setPHCupdates())/float(p.popsize)*100 << "%\n";
-if(p.eHC_on)
-	s.out << "Epigenetic updates: " << float(s.setEHCupdates())/float(p.popsize)*100 << "%\n";
+if (p.pHC_on) {
+	s.out << "Parameter updates: " << float(s.setPHCupdates()) / float(p.popsize) * 100 << "%\n";
+	s.out << "Epigenetic updates: " << float(s.setEHCupdates()) / float(p.popsize) * 100 << "%\n";
+	s.out << "Epigenetic ties: " << float(s.setEHCties()) / float(p.popsize) * 100 << "%\n";
+}
 s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "%\n";
 s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "%\n";
 s.out << "Bad Genetics: " << s.getBadCrossPct() << "%\n";
@@ -1049,7 +1050,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 							printpop(A.pop,p,s,logname,1);
 						}
 						if (!p.limit_evals || s.totalptevals() >= print_trigger){
-							printdatafile(World,s,p,r,dfout,gen);
+							printdatafile(World,s,p,r,dfout,gen,time.elapsed());
 							if (p.print_every_pop) printpop(World.pop,p,s,logname,2);
 							if (p.print_log) {
 								printstats(World,gen,s,p,A);
@@ -1110,7 +1111,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			p.EstimateFitness=1;
 		}
 		
-		printdatafile(World,s,p,r,dfout,gen);
+		printdatafile(World,s,p,r,dfout,gen,time.elapsed());
 		printbestind(World,p,s,logname);
 		printpop(World.pop,p,s,logname,0);
 		if (p.prto_arch_on)
@@ -1275,7 +1276,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					printpop(A.pop,p,s,logname,1);
 				}
 				if (!p.limit_evals || s.totalptevals() >= print_trigger){ 
-					printdatafile(T,s,p,r,dfout,counter);
+					printdatafile(T,s,p,r,dfout,counter,time.elapsed());
 					if (p.print_every_pop) printpop(T.pop,p,s,logname,2);
 					if (p.print_log){
 						printstats(T,counter,s,p,A);
@@ -1336,7 +1337,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			p.EstimateFitness=1;
 		}
 
-		printdatafile(T,s,p,r,dfout,counter);
+		printdatafile(T,s,p,r,dfout,counter,time.elapsed());
 		printbestind(T,p,s,logname);
 		printpop(T.pop,p,s,logname,0);
 		if (p.prto_arch_on)
