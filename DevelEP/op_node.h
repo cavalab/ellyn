@@ -92,9 +92,9 @@ private:
 	void setComplexity()
 	{
 		// assign complexity
-		if (type=='^' || type=='i' || type=='t') 
+		if (type=='i' || type=='t') 
 			c = 5;
-		else if (type=='e' || type=='l') 
+		else if (type=='e' || type=='l' || type=='^') 
 			c = 4; 
 		else if (type=='s' || type=='c' ) 
 			c = 3;

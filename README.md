@@ -155,7 +155,12 @@ island_gens				|	100		|	number of generations between shuffling of the island po
 lexpool 				|	1		|	Fraction of population to use in lexicase selection events
 lex_class				| 	0		|	For a classification problem, use separate class fitnesses as cases
 lex_metacases			|	none	|	Specify extra cases for selection. Options: age, complexity
-
+lex_eps_std				|	0		|	use epsilon lexicase with eps = standard deviation of error
+lex_eps_error	    	|	0		|	use epsilon lexicase with error-based epsilons
+lex_eps_target		  	|	0		|	use epsilon lexicase with error-based epsilons
+lex_eps_target_mad	    |	0		|	use epsilon lexicase with median absolute deviation, target-based epsilons
+lex_eps_error_mad	    |	0		|	use epsilon lexicase with median absolute deviation, error-based epsilons
+lex_epsilon				|	0.1		| 	value of epsilon (ignored for mad and std versions)
  	
 FYI
 ===

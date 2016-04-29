@@ -74,7 +74,7 @@ void initdatafile(std::ofstream& dfout,string & logname,params& p)
 	dfout.open(dataname,std::ofstream::out | std::ofstream::app);
 	//dfout.open(dataname,std::ofstream::app);
 	//dfout << "pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t best_R2 \t best_R2_v \t best_VAF \t best_VAF_v \t size \t eff_size \t pHC_pct \t eHC_pct \t good_g_pct \t neut_g_pct \t bad_g_pct \t tot_hom \t on_hom \t off_hom\n";
-	dfout << "gen \t pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t \t best_MSE \t best_MSE_v \t best_R2 \t best_R2_v \t best_VAF \t best_VAF_v \t size \t eff_size \t pHC_pct \t eHC_pct \t eHC_ties \t good_g_pct \t neut_g_pct \t bad_g_pct \t time";
+	dfout << "gen \t pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t best_MSE \t best_MSE_v \t best_R2 \t best_R2_v \t best_VAF \t best_VAF_v \t size \t eff_size \t pHC_pct \t eHC_pct \t eHC_ties \t good_g_pct \t neut_g_pct \t bad_g_pct \t time";
 	if (p.print_homology)
 		dfout << "\t tot_hom \t on_hom \t off_hom";
 	if (p.classification && p.class_m3gp) 

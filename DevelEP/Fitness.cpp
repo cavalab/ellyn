@@ -1101,7 +1101,7 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 		if (p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0){
 			me.fitness = me.abserror;
 		}
-		else if (p.fit_type.compare("2")==0 || p.fit_type.compare("FM")) {
+		else if (p.fit_type.compare("2")==0 || p.fit_type.compare("F1W")) {
 			float precision, recall;
 			me.fitness = 0;
 			for (unsigned int i = 0; i < p.number_of_classes; ++i) {
@@ -1120,7 +1120,25 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 			}
 			me.fitness = 1 - me.fitness;
 		}
-									
+		else if (p.fit_type.compare("3") == 0 || p.fit_type.compare("F1")) {
+			float precision, recall;
+			me.fitness = 0;
+			for (unsigned int i = 0; i < p.number_of_classes; ++i) {
+				if (TP[i] + FP[i] == 0)
+					precision = 0;
+				else
+					precision = TP[i] / (TP[i] + FP[i]);
+
+				if (TP[i] + FN[i] == 0)
+					recall = 0;
+				else
+					recall = TP[i] / (TP[i] + FN[i]);
+
+				if (recall + precision != 0)
+					me.fitness += 2 * (precision*recall) / (precision + recall);
+			}
+			me.fitness = 1 - me.fitness;
+		}
 		/*if (p.norm_error)
 			me.fitness = me.fitness/target_std;*/
 	}
@@ -1153,7 +1171,7 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 			if (p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0) {
 				me.fitness_v = me.abserror_v;
 			}
-			else if (p.fit_type.compare("2")==0 || p.fit_type.compare("FM")) {
+			else if (p.fit_type.compare("2")==0 || p.fit_type.compare("F1W")) {
 				float precision, recall;
 				me.fitness_v = 0;
 				for (unsigned int i = 0; i < p.number_of_classes; ++i) {
@@ -1170,6 +1188,26 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 
 					if (recall + precision != 0)
 						me.fitness_v += 2 * p.class_w_v[i] * (precision*recall) / (precision + recall);
+				}
+				me.fitness_v = 1 - me.fitness_v;
+			}
+			else if (p.fit_type.compare("3") == 0 || p.fit_type.compare("F1")) {
+				float precision, recall;
+				me.fitness_v = 0;
+				for (unsigned int i = 0; i < p.number_of_classes; ++i) {
+
+					if (TP_v[i] + FP_v[i] == 0)
+						precision = 0;
+					else
+						precision = TP_v[i] / (TP_v[i] + FP_v[i]);
+
+					if (TP_v[i] + FN_v[i] == 0)
+						recall = 0;
+					else
+						recall = TP_v[i] / (TP_v[i] + FN_v[i]);
+
+					if (recall + precision != 0)
+						me.fitness_v += 2 * (precision*recall) / (precision + recall);
 				}
 				me.fitness_v = 1 - me.fitness_v;
 			}

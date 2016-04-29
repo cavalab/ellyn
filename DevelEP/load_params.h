@@ -405,63 +405,69 @@ void load_params(params &p, std::ifstream& fs)
 			p.op_arity.push_back(1);
 			p.return_type.push_back('f');
 		}
-		else if (p.op_list.at(i).compare("=")==0)
+		else if (p.op_list.at(i).compare("^") == 0)
 		{
 			p.op_choice.push_back(12);
 			p.op_arity.push_back(2);
-			p.return_type.push_back('b');
+			p.return_type.push_back('f');
 		}
-		else if (p.op_list.at(i).compare("!")==0)
+		else if (p.op_list.at(i).compare("=")==0)
 		{
 			p.op_choice.push_back(13);
 			p.op_arity.push_back(2);
 			p.return_type.push_back('b');
 		}
-		else if (p.op_list.at(i).compare("<")==0)
+		else if (p.op_list.at(i).compare("!")==0)
 		{
 			p.op_choice.push_back(14);
 			p.op_arity.push_back(2);
 			p.return_type.push_back('b');
 		}
-		else if (p.op_list.at(i).compare(">")==0)
+		else if (p.op_list.at(i).compare("<")==0)
 		{
 			p.op_choice.push_back(15);
 			p.op_arity.push_back(2);
 			p.return_type.push_back('b');
 		}
-		else if (p.op_list.at(i).compare("<=")==0)
+		else if (p.op_list.at(i).compare(">")==0)
 		{
 			p.op_choice.push_back(16);
 			p.op_arity.push_back(2);
 			p.return_type.push_back('b');
 		}
-		else if (p.op_list.at(i).compare(">=")==0)
+		else if (p.op_list.at(i).compare("<=")==0)
 		{
 			p.op_choice.push_back(17);
 			p.op_arity.push_back(2);
 			p.return_type.push_back('b');
 		}
-		else if (p.op_list.at(i).compare("if-then")==0)
+		else if (p.op_list.at(i).compare(">=")==0)
 		{
 			p.op_choice.push_back(18);
+			p.op_arity.push_back(2);
+			p.return_type.push_back('b');
+		}
+		else if (p.op_list.at(i).compare("if-then")==0)
+		{
+			p.op_choice.push_back(19);
 			p.op_arity.push_back(2);
 			p.return_type.push_back('f');
 		}
 		else if (p.op_list.at(i).compare("if-then-else")==0)
 		{
-			p.op_choice.push_back(19);
+			p.op_choice.push_back(20);
 			p.op_arity.push_back(3);
 			p.return_type.push_back('f');
 		}
 		else if (p.op_list.at(i).compare("&")==0)
 		{
-			p.op_choice.push_back(20);
+			p.op_choice.push_back(21);
 			p.op_arity.push_back(3);
 			p.return_type.push_back('b');
 		}
 		else if (p.op_list.at(i).compare("|")==0)
 		{
-			p.op_choice.push_back(21);
+			p.op_choice.push_back(22);
 			p.op_arity.push_back(3);
 			p.return_type.push_back('b');
 		}
@@ -533,6 +539,11 @@ void load_params(params &p, std::ifstream& fs)
 		if (p.lex_metacases[i].compare("age")==0)
 			p.lexage=true;
 	}
+
+	// make p.min_len equal the number of classes if m3gp is used
+	if(p.class_m3gp && p.min_len < p.number_of_classes) 
+		p.min_len = p.number_of_classes;
+
 }
 
 #endif

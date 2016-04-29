@@ -178,34 +178,37 @@ void MutInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,Data& d)
 		case 11: // sqrt
 			newind.line.at(loc) = node('q');
 			break;
-		case 12: // equals
+		case 12: // exponent 
+			newind.line.at(loc) = node('^');
+			break;
+		case 13: // equals
 			newind.line.at(loc) = node('=');
 			break;
-		case 13: // does not equal
+		case 14: // does not equal
 			newind.line.at(loc) = node('!');
 			break;
-		case 14: // less than
+		case 15: // less than
 			newind.line.at(loc) = node('<');
 			break;
-		case 15: // greater than
+		case 16: // greater than
 			newind.line.at(loc) = node('>');
 			break;
-		case 16: //less than or equal to
+		case 17: //less than or equal to
 			newind.line.at(loc) = node('{');
 			break;
-		case 17: //greater than or equal to
+		case 18: //greater than or equal to
 			newind.line.at(loc) = node('}');
 			break;
-		case 18: //if-then
+		case 19: //if-then
 			newind.line.at(loc) = node('i');
 			break;
-		case 19: //if-then-else
+		case 20: //if-then-else
 			newind.line.at(loc) = node('t');
 			break;
-		case 20: //and
+		case 21: //and
 			newind.line.at(loc) = node('&');
 			break;
-		case 21: //or
+		case 22: //or
 			newind.line.at(loc) = node('|');
 			break;
 		}

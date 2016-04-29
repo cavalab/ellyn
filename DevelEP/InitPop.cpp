@@ -56,8 +56,9 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 				// choose dimensions of trees between 1 and max_len_init/min_len 
 				int dims;
 
-				if (p.class_m3gp)
-					dims = r[omp_get_thread_num()].rnd_int(1,linelen/p.min_len);
+				if (p.class_m3gp) {
+					dims = r[omp_get_thread_num()].rnd_int(p.number_of_classes, linelen / p.min_len);
+				}
 				else
 					dims = p.number_of_classes;
 
