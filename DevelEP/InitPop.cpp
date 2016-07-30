@@ -57,7 +57,7 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 				int dims;
 
 				if (p.class_m3gp) {
-					dims = r[omp_get_thread_num()].rnd_int(p.number_of_classes, linelen / p.min_len);
+					dims = r[omp_get_thread_num()].rnd_int(p.number_of_classes, linelen);
 				}
 				else
 					dims = p.number_of_classes;

@@ -144,6 +144,7 @@ struct state{
 				mpc += median_passes_per_case[i];
 			}
 		}
+		if (sz == 0) sz = 1;
 		return mpc / sz;
 		//return accumulate(median_lex_pool.begin(), median_lex_pool.end(), 0.0) / median_lex_pool.size();
 	}
