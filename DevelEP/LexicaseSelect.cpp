@@ -309,9 +309,8 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 				}
 				// winners are within epsilon of the local pool's minimum fitness
 				for (int j=0;j<pool.size();++j){
-					if (pop[pool[j]].error[case_order[h]]<=minfit+epsilon[case_order[h]]){
+					if (pop[pool[j]].error[case_order[h]]<=minfit+epsilon[case_order[h]])
 						winner.push_back(pool[j]);
-					}
 				}
 			}
 			// if there is more than one elite individual and still more cases to consider
@@ -332,12 +331,17 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 			parloc[i]=winner[r[omp_get_thread_num()].rnd_int(0,winner.size()-1)];
 		else if (winner.size()==1) // otherwise make the winner a parent
 			parloc[i]=winner[0];
-		/*else if (winner.empty())
-			parloc[i]=pool[r[omp_get_thread_num()].rnd_int(0,pool.size()-1)];*/
-		else // otherwise throw an ??
+		else{ // otherwise throw an ??
 			cout << "??";
+			cout << "winner is not correct size\n";
+			cout << "minfit: " << minfit << "\n";
+			cout << "epsilon:\n";
+			for (size_t i = 0; i< epsilon.size(); ++i)
+				cout << epsilon[i] << ",";
+		}
 		assert(winner.size()>0);
 		// reset minfit
+
 		minfit=p.max_fit;
 		cases_used.push_back(h+1);
 		sel_size.push_back(winner.size());
