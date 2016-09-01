@@ -6,7 +6,7 @@ using namespace std;
 
 void load_params(params &p, std::ifstream& fs)
 {
-	if (!fs.good()) 
+	if (!fs.good())
 	{
 			cerr << "BAD PARAMETER FILE LOCATION" << "\n";
 			exit(1);
@@ -264,7 +264,7 @@ void load_params(params &p, std::ifstream& fs)
 				cout << "WARNING: AR_nka set to min value of 1\n";
 				p.AR_nka = 1;
 			}
-		}		
+		}
 		else if(varname.compare("AR_nb") == 0)
 			ss>>p.AR_nb;
 		else if (varname.compare("AR_nkb") == 0)
@@ -314,6 +314,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss >> p.lex_eps_error_mad;
 		else if (varname.compare("lex_epsilon") == 0)
 			ss >> p.lex_epsilon;
+		else if (varname.compare("lex_eps_global") == 0)
+			ss >> p.lex_eps_global;
 		else if (varname.compare("test_at_end") == 0)
 			ss >> p.test_at_end;
 		else{}
@@ -330,12 +332,12 @@ void load_params(params &p, std::ifstream& fs)
 		p.max_len_init = p.max_len;
 	// op_list
 	if (p.op_list.empty()){ // set default operator list
-		p.op_list.push_back("n"); 
+		p.op_list.push_back("n");
 		p.op_list.push_back("v");
-		p.op_list.push_back("+"); 
-		p.op_list.push_back("-"); 
-		p.op_list.push_back("*"); 
-		p.op_list.push_back("/"); 
+		p.op_list.push_back("+");
+		p.op_list.push_back("-");
+		p.op_list.push_back("*");
+		p.op_list.push_back("/");
 	}
 	for (unsigned int i=0; i<p.op_list.size(); ++i)
 	{
@@ -471,16 +473,16 @@ void load_params(params &p, std::ifstream& fs)
 			p.op_arity.push_back(3);
 			p.return_type.push_back('b');
 		}
-		else 
+		else
 			cout << "bad command (load params op_choice)" << "\n";
 	}
-	
+
 	p.rep_wheel.push_back(p.rt_rep);
 	p.rep_wheel.push_back(p.rt_cross);
 	p.rep_wheel.push_back(p.rt_mut);
 
 	partial_sum(p.rep_wheel.begin(), p.rep_wheel.end(), p.rep_wheel.begin());
-	
+
 	if(!p.seeds.empty()) // get seed stacks
 	{
 		p.op_choice.push_back(10); // include seeds in operation choices
@@ -496,7 +498,7 @@ void load_params(params &p, std::ifstream& fs)
 		}
 	}
 	//normalize fn weights
-	if (p.weight_ops_on) 
+	if (p.weight_ops_on)
 	{
 		float sumweight = accumulate(p.op_weight.begin(),p.op_weight.end(),0.0);
 		for(unsigned int i=0;i<p.op_weight.size();++i)
@@ -516,14 +518,14 @@ void load_params(params &p, std::ifstream& fs)
 				++io;
 				++ia;
 				++il;
-			}	
+			}
 		}
 	}
 
 	// turn off AR_nb if AR is not being used
 	if (!p.AR){
 		p.AR_na = 0;
-		p.AR_nb = 0; 
+		p.AR_nb = 0;
 		p.AR_nka = 0;
 		p.AR_nkb = 0;
 		p.AR_lookahead= 0;
@@ -535,13 +537,16 @@ void load_params(params &p, std::ifstream& fs)
 	// add lexage flag if age is a metacase
 	p.lexage=false;
 	for (unsigned i = 0; i<p.lex_metacases.size(); ++i)
-	{	
+	{
 		if (p.lex_metacases[i].compare("age")==0)
 			p.lexage=true;
 	}
+	// turn on lex_eps_global if an epsilon method is not used
+	if (!p.lex_eps_global && !(p.lex_eps_std || p.lex_eps_error_mad || p.lex_eps_target_mad || p.lex_eps_error || p.lex_eps_target ))
+		p.lex_eps_global = true;
 
 	// make p.min_len equal the number of classes if m3gp is used
-	if(p.class_m3gp && p.min_len < p.number_of_classes) 
+	if(p.class_m3gp && p.min_len < p.number_of_classes)
 		p.min_len = p.number_of_classes;
 
 }

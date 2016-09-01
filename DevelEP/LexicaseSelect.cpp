@@ -106,43 +106,54 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 	int h;
 	vector<int> num_passes(numcases-p.lex_metacases.size(),0);
 	int tmp;
+  vector<float> epsilon; // epsilon values for each case
 
 	// epsilon lexicase implementations
-	if (p.lex_eps_error) // errors within episilon of the best error are pass, otherwise fail
+	if (p.lex_eps_error ) // errors within episilon of the global best error are pass, otherwise fail
 	{
+		if(p.lex_eps_global){
 		// get minimum error on each case
-		vector<float> min_error(numcases - p.lex_metacases.size(),p.max_fit);
+			vector<float> min_error(numcases - p.lex_metacases.size(),p.max_fit);
 
-		for (size_t i = 0; i < numcases - p.lex_metacases.size(); ++i) {
-			for (size_t j = 0; j < pool.size(); ++j) {
-				if (pop[pool[j]].error[i] < min_error[i])
-					min_error[i] = pop[pool[j]].error[i];
-			}
-		}
-		for (size_t i = 0; i < pool.size(); ++i) {
-			// check if error is within epsilon
-			for (size_t j = 0; j < numcases - p.lex_metacases.size(); ++j) {
-				if (pop[pool[i]].error[j] <= (1+p.lex_epsilon)*min_error[j]){
-					pop[pool[i]].error[j] = 0;
-					++num_passes[j];
+			for (size_t i = 0; i < numcases - p.lex_metacases.size(); ++i) {
+				for (size_t j = 0; j < pool.size(); ++j) {
+					if (pop[pool[j]].error[i] < min_error[i])
+						min_error[i] = pop[pool[j]].error[i];
 				}
-				else
-					pop[pool[i]].error[j] = 1;
 			}
-
+			for (size_t i = 0; i < pool.size(); ++i) {
+				// check if error is within epsilon
+				for (size_t j = 0; j < numcases - p.lex_metacases.size(); ++j) {
+					if (pop[pool[i]].error[j] <= (1+p.lex_epsilon)*min_error[j]){
+						pop[pool[i]].error[j] = 0;
+						++num_passes[j];
+					}
+					else
+						pop[pool[i]].error[j] = 1;
+				}
+			}
 		}
-
+		else{// for non-global version, just save the epsilon values for each case
+			for (size_t i = 0; i < numcases - p.lex_metacases.size(); ++i)
+			 	epsilon.push_back(p.lex_epsilon);
+		}
 	}
 	else if (p.lex_eps_target) // errors within epsilon of the target are pass, otherwise fail
 	{
-		for (size_t i = 0; i < pool.size(); ++i) {
-			// check if error is within epsilon
-			for (size_t j = 0; j < numcases - p.lex_metacases.size(); ++j) {
-				if (pop[pool[i]].error[j] <= p.lex_epsilon)
-					pop[pool[i]].error[j] = 0;
-				else
-					pop[pool[i]].error[j] = 1;
+		if (p.lex_eps_global){
+			for (size_t i = 0; i < pool.size(); ++i) {
+				// check if error is within epsilon
+				for (size_t j = 0; j < numcases - p.lex_metacases.size(); ++j) {
+					if (pop[pool[i]].error[j] <= p.lex_epsilon)
+						pop[pool[i]].error[j] = 0;
+					else
+						pop[pool[i]].error[j] = 1;
+				}
 			}
+		}
+		else{// for non-global version, just save the epsilon values for each case
+			for (size_t i = 0; i < numcases - p.lex_metacases.size(); ++i)
+			 	epsilon.push_back(p.lex_epsilon);
 		}
 	}
 
@@ -164,15 +175,22 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 			std_error[i] = std_dev(case_error);
 
 		}
-		for (size_t i = 0; i < pool.size(); ++i) {
-			// check if error is within epsilon
-			for (size_t j = 0; j < numcases - p.lex_metacases.size(); ++j) {
-				if (pop[pool[i]].error[j] <= min_error[j]+std_error[j])
-					pop[pool[i]].error[j] = 0;
-				else
-					pop[pool[i]].error[j] = 1;
-			}
+		if (p.lex_eps_global){ // if pass conditions defined relative to whole population (rather than selection pool):
 
+			for (size_t i = 0; i < pool.size(); ++i) {
+				// check if error is within epsilon
+				for (size_t j = 0; j < numcases - p.lex_metacases.size(); ++j) {
+					if (pop[pool[i]].error[j] <= min_error[j]+std_error[j])
+						pop[pool[i]].error[j] = 0;
+					else
+						pop[pool[i]].error[j] = 1;
+				}
+
+			}
+		}
+		else{// for non-global version, just save the epsilon values for each case
+				for (size_t i = 0; i < numcases - p.lex_metacases.size(); ++i)
+				 	epsilon.push_back(std_error[i]);
 		}
 	}
 	else if (p.lex_eps_target_mad) { // errors within mad of the target pass
@@ -186,14 +204,20 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 
 			mad_error[i] = mad(case_error);
 		}
-		for (size_t i = 0; i < pool.size(); ++i) {
-			// check if error is within epsilon
-			for (size_t j = 0; j < numcases - p.lex_metacases.size(); ++j) {
-				if (pop[pool[i]].error[j] <= mad_error[j])
-					pop[pool[i]].error[j] = 0;
-				else
-					pop[pool[i]].error[j] = 1;
+		if (p.lex_eps_global){ // if pass conditions defined relative to whole population (rather than selection pool):
+			for (size_t i = 0; i < pool.size(); ++i) {
+				// check if error is within epsilon
+				for (size_t j = 0; j < numcases - p.lex_metacases.size(); ++j) {
+					if (pop[pool[i]].error[j] <= mad_error[j])
+						pop[pool[i]].error[j] = 0;
+					else
+						pop[pool[i]].error[j] = 1;
+				}
 			}
+		}
+		else{// for non-global version, just save the epsilon values for each case
+				for (size_t i = 0; i < numcases - p.lex_metacases.size(); ++i)
+					epsilon.push_back(mad_error[i]);
 		}
 	}
 	else if (p.lex_eps_error_mad) { // errors within mad of the best error pass
@@ -211,14 +235,20 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 			}
 			mad_error[i] = mad(case_error);
 		}
-		for (size_t i = 0; i < pool.size(); ++i) {
-			// check if error is within epsilon
-			for (size_t j = 0; j < numcases - p.lex_metacases.size(); ++j) {
-				if (pop[pool[i]].error[j] <= min_error[j]+mad_error[j])
-					pop[pool[i]].error[j] = 0;
-				else
-					pop[pool[i]].error[j] = 1;
-			}
+		if (p.lex_eps_global){ // if pass conditions defined relative to whole population (rather than selection pool):
+				for (size_t i = 0; i < pool.size(); ++i) {
+					// check if error is within epsilon
+					for (size_t j = 0; j < numcases - p.lex_metacases.size(); ++j) {
+						if (pop[pool[i]].error[j] <= min_error[j]+mad_error[j])
+							pop[pool[i]].error[j] = 0;
+						else
+							pop[pool[i]].error[j] = 1;
+					}
+				}
+		}
+		else{ // for non-global version, just save the epsilon values for each case
+				for (size_t i = 0; i < numcases - p.lex_metacases.size(); ++i)
+					epsilon.push_back(mad_error[i]);
 		}
 	}
 	// measure median number of cases used
@@ -254,25 +284,35 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 			winner.resize(0);
 			minfit=p.max_fit;
 
-			// loop through the individuals and pick out the elites
-			for (int j=0;j<pool.size();++j)
-			{
-
-				if (pop[pool[j]].error[case_order[h]]<minfit)
+			if (p.lex_eps_global){
+				// loop through the individuals and pick out the elites
+				for (int j=0;j<pool.size();++j)
 				{
-					minfit=pop[pool[j]].error[case_order[h]];
-					winner.resize(0);
-					winner.push_back(pool[j]);
-				}
-				else if (pop[pool[j]].error[case_order[h]]==minfit)
-				{
-					winner.push_back(pool[j]);
-				}
-				//else{ // individual is worse than minimum
-				//	swap(pop[pool[j]],pop.back());
-				//	pop.pop_back();
-				//}
 
+					if (pop[pool[j]].error[case_order[h]]<minfit)
+					{
+						minfit=pop[pool[j]].error[case_order[h]];
+						winner.resize(0);
+						winner.push_back(pool[j]);
+					}
+					else if (pop[pool[j]].error[case_order[h]]==minfit)
+					{
+						winner.push_back(pool[j]);
+					}
+				}
+			}
+			else{// epsilon lexicase with local pool pass conditions
+				// get best fitness in selection pool
+				for (int j=0;j<pool.size();++j){
+					if (pop[pool[j]].error[case_order[h]]<minfit)
+						minfit=pop[pool[j]].error[case_order[h]];
+				}
+				// winners are within epsilon of the local pool's minimum fitness
+				for (int j=0;j<pool.size();++j){
+					if (pop[pool[j]].error[case_order[h]]<=minfit+epsilon[case_order[h]]){
+						winner.push_back(pool[j]);
+					}
+				}
 			}
 			// if there is more than one elite individual and still more cases to consider
 			if(winner.size()>1 && h<case_order.size()-1)
@@ -281,9 +321,6 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 				++h;
 				//reduce pool to elite individuals on case case_oder[h]
 				pool = winner;
-
-				/*for (int i=0; i<fitindex.size();++i)
-					fitcompare.push_back(pop.at(fitindex[i]).error[case_order[h]]);*/
 			} // otherwise, a parent has been chosen or has to be chosen randomly from the remaining pool
 			else
 				pass=false;
@@ -299,6 +336,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 			parloc[i]=pool[r[omp_get_thread_num()].rnd_int(0,pool.size()-1)];*/
 		else // otherwise throw an ??
 			cout << "??";
+		assert(winner.size()>0);
 		// reset minfit
 		minfit=p.max_fit;
 		cases_used.push_back(h+1);

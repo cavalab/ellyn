@@ -12,27 +12,27 @@
 using namespace std;
 
 struct params {
-	
+
 	int g; // number of generations (limited by default)
 	int popsize; //population size
 	bool limit_evals; // limit evals instead of generations
 	long long max_evals; // maximum number of evals before termination (only active if limit_evals is true)
 
-	// Generation Settings 
+	// Generation Settings
 	int sel; // 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 	int tourn_size;
 	float rt_rep; //probability of reproduction
-	float rt_cross; 
+	float rt_cross;
 	float rt_mut;
 	vector<float> rep_wheel;
 	float cross_ar; //crossover alternation rate
 	float mut_ar;
 	int cross; // 1: ultra; 2: one point
-	int mutate; // 1: uniform point mutation; 2: sub-tree mutation 
+	int mutate; // 1: uniform point mutation; 2: sub-tree mutation
 	bool align_dev; // on or off - adds alignment deviation via gaussian random variable
 	bool elitism; // on or off - if on, saves best individual each generation
 	//float stoperror; // stop condition / convergence condition
-	
+
 	// Data settings
 	bool init_validate_on; // initial fitness validation of individuals
 	bool train; // choice to turn on training for splitting up the data set
@@ -41,13 +41,13 @@ struct params {
 	bool test_at_end; // only run the test fitness on the population at the end of a run
 
 	bool pop_restart; // restart from previous population
-	string pop_restart_path; // restart population file path 
+	string pop_restart_path; // restart population file path
 	// Results
 	string resultspath;
 	//bool loud;
 
 	// use fitness estimator coevolution
-	bool EstimateFitness; 
+	bool EstimateFitness;
 	int FE_pop_size;
 	int FE_ind_size;
 	int FE_train_size;
@@ -55,11 +55,11 @@ struct params {
 	bool FE_rank;
 
 	bool estimate_generality;
-	int G_sel; 
+	int G_sel;
 	bool G_shuffle;
 
 
-	
+
 	// Problem information
 	vector <string> intvars; // internal variables
 	//vector <string> extvars; // external variables (external forces)
@@ -72,7 +72,7 @@ struct params {
 	int AR_nka; // state delay
 	int AR_nb; //order of inputs
 	int AR_nkb; // input delay
-	bool AR_lookahead; 
+	bool AR_lookahead;
 	vector <string> allvars;// = intvars.insert(intvars.end(), extvars.begin(), extvars.end());
 	vector <string> allblocks;// = allvars.insert(allvars.end(),consvals.begin(),convals.end());
 	//allblocks = allblocks.insert(allblocks.end(),seeds.begin(),seeds.end());
@@ -86,7 +86,7 @@ struct params {
 	int numERC;
 
 	//vector <float> target;
-	// Fitness Settings 
+	// Fitness Settings
 
 	string fit_type; // MAE(1), R2(2), MAER2(3), VAF(4), MSE
 	bool norm_error; // normalize fitness by the standard deviation of the target output
@@ -94,7 +94,7 @@ struct params {
 	float min_fit;
 	bool weight_error; // weight error vector by predefined weights from data file
 	vector<float> error_weight; // vector of error weights
-	vector<float> class_w; // vector of class weights (proportion of training samples with class n) 
+	vector<float> class_w; // vector of class weights (proportion of training samples with class n)
 	vector<float> class_w_v; // vector of class weights (proportion of test samples with class n)
 	// Operator Settings
 	vector <string> op_list;
@@ -148,19 +148,19 @@ struct params {
 	// lexicase selection
 	float lexpool; // percent of population to use for lexicase selection events
 	bool lexage;// currently not used; up for deletion
-	bool lex_class; // use class-based fitness objectives instead of raw error 
+	bool lex_class; // use class-based fitness objectives instead of raw error
 	vector<string> lex_metacases; // extra cases to be used for lexicase selection
 	bool lex_eps_error; // errors within episilon of the best error are pass, otherwise fail
 	bool lex_eps_target; // errors within epsilon of the target are pass, otherwise fail
 	bool lex_eps_std; // errors in a standard dev of the best are pass, otherwise fail
 	bool lex_eps_target_mad; // errors in a standard dev of the best are pass, otherwise fail
 	bool lex_eps_error_mad; // errors in a standard dev of the best are pass, otherwise fail
-
-	float lex_epsilon; 
+	bool lex_eps_global; // pass condition defined relative to whole population (rather than selection pool)
+	float lex_epsilon;
 
 	// ==== Printing Options === //
 	//print initial population
-	bool print_init_pop; 
+	bool print_init_pop;
 	bool print_homology; // print homology
 	bool print_log; //print log
 	bool print_every_pop; // print pop every generation
@@ -172,7 +172,7 @@ struct params {
 	int num_log_pts;
 	//pareto survival setting
 	int PS_sel;
-	
+
 	//classification
 	bool classification;
 	bool class_bool; // use binary or multiclass
@@ -181,7 +181,7 @@ struct params {
 	int number_of_classes; // number of unique classes
 
 	// stop condition
-	bool stop_condition; 
+	bool stop_condition;
 	//print protected operators
 	bool print_protected_operators;
 	// number of threads
@@ -191,11 +191,11 @@ struct params {
 		limit_evals=false; // limit evals instead of generations
 		max_evals=0; // maximum number of evals before termination (only active if limit_evals is true)
 		init_trees=1;
-		// Generation Settings 
+		// Generation Settings
 		sel=1; // 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 		tourn_size=2;
 		rt_rep=0; //probability of reproduction
-		rt_cross=0.8; 
+		rt_cross=0.8;
 		rt_mut=0.2;
 		cross_ar=0.025; //crossover alternation rate
 		mut_ar=0.025;
@@ -224,7 +224,7 @@ struct params {
 		print_every_pop=0;
 		//print initial population
 		print_init_pop = 0;
-		// print homology 
+		// print homology
 		print_homology = 0;
 		//print log
 		print_log = 1;
@@ -243,22 +243,22 @@ struct params {
 		weight_error = 0; // weight error vector by predefined weights from data file
 		max_fit = 1.0E20;
 		min_fit = 0.00000000000000000001;
-		
+
 		// Fitness estimators
-		EstimateFitness=0; 
+		EstimateFitness=0;
 		FE_pop_size=0;
 		FE_ind_size=0;
 		FE_train_size=0;
 		FE_train_gens=0;
 		FE_rank=0;
 		estimate_generality=0;
-		G_sel=1; 
+		G_sel=1;
 		G_shuffle=0;
 		// Computer Settings
 		//bool parallel;
 		//int numcores;
 
-		
+
 		// =========== Program Settings
 		ERC = 1; // ephemeral random constants
 		ERCints =0 ;
@@ -293,7 +293,7 @@ struct params {
 		eHC_init = 0.5;
 		eHC_mut = 0; // epigenetic mutation rather than hill climbing
 		eHC_slim = 0; // use SlimFitness
-		
+
 		// Pareto settings
 
 		prto_arch_on = 0;
@@ -317,6 +317,8 @@ struct params {
 		lex_eps_target_mad=false; // errors in a standard dev of the best are pass, otherwise fail
 		lex_eps_error_mad=false; // errors in a standard dev of the best are pass, otherwise fail
 		lex_epsilon = 0.1;
+		lex_eps_global = true; //pass conditions in lex eps defined relative to whole population (rather than selection pool).
+		                       //should be true for regular lexicase (forced in load_params)
 		//pareto survival setting
 		PS_sel=1;
 
@@ -325,7 +327,7 @@ struct params {
 		class_bool = 0;
 		class_m3gp = 0;
 		class_prune = 0;
-		//class_multiclass=0; // use multiclass 
+		//class_multiclass=0; // use multiclass
 		number_of_classes=1; //for use with multiclass
 
 		stop_condition=1;
@@ -353,10 +355,10 @@ struct params {
 				class_w[i] /= d.target.size();
 		}
 	}
-	
+
 	//void clear()
 	//{
-	//	
+	//
 	//	rep_wheel.clear();
 	//
 	//	// Problem information
