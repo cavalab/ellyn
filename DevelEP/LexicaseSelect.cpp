@@ -304,7 +304,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 			else{// epsilon lexicase with local pool pass conditions
 				// get best fitness in selection pool
 				for (int j=0;j<pool.size();++j){
-					if (pop[pool[j]].error[case_order[h]]<minfit)
+					if (pop[pool[j]].error[case_order[h]]<=minfit)
 						minfit=pop[pool[j]].error[case_order[h]];
 				}
 				// winners are within epsilon of the local pool's minimum fitness
@@ -334,6 +334,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 		else{ // otherwise throw an ??
 			cout << "??";
 			cout << "winner is not correct size\n";
+			cout << "pool size:" << pool.size() << "\n";
 			cout << "minfit: " << minfit << "\n";
 			cout << "epsilon:\n";
 			for (size_t i = 0; i< epsilon.size(); ++i)
