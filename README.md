@@ -1,18 +1,22 @@
-ellenGP
+ellyn
 =======
+
+ellyn is a Python-wrapped version of ellenGP that allows ellenGP to play nice with sci-kitlearn. It also makes parameter settings totally accessible from the commandline, whereas ellenGP relies on a parameter file. This can make batch jobs less tedious. 
 
 ellenGP is a genetic programming tool for symbolic regression and multi-class classification that incorporates epigenetic learning and uses a stack-based, linear representation.
 It is very much under development!
 
 There are some boost library dependencies, including regex. 
 
-The files have been built in Visual Studio C++ 2010 and in linux with g++ and the intel c++ compiler. 
+This project requires the Boost c++ libraries and Eigen.
 
 About
 =====
 ellenGP uses a stack-based, syntax-free, linear genome for constructing candidate equations. 
 
 It is built to include different evolutionary methods for system identification adapted from literature. The options include  normal tournament selection, deterministic crowding, and age-pareto fitness selection. All algorithm choices are mangaged by one parameter file. 
+
+ellyn wraps ellenGP in a Python class that allows it to behave like an estimator in [scikit-learn](http://www.scikit-learn.org). Specifically, ellyn inherits the ```BaseEstimator``` class from sklearn, and is therefore able to utilize the sklearn environment of ML tools such as cross validation, hyperparameter optimization, etc. 
 
 How to Build
 ============
