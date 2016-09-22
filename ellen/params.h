@@ -9,7 +9,20 @@
 //#include <array>
 #include "op_node.h"
 #include "data.h"
+#include "Eqn2Line.h"
 using namespace std;
+#include <boost/python.hpp>
+using namespace boost::python;
+// using std::vector;
+// using std::begin;
+// using std::string;
+// using std::cout;
+// BOOST_PYTHON_MODULE(params)
+// {
+//     class_<params>("params")
+//         .def("set", &World::set)
+//     ;
+// }
 
 struct params {
 
@@ -377,6 +390,488 @@ struct params {
 	//	op_weight.clear();
 	//
 	//}
+	void set(dict& d){
+		/* function called from python to set parameter values. equivalent behavior to load_params,
+		but for setting params in python.*/
 
+		if (d.has_key("g"))
+			g = extract<int>(d["g"]);
+		if (d.has_key("popsize"))
+			popsize = extract<int>(d["popsize"]);
+		if (d.has_key("sel"))
+			sel = extract<int>(d["sel"]);
+		if (d.has_key("tourn_size"))
+			tourn_size = extract<int>(d["tourn_size"]);
+		if (d.has_key("rt_rep"))
+			rt_rep = extract<float>(d["rt_rep"]);
+		if (d.has_key("rt_cross"))
+			rt_cross = extract<float>(d["rt_cross"]);
+		if (d.has_key("rt_mut"))
+			rt_mut = extract<float>(d["rt_mut"]);
+		if (d.has_key("cross"))
+			cross = extract<int>(d["cross"]);
+		if (d.has_key("cross_ar"))
+			cross_ar = extract<float>(d["cross_ar"]);
+		if (d.has_key("mut_ar"))
+			mut_ar = extract<float>(d["mut_ar"]);
+		if (d.has_key("init_validate_on"))
+			init_validate_on = extract<bool>(d["init_validate_on"]);
+		if (d.has_key("resultspath"))
+		{
+			int q = 0;
+			for(unsigned int i = 0; i<len(d["resultspath"]); ++i)
+			{
+				if (q > 0)
+					resultspath = resultspath + ' ';
+				string tmp = extract<string>(d["resultspath"][i]);
+				resultspath.insert(resultspath.end(),tmp.begin(),tmp.end());
+				// resultspath.push_back(extract<string>(d["resultspath"][i])); //.insert(resultspath.end(), std::begin(extract<string>(d["resultspath"][i])), std::end(extract<string>(d["resultspath"][i])));
+				++q;
+			}
+		}
+
+		if (d.has_key("intvars"))
+		{
+			for(unsigned int i = 0; i<len(d["intvars"]); ++i)
+				intvars.push_back(extract<string>(d["intvars"][i]));
+		}
+
+		if (d.has_key("cvals"))
+		{
+			for(unsigned int i = 0; i<len(d["cvals"]); ++i) {
+				cvals.push_back(extract<float>(d["cvals"][i]));
+				cons.push_back(std::to_string(static_cast<long double>(extract<float>(d["cvals"][i]))));
+			}
+
+		}
+		if (d.has_key("seeds"))
+		{
+			for(unsigned int i = 0; i<len(d["seeds"]); ++i)
+				seeds.push_back(extract<string>(d["seeds"][i]));
+		}
+		if (d.has_key("ERC"))
+			ERC = extract<bool>(d["ERC"]);
+		if (d.has_key("ERCints"))
+			ERCints = extract<bool>(d["ERCints"]);
+		if (d.has_key("maxERC"))
+			maxERC = extract<int>(d["maxERC"]);
+		if (d.has_key("minERC"))
+			minERC = extract<int>(d["minERC"]);
+		if (d.has_key("numERC"))
+			numERC = extract<int>(d["numERC"]);
+		if (d.has_key("fit_type"))
+			fit_type = extract<string>(d["fit_type"]);
+		if (d.has_key("max_fit"))
+			max_fit = extract<float>(d["max_fit"]);
+		if (d.has_key("min_fit"))
+			min_fit = extract<float>(d["min_fit"]);
+		if (d.has_key("op_list"))
+		{
+			for(unsigned int i = 0; i<len(d["op_list"]); ++i)
+		   		op_list.push_back(extract<string>(d["op_list"][i]));
+		}
+		if (d.has_key("op_weight"))
+		{
+			for(unsigned int i = 0; i<len(d["op_weight"]); ++i)
+		   		op_weight.push_back(extract<float>(d["op_weight"][i]));
+
+		}
+		if (d.has_key("weight_ops_on"))
+			weight_ops_on = extract<bool>(d["weight_ops_on"]);
+		if (d.has_key("min_len"))
+			min_len = extract<int>(d["min_len"]);
+		if (d.has_key("max_len"))
+			max_len = extract<int>(d["max_len"]);
+		if (d.has_key("max_len_init"))
+			max_len_init = extract<int>(d["max_len_init"]);
+		if (d.has_key("complex_measure"))
+			complex_measure = extract<int>(d["complex_measure"]);
+		if (d.has_key("lineHC_on"))
+			lineHC_on = extract<bool>(d["lineHC_on"]);
+		if (d.has_key("lineHC_its"))
+			lineHC_its = extract<int>(d["lineHC_its"]);
+		if (d.has_key("pHC_on"))
+			pHC_on = extract<bool>(d["pHC_on"]);
+		if (d.has_key("pHC_delay_on"))
+			pHC_delay_on = extract<bool>(d["pHC_delay_on"]);
+		if (d.has_key("pHC_size"))
+			pHC_size = extract<int>(d["pHC_size"]);
+		if (d.has_key("pHC_its"))
+			pHC_its = extract<int>(d["pHC_its"]);
+		if (d.has_key("pHC_gauss"))
+			pHC_gauss = extract<float>(d["pHC_gauss"]);
+		if (d.has_key("eHC_on"))
+			eHC_on = extract<bool>(d["eHC_on"]);
+		if (d.has_key("eHC_its"))
+			eHC_its = extract<int>(d["eHC_its"]);
+		if (d.has_key("eHC_prob"))
+			eHC_prob = extract<float>(d["eHC_prob"]);
+		if (d.has_key("eHC_init"))
+			eHC_init = extract<float>(d["eHC_init"]);
+		if (d.has_key("eHC_mut"))
+			eHC_mut = extract<bool>(d["eHC_mut"]);
+		if (d.has_key("eHC_slim"))
+			eHC_slim = extract<bool>(d["eHC_slim"]);
+		if (d.has_key("lexpool"))
+			lexpool = extract<float>(d["lexpool"]);
+		if (d.has_key("prto_arch_on"))
+			prto_arch_on = extract<bool>(d["prto_arch_on"]);
+		if (d.has_key("prto_arch_size"))
+			prto_arch_size = extract<int>(d["prto_arch_size"]);
+		if (d.has_key("prto_sel_on"))
+			prto_sel_on = extract<bool>(d["prto_sel_on"]);
+		if (d.has_key("islands"))
+			islands = extract<bool>(d["islands"]);
+		if (d.has_key("island_gens"))
+			island_gens = extract<int>(d["island_gens"]);
+		if (d.has_key("train"))
+			train = extract<bool>(d["train"]);
+		if (d.has_key("train_pct"))
+			train_pct = extract<float>(d["train_pct"]);
+		if (d.has_key("print_every_pop"))
+			print_every_pop = extract<bool>(d["print_every_pop"]);
+		if (d.has_key("estimate_fitness"))
+			EstimateFitness = extract<bool>(d["EstimateFitness"]);
+		if (d.has_key("FE_pop_size"))
+			FE_pop_size = extract<int>(d["FE_pop_size"]);
+		if (d.has_key("FE_ind_size"))
+			FE_ind_size = extract<int>(d["FE_ind_size"]);
+		if (d.has_key("FE_train_size"))
+			FE_train_size = extract<int>(d["FE_train_size"]);
+		if (d.has_key("FE_train_gens"))
+			FE_train_gens = extract<int>(d["FE_train_gens"]);
+		if (d.has_key("FE_rank"))
+			FE_rank = extract<bool>(d["FE_rank"]);
+		if (d.has_key("estimate_generality"))
+			estimate_generality = extract<bool>(d["estimate_generality"]);
+		if (d.has_key("G_sel"))
+			G_sel = extract<int>(d["G_sel"]);
+		if (d.has_key("G_shuffle"))
+			G_shuffle = extract<bool>(d["G_shuffle"]);
+		if (d.has_key("norm_error"))
+			norm_error = extract<bool>(d["norm_error"]);
+		if (d.has_key("shuffle_data"))
+			shuffle_data = extract<bool>(d["shuffle_data"]);
+		if (d.has_key("init_trees"))
+			init_trees = extract<bool>(d["init_trees"]);
+		if (d.has_key("limit_evals"))
+			limit_evals = extract<bool>(d["limit_evals"]);
+		if (d.has_key("max_evals"))
+			max_evals = extract<long long>(d["max_evals"]);
+		if (d.has_key("print_homology"))
+			print_homology = extract<bool>(d["print_homology"]);
+		if (d.has_key("print_log"))
+			print_log = extract<bool>(d["print_log"]);
+		if (d.has_key("print_init_pop"))
+			print_init_pop = extract<bool>(d["print_init_pop"]);
+		if (d.has_key("print_genome"))
+			print_genome = extract<bool>(d["print_genome"]);
+		if (d.has_key("print_epigenome"))
+			print_epigenome = extract<bool>(d["print_epigenome"]);
+		if (d.has_key("num_log_pts"))
+			num_log_pts = extract<int>(d["num_log_pts"]);
+		if (d.has_key("PS_sel"))
+			PS_sel = extract<bool>(d["PS_sel"]);
+		if (d.has_key("pop_restart"))
+			pop_restart = extract<bool>(d["pop_restart"]);
+		if (d.has_key("pop_restart_path"))
+			pop_restart_path = extract<string>(d["pop_restart_path"]);
+		if (d.has_key("AR"))
+			AR = extract<bool>(d["AR"]);
+		if (d.has_key("AR_na"))
+			AR_na = extract<int>(d["AR_na"]);
+		if (d.has_key("AR_nka")) {
+			AR_nka = extract<int>(d["AR_nka"]);
+			if (AR_nka < 1) {
+				cout << "WARNING: AR_nka set to min value of 1\n";
+				AR_nka = 1;
+			}
+		}
+		if(d.has_key("AR_nb"))
+			AR_nb = extract<int>(d["AR_nb"]);
+		if (d.has_key("AR_nkb"))
+			AR_nkb;
+		if(d.has_key("AR_lookahead"))
+			AR_lookahead = extract<bool>(d["AR_lookahead"]);
+		if(d.has_key("align_dev"))
+			align_dev = extract<bool>(d["align_dev"]);
+		if(d.has_key("classification"))
+			classification = extract<bool>(d["classification"]);
+		if(d.has_key("class_bool"))
+			class_bool = extract<bool>(d["class_bool"]);
+		if(d.has_key("class_m3gp"))
+			class_m3gp = extract<bool>(d["class_m3gp"]);
+		if(d.has_key("class_prune"))
+			class_prune = extract<bool>(d["class_prune"]);
+		if(d.has_key("number_of_classes"))
+			number_of_classes = extract<int>(d["number_of_classes"]);
+		if(d.has_key("elitism"))
+			elitism = extract<bool>(d["elitism"]);
+		if(d.has_key("stop_condition"))
+			stop_condition = extract<bool>(d["stop_condition"]);
+		if(d.has_key("mutate"))
+			mutate = extract<int>(d["mutate"]);
+		if(d.has_key("print_novelty"))
+			print_novelty = extract<bool>(d["print_novelty"]);
+		if(d.has_key("lex_metacases"))
+		{
+			for(unsigned int i = 0; i<len(d["lex_metacases"]); ++i)
+		    	lex_metacases.push_back(extract<string>(d["lex_metacases"][i]));
+		}
+		if(d.has_key("lex_class"))
+			lex_class = extract<bool>(d["lex_class"]);
+		if(d.has_key("weight_error"))
+			weight_error = extract<bool>(d["weight_error"]);
+		if(d.has_key("print_protected_operators"))
+			print_protected_operators = extract<bool>(d["print_protected_operators"]);
+		if (d.has_key("lex_eps_error"))
+			lex_eps_error = extract<bool>(d["lex_eps_error"]);
+		if (d.has_key("lex_eps_target"))
+			lex_eps_target = extract<bool>(d["lex_eps_target"]);
+		if (d.has_key("lex_eps_std"))
+			lex_eps_std = extract<bool>(d["lex_eps_std"]);
+		if (d.has_key("lex_eps_target_mad"))
+			lex_eps_target_mad = extract<bool>(d["lex_eps_target_mad"]);
+		if (d.has_key("lex_eps_error_mad"))
+			lex_eps_error_mad = extract<bool>(d["lex_eps_error_mad"]);
+		if (d.has_key("lex_epsilon"))
+			lex_epsilon = extract<bool>(d["lex_epsilon"]);
+		if (d.has_key("lex_eps_global"))
+			lex_eps_global = extract<bool>(d["lex_eps_global"]);
+		if (d.has_key("test_at_end"))
+			test_at_end = extract<bool>(d["test_at_end"]);
+
+		// finished reading from dict.
+
+		allvars = intvars;
+		//allvars.insert(allvars.end(), extvars.begin(), extvars.end());
+		allblocks = allvars;
+		allblocks.insert(allblocks.end(),cons.begin(),cons.end());
+		allblocks.insert(allblocks.end(),seeds.begin(),seeds.end());
+
+		//seed = time(0);
+
+		if (max_len_init == 0)
+			max_len_init = max_len;
+		// op_list
+		if (op_list.empty()){ // set default operator list
+			op_list.push_back("n");
+			op_list.push_back("v");
+			op_list.push_back("+");
+			op_list.push_back("-");
+			op_list.push_back("*");
+			op_list.push_back("/");
+		}
+		for (unsigned int i=0; i<op_list.size(); ++i)
+		{
+			if (op_list.at(i).compare("n")==0 )//&& ( ERC || !cvals.empty() ) )
+			{
+				op_choice.push_back(0);
+				op_arity.push_back(0);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("v")==0)
+			{
+				op_choice.push_back(1);
+				op_arity.push_back(0);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("+")==0)
+			{
+				op_choice.push_back(2);
+				op_arity.push_back(2);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("-")==0)
+			{
+				op_choice.push_back(3);
+				op_arity.push_back(2);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("*")==0)
+			{
+				op_choice.push_back(4);
+				op_arity.push_back(2);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("/")==0)
+			{
+				op_choice.push_back(5);
+				op_arity.push_back(2);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("sin")==0)
+			{
+				op_choice.push_back(6);
+				op_arity.push_back(1);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("cos")==0)
+			{
+				op_choice.push_back(7);
+				op_arity.push_back(1);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("exp")==0)
+			{
+				op_choice.push_back(8);
+				op_arity.push_back(1);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("log")==0)
+			{
+				op_choice.push_back(9);
+				op_arity.push_back(1);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("sqrt")==0)
+			{
+				op_choice.push_back(11);
+				op_arity.push_back(1);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("^") == 0)
+			{
+				op_choice.push_back(12);
+				op_arity.push_back(2);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("=")==0)
+			{
+				op_choice.push_back(13);
+				op_arity.push_back(2);
+				return_type.push_back('b');
+			}
+			else if (op_list.at(i).compare("!")==0)
+			{
+				op_choice.push_back(14);
+				op_arity.push_back(2);
+				return_type.push_back('b');
+			}
+			else if (op_list.at(i).compare("<")==0)
+			{
+				op_choice.push_back(15);
+				op_arity.push_back(2);
+				return_type.push_back('b');
+			}
+			else if (op_list.at(i).compare(">")==0)
+			{
+				op_choice.push_back(16);
+				op_arity.push_back(2);
+				return_type.push_back('b');
+			}
+			else if (op_list.at(i).compare("<=")==0)
+			{
+				op_choice.push_back(17);
+				op_arity.push_back(2);
+				return_type.push_back('b');
+			}
+			else if (op_list.at(i).compare(">=")==0)
+			{
+				op_choice.push_back(18);
+				op_arity.push_back(2);
+				return_type.push_back('b');
+			}
+			else if (op_list.at(i).compare("if-then")==0)
+			{
+				op_choice.push_back(19);
+				op_arity.push_back(2);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("if-then-else")==0)
+			{
+				op_choice.push_back(20);
+				op_arity.push_back(3);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("&")==0)
+			{
+				op_choice.push_back(21);
+				op_arity.push_back(3);
+				return_type.push_back('b');
+			}
+			else if (op_list.at(i).compare("|")==0)
+			{
+				op_choice.push_back(22);
+				op_arity.push_back(3);
+				return_type.push_back('b');
+			}
+			else
+				cout << "bad command (load params op_choice)" << "\n";
+		}
+
+		rep_wheel.push_back(rt_rep);
+		rep_wheel.push_back(rt_cross);
+		rep_wheel.push_back(rt_mut);
+
+		partial_sum(rep_wheel.begin(), rep_wheel.end(), rep_wheel.begin());
+
+		if(!seeds.empty()) // get seed stacks
+		{
+			op_choice.push_back(10); // include seeds in operation choices
+			op_weight.push_back(1); // include opweight if used
+			op_list.push_back("seed");
+			op_arity.push_back(0);
+
+			for (int i=0; i<seeds.size();++i)
+			{
+				seedstacks.push_back(vector<node>());
+
+				Eqn2Line(seeds.at(i),seedstacks.at(i));
+			}
+		}
+		//normalize fn weights
+		if (weight_ops_on)
+		{
+			float sumweight = accumulate(op_weight.begin(),op_weight.end(),0.0);
+			for(unsigned int i=0;i<op_weight.size();++i)
+	                        op_weight.at(i) = op_weight.at(i)/sumweight;
+			vector<int>::iterator io = op_choice.begin();
+			vector<int>::iterator ia = op_arity.begin();
+			vector<string>::iterator il = op_list.begin();
+			for (vector<float>::iterator it = op_weight.begin() ; it != op_weight.end();){
+				if (*it == 0){
+					it = op_weight.erase(it);
+					io = op_choice.erase(io);
+					ia = op_arity.erase(ia);
+					il = op_list.erase(il);
+				}
+				else{
+					++it;
+					++io;
+					++ia;
+					++il;
+				}
+			}
+		}
+
+		// turn off AR_nb if AR is not being used
+		if (!AR){
+			AR_na = 0;
+			AR_nb = 0;
+			AR_nka = 0;
+			AR_nkb = 0;
+			AR_lookahead= 0;
+		}
+
+		// set train pct to 1 if train is zero
+		if (!train) train_pct=1;
+
+		// add lexage flag if age is a metacase
+		lexage=false;
+		for (unsigned i = 0; i<lex_metacases.size(); ++i)
+		{
+			if (lex_metacases[i].compare("age")==0)
+				lexage=true;
+		}
+		// turn on lex_eps_global if an epsilon method is not used
+		if (!lex_eps_global && !(lex_eps_std || lex_eps_error_mad || lex_eps_target_mad || lex_eps_error || lex_eps_target ))
+			lex_eps_global = true;
+
+		// make min_len equal the number of classes if m3gp is used
+		if(class_m3gp && min_len < number_of_classes)
+			min_len = number_of_classes;
+
+	}
 };
 #endif

@@ -34,12 +34,13 @@ using namespace std;
 	#define GetCurrentDir _getcwd
 #else
 	#include <unistd.h>
-	#include <iomanip> 
+	#include <iomanip>
 	#define GetCurrentDir getcwd
 #endif
 
-
-
+// includes for python integration
+#include <boost/python.hpp>
+using namespace boost::python;
 
 // global parameters structure
 
@@ -54,11 +55,11 @@ using namespace std;
 //void shuffle_data(Data& d, params& p, vector<Randclass>& r,state& s);
 
 bool check_genty(vector<ind>& pop,params& p){
-	
+
 	for(int count = 0; count<pop.size(); ++count)
 	{
 		float tmp = abs(pop[count].fitness-pop[count].fitness_v)/pop[count].fitness;
-		if (pop.at(count).genty != tmp && pop.at(count).genty != p.max_fit) 
+		if (pop.at(count).genty != tmp && pop.at(count).genty != p.max_fit)
 			return 0;
 	}
 	return 1;
@@ -80,12 +81,12 @@ void printGenome(tribe& T,int gen,string& logname,Data& d,params& p)
 	 gout_all << "x,y,fit,age,g,e\n";
 	// on genes
 	 if (p.eHC_on){
-		 
+
 		 string filename = logname.substr(0,logname.size()-4)+"_g_on.csv."+std::to_string(static_cast<long long>(gen));
 		 gout_on.open(filename);
 		 gout_on << "x,y,fit,age,g,e\n";
 		 // off genes
-		 
+
 		 string filename2 = logname.substr(0,logname.size()-4)+"_g_off.csv."+std::to_string(static_cast<long long>(gen));
 		 gout_off.open(filename2);
 		 gout_off << "x,y,fit,age,g,e\n";
@@ -112,7 +113,7 @@ void printGenome(tribe& T,int gen,string& logname,Data& d,params& p)
 	}
 	if(p.sel==4) T.sortpop_age();
 	else T.sortpop();
-	
+
 	 for (size_t i=0; i<T.pop.size(); ++i){
 		 y=0;
 		 y_on=0;
@@ -173,13 +174,11 @@ void printGenome(tribe& T,int gen,string& logname,Data& d,params& p)
 	 gout_off.close();
 		 gout_on.close();
 	 /*if (p.eHC_on) {
-		 
+
 	 }*/
 }
-void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A)
-{
-	
-	//boost::progress_timer timer;
+void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A){
+//boost::progress_timer timer;
 s.out << "--- Generation " << i << "---------------------------------------------------------------" << "\n";
 s.out << "population size: " << T.pop.size() << "\n";
 s.out << "Number of evals: " << s.genevals.back() << "\n";
@@ -198,15 +197,7 @@ if (p.pHC_on) {
 s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "%\n";
 s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "%\n";
 s.out << "Bad Genetics: " << s.getBadCrossPct() << "%\n";
-//s.clearCross();
-//float totalshares = 0;
-//float c1=0;
-//for (int i = 0; i<T.pop.size();++i)
-//{
-//	for (int j=0;j<T.pop.at(i).line.size();++j){
-//		totalshares+=float(T.pop.at(i).line.at(j).use_count()); c1++;}
-//}
-//s.out << "Average shared pointer use count: " << totalshares/(c1) << "\n";
+
 if (p.classification){
 	s.out << "Fitness \t Equation \n";
 	vector <sub_ind> besteqns;
@@ -215,7 +206,7 @@ if (p.classification){
 	//	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
 	for(unsigned int j=0;j<besteqns.size();++j)
 		s.out << besteqns.at(j).fitness << "\t" << besteqns.at(j).eqn <<"\n";
-	
+
 }
 else{
 	s.out << "MAE \t R^2 \t Fitness \t Equation \n";
@@ -227,7 +218,7 @@ else{
 		s.out << setprecision(3) << besteqns.at(j).abserror << "\t" << setprecision(3) << besteqns.at(j).corr << "\t" << setprecision(3) << besteqns.at(j).fitness << "\t" << besteqns.at(j).eqn <<"\n";
 		/*if(boost::math::isnan(besteqns.at(j).abserror))
 		{
-			cout << "equation with NaN error: " + besteqns.at(j).eqn + "\n";	
+			cout << "equation with NaN error: " + besteqns.at(j).eqn + "\n";
 		}*/
 	}
 }
@@ -243,56 +234,18 @@ else{
 //}
 s.out << "-------------------------------------------------------------------------------" << "\n";
 }
-//void printstatsP(tribe T,int &i,state s,params& p,paretoarchive A)
-//{
-//	
-//	//boost::progress_timer timer;
-//s.out << "--- Generation " << i << "---------------------------------------------------------------" << "\n";
-//s.out << "Number of evals: " << s.genevals.back() << "\n";
-//s.out << "Best Fitness: " << T.bestFit() <<"\n";
-//s.out << "Best Fitness (v): " << T.bestFit_v() <<"\n";
-//s.out << "Median Fitness: " << T.medFit_v()<<"\n";
-//s.out << "Median Fitness: " << T.medFit()<<"\n";
-//s.out << "Mean Size: " << T.meanSize() << "\n";
-//s.out << "Mean Eff Size: " << T.meanEffSize() << "\n";
-//s.out << "Pareto Front Equations: " << A.optimal_size << "\n";
-//if(p.pHC_on)
-//	s.out << "Parameter updates: " << s.setpHCupdates() << "\n";
-//if(p.eHC_on)
-//	s.out << "Epigenetic updates: " << s.geteHCupdates() << "\n";
-//s.out << "Beneficial Genetics: " << s.getGoodCrossPct() << "%%\n";
-//s.out << "Neutral Genetics: " << s.getNeutCrossPct() << "%%\n";
-//s.out << "Bad Genetics: " << s.getBadCrossPct() << "%\n";
-//
-////float totalshares = 0;
-////float c1=0;
-////for (int i = 0; i<T.pop.size();++i)
-////{
-////	for (int j=0;j<T.pop.at(i).line.size();++j){
-////		totalshares+=float(T.pop.at(i).line.at(j).use_count()); c1++;}
-////}
-////s.out << "Average shared pointer use count: " << totalshares/(c1) << "\n";
-//s.out << "MAE \t R^2 \t Fitness \t Equation \n";
-//vector <ind> besteqns;
-//T.topTen(besteqns);
-////for(unsigned int j=0;j<min(10,int(A.pop.size()));++j)
-////	s.out <<A.pop.at(j).abserror_v << "\t" << A.pop.at(j).corr_v << "\t" << A.pop.at(j).eqn <<"\n";
-//for(unsigned int j=0;j<besteqns.size();++j)
-//	s.out <<besteqns.at(j).abserror << "\t" << besteqns.at(j).corr << "\t" << besteqns.at(j).fitness << "\t" << besteqns.at(j).eqn <<"\n";
-//
-//s.out << "-------------------------------------------------------------------------------" << "\n";
-//}
+
 
 int load_pop(vector<ind>& pop,params& p,state& s)
 {
-	// load population from file filename. 
+	// load population from file filename.
 	ifstream fs(p.pop_restart_path);
 	if(!fs.is_open())
 	{
 		std::cerr << "Error: couldn't open population file " + p.pop_restart_path + ".\n";
 		exit(1);
 	}
-	
+
 	string s0;
 	string varname;
 	float tmpf;
@@ -306,7 +259,7 @@ int load_pop(vector<ind>& pop,params& p,state& s)
 	int i=0;
 	int j=0;
 	while(!fs.eof() && i<=p.popsize)
-    {		
+    {
 		getline(fs,s0,'\n');
 		istringstream ss(s0);
 		ss >> varname;
@@ -314,7 +267,7 @@ int load_pop(vector<ind>& pop,params& p,state& s)
 		if(varname.compare(0,6,"gline:") == 0 && i<p.popsize)
 		{
 			//pop.push_back(ind());
-			
+
 			while (ss>>tmps){
 				if (tmps.compare("+")==0 || tmps.compare("-")==0 || tmps.compare("*")==0 || tmps.compare("/")==0 || tmps.compare("s")==0 || tmps.compare("c")==0 || tmps.compare("e")==0 || tmps.compare("l")==0 || tmps.compare("!") == 0 || tmps.compare("=") == 0 || tmps.compare("<") == 0 || tmps.compare(">") == 0 || tmps.compare("{") == 0 || tmps.compare("}")==0 || tmps.compare("i") == 0 || tmps.compare("t") == 0 || tmps.compare("&") == 0 || tmps.compare("|") == 0) // operator node
 					pop[i].line.push_back(node(char(tmps[0])));
@@ -351,8 +304,8 @@ void shuffle_data(Data& d, params& p, vector<Randclass>& r,state& s)
 		shuffler.push_back(i);
 
 	std::random_shuffle(shuffler.begin(),shuffler.end(),r[omp_get_thread_num()]);
-		
-		
+
+
 	if (p.EstimateFitness){
 		bool tmp = s.out.trials;
 		s.out.trials=1; // keep output from going to console
@@ -370,7 +323,7 @@ void shuffle_data(Data& d, params& p, vector<Randclass>& r,state& s)
 	}
 	using std::swap;
 	std::swap(d.target,newtarget);
-	std::swap(d.vals,newvals);	
+	std::swap(d.vals,newvals);
 }
 bool stopcondition(tribe& T,params p,Data& d,state& s,FitnessEstimator& FE)
 {
@@ -387,7 +340,7 @@ bool stopcondition(tribe& T,params p,Data& d,state& s,FitnessEstimator& FE)
 	else{
 		vector<ind> best(1);
 		T.getbestind(best[0]);
-		
+
 		p.EstimateFitness=0;
 		Fitness(best,p,d,s,FE);
 		p.EstimateFitness=1;
@@ -401,7 +354,7 @@ bool stopcondition(tribe& T,params p,Data& d,state& s,FitnessEstimator& FE)
 }
 int get_next_task(int& index,vector<int>& task_assignments)
 {
-	// 0: evolve solution 
+	// 0: evolve solution
 	// 1: evolve fitness estimation
 	// 2: print output (after all 0 tasks finish)
 	// 3: update pareto archive (after all 0 tasks finish)
@@ -411,8 +364,15 @@ int get_next_task(int& index,vector<int>& task_assignments)
 		return task_assignments.at(++index);
 	}
 }
-void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
+// template <size_t samples, size_t features>
+// void runEllenGP(dict& param_dict, float (&X)[samples][features], float (&Y)[samples],string pname,string dname)
+void runEllenGP(dict& param_dict, float** features, float* target,  size_t N, size_t D, string pname,string dname)
+
 {
+	bool trials = 0;
+	int trialnum = 0;
+	// string paramfile = "ellyn";
+	// string datafile = "d";
 	//string paramfile(param_in);
 	//string datafile(data_in);
 	/* ===================================
@@ -430,49 +390,61 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		hill climb
 	Store Statistics
 	Print Update
-	
+
 	INPUTS
 	paramfile: parameter file
 	datafile: data set: target in first column, dependent variables in second column
 	=================================== */
 
-	struct params p; 
+	struct params p;
 	struct Data d;
 	struct state s;
 
 	vector <Randclass> r;
-	
+
 	// load parameter file
-	ifstream fs(paramfile);
-	if (!fs.is_open()){
-		cerr << "Error: couldn't open parameter file " + paramfile << "\n";
-		/*if (!GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
-		{
-		return errno;
-		}*/
-		char cCurrentPath[FILENAME_MAX];
-		bool tmp = GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
-		cCurrentPath[sizeof(cCurrentPath) - 1] = '\0'; /* not really required */
-		printf ("The current working directory is %s", cCurrentPath);
-		exit(1);
-	}
-	load_params(p, fs);
+	p.set(param_dict);
+	// ifstream fs(paramfile);
+	// if (!fs.is_open()){
+	// 	cerr << "Error: couldn't open parameter file " + paramfile << "\n";
+	// 	/*if (!GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
+	// 	{
+	// 	return errno;
+	// 	}*/
+	// 	char cCurrentPath[FILENAME_MAX];
+	// 	bool tmp = GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
+	// 	cCurrentPath[sizeof(cCurrentPath) - 1] = '\0'; /* not really required */
+	// 	printf ("The current working directory is %s", cCurrentPath);
+	// 	exit(1);
+	// }
+	// load_params(p, fs);
 	// load data file
-	ifstream ds(datafile);
-	if (!ds.is_open()){
-			cerr << "Error: couldn't open data file " + datafile << "\n";
-			char cCurrentPath[FILENAME_MAX];
-			bool tmp = GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
-			cCurrentPath[sizeof(cCurrentPath) - 1] = '\0'; /* not really required */
-			printf ("The current working directory is %s", cCurrentPath);
-			exit(1);
-		}
-	//if (p.sel == 3) load_lexdata(d,ds,p);
-	//else 
-	load_data(d,ds,p);
-	
+	// ifstream ds(datafile);
+	// if (!ds.is_open()){
+	// 		cerr << "Error: couldn't open data file " + datafile << "\n";
+	// 		char cCurrentPath[FILENAME_MAX];
+	// 		bool tmp = GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
+	// 		cCurrentPath[sizeof(cCurrentPath) - 1] = '\0'; /* not really required */
+	// 		printf ("The current working directory is %s", cCurrentPath);
+	// 		exit(1);
+	// 	}
+	// //if (p.sel == 3) load_lexdata(d,ds,p);
+	// //else
+	vector<float *> feat_ptr;
+  for (size_t i = 0; i < N; ++i)
+    feat_ptr.push_back(features[i]);
+	// X[row].insert(X[row].end(),features[row],features[row]+D);
+	// vector<float> Y(target,N);
+	// int x_address = &features ;
+
+	d.set_train(feat_ptr.data(),N,D);
+	d.set_target(target,N);
+
+	d.set_dependencies(p);
+	// load_data(d,ds,p);
+
 	std::time_t t =  std::time(NULL);
-    
+
 
 #if defined(_WIN32)
 	std::tm tm;
@@ -485,7 +457,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	strftime(tmplog,100,"%F_%H-%M-%S",tm);
 #endif
 
-	
+
    // string tmplog = "777";
 	const char * c = p.resultspath.c_str();
 	#if defined(_WIN32)
@@ -498,17 +470,17 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	 if (trials) thread = std::to_string(static_cast<long long>(trialnum));
 	 else thread = std::to_string(static_cast<long long>(thrd));
 #if defined(_WIN32)
-	 string pname = paramfile.substr(paramfile.rfind('\\')+1,paramfile.size());
-	 string dname = datafile.substr(datafile.rfind('\\')+1,datafile.size());
-	 pname = pname.substr(0,pname.size()-4);
-	 dname = dname.substr(0,dname.size()-4);
-     string logname = p.resultspath + '\\' + "DevelEP_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
+	//  string pname = paramfile.substr(paramfile.rfind('\\')+1,paramfile.size());
+	//  string dname = datafile.substr(datafile.rfind('\\')+1,datafile.size());
+	//  pname = pname.substr(0,pname.size()-4);
+	//  dname = dname.substr(0,dname.size()-4);
+  string logname = p.resultspath + '\\' + "ellyn_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
 #else
-	 string pname = paramfile.substr(paramfile.rfind('/')+1,paramfile.size());
-	 string dname = datafile.substr(datafile.rfind('/')+1,datafile.size());
-	 pname = pname.substr(0,pname.size()-4);
-	 dname = dname.substr(0,dname.size()-4);
-	 string logname = p.resultspath + '/' + "DevelEP_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
+	//  string pname = paramfile.substr(paramfile.rfind('/')+1,paramfile.size());
+	//  string dname = datafile.substr(datafile.rfind('/')+1,datafile.size());
+	//  pname = pname.substr(0,pname.size()-4);
+	//  dname = dname.substr(0,dname.size()-4);
+	 string logname = p.resultspath + '/' + "ellyn_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
 #endif
 
 
@@ -526,8 +498,8 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	 s.out << "_______________________________________________________________________________ \n";
 	 //s.out << "Time right now is " << std::put_time(&tm, "%c %Z") << '\n';
 	 s.out<< "Results Path: " << p.resultspath  << "\n";
-	 s.out << "parameter file: " << paramfile << "\n";
-	 s.out << "data file: " << datafile << "\n";
+	 s.out << "parameter name: " << pname << "\n";
+	 s.out << "data file: " << dname << "\n";
 	 if(trials) {s.out << "Running in Trial Mode\n";
 	 s.out << "Trial ID: " << trialnum << "\n";
 	 }
@@ -563,9 +535,9 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	 s.out << "fitness type: " << p.fit_type << "\n";
 
 	int nt=0;
-	//int ntt=0;	
+	//int ntt=0;
 
-	#pragma omp parallel 
+	#pragma omp parallel
 	{
 		nt = omp_get_num_threads();
 	}
@@ -577,7 +549,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	unsigned int seed1 = int(time(NULL));
 	s.out << "seeds: \n";
 	r.resize(omp_get_max_threads());
-	#pragma omp parallel 
+	#pragma omp parallel
 	{
 			//cout << "seeder: " << seeder <<endl;
 			//cout << "seed1: " << seed1*seeder <<endl;
@@ -593,11 +565,11 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		s.out << (omp_get_thread_num()+1)*seed1*trialnum << "\n";
 
 	//shuffle data for training
-	if (p.shuffle_data) 
+	if (p.shuffle_data)
 		shuffle_data(d,p,r,s);
 
 	// define class weights for wighted F1 fitness
-	if (p.classification && (p.fit_type.compare("2")==0 || p.fit_type.compare("F1W"))) 
+	if (p.classification && (p.fit_type.compare("2")==0 || p.fit_type.compare("F1W")))
 		p.define_class_weights(d);
 
 	boost::timer time;
@@ -615,7 +587,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 	{
 		//p.parallel=false;
 		// determine number of threads
-		
+
 		//int num_islands=omp_get_max_threads(); //
 		int num_islands=nt;
 		int subpops = p.popsize/num_islands;
@@ -623,11 +595,11 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		vector<tribe> T;
 		tribe World(subpops*num_islands,p.max_fit,p.min_fit); //total population of tribes
 		s.out << num_islands << " islands of " << subpops << " individuals, total pop " << p.popsize <<"\n";
-		 
+
 
 		for(int i=0;i<num_islands;++i)
 			T.push_back(tribe(subpops,p.max_fit,p.min_fit));
-		// run separate islands 
+		// run separate islands
 		if (p.pop_restart) // initialize population from file
 		{
 			s.out << "loading pop from " + p.pop_restart_path + "...\n";
@@ -650,13 +622,13 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			for (int q = 0; q<num_islands; ++q)
 				T[q].pop.assign(World.pop.begin()+q*subpops,World.pop.begin()+(q+1)*subpops);
 		}
-		else // initialize population from random 
+		else // initialize population from random
 		{
 			if (p.init_validate_on)
 			{
-				s.out << "Initial validation..."; 
-			
-				
+				s.out << "Initial validation...";
+
+
 				#pragma omp parallel for
 				for(int i=0;i<num_islands;++i)
 					InitPop(T.at(i).pop,p,r);
@@ -667,7 +639,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					for(int j=0;j<T.size();++j){
 						for(int k=0;k<T[0].pop.size();++k){
 							World.pop.at(j*T[0].pop.size()+k)=T.at(j).pop.at(k);
-							//makenew(World.pop[j*T[0].pop.size()+k]);	
+							//makenew(World.pop[j*T[0].pop.size()+k]);
 						}
 					}
 					// initialize fitness estimation pop
@@ -684,7 +656,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					worstfit = T.at(i).worstFit();
 					bestfit = T.at(i).bestFit();
 
-					
+
 					int counter=0;
 					while(worstfit == p.max_fit && counter<100)
 					{
@@ -714,7 +686,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 				//}
 				//else{
 				//
-				//	#pragma omp parallel for 
+				//	#pragma omp parallel for
 				//	for(int i=0;i<num_islands;++i)
 				//	{
 				//		float worstfit;
@@ -751,7 +723,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 				//		}
 				//
 				//	}
-			
+
 				//	s.setgenevals();
 				//	s.out << " number of evals: " << s.getgenevals() << "\n";
 				//}
@@ -760,22 +732,22 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			{
 				/*bool tmp = p.EstimateFitness;
 				p.EstimateFitness=0;*/
-				#pragma omp parallel for 
+				#pragma omp parallel for
 				for(int i=0;i<num_islands;++i)
 					InitPop(T.at(i).pop,p,r);
-				
+
 				if (p.EstimateFitness){
 					// construct world population
 					for(int j=0;j<T.size();++j){
 						for(int k=0;k<T[0].pop.size();++k){
 							World.pop.at(j*T[0].pop.size()+k)=T.at(j).pop.at(k);
-							//makenew(World.pop[j*T[0].pop.size()+k]);	
+							//makenew(World.pop[j*T[0].pop.size()+k]);
 						}
 					}
 					InitPopFE(FE,World.pop,trainers,p,r,d,s);
-				}					
-				
-				#pragma omp parallel for 
+				}
+
+				#pragma omp parallel for
 				for(int i=0;i<num_islands;++i)
 					Fitness(T.at(i).pop,p,d,s,FE[0]);
 
@@ -783,14 +755,14 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 				for(int j=0;j<T.size();++j){
 					for(int k=0;k<T[0].pop.size();++k){
 						World.pop.at(j*T[0].pop.size()+k)=T.at(j).pop.at(k);
-						//makenew(World.pop[j*T[0].pop.size()+k]);	
+						//makenew(World.pop[j*T[0].pop.size()+k]);
 					}
 				}
-				
+
 			}
 		}
 		// use tmpFE for updating in parallel
-		vector<FitnessEstimator> tmpFE = FE; 
+		vector<FitnessEstimator> tmpFE = FE;
 
 		int gen=0;
 		long long termits,term, print_trigger;
@@ -799,7 +771,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			term = p.max_evals;
 			if (p.num_log_pts ==0) print_trigger=0;
 			else print_trigger = p.max_evals/p.num_log_pts;
-		
+
 		}
 		else {
 			print_trigger=0;
@@ -810,7 +782,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		int mixtrigger=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
 		//int trainer_trigger=0;
 		int trainer_trigger=p.FE_train_gens;//p.FE_train_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
-		
+
 		bool migrate=false;
 		// while(gen<=p.g && !stopcondition(World.best))
 		// {
@@ -836,8 +808,8 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		//		while(task_num!=-1){
 		//			switch(task_num){
 		//			case 0: //evolve solution population
-		//				if(pass){			
-		//					Generation(T[q].pop,p,r,d,s,FE[0]);	
+		//				if(pass){
+		//					Generation(T[q].pop,p,r,d,s,FE[0]);
 
 		//					if (stopcondition(T[q],p,d,s,FE[0]))
 		//						pass=0;
@@ -852,7 +824,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		//						for(int m=0; m<T[q].pop.size(); m++)
 		//							EpiHC(T[q].pop.at(m),p,r,d,s,FE[0]);
 		//					}
-		//	
+		//
 		//					if (stopcondition(T[q],p,d,s,FE[0]))
 		//						pass=0;
 		//				}
@@ -868,9 +840,9 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		//			case 1: //evolve fitness estimator
 		//				s.out << "Evolving fitness estimators...\n";
 		//				EvolveFE(World.pop,tmpFE,trainers,p,d,s,r);
-		//								
+		//
 		//				break;
-			//		case 2: // print out 
+			//		case 2: // print out
 			//			printstatsP(World,gen,s,p,A);
 			//			if (p.print_every_pop) printpop(World.pop,p,s,logname,2);
 			//			s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
@@ -889,9 +861,9 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		//		#pragma omp single  // mix island populations at regular intervals
 		//		{
 		//			s.setgenevals();
-		//			if(s.totalevals()>mixtrigger) 
+		//			if(s.totalevals()>mixtrigger)
 		//			{
-		//				//shuffle population	
+		//				//shuffle population
 		//				std::random_shuffle(World.pop.begin(),World.pop.end(),r[q]);
 		//				//redistribute populations to islands
 		//				s.out << "Shuffling island populations...\n";
@@ -901,7 +873,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		//			else
 		//				migrate=false;
 		//		}
-		//				
+		//
 		//		#pragma omp single // pick new trainers for fitness estimation at regular intervals
 		//		{
 		//			if (p.EstimateFitness){
@@ -917,9 +889,9 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		//		#pragma omp single // print status each generation
 		//		{
 		//			//update pareto archive
-		//			A.update(World.pop); 
+		//			A.update(World.pop);
 		//			printpop(A.pop,p,s,logname,1);
-		//			
+		//
 		//			ge++n;
 		//			if (p.EstimateFitness)
 		//			{
@@ -928,14 +900,14 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		//				for (int a=0;a<tmpFE.size();a++){
 		//					for (int b=0;b<tmpFE[a].FEpts.size();b++)
 		//						s.out << tmpFE[a].FEpts[b] << " ";
-		//					s.out << "\n";		
+		//					s.out << "\n";
 		//				}
-		//			}	
+		//			}
 		//		}
 
-		//		if (migrate)					
+		//		if (migrate)
 		//			T[q].pop.assign(World.pop.begin()+q*subpops,World.pop.begin()+(q+1)*subpops);
-				
+
 
 		//		if (gen>p.g) pass=0;
 		//	} // while gen<=p.g
@@ -944,7 +916,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		// construct world population
 		if (!p.EstimateFitness || !p.pop_restart){
 			int cntr=0;
-			for (int q0 = 0; q0<nt;++q0){ 
+			for (int q0 = 0; q0<nt;++q0){
 				for(int k=q0*subpops;k<(q0+1)*subpops;++k){
 					World.pop.at(k)=T.at(q0).pop.at(cntr);
 					//makenew(World.pop.at(k));
@@ -957,15 +929,15 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		if (p.print_genome) printGenome(World,0,logname,d,p);
 		#pragma omp parallel private(q) shared(pass)
 		{
-		
+
 			q = omp_get_thread_num();
 
 			while(termits<=term && pass)
 			{
-			
 
-				if(pass){			
-					Generation(T[q].pop,p,r,d,s,FE[0]);	
+
+				if(pass){
+					Generation(T[q].pop,p,r,d,s,FE[0]);
 
 					if (stopcondition(T[q],p,d,s,FE[0]))
 						pass=0;
@@ -977,17 +949,17 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 							for(int k=0; k<T[q].pop.size(); ++k)
 								HillClimb(T[q].pop.at(k),p,r,d,s,FE[0]);
 					}
-					if (p.eHC_on && !p.eHC_mut) 
+					if (p.eHC_on && !p.eHC_mut)
 					{
 							for(int m=0; m<T[q].pop.size(); m++)
 								EpiHC(T[q].pop.at(m),p,r,d,s,FE[0]);
 					}
-			
+
 					if (stopcondition(T[q],p,d,s,FE[0]))
 						pass=0;
 				}
 
-			
+
 					// construct world population
 					int cntr=0;
 					//std::vector<ind>::iterator it = T[q].begin();
@@ -997,15 +969,15 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 						//makenew(World.pop.at(k));
 						cntr++;
 					}
-					
+
 					#pragma omp barrier
-					
+
 					#pragma omp single  nowait //coevolve fitness estimators
 					{
-					
+
 						if (p.EstimateFitness){
 
-						
+
 							float aveFEfit=0;
 							for (int u=0;u<FE.size();u++)
 								aveFEfit+=FE[u].fitness;
@@ -1020,20 +992,20 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 								if (p.estimate_generality) s.out << "Best FE genty: " << FE[0].genty <<"\n";
 								s.out << "Ave FE fit: " << aveFEfit << "\n";
 								s.out << "Current Fitness Estimator:\n";
-						
+
 								for (int b=0;b<FE[0].FEpts.size();b++)
 									s.out << FE[0].FEpts[b] << " ";
 								s.out << "\n";
 							}
-						
+
 						}
 					}
-					#pragma omp single 
+					#pragma omp single
 					{
 						s.setgenevals();
-						if(s.totalevals()>mixtrigger) 
+						if(s.totalevals()>mixtrigger)
 						{
-							//shuffle population	
+							//shuffle population
 							std::random_shuffle(World.pop.begin(),World.pop.end(),r[q]);
 							//redistribute populations to islands
 							s.out << "Shuffling island populations...\n";
@@ -1043,7 +1015,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 						else
 							migrate=false;
 					}
-					#pragma omp single 
+					#pragma omp single
 					{
 						if(p.prto_arch_on){
 							A.update(World.pop);
@@ -1066,12 +1038,12 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 						++gen;
 						if (p.limit_evals) termits = s.totalptevals();
 						else ++termits;
-					
+
 						if (!p.EstimateFitness && p.estimate_generality && p.G_shuffle)
-							shuffle_data(d,p,r,s);	
-									
+							shuffle_data(d,p,r,s);
+
 					}
-					
+
 					#pragma omp single
 					{
 						if (p.EstimateFitness){
@@ -1093,15 +1065,15 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 						}
 					}
 
-					if (migrate)					
+					if (migrate)
 						T[q].pop.assign(World.pop.begin()+q*subpops,World.pop.begin()+(q+1)*subpops);
 
 					//if (gen>p.g) pass=0;
-								
-			
+
+
 			}  s.out << "exited while loop...\n";
 		} s.out << "exited parallel region ...\n";
-		
+
 
 		if (p.EstimateFitness || p.test_at_end){// assign real fitness values to final population and archive
 			p.EstimateFitness=0;
@@ -1110,7 +1082,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			if (p.prto_arch_on) Fitness(A.pop,p,d,s,FE[0]);
 			p.EstimateFitness=1;
 		}
-		
+
 		printdatafile(World,s,p,r,dfout,gen,time.elapsed());
 		printbestind(World,p,s,logname);
 		printpop(World.pop,p,s,logname,0);
@@ -1137,10 +1109,10 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		else{
 			if (p.init_validate_on)
 			{
-				s.out << "Initial validation..."; 
+				s.out << "Initial validation...";
 				//bool tmp = p.EstimateFitness;
 				//p.EstimateFitness=0;
-				
+
 
 				float worstfit;
 				int cnt=0;
@@ -1156,7 +1128,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 
 				Fitness(T.pop,p,d,s,FE[0]);
 				assert (T.pop.size()== p.popsize) ;
-			
+
 				worstfit = T.worstFit();
 				while(worstfit == p.max_fit && cnt<100)
 				{
@@ -1170,11 +1142,11 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 						else
 							++j;
 					}
-				
+
 					s.out << "\ntmppop size: " << tmppop.size();
 					InitPop(tmppop,p,r);
 					Fitness(tmppop,p,d,s,FE[0]);
-				
+
 					T.pop.insert(T.pop.end(),tmppop.begin(),tmppop.end());
 					tmppop.clear();
 					worstfit = T.worstFit();
@@ -1186,7 +1158,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			}
 			else // normal population initialization
 			{
-				InitPop(T.pop,p,r);	
+				InitPop(T.pop,p,r);
 				if (p.EstimateFitness)
 					InitPopFE(FE,T.pop,trainers,p,r,d,s);
 				//bool tmp = p.EstimateFitness;
@@ -1200,12 +1172,12 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 		int its = 1;
 		long long termits;
 		int gits=1;
-		
+
 		if (p.limit_evals) termits = s.totalptevals();
 		else termits=1;
 		int trigger=0;
 		int trainer_trigger=p.FE_train_gens;//*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
-		
+
 
 		int gen=0;
 		int counter=0;
@@ -1227,7 +1199,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			print_trigger=0;
 			term = gen;
 		}
-		
+
 		float etmp;
 		//print initial population
 		if (p.print_init_pop) printpop(T.pop,p,s,logname,3);
@@ -1235,7 +1207,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 
 		while (termits<=term && !stopcondition(T,p,d,s,FE[0]))
 		{
-			
+
 			 etmp = s.numevals[omp_get_thread_num()];
 
 			 if (!p.EstimateFitness && p.estimate_generality && p.G_shuffle)
@@ -1244,7 +1216,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			 Generation(T.pop,p,r,d,s,FE[0]);
 			 assert (T.pop.size()== p.popsize);
 			 //s.out << "Generation evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
-			 
+
 
 			 if (its>trigger)
 			 {
@@ -1254,12 +1226,12 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					//#pragma omp parallel for
 		 			for(int k=0; k<T.pop.size(); ++k)
 		 				HillClimb(T.pop.at(k),p,r,d,s,FE[0]);
-		 			 //s.out << "Hill climb evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";	
-					
+		 			 //s.out << "Hill climb evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
+
 
 		 		 }
-				
-				 if (p.eHC_on&& !p.eHC_mut) 
+
+				 if (p.eHC_on&& !p.eHC_mut)
 				 {
 					 etmp = s.numevals[omp_get_thread_num()];
 					// boost::progress_timer tm1;
@@ -1267,7 +1239,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					for(int m=0; m<T.pop.size(); m++)
 						EpiHC(T.pop.at(m),p,r,d,s,FE[0]);
 					 //s.out << "EHC evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
-				 } 
+				 }
 
 				s.setgenevals();
 				//s.out << "Elapsed time: \n";
@@ -1275,7 +1247,7 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					A.update(T.pop);
 					printpop(A.pop,p,s,logname,1);
 				}
-				if (!p.limit_evals || s.totalptevals() >= print_trigger){ 
+				if (!p.limit_evals || s.totalptevals() >= print_trigger){
 					printdatafile(T,s,p,r,dfout,counter,time.elapsed());
 					if (p.print_every_pop) printpop(T.pop,p,s,logname,2);
 					if (p.print_log){
@@ -1294,24 +1266,24 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 				//if (p.sel==2)
 					//trigger+=p.popsize*(p.rt_mut+p.rt_rep)+p.popsize*p.rt_cross/2;
 				++counter;
-		
+
 			 }
-			
+
 			if (p.EstimateFitness){
 				EvolveFE(T.pop,FE,trainers,p,d,s,r);
-				if (!p.limit_evals || printed){ 
+				if (!p.limit_evals || printed){
 					s.out << "Evolving fitness estimators...\n";
 					s.out << "Best FE fit: " << FE[0].fitness <<"\n";
 					if (p.estimate_generality) s.out << "Best FE genty: " << FE[0].genty <<"\n";
 					s.out << "Current Fitness Estimator:\n";
-					
+
 					for (int b=0;b<FE[0].FEpts.size();b++)
 						s.out << FE[0].FEpts[b] << " ";
 					s.out << "\n";
 				}
 			}
-			
-				
+
+
 			if (p.EstimateFitness){
 				if(counter>trainer_trigger) {
 					s.out << "Picking trainers...\n";
@@ -1320,14 +1292,14 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 					//trainer_trigger=0;
 				}
 			}
-				
 
-			if (p.limit_evals) termits = s.totalptevals(); 
+
+			if (p.limit_evals) termits = s.totalptevals();
 			else termits++;
 			its++;
 			printed=false;
 		}
-		
+
 
 		if (p.EstimateFitness || p.test_at_end){// assign real fitness values to final population and archive
 			p.EstimateFitness=0;
@@ -1344,10 +1316,15 @@ void runEllenGP(string paramfile, string datafile,bool trials,int trialnum)
 			printpop(A.pop,p,s,logname,1);
 	}
 
-	
+
 	s.out << "\n Program finished sucessfully.\n";
-	
 
 
 
+
+}
+
+BOOST_PYTHON_MODULE(elgp)
+{
+    def("runEllenGP", runEllenGP);
 }

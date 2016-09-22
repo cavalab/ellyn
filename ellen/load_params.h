@@ -4,6 +4,7 @@
 
 using namespace std;
 
+
 void load_params(params &p, std::ifstream& fs)
 {
 	if (!fs.good())

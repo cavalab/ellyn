@@ -50,7 +50,7 @@ void load_data(Data& d, std::ifstream& fs,params& p)
 			{
 				++index;
 			}
-			
+
 		}
 		if (!pass) ++d_index;
 		pass=0;
@@ -64,7 +64,7 @@ void load_data(Data& d, std::ifstream& fs,params& p)
 	int cur_col=0;
 	vector<int> shuffler;
     while(!fs.eof())
-    {		
+    {
 		getline(fs,s,'\n');
 		istringstream ss2(s);
 		// get target data
@@ -76,12 +76,12 @@ void load_data(Data& d, std::ifstream& fs,params& p)
 		d.target.push_back(tarf);
 		d.vals.push_back(vector<float>());
 		// get variable data
-		
+
 		while(ss2 >> tmpf && cur_col<d_col.size())
 		{
-			if (varcount == d_col[cur_col]){ 
-				if (p.weight_error && varcount==w_index)				
-					p.error_weight.push_back(tmpf);				
+			if (varcount == d_col[cur_col]){
+				if (p.weight_error && varcount==w_index)
+					p.error_weight.push_back(tmpf);
 				else
 					d.vals[rownum].push_back(tmpf);
 				++cur_col;
@@ -108,15 +108,15 @@ void load_data(Data& d, std::ifstream& fs,params& p)
 		// set lowest class equal to zero
 		int offset  = *std::min_element(d.target.begin(),d.target.end());
 		if (offset>0){
-			for (unsigned i=0;i<d.target.size();++i) 
+			for (unsigned i=0;i<d.target.size();++i)
 				d.target[i] -= offset;
 		}
 	}
-	
+
 	if (p.AR){ // make auto-regressive variables
 		vector<vector<float> > tmp_vals = d.vals;
-		
-		// add data columns to d.vals 
+
+		// add data columns to d.vals
 		int numvars = d.vals[0].size();
 		for (unsigned i = 0; i<p.AR_nb; ++i){
 			for (unsigned j = 0; j<tmp_vals.size(); ++j){
@@ -124,14 +124,14 @@ void load_data(Data& d, std::ifstream& fs,params& p)
 					d.vals[j].resize(0);
 
 				for (unsigned k = 0; k<numvars;++k){
-					if(j>=i+p.AR_nkb) 
+					if(j>=i+p.AR_nkb)
 						d.vals[j].push_back(tmp_vals[j-i-p.AR_nkb][k]);
-					else 
+					else
 						d.vals[j].push_back(0.0);
 				}
 			}
 		}
-		
+
 		// add data labels to d.label and p.allvars
 			int tmp = d.label.size();
 			vector<string> tmp_label = d.label;
@@ -147,12 +147,12 @@ void load_data(Data& d, std::ifstream& fs,params& p)
 					p.allvars.push_back(tmp_label[k] + "_" + to_string(static_cast<long long>(i+p.AR_nkb)));
 				}
 			}
-			// add target AR variables	
+			// add target AR variables
 			for (int i=0;i<p.AR_na;++i){
 				p.allvars.push_back(d.target_var + "_" + to_string(static_cast<long long>(i+p.AR_nka)));
 				d.label.push_back(d.target_var + "_" + to_string(static_cast<long long>(i+p.AR_nka)));
 			}
-		
+
 	}
 	//d.dattovar.resize(p.allvars.size());
 	//d.mapdata();

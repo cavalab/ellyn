@@ -7,25 +7,19 @@ license: GNU/GPLv3
 """
 
 import argparse
-from ._version import __version__
-from .evaluation import out, calc_fitness, f
-from .population import *
-from .variation import *
-from .selection import *
+# from ._version import __version__
 
 from sklearn.base import BaseEstimator
-from sklearn.linear_model import LassoLarsCV
-from sklearn.svm import LinearSVR
-from sklearn.cross_validation import train_test_split
-from sklearn.metrics import r2_score
+
 import numpy as np
 import pandas as pd
 import warnings
 import copy
 import itertools as it
 import pdb
+import elgp
 from update_checker import update_check
-from joblib import Parallel, delayed
+# from joblib import Parallel, delayed
 
 # import multiprocessing as mp
 # NUM_THREADS = mp.cpu_count()
@@ -44,12 +38,7 @@ class ellyn(BaseEstimator):
     """
     update_checked = False
 
-    def __init__(self, population_size=100, generations=100,
-                 mutation_rate=0.2, crossover_rate=0.8,
-                 machine_learner = 'lasso', min_depth = 1, max_depth = 5, max_depth_init = 5,
-                 sel = 'tournament', tourn_size = 2, fit_choice = 'mse', op_weight = False,
-                 seed_with_ml = False, erc = False, random_state=np.random.randint(4294967295), verbosity=0, scoring_function=r2_score,
-                 disable_update_check=False,elitism=False):
+    def __init__(self, **kwargs):
                 # sets up GP.
 
         # Save params to be recalled later by get_params()
@@ -65,248 +54,33 @@ class ellyn(BaseEstimator):
             update_check('ellyn', __version__)
             ellyn.update_checked = True
 
+        self.param_dict = kwargs.__dict__
+        # self.param_file = ''
+        # for arg in sorted(kwargs.__dict__):
+        #     self.param_file += ('{}\t{}'.format(lower(arg), kwargs.__dict__[arg]))
+        pdb.set_trace()
         self._best_estimator = None
-        self._training_features = None
-        self._training_labels = None
-        self._best_inds = None
-
-        self.population_size = population_size
-        self.generations = generations
-        self.mutation_rate = mutation_rate
-        self.crossover_rate = crossover_rate
-        self.machine_learner = machine_learner
-        self.min_depth = min_depth
-        self.max_depth = max_depth
-        self.max_depth_init = max_depth_init
-        self.sel = sel
-        self.tourn_size = tourn_size
-        self.fit_choice = fit_choice
-        self.op_weight = op_weight
-        self.seed_with_ml = seed_with_ml
-        self.erc = erc
-        self.random_state = random_state
-        self.verbosity = verbosity
-        self.scoring_function = scoring_function
-        self.gp_generation = 0
-        self.elitism = elitism
-        self.max_fit = 99999999.666
-        # self.op_weight = op_weight
-
-        if "lexicase" in self.sel and ("_vec" not in self.fit_choice or "_rel" not in self.fit_choice):
-            self.fit_choice += "_vec"
-        # pdb.set_trace()
-        # instantiate sklearn estimator according to specified machine learner
-        if (self.machine_learner.lower() == "lasso"):
-            self.ml = LassoLarsCV(n_jobs=-1)
-        elif (self.machine_learner.lower() == 'svr'):
-            self.ml = LinearSVR()
-        # elif (self.machine_learner.lower() == "distance"):
-        #     self.ml = DistanceClassifier()
-        else:
-            self.ml = LassoLarsCV(n_jobs=-1)
-
-        # Columns to always ignore when in an operator
-        self.non_feature_columns = ['label', 'group', 'guess']
-
-        # function set
-        self.func_set = [('+',2),('-',2),('*',2),('/',2),
-                         ('sin',1),('cos',1),('exp',1),('log',1),
-                         ('^2',1),('^3',1),('sqrt',1)]
-        # terminal set
-        self.term_set = []
-
     def fit(self, features, labels):
         """Fit model to data"""
         np.random.seed(self.random_state)
         # setup data
-
-        # Train-test split routine for internal validation
-        ####
-        train_val_data = pd.DataFrame(data=features)
-        train_val_data['labels'] = labels
-        # print("train val data:",train_val_data[::10])
-        new_col_names = {}
-        for column in train_val_data.columns.values:
-            if type(column) != str:
-                new_col_names[column] = str(column).zfill(10)
-        train_val_data.rename(columns=new_col_names, inplace=True)
-        # internal training/validation split
-        train_i, val_i = train_test_split(train_val_data.index,
-                                                             stratify=None,
-                                                             train_size=0.75,
-                                                             test_size=0.25)
-
-        x_t = train_val_data.loc[train_i].drop('labels',axis=1).values
-        x_v = train_val_data.loc[val_i].drop('labels',axis=1).values
-        y_t = train_val_data.loc[train_i, 'labels'].values
-        y_v = train_val_data.loc[val_i, 'labels'].values
-
-        # Store the training features and classes for later use
-        self._training_features = x_t
-        self._training_labels = y_t
-
+        # setup call to ellenGP library
+        # curdir = os.path.split(os.path.abspath( __file__))[0]
+        # curdirList = curdir.split(os.path.sep)
+        # reporootdir = os.path.sep.join(curdirList[:-2])
+        # lib = ctypes.cdll.LoadLibrary(
+        # os.path.join(reporootdir,'lib/ellengp.so'))
+        # lib.runEllenGP.argtypes = [
+        #     ndpointer(ctypes.c_float),
+        #     ndpointer(ctypes.c_float),
+        #     ctypes.c_int,
+        #     ctypes.c_int]
+        # run GP code
+        elgp.runEllenGP(self.param_dict,features,labels,0,0)
         ####
 
         # initial model
-        self._best_estimator = copy.deepcopy(self.ml.fit(x_t,y_t))
-        self._best_score = self._best_estimator.score(x_v,y_v)
-        if self.verbosity > 2: print("initial estimator size:",self._best_estimator.coef_.shape)
-        if self.verbosity > 1: print("initial score:",self._best_score)
-        # create terminal set
-        for i in np.arange(x_t.shape[1]):
-            # (.,.,.): node type, arity, feature column index or value
-            self.term_set.append(('x',0,i)) # features
-            # add ephemeral random constants if flag
-            if self.erc:
-                self.term_set.append(('k',0,np.random.rand())) # ephemeral random constants
 
-        # Create initial population
-        pop = self.init_pop()
-
-        # Evaluate the entire population
-        # X represents a matrix of the population outputs (number os samples x population size)
-        # pop.X = np.asarray(list(map(lambda I: out(I,x_t,labels), pop.individuals)))
-        # pop.X = self.transform(x_t,pop.individuals,y_t)
-        pop.X = np.asarray(Parallel(n_jobs=-1,backend="threading")(delayed(out)(I,x_t,y_t) for I in pop.individuals), order = 'F')
-        # pdb.set_trace()
-        # calculate fitness of individuals
-        # fitnesses = list(map(lambda I: fitness(I,y_t,self.machine_learner),pop.X))
-        fitnesses = calc_fitness(pop.X,y_t,self.fit_choice)
-
-        # print("fitnesses:",fitnesses)
-        # Assign fitnesses to inidividuals in population
-        for ind, fit in zip(pop.individuals, fitnesses):
-            if isinstance(fit,(list,np.ndarray)): # calc_fitness returned raw fitness values
-                fit[fit < 0] = self.max_fit
-                fit[np.isnan(fit)] = self.max_fit
-                fit[np.isinf(fit)] = self.max_fit
-                ind.fitness_vec = fit
-                ind.fitness = np.mean(ind.fitness_vec)
-            else:
-                ind.fitness = np.nanmin([fit,self.max_fit])
-
-        #with Parallel(n_jobs=-1,backend="threading") as parallel:
-        ####################
-        ### Main GP loop
-        # for each generation g
-        for g in np.arange(self.generations):
-            if self.verbosity > 0: print(".",end='')
-            if self.verbosity > 1: print(str(g)+".)",end='')
-            # if self.verbosity > 1: print("population:",stacks_2_eqns(pop.individuals))
-            if self.verbosity > 2: print("pop fitnesses:", ["%0.2f" % x.fitness for x in pop.individuals])
-            if self.verbosity > 1: print("median fitness pop: %0.2f" % np.median([x.fitness for x in pop.individuals]))
-            if self.verbosity > 1: print("best fitness pop: %0.2f" % np.min([x.fitness for x in pop.individuals]))
-
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                try:
-                    self.ml.fit(pop.X[self.valid_loc(pop.individuals),:].transpose(),y_t)
-                except ValueError as detail:
-                    print("warning: ValueError in ml fit. X.shape:",pop.X[self.valid_loc(pop.individuals),:].transpose().shape,"y_t shape:",y_t.shape)
-                    print("First ten entries X:",pop.X[self.valid_loc(pop.individuals),:].transpose()[:10])
-                    print("First ten entries y_t:",y_t[:10])
-                    print("equations:",stacks_2_eqns(pop.individuals))
-                    print("ellyn parameters:",self.get_params())
-                    if self.verbosity > 1: print("---\ndetailed error message:",detail)
-                    raise(ValueError)
-
-            if self.verbosity > 1: print("number of non-zero regressors:",self.ml.coef_.shape[0])
-            # keep best model
-            # try:
-            tmp = self.ml.score(self.transform(x_v,pop.individuals)[self.valid_loc(pop.individuals),:].transpose(),y_v)
-            if self.verbosity > 1: print("current ml validation score:",tmp)
-            # except Exception:
-            #     tmp = 0
-
-            if tmp > self._best_score:
-                self._best_estimator = copy.deepcopy(self.ml)
-                self._best_score = tmp
-                self._best_inds = pop.individuals[:]
-                if self.verbosity > 1: print("updated best internal validation score:",self._best_score)
-
-            offspring = []
-
-            # clone individuals for offspring creation
-            if self.sel == 'lasso':
-                # for lasso, filter individuals with 0 coefficients
-                offspring = copy.deepcopy(list(x for i,x in zip(self.ml.coef_, self.valid(pop.individuals)) if  i != 0))
-            else:
-                offspring = copy.deepcopy(self.valid(pop.individuals))
-
-            if self.elitism: # keep a copy of the elite individual
-                elite_index = np.argmin([x.fitness for x in pop.individuals])
-                elite = copy.deepcopy(pop.individuals[elite_index])
-
-            # Apply crossover and mutation on the offspring
-            for child1, child2 in zip(offspring[::2], offspring[1::2]):
-                if np.random.rand() < self.crossover_rate:
-                    cross(child1.stack, child2.stack, self.max_depth)
-                else:
-                    mutate(child1.stack,self.func_set,self.term_set)
-                    mutate(child2.stack,self.func_set,self.term_set)
-                child1.fitness = -1
-                child2.fitness = -1
-            while len(offspring) < self.population_size:
-                #make new offspring to replace the invalid ones
-                offspring.append(Ind())
-                make_program(offspring[-1].stack,self.func_set,self.term_set,np.random.randint(self.min_depth,self.max_depth+1))
-                offspring[-1].stack = list(reversed(offspring[-1].stack))
-
-            # print("offspring:",stacks_2_eqns(offspring))
-            # X_offspring = self.transform(x_t,offspring)
-            X_offspring = np.asarray(Parallel(n_jobs=-1,backend="threading")(delayed(out)(O,x_t,y_t) for O in offspring), order = 'F')
-            # X_offspring = np.asarray([out(O,x_t,y_t) for O in offspring], order = 'F')
-
-            F_offspring = calc_fitness(X_offspring,y_t,self.fit_choice)
-            # F_offspring = parallel(delayed(f[self.fit_choice])(y_t,yhat) for yhat in X_offspring)
-            # print("fitnesses:",fitnesses)
-            # Assign fitnesses to inidividuals in population
-            for ind, fit in zip(offspring, F_offspring):
-                if isinstance(fit,(list,np.ndarray)): # calc_fitness returned raw fitness values
-                    fit[fit < 0] = self.max_fit
-                    fit[np.isnan(fit)] = self.max_fit
-                    fit[np.isinf(fit)] = self.max_fit
-                    ind.fitness_vec = fit
-                    ind.fitness = np.mean(ind.fitness_vec)
-                else:
-                    # print("fit.shape:",fit.shape)
-                    ind.fitness = np.nanmin([fit,self.max_fit])
-            # if self.verbosity > 0: print("median fitness offspring: %0.2f" % np.median([x.fitness for x in offspring]))
-
-            # Survival the next generation individuals
-            if self.sel == 'tournament':
-                survivors, survivor_index = tournament(pop.individuals + offspring, self.tourn_size, num_selections = len(pop.individuals))
-            elif self.sel == 'lexicase':
-                survivors, survivor_index = lexicase(pop.individuals + offspring, num_selections = len(pop.individuals), survival = True)
-            elif self.sel == 'epsilon_lexicase':
-                survivors, survivor_index = epsilon_lexicase(pop.individuals + offspring, num_selections = len(pop.individuals), survival = True)
-
-            if self.elitism and min([x.fitness for x in survivors]) > elite.fitness:
-                # if the elite individual did not survive and elitism is on, replace worst individual with elite
-                rep_index = np.argmax([x.fitness for x in survivors])
-                survivors[rep_index] = elite
-                survivor_index[rep_index] = elite_index
-            # print("current population:",stacks_2_eqns(pop.individuals))
-            # print("current pop.X:",pop.X[:,:4])
-            # print("offspring:",stacks_2_eqns(offspring))
-            # print("current X_offspring:",X_offspring[:,:4])
-            # print("survivor index:",survivor_index)
-            # print("survivors:",stacks_2_eqns(survivors))
-            pop.individuals[:] = survivors
-            pop.X = np.vstack((pop.X, X_offspring))[survivor_index,:]
-            if pop.X.shape[0] != self.population_size:
-                pdb.set_trace()
-            # print("new pop.X:",pop.X[:,:4])
-            # pdb.set_trace()
-            # pop.X = pop.X[survivor_index,:]
-            #[[s for s in survivor_index if s<len(pop.individuals)],:],
-                                    #  X_offspring[[s-len(pop.individuals) for s in survivor_index if s>=len(pop.individuals)],:]))
-            if self.verbosity > 2: print("median fitness survivors: %0.2f" % np.median([x.fitness for x in pop.individuals]))
-        # end of main GP loop
-            ####################
-        if self.verbosity > 0: print("finished. best internal val score:",self._best_score)
-        if self.verbosity > 2: print("features:",stacks_2_eqns(self._best_inds))
-        return self.score(features,labels)
 
     def predict(self, testing_features):
         """predict on a holdout data set."""
@@ -445,8 +219,8 @@ def float_range(value):
 # main functions
 def main():
     """Main function that is called when ellyn is run on the command line"""
-    parser = argparse.ArgumentParser(description='A feature engineering wrapper for '
-                                                 'machine learning algorithms using genetic programming.',
+    parser = argparse.ArgumentParser(description='A genetic programming '
+                                                 'system for regression and classification.',
                                      add_help=False)
 
     parser.add_argument('INPUT_FILE', type=str, help='Data file to run ellyn on; ensure that the target/label column is labeled as "label".')
@@ -456,54 +230,215 @@ def main():
     parser.add_argument('-is', action='store', dest='INPUT_SEPARATOR', default=None,
                         type=str, help='Character used to separate columns in the input file.')
 
-    parser.add_argument('-o', action='store', dest='OUTPUT_FILE', default='',
-                        type=str, help='File to export the final model.')
-
+# GP Runtime Options
     parser.add_argument('-g', action='store', dest='GENERATIONS', default=100,
                         type=positive_integer, help='Number of generations to run ellyn.')
 
-    parser.add_argument('-p', action='store', dest='POPULATION_SIZE', default=100,
+    parser.add_argument('-p', action='store', dest='POPULATION_SIZE', default=500,
                         type=positive_integer, help='Number of individuals in the GP population.')
 
-    parser.add_argument('-mr', action='store', dest='MUTATION_RATE', default=0.8,
-                        type=float_range, help='GP mutation rate in the range [0.0, 1.0].')
+    parser.add_argument('--limit_evals', action='store_true', dest='LIMIT_EVALS', default=False,
+                    help='Limit evaluations instead of generations.')
 
-    parser.add_argument('-xr', action='store', dest='CROSSOVER_RATE', default=0.2,
-                        type=float_range, help='GP crossover rate in the range [0.0, 1.0].')
-
-    parser.add_argument('-ml', action='store', dest='MACHINE_LEARNER', default='lasso', choices = ['lasso','svr'],
-                        type=str, help='ML algorithm to pair with features. Default: Lasso')
-
-    parser.add_argument('-min_depth', action='store', dest='MIN_DEPTH', default=1,
-                        type=positive_integer, help='Minimum length of GP programs.')
-
-    parser.add_argument('-max_depth', action='store', dest='MAX_DEPTH', default=2,
-                        type=positive_integer, help='Maximum number of nodes in GP programs.')
-
-    parser.add_argument('-max_depth_init', action='store', dest='MAX_DEPTH_INIT', default=1,
-                        type=positive_integer, help='Maximum number of nodes in initialized GP programs.')
-
-    parser.add_argument('-op_weight', action='store', dest='OP_WEIGHT', default=1,
-                        type=bool, help='Weight variables for inclusion in synthesized features based on ML scores. Default: off')
+    parser.add_argument('-me', action='store', dest='MAX_EVALS', default=0,
+                        type=float_range, help='Max point evaluations.')
 
     parser.add_argument('-sel', action='store', dest='SEL', default='tournament', choices = ['tournament','lexicase','epsilon_lexicase'],
                         type=str, help='Selection method (Default: tournament)')
 
+    parser.add_argument('-PS_sel', action='store', dest='PS_SEL', default=1, choices = [1,2,3,4,5,6],
+                        type=str, help='objectives for pareto survival. 1: age + fitness; 2: age+fitness+generality; 3: age+fitness+complexity; 4: class fitnesses (classification ONLY); 5: class fitnesses+ age (classification ONLY)')
+
     parser.add_argument('-tourn_size', action='store', dest='TOURN_SIZE', default=2,
                         type=positive_integer, help='Tournament size for tournament selection (Default: 2)')
 
-    parser.add_argument('-fit', action='store', dest='FIT_CHOICE', default='mse', choices = ['mse','mae','mdae','r2','vaf',
-                        'mse_rel','mae_rel','mdae_re','r2_rel','vaf_rel'],
-                        type=str, help='Fitness metric (Default: mse)')
+    parser.add_argument('-mr', action='store', dest='MUTATION_RATE', default=0.2,
+                        type=float_range, help='GP mutation rate in the range [0.0, 1.0].')
 
-    parser.add_argument('--seed_with_ml', action='store_true', dest='SEED_WITH_ML', default=False,
-                    help='Flag to seed initial GP population with components of the ML model.')
+    parser.add_argument('-xr', action='store', dest='CROSSOVER_RATE', default=0.8,
+                        type=float_range, help='GP crossover rate in the range [0.0, 1.0].')
+
+    parser.add_argument('-rr', action='store', dest='REPRODUCTION_RATE', default=0.2,
+                        type=float_range, help='GP reproduction rate in the range [0.0, 1.0].')
 
     parser.add_argument('--elitism', action='store_true', dest='ELITISM', default=False,
-                    help='Flag to force survival of best individual in GP population.')
+                help='Flag to force survival of best individual in GP population.')
 
-    parser.add_argument('--erc', action='store_true', dest='ERC', default=False,
-                    help='Flag to use ephemeral random constants in GP feature construction.')
+    parser.add_argument('--init_validate', action='store_true', dest='INIT_VALIDATE_ON', default=False,
+                help='Flag to guarantee initial population outputs are valid (no NaNs or Infs).')
+
+    parser.add_argument('--no_stop', action='store_false', dest='STOP_CONDITION', default=True,
+                    help='Flag to keep running even though fitness < 1e-6 has been reached.')
+# Data Options
+    parser.add_argument('--validate', action='store_true', dest='TRAIN', default=False,
+                help='Flag to split data into training and validation sets.')
+
+    parser.add_argument('-train_split', action='store', dest='TRAIN_PCT', default=0.5, type = float_range,
+                help='Fraction of data to use for training in [0,1]. Only used when --validate flag is present.')
+
+    parser.add_argument('--shuffle', action='store_true', dest='SHUFFLE_DATA', default=False,
+                help='Flag to shuffle data samples.')
+
+    parser.add_argument('--restart', action='store_true', dest='POP_RESTART_PATH', default=False,
+                help='Flag to restart from previous population.')
+
+    parser.add_argument('-pop', action='store_true', dest='POP_RESTART', default=False,
+                help='Population to use in restart. Only used when --restart flag is present.')
+
+    parser.add_argument('--AR', action='store_true', dest='AR', default=False,
+                    help='Flag to use auto-regressive variables.')
+
+    parser.add_argument('--AR_lookahead', action='store_true', dest='AR_LOOKAHEAD', default=False,
+                    help='Flag to only estimate on step ahead of data when evaluating candidate models.')
+
+    parser.add_argument('-AR_na', action='store', dest='AR_NA', default=1,
+                    type=positive_integer, help='Order of auto-regressive output (y).')
+    parser.add_argument('-AR_nb', action='store', dest='AR_NB', default=1,
+                    type=positive_integer, help='Order of auto-regressive inputs (x).')
+    parser.add_argument('-AR_nka', action='store', dest='AR_NKA', default=1,
+                    type=positive_integer, help='AR state (output) delay.')
+    parser.add_argument('-AR_nkb', action='store', dest='AR_NKB', default=1,
+                    type=positive_integer, help='AR input delay.')
+
+# Results and Printing Options
+    parser.add_argument('-o', action='store', dest='RESULTS_PATH', default='',
+                        type=str, help='Path where results will be saved.')
+
+    parser.add_argument('--print_every_pop', action='store_true', dest='PRINT_EVERY_POP', default=False,
+                    help='Flag to seed initial GP population with components of the ML model.')
+
+    parser.add_argument('--print_genome', action='store_true', dest='PRINT_GENOME', default=False,
+                    help='Flag to prints genome for visualization.')
+
+    parser.add_argument('--print_novelty', action='store_true', dest='PRINT_NOVELTY', default=False,
+                    help='Flag to print number of unique output vectors.')
+
+    parser.add_argument('--print_homology', action='store_true', dest='PRINT_HOMOLOGY', default=False,
+                    help='Flag to print genetic homology in programs.')
+
+    parser.add_argument('-num_log_pts', action='store', dest='num_log_pts', default=0,
+                        type=positive_integer, help='number of log points to print (0 means print each generation)')
+
+# Classification Options
+
+    parser.add_argument('--class', action='store_true', dest='CLASSIFICATION', default=False,
+                    help='Flag to define a classification problem instead of regression (the default).')
+
+    parser.add_argument('--class_bool', action='store_true', dest='CLASS_BOOL', default=False,
+                    help='Flag to interpret class labels as bit-string conversion of boolean stack output.')
+
+    parser.add_argument('--class_m4gp', action='store_true', dest='CLASS_M3GP', default=False,
+                    help='Flag to use the M4GP algorithm.')
+
+    parser.add_argument('--class_prune', action='store_true', dest='CLASS_PRUNE', default=False,
+                        help='Flag to prune the dimensions of the best individual each generation.')
+
+# Terminal and Operator Options
+    parser.add_argument('-op_list', nargs = '*', action='store', dest='OP_LIST', default=None,
+                    type=float, help='Operator list. Default: +,-,*,/,n,v. available operators: n v + - * / sin cos log exp sqrt = ! < <= > >= if-then if-then-else & |')
+
+    parser.add_argument('-op_weight', nargs = '*',action='store', dest='OP_WEIGHTS', default=None,
+                    help='Operator weights for each element in operator list. If not specified all operators have the same weights.')
+
+    parser.add_argument('-constants', nargs = '*', action='store', dest='CVALS', default=None,
+                        type=float, help='Seed GP initialization with constant values.')
+
+    parser.add_argument('-seeds', nargs = '*', action='store', dest='SEEDS', default=None,
+                        type=float, help='Seed GP initialization with partial solutions, e.g. (x+y). Each partial solution must be enclosed in parentheses.')
+
+    parser.add_argument('-min_len', action='store', dest='MIN_LEN', default=1,
+                        type=positive_integer, help='Minimum length of GP programs.')
+
+    parser.add_argument('-max_len', action='store', dest='MAX_LEN', default=2,
+                        type=positive_integer, help='Maximum number of nodes in GP programs.')
+
+    parser.add_argument('-max_len_init', action='store', dest='MAX_LEN_INIT', default=1,
+                        type=positive_integer, help='Maximum number of nodes in initialized GP programs.')
+
+    parser.add_argument('--erc_ints', action='store_true', dest='ERC_INTS', default=False,
+                help='Flag to use integer instead of floating point ERCs.')
+
+    parser.add_argument('--no_erc', action='store_false', dest='ERC', default=True,
+                help='Flag to turn of ERCs. Useful if you are specifying constant values and don''t want random ones.')
+
+    parser.add_argument('-min_erc', action='store', dest='MINERC', default=-1, type = int,
+                    help='Minimum ERC value.')
+
+    parser.add_argument('-max_erc', action='store', dest='MAXERC', default=1, type = int,
+                    help='Maximum ERC value.')
+
+    parser.add_argument('-num_erc', action='store', dest='NUMERC', default=1, type = int,
+                    help='Number of ERCs to use.')
+
+    parser.add_argument('--trees', action='store_true', dest='INIT_TREES', default=False,
+                    help='Flag to initialize genotypes as syntactically valid trees rather than randomized stacks.')
+# Fitness Options
+    parser.add_argument('-fit', action='store', dest='FIT_TYPE', default='mse', choices = ['mse','mae','r2','vaf','combo'],
+                    type=str, help='Fitness metric (Default: mse). combo is mae/r2')
+
+    parser.add_argument('--norm_error', action='store_true', dest='ERC_INTS', default=False,
+                help='Flag to normalize error by the standard deviation of the target data being used.')
+
+    parser.add_argument('--fe', action='store_true', dest='ESTIMATE_FITNESS', default=False,
+            help='Flag to coevolve fitness estimators.')
+
+    parser.add_argument('-fe_p', action='store', dest='FE_POP_SIZE', default=1, type = positive_integer,
+                    help='fitness estimator population size.')
+
+    parser.add_argument('-fe_i', action='store', dest='FE_IND_SIZE', default=1, type = positive_integer,
+                    help='number of fitness cases for FE to use.')
+
+    parser.add_argument('-fe_t', action='store', dest='FE_TRAIN_SIZE', default=1, type = positive_integer,
+                    help='trainer population size. Trainers are evaluated on the entire data set.')
+
+    parser.add_argument('-fe_g', action='store', dest='FE_TRAIN_GENS', default=1, type = positive_integer,
+                    help='Number of generations between trainer selections.')
+
+    parser.add_argument('--fe_rank', action='store_true', dest='FE_RANK', default=False,
+            help='User rank for FE fitness rather than error.')
+
+# Parameter hillclimbing
+    parser.add_argument('--phc', action='store_true', dest='PHC_ON', default=False,
+                        help='Flag to use parameter hillclimbing.')
+
+    parser.add_argument('-phc_its', action='store', dest='pHC_its', default=1, type = positive_integer,
+                        help='Number of iterations of parameter hill climbing each generation.')
+# Epigenetic hillclimbing
+    parser.add_argument('--ehc', action='store_true', dest='EHC_ON', default=False,
+                        help='Flag to use epigenetic hillclimbing.')
+
+    parser.add_argument('-ehc_its', action='store', dest='EHC_its', default=1, type = positive_integer,
+                    help='Number of iterations of epigenetic hill climbing each generation.')
+
+    parser.add_argument('-ehc_init', action='store', dest='EHC_INIT', default=0.5, type = positive_integer,
+                        help='Fraction of initial population''s genes that are silenced.')
+
+    parser.add_argument('--emut', action='store_true', dest='EHC_MUT', default=False,
+                        help='Flag to use epigenetic mutation. Only works if ehc flag is present.')
+
+    parser.add_argument('--e_slim', action='store_true', dest='EHC_SLIM', default=False,
+                        help='Flag to store partial program outputs such that point evaluations are minimized during EHC.')
+# Pareto Archive
+    parser.add_argument('--archive', action='store_true', dest='PRTO_ARCH_ON', default=False,
+                        help='Flag to save the Pareto front of equations (fitness and complexity) during the run.')
+
+    parser.add_argument('-arch_size', action='store', dest='PRTO_ARCH_SIZE', default=20,
+                        help='Minimum size of the Pareto archive. By default, ellyn will save the entire front, but more individuals will be added if the front is less than arch_size.')
+# island model
+    parser.add_argument('--islands', action='store_true', dest='ISLANDS', default=False,
+                    help='Flag to use island populations. Parallel execution across codes on a single node.')
+
+    parser.add_argument('-island_gens', action='store', dest='ISLAND_GENS', default=100, type = positive_integer,
+                    help='Number of generations between synchronized shuffling of island populations.')
+# lexicase selection options
+    parser.add_argument('-lex_pool', action='store', dest='LEX_POOL', default=1,
+                        type=float_range, help='Fraction of population to use in lexicase selection events [0.0, 1.0].')
+
+    parser.add_argument('-lex_metacases', nargs = '*',action='store', dest='LEX_METACASES', default=None,
+                    help='Specify extra cases for selection. Options: age, complexity.')
+
+    parser.add_argument('--lex_eps_error_mad', action='store_true', dest='LEX_EPS_ERROR_MAD', default=False,
+                    help='Flag to use epsilon lexicase with median absolute deviation, error-based epsilons.')
 
     parser.add_argument('-s', action='store', dest='RANDOM_STATE', default=np.random.randint(4294967295),
                         type=int, help='Random number generator seed for reproducibility. Note that using multi-threading may '
@@ -515,8 +450,8 @@ def main():
     parser.add_argument('--no-update-check', action='store_true', dest='DISABLE_UPDATE_CHECK', default=False,
                         help='Flag indicating whether the ellyn version checker should be disabled.')
 
-    parser.add_argument('--version', action='version', version='ellyn {version}'.format(version=__version__),
-                        help='Show ellyn\'s version number and exit.')
+    # parser.add_argument('--version', action='version', version='ellyn {version}'.format(version=__version__),
+    #                     help='Show ellyn\'s version number and exit.')
 
     args = parser.parse_args()
 
@@ -551,13 +486,14 @@ def main():
     testing_features = input_data.loc[test_i].drop('label', axis=1).values
     testing_labels = input_data.loc[test_i, 'label'].values
 
-    learner = ellyn(generations=args.GENERATIONS, population_size=args.POPULATION_SIZE,
-                mutation_rate=args.MUTATION_RATE, crossover_rate=args.CROSSOVER_RATE,
-                machine_learner = args.MACHINE_LEARNER, min_depth = args.MIN_DEPTH,
-                max_depth = args.MAX_DEPTH, sel = args.SEL, tourn_size = args.TOURN_SIZE,
-                seed_with_ml = args.SEED_WITH_ML, op_weight = args.OP_WEIGHT,
-                erc = args.ERC, random_state=args.RANDOM_STATE, verbosity=args.VERBOSITY,
-                disable_update_check=args.DISABLE_UPDATE_CHECK,fit_choice = args.FIT_CHOICE)
+    learner = ellyn(args.__dict__)
+    # learner = ellyn(generations=args.GENERATIONS, population_size=args.POPULATION_SIZE,
+    #             mutation_rate=args.MUTATION_RATE, crossover_rate=args.CROSSOVER_RATE,
+    #             machine_learner = args.MACHINE_LEARNER, min_depth = args.MIN_DEPTH,
+    #             max_depth = args.MAX_DEPTH, sel = args.SEL, tourn_size = args.TOURN_SIZE,
+    #             seed_with_ml = args.SEED_WITH_ML, op_weight = args.OP_WEIGHT,
+    #             erc = args.ERC, random_state=args.RANDOM_STATE, verbosity=args.VERBOSITY,
+    #             disable_update_check=args.DISABLE_UPDATE_CHECK,fit_choice = args.FIT_CHOICE)
 
     learner.fit(training_features, training_labels)
 
