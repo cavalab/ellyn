@@ -64,7 +64,7 @@ struct Data {
 		datatable.clear();*/
 	}
 
-	void set_train(float** X,size_t N, size_t D){
+	void set_train(float* X,size_t N, size_t D){
 		// using std::begin;
 		for (unsigned int i=0; i<N; ++i){
 			vals.push_back(vector<float>(X[i],X[i]+D));

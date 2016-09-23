@@ -24,6 +24,7 @@
 #include "load_params.h"
 #include "load_data.h"
 #include "printing.h"
+// #include "runEllenGP.h"
 //#define _CRTDBG_MAP_ALLOC
 //#include <stdlib.h>
 //#include <crtdbg.h>
@@ -41,7 +42,8 @@ using namespace std;
 // includes for python integration
 #include <boost/python.hpp>
 using namespace boost::python;
-
+#include <numpy/ndarrayobject.h>
+//#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 // global parameters structure
 
 
@@ -366,11 +368,31 @@ int get_next_task(int& index,vector<int>& task_assignments)
 }
 // template <size_t samples, size_t features>
 // void runEllenGP(dict& param_dict, float (&X)[samples][features], float (&Y)[samples],string pname,string dname)
-void runEllenGP(dict& param_dict, float** features, float* target,  size_t N, size_t D, string pname,string dname)
+// numeric::array& features, numeric::array& target
+
+void reference_contiguous_array(PyObject* in, float* &ptr, vector<int>& dims)
+{ // returns pointer to underlying c array (ptr) from PyObject in, checking for contiguos memory storage
+	  PyArrayObject* in_con;
+    in_con = PyArray_GETCONTIGUOUS((PyArrayObject*)in);
+    ptr = (float*)PyArray_DATA(in_con);
+		// get dimensions
+		int num_dim = PyArray_NDIM(in_con);
+    npy_intp* pdim = PyArray_DIMS(in_con);
+
+    for (int i = 0; i < num_dim; i++)
+        dims.push_back(pdim[i]);
+}
+void dereference(PyObject* o)
+{
+    Py_DECREF(o);
+}
+void runEllenGP(dict& param_dict, PyObject* features, PyObject* target) //string pname,string dname
 
 {
 	bool trials = 0;
 	int trialnum = 0;
+	string pname = "ellenGP";
+	string dname = "d";
 	// string paramfile = "ellyn";
 	// string datafile = "d";
 	//string paramfile(param_in);
@@ -430,15 +452,26 @@ void runEllenGP(dict& param_dict, float** features, float* target,  size_t N, si
 	// 	}
 	// //if (p.sel == 3) load_lexdata(d,ds,p);
 	// //else
-	vector<float *> feat_ptr;
-  for (size_t i = 0; i < N; ++i)
-    feat_ptr.push_back(features[i]);
+	// get the input array
+	float* feat_ptr;
+	vector<int> dims;
+	reference_contiguous_array(features, feat_ptr, dims);
+
+	// vector<float *> feat_ptr;
+  // for (size_t i = 0; i < dims[0]; ++i)
+  //   feat_ptr.push_back(features[i]);
 	// X[row].insert(X[row].end(),features[row],features[row]+D);
 	// vector<float> Y(target,N);
 	// int x_address = &features ;
 
-	d.set_train(feat_ptr.data(),N,D);
-	d.set_target(target,N);
+	d.set_train(feat_ptr,dims[0],dims[1]);
+
+	float* target_ptr;
+  dims.resize(0);
+	reference_contiguous_array(target, target_ptr, dims);
+	d.set_target(target_ptr,dims[0]);
+	Py_DECREF(features);
+	Py_DECREF(target);
 
 	d.set_dependencies(p);
 	// load_data(d,ds,p);
@@ -1321,10 +1354,10 @@ void runEllenGP(dict& param_dict, float** features, float* target,  size_t N, si
 
 
 
-
 }
 
 BOOST_PYTHON_MODULE(elgp)
 {
     def("runEllenGP", runEllenGP);
+		// import_array();
 }
