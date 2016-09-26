@@ -30,3 +30,8 @@ Release/
 *.zip
 *.o
 in/
+*.data
+*.log
+*.best_ind
+*.archive
+*.last_pop

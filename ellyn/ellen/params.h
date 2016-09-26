@@ -8,11 +8,19 @@
 //#include <random>
 //#include <array>
 #include "op_node.h"
-#include "data.h"
+//#include "data.h"
 #include "Eqn2Line.h"
 using namespace std;
 #include <boost/python.hpp>
 using namespace boost::python;
+#if defined(_WIN32)
+	#include <direct.h>
+	#define GetCurrentDir _getcwd
+#else
+	#include <unistd.h>
+	#include <iomanip>
+	#define GetCurrentDir getcwd
+#endif
 // using std::vector;
 // using std::begin;
 // using std::string;
@@ -232,7 +240,9 @@ struct params {
 		AR_nka = 1;
 		AR_lookahead = 0;
 		// ================ Results and printing
-		resultspath="";
+		char cCurrentPath[FILENAME_MAX];
+		bool tmp = GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
+		resultspath= (std::string) cCurrentPath;
 		//print every population
 		print_every_pop=0;
 		//print initial population
@@ -349,25 +359,8 @@ struct params {
 	}
 	~params(){}
 
-	void define_class_weights(Data& d) {
 
-		class_w.assign(number_of_classes,0);
-		class_w_v.assign(number_of_classes, 0);
-		for (unsigned int i = 0; i < d.target.size(); ++i) {
-			if (train && i >= d.target.size()*train_pct)
-				++class_w_v[d.target[i]];
-			else
-				++class_w[d.target[i]];
-		}
-		for (unsigned int i = 0; i < number_of_classes; ++i) {
-			if (train) {
-				class_w[i] /= d.target.size()*train_pct;
-				class_w_v[i] /= d.target.size()*(1-train_pct);
-			}
-			else
-				class_w[i] /= d.target.size();
-		}
-	}
+
 
 	//void clear()
 	//{
@@ -393,7 +386,7 @@ struct params {
 	void set(dict& d){
 		/* function called from python to set parameter values. equivalent behavior to load_params,
 		but for setting params in python.*/
-
+		std::cout << "in set params\n";
 		if (d.has_key("g"))
 			g = extract<int>(d["g"]);
 		if (d.has_key("popsize"))
@@ -655,6 +648,7 @@ struct params {
 			max_len_init = max_len;
 		// op_list
 		if (op_list.empty()){ // set default operator list
+			cout << "using default operator list\n";
 			op_list.push_back("n");
 			op_list.push_back("v");
 			op_list.push_back("+");

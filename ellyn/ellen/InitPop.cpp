@@ -20,7 +20,9 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 {
 	//boost::progress_timer timer;
 	//#pragma omp parallel for
-
+	// std::cout << "p.min_len: " << p.min_len;
+  // std::cout << "p.max_len_init: " << p.max_len_init;
+	// cout << "p.allvars size: " << p.allvars.size();
 	for(int i=0;i<pop.size();++i)
 	{
 		// WGL: need to edit this to work with EHC and classification both ON
@@ -32,7 +34,7 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 				for (int j=0;j<pop.at(i).line.size();++j)
 				{
 					float tmp = r[omp_get_thread_num()].rnd_flt(0,1);
-					//cout << "tmp: " << tmp << " p.eHC: " << p.eHC_init; 
+					//cout << "tmp: " << tmp << " p.eHC: " << p.eHC_init;
 					if (tmp > p.eHC_init)
 					{
 						pop.at(i).line[j].on=false;
@@ -42,6 +44,7 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 		}
 		else{ // init trees
 			int linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len_init);
+			// cout << "linelen:" << linelen << "\n";
 			if (p.eHC_on){
 				int onlen = max(p.min_len, int(linelen*p.eHC_init));
 				makeline_rec(pop.at(i).line,p,r,onlen);
@@ -53,7 +56,7 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 				}
 			}
 			else if (p.classification){
-				// choose dimensions of trees between 1 and max_len_init/min_len 
+				// choose dimensions of trees between 1 and max_len_init/min_len
 				int dims;
 
 				if (p.class_m3gp) {
@@ -65,10 +68,10 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 				int remain_len = linelen;
 				vector<node> tmp_line;
 				//int default_size = remain_len/dims;
-				// create dims trees and push them together 
+				// create dims trees and push them together
 				for (unsigned j=0; j<dims; ++j){
 					int treelen = remain_len/(dims-j);// + r[omp_get_thread_num()].gasdev();
-					if (treelen<1) 
+					if (treelen<1)
 						treelen=1;
 					else if (treelen>p.max_len_init)
 						treelen=p.max_len_init;
@@ -78,7 +81,7 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 					remain_len -= tmp_line.size();
 					tmp_line.clear();
 				}
-				
+
 			}
 			else // make normal trees
 				makeline_rec(pop.at(i).line,p,r,linelen);
@@ -86,23 +89,23 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 		//remove dangling numbers and variables from end
 		/*while((pop.at(i).line.back()->type=='n' || pop.at(i).line.back()->type=='v') && pop.at(i).line.size()>1)
 			pop.at(i).line.pop_back();*/
-			
+
 		pop.at(i).origin = 'i';
-		
+
 		assert(!pop.at(i).line.empty());
 		//assert(pop[i].line.size() >= p.min_len);
 
 	}
-	//cout <<"\nInit Pop time: ";
+	cout <<"\nInit Pop done ";
 }
 
 void makeline(ind& newind,params& p,vector<Randclass>& r)
 {
-	// construct line 
+	// construct line
 	int linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len_init);
-	
+
 	int choice=0;
-	
+
 	//uniform_int_distribution<int> dist(0,21);
 	vector<float> wheel(p.op_weight.size());
 	//wheel.resize(p.op_weight.size());
@@ -129,10 +132,10 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 				}
 			}
 		}
-		else 
+		else
 			choice = r[omp_get_thread_num()].rnd_int(0,p.op_choice.size()-1);
 
-		string varchoice; 
+		string varchoice;
 		int seedchoice;
 		vector<node> tmpstack;
 
@@ -144,7 +147,7 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 						if (r[omp_get_thread_num()].rnd_flt(0,1)<.5)
 							//newind.line.push_back(shared_ptr<node>(new n_num(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1)))));
 							newind.line.push_back(node(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1))));
-						else{	
+						else{
 							if(p.ERCints)
 								//newind.line.push_back(shared_ptr<node>(new n_num((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC))));
 								newind.line.push_back(node((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC)));
@@ -209,7 +212,7 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 				seedchoice = r[omp_get_thread_num()].rnd_int(0,p.seedstacks.size()-1);
 				//copystack(p.seedstacks.at(seedchoice),tmpstack);
 				tmpstack = p.seedstacks.at(seedchoice);
-				
+
 				for(int i=0;i<tmpstack.size(); ++i)
 				{
 					if (x<p.max_len_init){
@@ -261,10 +264,10 @@ void makeline_rec(vector<node>& line,params& p,vector<Randclass>& r, int linelen
 {
 	// recursive version of makeline that creates lines that are complete with respect to stack operations
 	// in other words the entire line is guaranteed to be a valid syntax tree
-	// construct line 
-	
-	
-	
+	// construct line
+
+
+
 	int choice=0;
 	// set output type based on problem definition ('f' = float, 'b' = boolean)
 	char type = 'f';
@@ -310,8 +313,10 @@ void getChoice(int& choice, int min_arity, int max_arity, char type, params& p,v
 				}
 			}
 		}
-		else 
+		else{
+			// cout << "choices size: " << choices.size();
 			tmpchoice =r[omp_get_thread_num()].rnd_int(0,choices.size()-1);
+		}
 
 		choice = choices[tmpchoice];
 	}
@@ -321,7 +326,7 @@ void getChoice(int& choice, int min_arity, int max_arity, char type, params& p,v
 
 void push_back_node(vector <node>& line, int choice, params& p,vector<Randclass>& r)
 {
-	string varchoice; 
+	string varchoice;
 
 	switch (p.op_choice.at(choice))
 	{
@@ -331,7 +336,7 @@ void push_back_node(vector <node>& line, int choice, params& p,vector<Randclass>
 					if (r[omp_get_thread_num()].rnd_flt(0,1)<.5)
 						//line.push_back(shared_ptr<node>(new n_num(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1)))));
 						line.push_back(node(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1))));
-					else{	
+					else{
 						if(p.ERCints)
 							/*line.push_back(shared_ptr<node>(new n_num((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC))));*/
 							line.push_back(node((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC)));
@@ -431,7 +436,7 @@ void push_back_node(vector <node>& line, int choice, params& p,vector<Randclass>
 }
 void push_front_node(vector <node>& line, int choice, params& p,vector<Randclass>& r)
 {
-	string varchoice; 
+	string varchoice;
 
 	switch (p.op_choice.at(choice))
 	{
@@ -441,7 +446,7 @@ void push_front_node(vector <node>& line, int choice, params& p,vector<Randclass
 					if (r[omp_get_thread_num()].rnd_flt(0,1)<.5)
 						//line.insert(line.begin(),shared_ptr<node>(new n_num(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1)))));
 						line.insert(line.begin(),node(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1))));
-					else{	
+					else{
 						if(p.ERCints)
 							/*line.insert(line.begin(),shared_ptr<node>(new n_num((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC))));*/
 							line.insert(line.begin(),node((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC)));
@@ -540,8 +545,8 @@ void push_front_node(vector <node>& line, int choice, params& p,vector<Randclass
 }
 int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,char type,params& p,vector<Randclass>& r)
 {
-	int choice; 
-//	int splitnodes; 
+	int choice;
+//	int splitnodes;
 	int thisnode = lastnode+1;
 	int startsize = line.size();
 	if (level == 1) { // choose a terminal because of the level limitation
@@ -580,7 +585,7 @@ int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,char t
 	/*else if (a == 0)
 		cout << "debug";*/
 
-		
+
 	for (int i=1;i<=a;++i)
 	{
 		if (i==a)
@@ -592,7 +597,7 @@ int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,char t
 			newlevel = max(newlevel, 1);
 			//newlevel = r[omp_get_thread_num()].rnd_int(1, level - 1);
 		}
-			
+
 		nodes += maketree(line,newlevel,exactlevel,thisnode,types[i-1],p,r);
 	}
 	//for (int i = 1; i <= a_b; ++i)
@@ -607,18 +612,18 @@ int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,char t
 }
 //void makestack(ind& newind,params& p,vector<Randclass>& r)
 //{
-//	// construct line 
+//	// construct line
 //	// obtain a seed from the system clock:
-//	
+//
 //	// random number generator
 //	//mt19937_64 engine(p.seed);
-//	
+//
 //	int linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len_init);
-//	
+//
 //	vector <string> load_choices(p.allblocks);
 //
 //	int choice=0;
-//	
+//
 //	//uniform_int_distribution<int> dist(0,21);
 //	if (p.ERC)
 //	{
@@ -655,10 +660,10 @@ int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,char t
 //				}
 //			}
 //		}
-//		else 
+//		else
 //			choice = r[omp_get_thread_num()].rnd_int(0,p.op_choice.size()-1);
 //
-//		
+//
 //		if (choice==0) // number reference to argument from all blocks in next position in line
 //		{
 //			if(p.ERCints)
@@ -669,7 +674,7 @@ int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,char t
 //		else if (choice==1) // pick pointer values from mapped variables in data struct
 //		{
 //		}
-//		else 
+//		else
 //			newind.line.push_back(ops(p.op_choice.at(choice)));
 //	}
 //}

@@ -65,7 +65,14 @@ class ellyn(BaseEstimator):
         # self.param_file = ''
         # for arg in sorted(kwargs.__dict__):
         #     self.param_file += ('{}\t{}'.format(lower(arg), kwargs.__dict__[arg]))
+        # convert selection method to number
+        self.param_dict['sel'] = {'tournament': 1,'dc':2, 'lexicase': 3,'afp': 4,'rand': 5}[self.param_dict['sel']]
+        # delete items that have a default value of None so that the elgp defaults will be used
+        for k in list(self.param_dict.keys()):
+            if self.param_dict[k] is None:
+                del self.param_dict[k]
 
+        # self.param_dict[self.param_dict.values()]
         self._best_estimator = None
     def fit(self, features, labels):
         """Fit model to data"""
@@ -98,7 +105,9 @@ class ellyn(BaseEstimator):
 
         # x_pt = features.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
         # y_pt = labels.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
-        pdb.set_trace()
+        # pdb.set_trace()
+        # self.param_dict = {}
+        print("features:",features[:5])
         elgp.runEllenGP(self.param_dict,features,labels)
         ####
         # initial model
@@ -253,106 +262,106 @@ def main():
                         type=str, help='Character used to separate columns in the input file.')
 
 # GP Runtime Options
-    parser.add_argument('-g', action='store', dest='g', default=100,
+    parser.add_argument('-g', action='store', dest='g', default=None,
                         type=positive_integer, help='Number of generations to run ellyn.')
 
-    parser.add_argument('-p', action='store', dest='popsize', default=500,
+    parser.add_argument('-p', action='store', dest='popsize', default=None,
                         type=positive_integer, help='Number of individuals in the GP population.')
 
-    parser.add_argument('--limit_evals', action='store_true', dest='limit_evals', default=False,
+    parser.add_argument('--limit_evals', action='store_true', dest='limit_evals', default=None,
                     help='Limit evaluations instead of generations.')
 
-    parser.add_argument('-me', action='store', dest='max_evals', default=0,
+    parser.add_argument('-me', action='store', dest='max_evals', default=None,
                         type=float_range, help='Max point evaluations.')
 
-    parser.add_argument('-sel', action='store', dest='sel', default='tournament', choices = ['tournament','lexicase','afp'],
+    parser.add_argument('-sel', action='store', dest='sel', default='tournament', choices = ['tournament','dc','lexicase','afp','rand'],
                         type=str, help='Selection method (Default: tournament)')
 
-    parser.add_argument('-PS_sel', action='store', dest='PS_SEL', default=1, choices = [1,2,3,4,5,6],
+    parser.add_argument('-PS_sel', action='store', dest='PS_SEL', default=None, choices = [1,2,3,4,5],
                         type=str, help='objectives for pareto survival. 1: age + fitness; 2: age+fitness+generality; 3: age+fitness+complexity; 4: class fitnesses (classification ONLY); 5: class fitnesses+ age (classification ONLY)')
 
-    parser.add_argument('-tourn_size', action='store', dest='tourn_size', default=2,
+    parser.add_argument('-tourn_size', action='store', dest='tourn_size', default=None,
                         type=positive_integer, help='Tournament size for tournament selection (Default: 2)')
 
-    parser.add_argument('-mr', action='store', dest='rt_mut', default=0.2,
+    parser.add_argument('-mr', action='store', dest='rt_mut', default=None,
                         type=float_range, help='GP mutation rate in the range [0.0, 1.0].')
 
-    parser.add_argument('-xr', action='store', dest='rt_cross', default=0.8,
+    parser.add_argument('-xr', action='store', dest='rt_cross', default=None,
                         type=float_range, help='GP crossover rate in the range [0.0, 1.0].')
 
-    parser.add_argument('-rr', action='store', dest='rt_rep', default=0.2,
+    parser.add_argument('-rr', action='store', dest='rt_rep', default=None,
                         type=float_range, help='GP reproduction rate in the range [0.0, 1.0].')
 
-    parser.add_argument('--elitism', action='store_true', dest='elitism', default=False,
+    parser.add_argument('--elitism', action='store_true', dest='elitism', default=None,
                 help='Flag to force survival of best individual in GP population.')
 
-    parser.add_argument('--init_validate', action='store_true', dest='init_validate_on', default=False,
+    parser.add_argument('--init_validate', action='store_true', dest='init_validate_on', default=None,
                 help='Flag to guarantee initial population outputs are valid (no NaNs or Infs).')
 
-    parser.add_argument('--no_stop', action='store_false', dest='stop_condition', default=True,
+    parser.add_argument('--no_stop', action='store_false', dest='stop_condition', default=None,
                     help='Flag to keep running even though fitness < 1e-6 has been reached.')
 # Data Options
-    parser.add_argument('--validate', action='store_true', dest='train', default=False,
+    parser.add_argument('--validate', action='store_true', dest='train', default=None,
                 help='Flag to split data into training and validation sets.')
 
-    parser.add_argument('-train_split', action='store', dest='train_pct', default=0.5, type = float_range,
+    parser.add_argument('-train_split', action='store', dest='train_pct', default=None, type = float_range,
                 help='Fraction of data to use for training in [0,1]. Only used when --validate flag is present.')
 
-    parser.add_argument('--shuffle', action='store_true', dest='shuffle_data', default=False,
+    parser.add_argument('--shuffle', action='store_true', dest='shuffle_data', default=None,
                 help='Flag to shuffle data samples.')
 
-    parser.add_argument('--restart', action='store_true', dest='pop_restart_path', default=False,
+    parser.add_argument('--restart', action='store_true', dest='pop_restart_path', default=None,
                 help='Flag to restart from previous population.')
 
-    parser.add_argument('-pop', action='store_true', dest='pop_restart', default=False,
+    parser.add_argument('-pop', action='store_true', dest='pop_restart', default=None,
                 help='Population to use in restart. Only used when --restart flag is present.')
 
-    parser.add_argument('--AR', action='store_true', dest='AR', default=False,
+    parser.add_argument('--AR', action='store_true', dest='AR', default=None,
                     help='Flag to use auto-regressive variables.')
 
-    parser.add_argument('--AR_lookahead', action='store_true', dest='AR_lookahead', default=False,
+    parser.add_argument('--AR_lookahead', action='store_true', dest='AR_lookahead', default=None,
                     help='Flag to only estimate on step ahead of data when evaluating candidate models.')
 
-    parser.add_argument('-AR_na', action='store', dest='AR_na', default=1,
+    parser.add_argument('-AR_na', action='store', dest='AR_na', default=None,
                     type=positive_integer, help='Order of auto-regressive output (y).')
-    parser.add_argument('-AR_nb', action='store', dest='AR_nb', default=1,
+    parser.add_argument('-AR_nb', action='store', dest='AR_nb', default=None,
                     type=positive_integer, help='Order of auto-regressive inputs (x).')
-    parser.add_argument('-AR_nka', action='store', dest='AR_nka', default=1,
+    parser.add_argument('-AR_nka', action='store', dest='AR_nka', default=None,
                     type=positive_integer, help='AR state (output) delay.')
-    parser.add_argument('-AR_nkb', action='store', dest='AR_nkb', default=1,
+    parser.add_argument('-AR_nkb', action='store', dest='AR_nkb', default=None,
                     type=positive_integer, help='AR input delay.')
 
 # Results and Printing Options
-    parser.add_argument('-o', action='store', dest='results_path', default='',
+    parser.add_argument('-o', action='store', dest='results_path', default=None,
                         type=str, help='Path where results will be saved.')
 
-    parser.add_argument('--print_every_pop', action='store_true', dest='print_every_pop', default=False,
+    parser.add_argument('--print_every_pop', action='store_true', dest='print_every_pop', default=None,
                     help='Flag to seed initial GP population with components of the ML model.')
 
-    parser.add_argument('--print_genome', action='store_true', dest='print_genome', default=False,
+    parser.add_argument('--print_genome', action='store_true', dest='print_genome', default=None,
                     help='Flag to prints genome for visualization.')
 
-    parser.add_argument('--print_novelty', action='store_true', dest='print_novelty', default=False,
+    parser.add_argument('--print_novelty', action='store_true', dest='print_novelty', default=None,
                     help='Flag to print number of unique output vectors.')
 
-    parser.add_argument('--print_homology', action='store_true', dest='print_homology', default=False,
+    parser.add_argument('--print_homology', action='store_true', dest='print_homology', default=None,
                     help='Flag to print genetic homology in programs.')
 
-    parser.add_argument('-num_log_pts', action='store', dest='num_log_pts', default=0,
+    parser.add_argument('-num_log_pts', action='store', dest='num_log_pts', default=None,
                         type=positive_integer, help='number of log points to print (0 means print each generation)')
 
 # Classification Options
 
-    parser.add_argument('--class', action='store_true', dest='classification', default=False,
+    parser.add_argument('--class', action='store_true', dest='classification', default=None,
                     help='Flag to define a classification problem instead of regression (the default).')
 
-    parser.add_argument('--class_bool', action='store_true', dest='class_bool', default=False,
+    parser.add_argument('--class_bool', action='store_true', dest='class_bool', default=None,
                     help='Flag to interpret class labels as bit-string conversion of boolean stack output.')
 
-    parser.add_argument('--class_m4gp', action='store_true', dest='class_m3gp', default=False,
+    parser.add_argument('--class_m4gp', action='store_true', dest='class_m3gp', default=None,
                     help='Flag to use the M4GP algorithm.')
 
-    parser.add_argument('--class_prune', action='store_true', dest='class_prune', default=False,
+    parser.add_argument('--class_prune', action='store_true', dest='class_prune', default=None,
                         help='Flag to prune the dimensions of the best individual each generation.')
 
 # Terminal and Operator Options
@@ -366,107 +375,107 @@ def main():
                         type=float, help='Seed GP initialization with constant values.')
 
     parser.add_argument('-seeds', nargs = '*', action='store', dest='seeds', default=None,
-                        type=float, help='Seed GP initialization with partial solutions, e.g. (x+y). Each partial solution must be enclosed in parentheses.')
+                        type=str, help='Seed GP initialization with partial solutions, e.g. (x+y). Each partial solution must be enclosed in parentheses.')
 
-    parser.add_argument('-min_len', action='store', dest='min_len', default=1,
+    parser.add_argument('-min_len', action='store', dest='min_len', default=None,
                         type=positive_integer, help='Minimum length of GP programs.')
 
-    parser.add_argument('-max_len', action='store', dest='max_len', default=2,
+    parser.add_argument('-max_len', action='store', dest='max_len', default=None,
                         type=positive_integer, help='Maximum number of nodes in GP programs.')
 
-    parser.add_argument('-max_len_init', action='store', dest='max_len_init', default=1,
+    parser.add_argument('-max_len_init', action='store', dest='max_len_init', default=None,
                         type=positive_integer, help='Maximum number of nodes in initialized GP programs.')
 
-    parser.add_argument('--erc_ints', action='store_true', dest='erc_ints', default=False,
+    parser.add_argument('--erc_ints', action='store_true', dest='erc_ints', default=None,
                 help='Flag to use integer instead of floating point ERCs.')
 
-    parser.add_argument('--no_erc', action='store_false', dest='ERC', default=True,
+    parser.add_argument('--no_erc', action='store_false', dest='ERC', default=None,
                 help='Flag to turn of ERCs. Useful if you are specifying constant values and don''t want random ones.')
 
-    parser.add_argument('-min_erc', action='store', dest='minERC', default=-1, type = int,
+    parser.add_argument('-min_erc', action='store', dest='minERC', default=None,
                     help='Minimum ERC value.')
 
-    parser.add_argument('-max_erc', action='store', dest='maxERC', default=1, type = int,
+    parser.add_argument('-max_erc', action='store', dest='maxERC', default=None, type = int,
                     help='Maximum ERC value.')
 
-    parser.add_argument('-num_erc', action='store', dest='numERC', default=1, type = int,
+    parser.add_argument('-num_erc', action='store', dest='numERC', default=None, type = int,
                     help='Number of ERCs to use.')
 
-    parser.add_argument('--trees', action='store_true', dest='init_trees', default=False,
+    parser.add_argument('--trees', action='store_true', dest='init_trees', default=None,
                     help='Flag to initialize genotypes as syntactically valid trees rather than randomized stacks.')
 # Fitness Options
-    parser.add_argument('-fit', action='store', dest='fit_type', default='mse', choices = ['mse','mae','r2','vaf','combo'],
+    parser.add_argument('-fit', action='store', dest='fit_type', default=None, choices = ['mse','mae','r2','vaf','combo'],
                     type=str, help='Fitness metric (Default: mse). combo is mae/r2')
 
-    parser.add_argument('--norm_error', action='store_true', dest='ERC_ints', default=False,
+    parser.add_argument('--norm_error', action='store_true', dest='ERC_ints', default=None,
                 help='Flag to normalize error by the standard deviation of the target data being used.')
 
-    parser.add_argument('--fe', action='store_true', dest='estimate_fitness', default=False,
+    parser.add_argument('--fe', action='store_true', dest='estimate_fitness', default=None,
             help='Flag to coevolve fitness estimators.')
 
-    parser.add_argument('-fe_p', action='store', dest='FE_pop_size', default=1, type = positive_integer,
+    parser.add_argument('-fe_p', action='store', dest='FE_pop_size', default=None, type = positive_integer,
                     help='fitness estimator population size.')
 
-    parser.add_argument('-fe_i', action='store', dest='FE_ind_size', default=1, type = positive_integer,
+    parser.add_argument('-fe_i', action='store', dest='FE_ind_size', default=None, type = positive_integer,
                     help='number of fitness cases for FE to use.')
 
-    parser.add_argument('-fe_t', action='store', dest='FE_train_size', default=1, type = positive_integer,
+    parser.add_argument('-fe_t', action='store', dest='FE_train_size', default=None, type = positive_integer,
                     help='trainer population size. Trainers are evaluated on the entire data set.')
 
-    parser.add_argument('-fe_g', action='store', dest='FE_train_gens', default=1, type = positive_integer,
+    parser.add_argument('-fe_g', action='store', dest='FE_train_gens', default=None, type = positive_integer,
                     help='Number of generations between trainer selections.')
 
-    parser.add_argument('--fe_rank', action='store_true', dest='FE_rank', default=False,
+    parser.add_argument('--fe_rank', action='store_true', dest='FE_rank', default=None,
             help='User rank for FE fitness rather than error.')
 
 # Parameter hillclimbing
-    parser.add_argument('--phc', action='store_true', dest='pHC_on', default=False,
+    parser.add_argument('--phc', action='store_true', dest='pHC_on', default=None,
                         help='Flag to use parameter hillclimbing.')
 
-    parser.add_argument('-phc_its', action='store', dest='pHC_its', default=1, type = positive_integer,
+    parser.add_argument('-phc_its', action='store', dest='pHC_its', default=None, type = positive_integer,
                         help='Number of iterations of parameter hill climbing each generation.')
 # Epigenetic hillclimbing
-    parser.add_argument('--ehc', action='store_true', dest='eHC_on', default=False,
+    parser.add_argument('--ehc', action='store_true', dest='eHC_on', default=None,
                         help='Flag to use epigenetic hillclimbing.')
 
-    parser.add_argument('-ehc_its', action='store', dest='EHC_its', default=1, type = positive_integer,
+    parser.add_argument('-ehc_its', action='store', dest='EHC_its', default=None, type = positive_integer,
                     help='Number of iterations of epigenetic hill climbing each generation.')
 
-    parser.add_argument('-ehc_init', action='store', dest='EHC_init', default=0.5, type = positive_integer,
+    parser.add_argument('-ehc_init', action='store', dest='EHC_init', default=None, type = positive_integer,
                         help='Fraction of initial population''s genes that are silenced.')
 
-    parser.add_argument('--emut', action='store_true', dest='EHC_mut', default=False,
+    parser.add_argument('--emut', action='store_true', dest='EHC_mut', default=None,
                         help='Flag to use epigenetic mutation. Only works if ehc flag is present.')
 
-    parser.add_argument('--e_slim', action='store_true', dest='EHC_slim', default=False,
+    parser.add_argument('--e_slim', action='store_true', dest='EHC_slim', default=None,
                         help='Flag to store partial program outputs such that point evaluations are minimized during EHC.')
 # Pareto Archive
-    parser.add_argument('--archive', action='store_true', dest='prto_arch_on', default=False,
+    parser.add_argument('--archive', action='store_true', dest='prto_arch_on', default=None,
                         help='Flag to save the Pareto front of equations (fitness and complexity) during the run.')
 
-    parser.add_argument('-arch_size', action='store', dest='prto_arch_size', default=20,
+    parser.add_argument('-arch_size', action='store', dest='prto_arch_size', default=None,
                         help='Minimum size of the Pareto archive. By default, ellyn will save the entire front, but more individuals will be added if the front is less than arch_size.')
 # island model
-    parser.add_argument('--islands', action='store_true', dest='islands', default=False,
+    parser.add_argument('--islands', action='store_true', dest='islands', default=None,
                     help='Flag to use island populations. Parallel execution across codes on a single node.')
 
-    parser.add_argument('-island_gens', action='store', dest='island_gens', default=100, type = positive_integer,
+    parser.add_argument('-island_gens', action='store', dest='island_gens', default=None, type = positive_integer,
                     help='Number of generations between synchronized shuffling of island populations.')
 # lexicase selection options
-    parser.add_argument('-lex_pool', action='store', dest='lex_pool', default=1,
+    parser.add_argument('-lex_pool', action='store', dest='lex_pool', default=None,
                         type=float_range, help='Fraction of population to use in lexicase selection events [0.0, 1.0].')
 
     parser.add_argument('-lex_metacases', nargs = '*',action='store', dest='lex_metacases', default=None,
                     help='Specify extra cases for selection. Options: age, complexity.')
 
-    parser.add_argument('--lex_eps_error_mad', action='store_true', dest='lex_eps_error_mad', default=False,
+    parser.add_argument('--lex_eps_error_mad', action='store_true', dest='lex_eps_error_mad', default=None,
                     help='Flag to use epsilon lexicase with median absolute deviation, error-based epsilons.')
 
     parser.add_argument('-s', action='store', dest='random_state', default=np.random.randint(4294967295),
                         type=int, help='Random number generator seed for reproducibility. Note that using multi-threading may '
                                        'make exacts results impossible to reproduce.')
 
-    parser.add_argument('-v', action='store', dest='VERBOSITY', default=1, choices=[0, 1, 2, 3],
+    parser.add_argument('-v', action='store', dest='VERBOSITY', default=0, choices=[0, 1, 2, 3],
                         type=int, help='How much information ellyn communicates while it is running: 0 = none, 1 = minimal, 2 = lots, 3 = all.')
 
     parser.add_argument('--no-update-check', action='store_true', dest='DISABLE_UPDATE_CHECK', default=False,
@@ -502,11 +511,11 @@ def main():
                                                          test_size=0.25,
                                                          random_state=random_state)
 
-    training_features = np.array(input_data.loc[train_i].drop('label', axis=1).values,dtype=float, order='C')
-    training_labels = np.array(input_data.loc[train_i, 'label'].values,dtype=float,order='C')
+    training_features = np.array(input_data.loc[train_i].drop('label', axis=1).values,dtype=np.float32, order='C')
+    training_labels = np.array(input_data.loc[train_i, 'label'].values,dtype=np.float32,order='C')
 
-    testing_features = input_data.loc[test_i].drop('label', axis=1).values
-    testing_labels = input_data.loc[test_i, 'label'].values
+    # testing_features = input_data.loc[test_i].drop('label', axis=1).values
+    # testing_labels = input_data.loc[test_i, 'label'].values
 
     learner = ellyn(args.__dict__)
     # learner = ellyn(generations=args.GENERATIONS, population_size=args.POPULATION_SIZE,

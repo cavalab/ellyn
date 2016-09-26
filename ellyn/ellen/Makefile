@@ -12,14 +12,14 @@ EXECUTABLE=lib/elgp.so
 
 
 all: lib_dir program
-program: $(SOURCES) $(EXECUTABLE)
 
 debug:	CFLAGS += -ggdb
-debug: $(SOURCES) $(EXECUTABLE)
+debug: lib_dir program
 
 lib_dir:
 	mkdir -p $(BIN)
 
+program: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) $(LDFLAGS2) -o $@
@@ -29,5 +29,5 @@ $(BIN)/%.o: %.cpp
 
 .PHONY : clean
 clean :
-	- rm $(OBJECTS) 
+	- rm $(OBJECTS)
 	- rm $(EXECUTABLE)

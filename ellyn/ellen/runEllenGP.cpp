@@ -373,22 +373,67 @@ int get_next_task(int& index,vector<int>& task_assignments)
 void reference_contiguous_array(PyObject* in, float* &ptr, vector<int>& dims)
 { // returns pointer to underlying c array (ptr) from PyObject in, checking for contiguos memory storage
 	  PyArrayObject* in_con;
+		PyArray_Descr* x = PyArray_DESCR(in);
+		std::cout << "array dtype: " << (*x).type << "\n";
+		std::cout << "array kind: " << (*x).kind << "\n";
+		std::cout << "array byteorder: " << (*x).byteorder << "\n";
+		std::cout << "array flags: " << (*x).flags << "\n";
+		// make sure data is contigous
     in_con = PyArray_GETCONTIGUOUS((PyArrayObject*)in);
+
+		// get pointer to c array
     ptr = (float*)PyArray_DATA(in_con);
+
+
 		// get dimensions
 		int num_dim = PyArray_NDIM(in_con);
     npy_intp* pdim = PyArray_DIMS(in_con);
+		std::cout << "PyArray_NDIM:" << num_dim << "\n";
 
-    for (int i = 0; i < num_dim; i++)
+    for (int i = 0; i < num_dim; i++){
         dims.push_back(pdim[i]);
+				std::cout << "dim" << i << ": " << dims[i] << "\n";
+			}
+		// for (int i = 0; i < dims[0]; ++i){
+		// 	std::cout << "*(ptr + " << i << "): " << *(ptr+i) << "\n";
+		// }
 }
 void dereference(PyObject* o)
 {
     Py_DECREF(o);
 }
+// struct SourcePoint
+// {
+//     const char *filename;
+//     int line;
+//     SourcePoint(const char *filename, int line)
+// 			: filename(filename), line(line)
+//     { }
+// }
+//
+// std::vector<SourcePoint> callstack;
+//
+// struct SourcePointMarker
+// {
+//     SourcePointMarker(const char *filename, int line)
+//     {
+//         callstack.push_back(SourcePoint(filename, line);
+//     }
+//
+//     ~SourcePointMarker()
+//     {
+//         callstack.pop_back();
+//     }
+// };
+
+// #define MARK_FUNCTION \
+//   SourcePointMarker sourcepointmarker(__FILE__, __LINE__);
+
 void runEllenGP(dict& param_dict, PyObject* features, PyObject* target) //string pname,string dname
 
 {
+	// MARK_FUNCTION
+	try{
 	bool trials = 0;
 	int trialnum = 0;
 	string pname = "ellenGP";
@@ -426,6 +471,7 @@ void runEllenGP(dict& param_dict, PyObject* features, PyObject* target) //string
 
 	// load parameter file
 	p.set(param_dict);
+	std::cout << "out of set params\n";
 	// ifstream fs(paramfile);
 	// if (!fs.is_open()){
 	// 	cerr << "Error: couldn't open parameter file " + paramfile << "\n";
@@ -463,12 +509,14 @@ void runEllenGP(dict& param_dict, PyObject* features, PyObject* target) //string
 	// X[row].insert(X[row].end(),features[row],features[row]+D);
 	// vector<float> Y(target,N);
 	// int x_address = &features ;
-
+	std::cout << "entering set train\n";
 	d.set_train(feat_ptr,dims[0],dims[1]);
 
 	float* target_ptr;
   dims.resize(0);
+
 	reference_contiguous_array(target, target_ptr, dims);
+	std::cout << "entering set target\n";
 	d.set_target(target_ptr,dims[0]);
 	Py_DECREF(features);
 	Py_DECREF(target);
@@ -603,7 +651,7 @@ void runEllenGP(dict& param_dict, PyObject* features, PyObject* target) //string
 
 	// define class weights for wighted F1 fitness
 	if (p.classification && (p.fit_type.compare("2")==0 || p.fit_type.compare("F1W")))
-		p.define_class_weights(d);
+		d.define_class_weights(p);
 
 	boost::timer time;
 	paretoarchive A;
@@ -960,6 +1008,7 @@ void runEllenGP(dict& param_dict, PyObject* features, PyObject* target) //string
 		}
 		if (p.print_init_pop) printpop(World.pop,p,s,logname,3);
 		if (p.print_genome) printGenome(World,0,logname,d,p);
+		std::cout << "line 1011\n";
 		#pragma omp parallel private(q) shared(pass)
 		{
 
@@ -1237,7 +1286,7 @@ void runEllenGP(dict& param_dict, PyObject* features, PyObject* target) //string
 		//print initial population
 		if (p.print_init_pop) printpop(T.pop,p,s,logname,3);
 		if (p.print_genome) printGenome(T,0,logname,d,p);
-
+		// std::cout << "line 1289\n";
 		while (termits<=term && !stopcondition(T,p,d,s,FE[0]))
 		{
 
@@ -1352,7 +1401,11 @@ void runEllenGP(dict& param_dict, PyObject* features, PyObject* target) //string
 
 	s.out << "\n Program finished sucessfully.\n";
 
+}
+catch(std::exception& e){
+	std::cerr << e.what();
 
+}
 
 }
 
