@@ -35,3 +35,4 @@ in/
 *.best_ind
 *.archive
 *.last_pop
+*.fuse*

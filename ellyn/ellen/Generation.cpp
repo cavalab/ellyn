@@ -14,6 +14,7 @@
 
 void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s,FitnessEstimator& FE)
 {
+	std::cout << "Generation";
 
 	//ind (*parloc)[p.popsize-1] = &pop;
 
@@ -89,8 +90,11 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s
 		}
 	case 3: // lexicase
 		{
+			std::cout << "p.lex_eps_global:" << p.lex_eps_global;
 
 			vector<unsigned int> parloc(pop.size());
+
+			std::cout << "p.lexage:" << p.lexage;
 
 			if (p.lexage) // if age is a metacase
 			{

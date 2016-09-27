@@ -411,16 +411,19 @@ struct params {
 			init_validate_on = extract<bool>(d["init_validate_on"]);
 		if (d.has_key("resultspath"))
 		{
-			int q = 0;
-			for(unsigned int i = 0; i<len(d["resultspath"]); ++i)
-			{
-				if (q > 0)
-					resultspath = resultspath + ' ';
-				string tmp = extract<string>(d["resultspath"][i]);
-				resultspath.insert(resultspath.end(),tmp.begin(),tmp.end());
-				// resultspath.push_back(extract<string>(d["resultspath"][i])); //.insert(resultspath.end(), std::begin(extract<string>(d["resultspath"][i])), std::end(extract<string>(d["resultspath"][i])));
-				++q;
-			}
+			resultspath = extract<string>(d["resultspath"]);
+			// int q = 0;
+			// for(unsigned int i = 0; i<len(d["resultspath"]); ++i)
+			// {
+			// 	if (q > 0)
+			// 		resultspath = resultspath + ' ';
+			// 	string tmp = extract<string>(d["resultspath"][i]);
+			// 	resultspath.insert(resultspath.end(),tmp.begin(),tmp.end());
+			// 	// resultspath.push_back(extract<string>(d["resultspath"][i])); //.insert(resultspath.end(), std::begin(extract<string>(d["resultspath"][i])), std::end(extract<string>(d["resultspath"][i])));
+			// 	++q;
+			// }
+			cout << "resultspath:" << resultspath << "\n";
+
 		}
 
 		if (d.has_key("intvars"))
@@ -524,7 +527,7 @@ struct params {
 		if (d.has_key("print_every_pop"))
 			print_every_pop = extract<bool>(d["print_every_pop"]);
 		if (d.has_key("estimate_fitness"))
-			EstimateFitness = extract<bool>(d["EstimateFitness"]);
+			EstimateFitness = extract<bool>(d["estimate_fitness"]);
 		if (d.has_key("FE_pop_size"))
 			FE_pop_size = extract<int>(d["FE_pop_size"]);
 		if (d.has_key("FE_ind_size"))

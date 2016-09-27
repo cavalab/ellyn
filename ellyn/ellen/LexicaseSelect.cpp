@@ -58,6 +58,7 @@ float mad(vector<float>& x) {
 }
 void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vector<Randclass>& r,Data& d,state& s)
 {
+
 	// add metacases if needed
 	for (unsigned i = 0; i<p.lex_metacases.size(); ++i)
 	{

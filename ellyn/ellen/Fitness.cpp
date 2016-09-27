@@ -566,7 +566,8 @@ void CalcFitness(ind& me, params& p, vector<vector<float>>& vals, vector<float>&
 					me.sq_error += pow(target.at(sim) - me.output.at(sim), 2);
 				}
 
-				if (p.sel == 3 && ((p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0) || p.fit_type.compare("3")==0 || p.fit_type.compare("MAER2")==0)) // lexicase error vector
+				// if (p.sel == 3 && ((p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0) || p.fit_type.compare("3")==0 || p.fit_type.compare("MAER2")==0) || p.fit_type.compare("MSE")) // lexicase error vector
+				if (p.sel == 3 && !(p.fit_type.compare("2")==0 || p.fit_type.compare("R2")==0 || p.fit_type.compare("3")==0 || p.fit_type.compare("MAER2")==0))
 					me.error.push_back(abs(target.at(sim) - me.output.at(sim)));
 
 				meantarget += target.at(sim);

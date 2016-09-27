@@ -66,14 +66,14 @@ struct Data {
 
 	void set_train(float* X,size_t N, size_t D){
 		// using std::begin;
-        std::cout << "N: " << N << ", D: " << D << "\n";
+        // std::cout << "N: " << N << ", D: " << D << "\n";
         int r = 0;
 		for (unsigned int i=0; i<N; ++i){
             r = i*D;
-            std::cout << "X[" << r << "]";
+            // std::cout << "X[" << r << "]";
             for (unsigned int j = 0; j<D; ++j)
-                std::cout << X[r]+j << ",";
-            std::cout << "\n";
+                // std::cout << X[r]+j << ",";
+            // std::cout << "\n";
 
             try{
                  vals.push_back(vector<float>());
@@ -83,14 +83,14 @@ struct Data {
             catch(std::exception& e){
                         std::cerr << e.what();
                      }
-            std::cout << "vals[" << i << "]: " ;
-            for(auto col : vals[i])
-                std::cout << col << ",";
-            std::cout << "\n";
+            // std::cout << "vals[" << i << "]: " ;
+            // for(auto col : vals[i])
+            //     std::cout << col << ",";
+            // std::cout << "\n";
 		}
 		// vals.assign(X,array_size(*(X)));
-		cout << "size of X:" << N << "x" << D;
-		cout << "size of vals:" << vals.size() << "x" << vals[0].size();
+		// cout << "size of X:" << N << "x" << D;
+		// cout << "size of vals:" << vals.size() << "x" << vals[0].size();
 	}
 	// template <size_t r>
 	// void set_target(float (&Y)[r]){
@@ -100,7 +100,7 @@ struct Data {
 	// }
 	void set_target(float* Y, size_t N){
 		target.assign(Y, Y+N);
-        cout << "size of target: " << target.size() << "\n";
+        // cout << "size of target: " << target.size() << "\n";
 
 	}
     void define_class_weights(params& p) {

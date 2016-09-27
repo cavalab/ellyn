@@ -332,7 +332,7 @@ def main():
                     type=positive_integer, help='AR input delay.')
 
 # Results and Printing Options
-    parser.add_argument('-o', action='store', dest='results_path', default=None,
+    parser.add_argument('-o', action='store', dest='resultspath', default=None,
                         type=str, help='Path where results will be saved.')
 
     parser.add_argument('--print_every_pop', action='store_true', dest='print_every_pop', default=None,
@@ -471,6 +471,12 @@ def main():
     parser.add_argument('--lex_eps_error_mad', action='store_true', dest='lex_eps_error_mad', default=None,
                     help='Flag to use epsilon lexicase with median absolute deviation, error-based epsilons.')
 
+    parser.add_argument('--lex_eps_target_mad', action='store_true', dest='lex_eps_target_mad', default=None,
+                    help='Flag to use epsilon lexicase with median absolute deviation, target-based epsilons.')
+
+    parser.add_argument('--lex_eps_dynamic', action='store_false', dest='lex_eps_global', default=None,
+                    help='Flag to use dynamic epsilon lexicase selection.')
+
     parser.add_argument('-s', action='store', dest='random_state', default=np.random.randint(4294967295),
                         type=int, help='Random number generator seed for reproducibility. Note that using multi-threading may '
                                        'make exacts results impossible to reproduce.')
@@ -532,8 +538,8 @@ def main():
         print('\nTraining accuracy: {}'.format(learner.score(training_features, training_labels)))
         print('Holdout accuracy: {}'.format(learner.score(testing_features, testing_labels)))
 
-    if args.OUTPUT_FILE != '':
-        learner.export(args.OUTPUT_FILE)
+    # if args.OUTPUT_FILE != '':
+    #     learner.export(args.OUTPUT_FILE)
 
 
 if __name__ == '__main__':
