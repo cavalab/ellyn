@@ -41,7 +41,7 @@ using namespace std;
 
 // includes for python integration
 #include <boost/python.hpp>
-using namespace boost::python;
+namespace bp = boost::python;
 #include <numpy/ndarrayobject.h>
 //#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 // global parameters structure
@@ -428,8 +428,27 @@ void dereference(PyObject* o)
 
 // #define MARK_FUNCTION \
 //   SourcePointMarker sourcepointmarker(__FILE__, __LINE__);
+void line_to_py(vector<node>& line,bp::list& prog){
+	// converts program to tuple for export to python.
 
-void runEllenGP(dict& param_dict, PyObject* features, PyObject* target) //string pname,string dname
+	for (auto n: line){
+		if (n.on){
+			switch(n.type)
+			{
+			case 'v':
+				prog.append(bp::make_tuple("x", n.arity_float + n.arity_bool, stoi(string(n.varname.begin()+2,n.varname.end()))));
+				break;
+			case 'n':
+				prog.append(bp::make_tuple("k", n.arity_float + n.arity_bool, n.value));
+				break;
+			default:
+				prog.append(bp::make_tuple(n.type, n.arity_float + n.arity_bool));
+				break;
+			}
+	}
+}
+}
+void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::list& best_prog) //string pname,string dname
 
 {
 	// MARK_FUNCTION
@@ -1005,7 +1024,6 @@ void runEllenGP(dict& param_dict, PyObject* features, PyObject* target) //string
 		}
 		if (p.print_init_pop) printpop(World.pop,p,s,logname,3);
 		if (p.print_genome) printGenome(World,0,logname,d,p);
-		std::cout << "line 1011\n";
 		#pragma omp parallel private(q) shared(pass)
 		{
 
@@ -1284,7 +1302,6 @@ void runEllenGP(dict& param_dict, PyObject* features, PyObject* target) //string
 		//print initial population
 		if (p.print_init_pop) printpop(T.pop,p,s,logname,3);
 		if (p.print_genome) printGenome(T,0,logname,d,p);
-		std::cout << "line 1289\n";
 		while (termits<=term && !stopcondition(T,p,d,s,FE[0]))
 		{
 
@@ -1404,6 +1421,10 @@ void runEllenGP(dict& param_dict, PyObject* features, PyObject* target) //string
 		printpop(T.pop,p,s,logname,0);
 		if (p.prto_arch_on)
 			printpop(A.pop,p,s,logname,1);
+		// save best individual to best_prog for python
+		vector<ind> best(1);
+		T.getbestind(best[0]);
+		line_to_py(best[0].line,best_prog);
 	}
 
 

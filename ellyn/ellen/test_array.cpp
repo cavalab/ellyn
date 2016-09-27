@@ -2,30 +2,22 @@
 #include <vector>
 using namespace std;
 
-void test_array(float **features, int N, int D){
+void line_to_py(vector<node>& line,bp::list& prog){
+	// converts program to tuple for export to python.
 
-  std::vector< std::vector< float > > X(N,vector<float>());
-
-  for (unsigned int i = 0; i< X.size(); ++i){
-    X[i].assign(features[i],features[i]+D);
-    std::cout << "features[i]:" << *(features[i]) << "\n";
-    std::cout << "features[i]+D:" << *(features[i]+D) << "\n";
-    std::cout << "x[" << i << "]";
-    for (auto j : X[i])
-      std::cout << j << ",";
-    std::cout << "\n";
-  }
-  std::cout << "\nsize of X:" << X.size() << "x" << X[0].size() << "\n";
-
-}
-
-int main(){
-  float arr[2][3] = {{0.4, 5.2, 5.19}, {6.54, 3.21, 0.10}};
-  vector<float *> b;
-
-  for (size_t i = 0; i < 2; ++i)
-    b.push_back(arr[i]);
-
-  test_array(b.data(),2,3);
+	for (auto n: line){
+		switch(n.type)
+		{
+		case 'n':
+			prog.append(bp::tuple(n.varname, n.arity, n.value));
+			break;
+		case 'v':
+			prog.append(bp::tuple("k", n.arity, n.value));
+			break;
+		default:
+			prog.append(bp::tuple(n.type, n.arity));
+			break;
+		}
+	}
 
 }

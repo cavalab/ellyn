@@ -11,7 +11,7 @@ import argparse
 
 from sklearn.base import BaseEstimator
 from sklearn.cross_validation import train_test_split
-
+from sklearn.metrics import r2_score, mean_squared_error
 import numpy as np
 import pandas as pd
 import warnings
@@ -41,6 +41,38 @@ class ellyn(BaseEstimator):
     """
     update_checked = False
 
+    eval_dict = {
+    # float operations
+        '+': lambda n,features,stack_float,stack_bool: stack_float.pop() + stack_float.pop(),
+        '-': lambda n,features,stack_float,stack_bool: stack_float.pop() - stack_float.pop(),
+        '*': lambda n,features,stack_float,stack_bool: stack_float.pop() * stack_float.pop(),
+        '/': lambda n,features,stack_float,stack_bool: divs(stack_float.pop(),stack_float.pop()),
+        'sin': lambda n,features,stack_float,stack_bool: np.sin(stack_float.pop()),
+        'cos': lambda n,features,stack_float,stack_bool: np.cos(stack_float.pop()),
+        'exp': lambda n,features,stack_float,stack_bool: np.exp(stack_float.pop()),
+        'log': lambda n,features,stack_float,stack_bool: logs(stack_float.pop()),#np.log(np.abs(stack_float.pop())),
+        'x':  lambda n,features,stack_float,stack_bool: features[:,n[2]],
+        'k': lambda n,features,stack_float,stack_bool: np.ones(features.shape[0])*n[2],
+        '^2': lambda n,features,stack_float,stack_bool: stack_float.pop()**2,
+        '^3': lambda n,features,stack_float,stack_bool: stack_float.pop()**3,
+        'sqrt': lambda n,features,stack_float,stack_bool: np.sqrt(np.abs(stack_float.pop())),
+        # 'rbf': lambda n,features,stack_float,stack_bool: np.exp(-(np.norm(stack_float.pop()-stack_float.pop())**2)/2)
+    # bool operations
+        '!': lambda n,features,stack_float,stack_bool: not stack_bool.pop(),
+        '&': lambda n,features,stack_float,stack_bool: stack_bool.pop() and stack_bool.pop(),
+        '|': lambda n,features,stack_float,stack_bool: stack_bool.pop() or stack_bool.pop(),
+        '==': lambda n,features,stack_float,stack_bool: stack_bool.pop() == stack_bool.pop(),
+        '>': lambda n,features,stack_float,stack_bool: stack_float.pop() > stack_float.pop(),
+        '<': lambda n,features,stack_float,stack_bool: stack_float.pop() < stack_float.pop(),
+        '}': lambda n,features,stack_float,stack_bool: stack_float.pop() >= stack_float.pop(),
+        '{': lambda n,features,stack_float,stack_bool: stack_float.pop() <= stack_float.pop(),
+        # '>_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() > stack_bool.pop(),
+        # '<_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() < stack_bool.pop(),
+        # '>=_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() >= stack_bool.pop(),
+        # '<=_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() <= stack_bool.pop(),
+    }
+
+
     def __init__(self, input_dict=None, **kwargs):
                 # sets up GP.
 
@@ -60,8 +92,10 @@ class ellyn(BaseEstimator):
         if input_dict:
             self.param_dict = input_dict
             self.random_state = input_dict['random_state']
+            self.scoring_function = r2_score
         else:
             self.param_dict = kwargs.__dict__
+            self.scoring_function = self.param_dict['scoring_function']
         # self.param_file = ''
         # for arg in sorted(kwargs.__dict__):
         #     self.param_file += ('{}\t{}'.format(lower(arg), kwargs.__dict__[arg]))
@@ -73,7 +107,9 @@ class ellyn(BaseEstimator):
                 del self.param_dict[k]
 
         # self.param_dict[self.param_dict.values()]
-        self._best_estimator = None
+        self._best_estimator = []
+        self.scoring_function = mean_squared_error
+        
     def fit(self, features, labels):
         """Fit model to data"""
         np.random.seed(self.random_state)
@@ -107,8 +143,9 @@ class ellyn(BaseEstimator):
         # y_pt = labels.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
         # pdb.set_trace()
         # self.param_dict = {}
-        print("features:",features[:5])
-        elgp.runEllenGP(self.param_dict,features,labels)
+        # print("features:",features[:5])
+        elgp.runEllenGP(self.param_dict,features,labels,self._best_estimator)
+        print("best program:",self._best_estimator)
         ####
         # initial model
 
@@ -117,11 +154,7 @@ class ellyn(BaseEstimator):
         """predict on a holdout data set."""
         # print("best_inds:",self._best_inds)
         # print("best estimator size:",self._best_estimator.coef_.shape)
-        if self._best_inds is None:
-            return self._best_estimator.predict(testing_features)
-        else:
-            X_transform = (np.asarray(list(map(lambda I: out(I,testing_features), self._best_inds))))
-            return self._best_estimator.predict(X_transform[self.valid_loc(self._best_inds),:].transpose())
+        return self._out(self._best_estimator,testing_features)
 
     def fit_predict(self, features, labels):
         """Convenience function that fits a pipeline then predicts on the provided features
@@ -150,42 +183,7 @@ class ellyn(BaseEstimator):
         return self.scoring_function(testing_labels,yhat)
 
     def export(self, output_file_name):
-        """exports engineered features
-
-        Parameters
-        ----------
-        output_file_name: string
-            String containing the path and file name of the desired output file
-
-        Returns
-        -------
-        None
-
-        """
-        if self._best_estimator is None:
-            raise ValueError('A model has not been optimized. Please call fit() first.')
-
-        # Have the exported code import all of the necessary modules and functions
-        # write model form from coefficients and features
-        model = ''
-        sym_model = ''
-        x = 0
-        for c,i in zip(self._best_estimator.coef_,stacks_2_eqns(self._best_inds)):
-           if c != 0:
-               if model:
-                   model+= '+'
-                   sym_model += '+'
-               model+= str(c) + '*' + str(i)
-               sym_model += "k_" + str(x) + '*' + str(i)
-               x += 1
-
-        print_text = "exact_model: " + model
-        print_text += "\nsymbolic_model: " + sym_model
-        print_text += "\ncoefficients: " + str([c for c in self._best_estimator.coef_ if c != 0])
-        print_text += "\nfeatures: " + str([s for s,c in zip(stacks_2_eqns(self._best_inds),self._best_estimator.coef_) if c!=0])
-
-        with open(output_file_name, 'w') as output_file:
-            output_file.write(print_text)
+        """does nothing currently"""
 
     def get_params(self, deep=None):
         """Get parameters for this estimator
@@ -204,6 +202,40 @@ class ellyn(BaseEstimator):
             Parameter names mapped to their values
         """
         return self.params
+
+    def _eval(self,n, features, stack_float, stack_bool):
+        """evaluation function for best estimator"""
+        np.seterr(all='ignore')
+        if len(stack_float) >= n[1]:
+            stack_float.append(self.eval_dict[n[0]](n,features,stack_float,stack_bool))
+            if any(np.isnan(stack_float[-1])) or any(np.isinf(stack_float[-1])):
+                print("problem operator:",n)
+
+    def _out(self,I,features):
+        """computes the output for individual I"""
+        stack_float = []
+        stack_bool = []
+        # print("stack:",I.stack)
+        # evaulate stack over rows of features,labels
+        for n in I:
+            self._eval(n,features,stack_float,stack_bool)
+            # print("stack_float:",stack_float)
+
+        return stack_float[-1]
+
+def divs(x,y):
+    """safe division"""
+    tmp = np.ones(x.shape)
+    nonzero_y = np.abs(y) >= 0.000001
+    tmp[nonzero_y] = x[nonzero_y]/y[nonzero_y]
+    return tmp
+
+def logs(x):
+    """safe log"""
+    tmp = np.ones(x.shape)
+    nonzero_x = np.abs(x) >= 0.000001
+    tmp[nonzero_x] = np.log(np.abs(x[nonzero_x]))
+    return tmp
 
 def positive_integer(value):
     """Ensures that the provided value is a positive integer; throws an exception otherwise
@@ -404,7 +436,7 @@ def main():
     parser.add_argument('--trees', action='store_true', dest='init_trees', default=None,
                     help='Flag to initialize genotypes as syntactically valid trees rather than randomized stacks.')
 # Fitness Options
-    parser.add_argument('-fit', action='store', dest='fit_type', default=None, choices = ['mse','mae','r2','vaf','combo'],
+    parser.add_argument('-fit', action='store', dest='fit_type', default=None, choices = ['MSE','MAE','R2','VAF','combo'],
                     type=str, help='Fitness metric (Default: mse). combo is mae/r2')
 
     parser.add_argument('--norm_error', action='store_true', dest='ERC_ints', default=None,
@@ -520,8 +552,8 @@ def main():
     training_features = np.array(input_data.loc[train_i].drop('label', axis=1).values,dtype=np.float32, order='C')
     training_labels = np.array(input_data.loc[train_i, 'label'].values,dtype=np.float32,order='C')
 
-    # testing_features = input_data.loc[test_i].drop('label', axis=1).values
-    # testing_labels = input_data.loc[test_i, 'label'].values
+    testing_features = input_data.loc[test_i].drop('label', axis=1).values
+    testing_labels = input_data.loc[test_i, 'label'].values
 
     learner = ellyn(args.__dict__)
     # learner = ellyn(generations=args.GENERATIONS, population_size=args.POPULATION_SIZE,
