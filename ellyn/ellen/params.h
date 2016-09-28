@@ -463,8 +463,11 @@ struct params {
 			min_fit = extract<float>(d["min_fit"]);
 		if (d.has_key("op_list"))
 		{
-			for(unsigned int i = 0; i<len(d["op_list"]); ++i)
+			for(unsigned int i = 0; i<len(d["op_list"]); ++i){
+				string tmp = extract<string>(d["op_list"][i]);
+				cout << tmp << "\n";
 		   		op_list.push_back(extract<string>(d["op_list"][i]));
+			}
 		}
 		if (d.has_key("op_weight"))
 		{

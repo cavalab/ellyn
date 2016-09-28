@@ -1168,8 +1168,8 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 					//if (gen>p.g) pass=0;
 
 
-			}  s.out << "exited while loop...\n";
-		} s.out << "exited parallel region ...\n";
+			} // s.out << "exited while loop...\n";
+		} // s.out << "exited parallel region ...\n";
 
 
 		if (p.EstimateFitness || p.test_at_end){// assign real fitness values to final population and archive
@@ -1185,6 +1185,11 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 		printpop(World.pop,p,s,logname,0);
 		if (p.prto_arch_on)
 			printpop(A.pop,p,s,logname,1);
+
+		// save best individual to best_prog for python
+		vector<ind> best(1);
+		World.getbestind(best[0]);
+		line_to_py(best[0].line,best_prog);
 	}
 	else //no islands
 	{
@@ -1421,10 +1426,12 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 		printpop(T.pop,p,s,logname,0);
 		if (p.prto_arch_on)
 			printpop(A.pop,p,s,logname,1);
+
 		// save best individual to best_prog for python
 		vector<ind> best(1);
 		T.getbestind(best[0]);
 		line_to_py(best[0].line,best_prog);
+
 	}
 
 

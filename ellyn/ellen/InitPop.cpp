@@ -96,7 +96,7 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 		//assert(pop[i].line.size() >= p.min_len);
 
 	}
-	cout <<"\nInit Pop done ";
+	// cout <<"\nInit Pop done ";
 }
 
 void makeline(ind& newind,params& p,vector<Randclass>& r)

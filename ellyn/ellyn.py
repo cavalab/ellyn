@@ -11,7 +11,7 @@ import argparse
 
 from sklearn.base import BaseEstimator
 from sklearn.cross_validation import train_test_split
-from sklearn.metrics import r2_score, mean_squared_error
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, explained_variance_score
 import numpy as np
 import pandas as pd
 import warnings
@@ -41,38 +41,6 @@ class ellyn(BaseEstimator):
     """
     update_checked = False
 
-    eval_dict = {
-    # float operations
-        '+': lambda n,features,stack_float,stack_bool: stack_float.pop() + stack_float.pop(),
-        '-': lambda n,features,stack_float,stack_bool: stack_float.pop() - stack_float.pop(),
-        '*': lambda n,features,stack_float,stack_bool: stack_float.pop() * stack_float.pop(),
-        '/': lambda n,features,stack_float,stack_bool: divs(stack_float.pop(),stack_float.pop()),
-        'sin': lambda n,features,stack_float,stack_bool: np.sin(stack_float.pop()),
-        'cos': lambda n,features,stack_float,stack_bool: np.cos(stack_float.pop()),
-        'exp': lambda n,features,stack_float,stack_bool: np.exp(stack_float.pop()),
-        'log': lambda n,features,stack_float,stack_bool: logs(stack_float.pop()),#np.log(np.abs(stack_float.pop())),
-        'x':  lambda n,features,stack_float,stack_bool: features[:,n[2]],
-        'k': lambda n,features,stack_float,stack_bool: np.ones(features.shape[0])*n[2],
-        '^2': lambda n,features,stack_float,stack_bool: stack_float.pop()**2,
-        '^3': lambda n,features,stack_float,stack_bool: stack_float.pop()**3,
-        'sqrt': lambda n,features,stack_float,stack_bool: np.sqrt(np.abs(stack_float.pop())),
-        # 'rbf': lambda n,features,stack_float,stack_bool: np.exp(-(np.norm(stack_float.pop()-stack_float.pop())**2)/2)
-    # bool operations
-        '!': lambda n,features,stack_float,stack_bool: not stack_bool.pop(),
-        '&': lambda n,features,stack_float,stack_bool: stack_bool.pop() and stack_bool.pop(),
-        '|': lambda n,features,stack_float,stack_bool: stack_bool.pop() or stack_bool.pop(),
-        '==': lambda n,features,stack_float,stack_bool: stack_bool.pop() == stack_bool.pop(),
-        '>': lambda n,features,stack_float,stack_bool: stack_float.pop() > stack_float.pop(),
-        '<': lambda n,features,stack_float,stack_bool: stack_float.pop() < stack_float.pop(),
-        '}': lambda n,features,stack_float,stack_bool: stack_float.pop() >= stack_float.pop(),
-        '{': lambda n,features,stack_float,stack_bool: stack_float.pop() <= stack_float.pop(),
-        # '>_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() > stack_bool.pop(),
-        # '<_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() < stack_bool.pop(),
-        # '>=_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() >= stack_bool.pop(),
-        # '<=_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() <= stack_bool.pop(),
-    }
-
-
     def __init__(self, input_dict=None, **kwargs):
                 # sets up GP.
 
@@ -92,10 +60,8 @@ class ellyn(BaseEstimator):
         if input_dict:
             self.param_dict = input_dict
             self.random_state = input_dict['random_state']
-            self.scoring_function = r2_score
         else:
             self.param_dict = kwargs.__dict__
-            self.scoring_function = self.param_dict['scoring_function']
         # self.param_file = ''
         # for arg in sorted(kwargs.__dict__):
         #     self.param_file += ('{}\t{}'.format(lower(arg), kwargs.__dict__[arg]))
@@ -108,8 +74,9 @@ class ellyn(BaseEstimator):
 
         # self.param_dict[self.param_dict.values()]
         self._best_estimator = []
-        self.scoring_function = mean_squared_error
-        
+        self.scoring_function = {'MAE':mean_absolute_error,'MSE':mean_squared_error,
+                                 'R2':r2_score,'VAF':explained_variance_score,'combo':mean_absolute_error}[self.param_dict['fit_type']]
+
     def fit(self, features, labels):
         """Fit model to data"""
         np.random.seed(self.random_state)
@@ -207,7 +174,7 @@ class ellyn(BaseEstimator):
         """evaluation function for best estimator"""
         np.seterr(all='ignore')
         if len(stack_float) >= n[1]:
-            stack_float.append(self.eval_dict[n[0]](n,features,stack_float,stack_bool))
+            stack_float.append(eval_dict[n[0]](n,features,stack_float,stack_bool))
             if any(np.isnan(stack_float[-1])) or any(np.isinf(stack_float[-1])):
                 print("problem operator:",n)
 
@@ -223,16 +190,48 @@ class ellyn(BaseEstimator):
 
         return stack_float[-1]
 
+eval_dict = {
+# float operations
+    '+': lambda n,features,stack_float,stack_bool: stack_float.pop() + stack_float.pop(),
+    '-': lambda n,features,stack_float,stack_bool: stack_float.pop() - stack_float.pop(),
+    '*': lambda n,features,stack_float,stack_bool: stack_float.pop() * stack_float.pop(),
+    '/': lambda n,features,stack_float,stack_bool: divs(stack_float.pop(),stack_float.pop()),
+    'sin': lambda n,features,stack_float,stack_bool: np.sin(stack_float.pop()),
+    'cos': lambda n,features,stack_float,stack_bool: np.cos(stack_float.pop()),
+    'exp': lambda n,features,stack_float,stack_bool: np.exp(stack_float.pop()),
+    'log': lambda n,features,stack_float,stack_bool: logs(stack_float.pop()),#np.log(np.abs(stack_float.pop())),
+    'x':  lambda n,features,stack_float,stack_bool: features[:,n[2]],
+    'k': lambda n,features,stack_float,stack_bool: np.ones(features.shape[0])*n[2],
+    '^2': lambda n,features,stack_float,stack_bool: stack_float.pop()**2,
+    '^3': lambda n,features,stack_float,stack_bool: stack_float.pop()**3,
+    'sqrt': lambda n,features,stack_float,stack_bool: np.sqrt(np.abs(stack_float.pop())),
+    # 'rbf': lambda n,features,stack_float,stack_bool: np.exp(-(np.norm(stack_float.pop()-stack_float.pop())**2)/2)
+# bool operations
+    '!': lambda n,features,stack_float,stack_bool: not stack_bool.pop(),
+    '&': lambda n,features,stack_float,stack_bool: stack_bool.pop() and stack_bool.pop(),
+    '|': lambda n,features,stack_float,stack_bool: stack_bool.pop() or stack_bool.pop(),
+    '==': lambda n,features,stack_float,stack_bool: stack_bool.pop() == stack_bool.pop(),
+    '>': lambda n,features,stack_float,stack_bool: stack_float.pop() > stack_float.pop(),
+    '<': lambda n,features,stack_float,stack_bool: stack_float.pop() < stack_float.pop(),
+    '}': lambda n,features,stack_float,stack_bool: stack_float.pop() >= stack_float.pop(),
+    '{': lambda n,features,stack_float,stack_bool: stack_float.pop() <= stack_float.pop(),
+    # '>_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() > stack_bool.pop(),
+    # '<_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() < stack_bool.pop(),
+    # '>=_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() >= stack_bool.pop(),
+    # '<=_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() <= stack_bool.pop(),
+}
 def divs(x,y):
     """safe division"""
-    tmp = np.ones(x.shape)
-    nonzero_y = np.abs(y) >= 0.000001
-    tmp[nonzero_y] = x[nonzero_y]/y[nonzero_y]
+    pdb.set_trace()
+    tmp = np.ones(y.shape)
+    nonzero_x = np.abs(x) >= 0.000001
+    print("nonzero_x.sum:", np.sum(nonzero_x))
+    tmp[nonzero_x] = y[nonzero_x]/x[nonzero_x]
     return tmp
 
 def logs(x):
     """safe log"""
-    tmp = np.ones(x.shape)
+    tmp = np.zeros(x.shape)
     nonzero_x = np.abs(x) >= 0.000001
     tmp[nonzero_x] = np.log(np.abs(x[nonzero_x]))
     return tmp
@@ -309,7 +308,7 @@ def main():
     parser.add_argument('-sel', action='store', dest='sel', default='tournament', choices = ['tournament','dc','lexicase','afp','rand'],
                         type=str, help='Selection method (Default: tournament)')
 
-    parser.add_argument('-PS_sel', action='store', dest='PS_SEL', default=None, choices = [1,2,3,4,5],
+    parser.add_argument('-PS_sel', action='store', dest='PS_sel', default=None, choices = [1,2,3,4,5],
                         type=str, help='objectives for pareto survival. 1: age + fitness; 2: age+fitness+generality; 3: age+fitness+complexity; 4: class fitnesses (classification ONLY); 5: class fitnesses+ age (classification ONLY)')
 
     parser.add_argument('-tourn_size', action='store', dest='tourn_size', default=None,
@@ -366,6 +365,8 @@ def main():
 # Results and Printing Options
     parser.add_argument('-o', action='store', dest='resultspath', default=None,
                         type=str, help='Path where results will be saved.')
+    parser.add_argument('--print_log', action='store_true', dest='print_log', default=False,
+                    help='Flag to print log to terminal.')
 
     parser.add_argument('--print_every_pop', action='store_true', dest='print_every_pop', default=None,
                     help='Flag to seed initial GP population with components of the ML model.')
@@ -398,7 +399,7 @@ def main():
 
 # Terminal and Operator Options
     parser.add_argument('-op_list', nargs = '*', action='store', dest='op_list', default=None,
-                    type=float, help='Operator list. Default: +,-,*,/,n,v. available operators: n v + - * / sin cos log exp sqrt = ! < <= > >= if-then if-then-else & |')
+                    type=str, help='Operator list. Default: +,-,*,/,n,v. available operators: n v + - * / sin cos log exp sqrt = ! < <= > >= if-then if-then-else & |')
 
     parser.add_argument('-op_weight', nargs = '*',action='store', dest='op_weights', default=None,
                     help='Operator weights for each element in operator list. If not specified all operators have the same weights.')

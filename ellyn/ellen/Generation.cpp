@@ -22,7 +22,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s
 	{
 	case 1: // tournament selection
 		{
-			std::cout << "tournament selection\n";
+			// std::cout << "tournament selection\n";
 		//if (p.loud) boost::progress_timer timer;
 		// return pop ids for parents
 		vector<unsigned int> parloc(pop.size());
