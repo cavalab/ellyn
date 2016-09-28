@@ -37,7 +37,7 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p,bool protect)
 				//string sop2; // for protected functions
 				//char tmp = line.at(i).type;
 				if(eqn_floatstack.size() >= line[i].arity_float && eqn_boolstack.size()>=line[i].arity_bool){
-					
+
 					switch (line.at(i).type){
 					case 'l':
 						if (p.print_protected_operators && protect)
@@ -101,7 +101,7 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p,bool protect)
 					if(line[i].arity_float>=1){
 						s1 = eqn_floatstack.back(); eqn_floatstack.pop_back();
 						s1f = form_floatstack.back(); form_floatstack.pop_back();
-					
+
 						if(line[i].arity_float==2){
 							s2 = eqn_floatstack.back(); eqn_floatstack.pop_back();
 							s2f = form_floatstack.back(); form_floatstack.pop_back();
@@ -111,13 +111,13 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p,bool protect)
 					if(line[i].arity_bool>=1){
 						b1 = eqn_boolstack.back(); eqn_boolstack.pop_back();
 						b1f = form_boolstack.back(); form_boolstack.pop_back();
-					
+
 						if(line[i].arity_bool==2){
 							b2 = eqn_boolstack.back(); eqn_boolstack.pop_back();
 							b2f = form_boolstack.back(); form_boolstack.pop_back();
 						}
 					}
-					
+
 					if(line[i].return_type=='f'){
 						if(line[i].arity_float==1 && line[i].arity_bool==0){
 							eqn_floatstack.push_back(sop + "("+s1+")");
@@ -129,11 +129,11 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p,bool protect)
 						}
 						else if (line[i].arity_float==2 && line[i].arity_bool==0){
 							if (p.print_protected_operators && protect && line[i].type=='/'){
-								eqn_floatstack.push_back("divs("+s2+","+s1+")");
+								eqn_floatstack.push_back("divs("+s1+","+s2+")");
 							}
 							else
-								eqn_floatstack.push_back("("+s2+sop+s1+")");
-							form_floatstack.push_back("("+s2f+sop+s1f+")");
+								eqn_floatstack.push_back("("+s1+sop+s2+")");
+							form_floatstack.push_back("("+s1f+sop+s2f+")");
 						}
 						else if (line[i].arity_float==2 && line[i].arity_bool==1){
 							eqn_floatstack.push_back(sop + "("+b1+","+s2+","+s1+")");
@@ -144,12 +144,12 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p,bool protect)
 					}
 					else if (line[i].return_type=='b'){
 						if(line[i].arity_float==2 && line[i].arity_bool==0){
-							eqn_boolstack.push_back("("+s2+sop+s1+")");
-							form_boolstack.push_back("("+s2f+sop+s1f+")");
+							eqn_boolstack.push_back("("+s1+sop+s2+")");
+							form_boolstack.push_back("("+s1f+sop+s2f+")");
 						}
 						else if(line[i].arity_float==0 && line[i].arity_bool==2){
-							eqn_boolstack.push_back("("+b2+sop+b1+")");
-							form_boolstack.push_back("("+b2f+sop+b1f+")");
+							eqn_boolstack.push_back("("+b1+sop+b2+")");
+							form_boolstack.push_back("("+b1f+sop+b2f+")");
 						}
 						else if(line[i].arity_float==0 && line[i].arity_bool==1){
 							eqn_boolstack.push_back(sop + "("+b1+")");
@@ -160,13 +160,13 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p,bool protect)
 					}
 					else
 							cout << "missed something";
-					
+
 				}					//cout <<"arity screwed up.\n";
-			}	
+			}
 		}
 	}
 	//if ((eqn_floatstack.empty() && !p.classification) || (eqn_boolstack.empty() && p.classification) )
-	if (eqn_floatstack.empty())	
+	if (eqn_floatstack.empty())
 	{
 		eqnForm = "unwriteable";
 		//cout << "equation stack empty.\n";

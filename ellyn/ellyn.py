@@ -60,13 +60,16 @@ class ellyn(BaseEstimator):
         if input_dict:
             self.param_dict = input_dict
             self.random_state = input_dict['random_state']
-        else:
+        elif kwargs:
             self.param_dict = kwargs.__dict__
+        else:
+            self.param_dict = dict()
         # self.param_file = ''
         # for arg in sorted(kwargs.__dict__):
         #     self.param_file += ('{}\t{}'.format(lower(arg), kwargs.__dict__[arg]))
         # convert selection method to number
-        self.param_dict['sel'] = {'tournament': 1,'dc':2, 'lexicase': 3,'afp': 4,'rand': 5}[self.param_dict['sel']]
+        if 'sel' in self.param_dict:
+            self.param_dict['sel'] = {'tournament': 1,'dc':2, 'lexicase': 3,'afp': 4,'rand': 5}[self.param_dict['sel']]
         # delete items that have a default value of None so that the elgp defaults will be used
         for k in list(self.param_dict.keys()):
             if self.param_dict[k] is None:
@@ -74,8 +77,12 @@ class ellyn(BaseEstimator):
 
         # self.param_dict[self.param_dict.values()]
         self._best_estimator = []
-        self.scoring_function = {'MAE':mean_absolute_error,'MSE':mean_squared_error,
-                                 'R2':r2_score,'VAF':explained_variance_score,'combo':mean_absolute_error}[self.param_dict['fit_type']]
+        if 'fit_type' in self.param_dict:
+            self.scoring_function = {'MAE':mean_absolute_error,'MSE':mean_squared_error,
+                                    'R2':r2_score,'VAF':explained_variance_score,
+                                    'combo':mean_absolute_error}[self.param_dict['fit_type']]
+        else:
+            self.scoring_fucntion = mean_squared_error
 
     def fit(self, features, labels):
         """Fit model to data"""
@@ -121,6 +128,8 @@ class ellyn(BaseEstimator):
         """predict on a holdout data set."""
         # print("best_inds:",self._best_inds)
         # print("best estimator size:",self._best_estimator.coef_.shape)
+        tmp = self._out(self._best_estimator,testing_features)
+        pdb.set_trace()
         return self._out(self._best_estimator,testing_features)
 
     def fit_predict(self, features, labels):
@@ -222,11 +231,11 @@ eval_dict = {
 }
 def divs(x,y):
     """safe division"""
-    pdb.set_trace()
+    # pdb.set_trace()
     tmp = np.ones(y.shape)
-    nonzero_x = np.abs(x) >= 0.000001
-    print("nonzero_x.sum:", np.sum(nonzero_x))
-    tmp[nonzero_x] = y[nonzero_x]/x[nonzero_x]
+    nonzero_y = np.abs(y) >= 0.000001
+    # print("nonzero_y.sum:", np.sum(nonzero_y))
+    tmp[nonzero_y] = x[nonzero_y]/y[nonzero_y]
     return tmp
 
 def logs(x):

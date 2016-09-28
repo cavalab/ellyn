@@ -36,3 +36,4 @@ in/
 *.archive
 *.last_pop
 *.fuse*
+__pycache__

@@ -279,25 +279,25 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 		case '+':
 			n1 = stack_float.back(); stack_float.pop_back();
 			n2 = stack_float.back(); stack_float.pop_back();
-			stack_float.push_back(n2+n1);
+			stack_float.push_back(n1+n2);
 			break;
 		case '-':
 			n1 = stack_float.back(); stack_float.pop_back();
 			n2 = stack_float.back(); stack_float.pop_back();
-			stack_float.push_back(n2-n1);
+			stack_float.push_back(n1-n2);
 			break;
 		case '*':
 			n1 = stack_float.back(); stack_float.pop_back();
 			n2 = stack_float.back(); stack_float.pop_back();
-			stack_float.push_back(n2*n1);
+			stack_float.push_back(n1*n2);
 			break;
 		case '/':
 			n1 = stack_float.back(); stack_float.pop_back();
 			n2 = stack_float.back(); stack_float.pop_back();
-			if(abs(n1)<0.000001)
+			if(abs(n2)<0.000001)
 				stack_float.push_back(1);
 			else
-				stack_float.push_back(n2/n1);
+				stack_float.push_back(n1/n2);
 			break;
 		case 's':
 			n1 = stack_float.back(); stack_float.pop_back();
@@ -339,22 +339,22 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 		case '>': //greater than
 			n1 = stack_float.back(); stack_float.pop_back();
 			n2 = stack_float.back(); stack_float.pop_back();
-			stack_bool.push_back(n2 > n1);
+			stack_bool.push_back(n1 > n2);
 			break;
 		case '<': //less than
 			n1 = stack_float.back(); stack_float.pop_back();
 			n2 = stack_float.back(); stack_float.pop_back();
-			stack_bool.push_back(n2 < n1);
+			stack_bool.push_back(n1 < n2);
 			break;
 		case '}': //greater than or equal
 			n1 = stack_float.back(); stack_float.pop_back();
 			n2 = stack_float.back(); stack_float.pop_back();
-			stack_bool.push_back(n2 >= n1);
+			stack_bool.push_back(n1 >= n2);
 			break;
 		case '{': //less than or equal
 			n1 = stack_float.back(); stack_float.pop_back();
 			n2 = stack_float.back(); stack_float.pop_back();
-			stack_bool.push_back(n2 <= n1);
+			stack_bool.push_back(n1 <= n2);
 			break;
 		case 'i': // if (arity 2). if stack_bool true, leave top element of floating stack. otherwise, pop it.
 			b1 = stack_bool.back(); stack_bool.pop_back();
