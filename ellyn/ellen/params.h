@@ -463,11 +463,13 @@ struct params {
 			min_fit = extract<float>(d["min_fit"]);
 		if (d.has_key("op_list"))
 		{
+			cout << "op_list: ";
 			for(unsigned int i = 0; i<len(d["op_list"]); ++i){
 				string tmp = extract<string>(d["op_list"][i]);
-				cout << tmp << "\n";
+				cout << tmp << ",";
 		   		op_list.push_back(extract<string>(d["op_list"][i]));
 			}
+			cout << "\n";
 		}
 		if (d.has_key("op_weight"))
 		{
@@ -800,6 +802,7 @@ struct params {
 				cout << "bad command (load params op_choice)" << "\n";
 		}
 
+
 		rep_wheel.push_back(rt_rep);
 		rep_wheel.push_back(rt_cross);
 		rep_wheel.push_back(rt_mut);
@@ -823,6 +826,8 @@ struct params {
 		//normalize fn weights
 		if (weight_ops_on)
 		{
+			cout <<"weight_ops_on\n";
+
 			float sumweight = accumulate(op_weight.begin(),op_weight.end(),0.0);
 			for(unsigned int i=0;i<op_weight.size();++i)
 	                        op_weight.at(i) = op_weight.at(i)/sumweight;
@@ -844,6 +849,28 @@ struct params {
 				}
 			}
 		}
+
+		// debugging
+		cout << "op_list: ";
+		for (auto i : op_list){
+			cout << i << ",";
+		}
+		cout << "\n";
+		cout << "op_choice: ";
+		for (auto i : op_choice){
+			cout << i << ",";
+		}
+		cout << "\n";
+		cout << "op_arity: ";
+		for (auto i : op_arity){
+			cout << i << ",";
+		}
+		cout << "\n";
+		cout << "return_type: ";
+		for (auto i : return_type){
+			cout << i << ",";
+		}
+		cout << "\n";
 
 		// turn off AR_nb if AR is not being used
 		if (!AR){

@@ -72,8 +72,13 @@ struct Data {
             r = i*D;
             vals.push_back(vector<float>());
             for (unsigned int d =0; d< D; ++d)
-                vals[i].push_back(X[r]+d);
+                vals[i].push_back(X[r+d]);
 		}
+        for (int i = 0; i<10; ++i){
+            for (int j=0; j < vals[0].size(); ++j)
+                cout << vals[i][j] << ",";
+            cout << "\n";
+        }
 	}
 
 	void set_target(float* Y, size_t N){
@@ -181,6 +186,20 @@ struct Data {
     	//dattovar.resize(p.allvars.size());
     	//mapdata();
     	assert(target.size() == vals.size());
+
+        //debugging
+        cout << "data:\n";
+        for (auto l : label)
+            cout << l << ",";
+
+        cout << "\n";
+        for (int i = 0; i<10; ++i){
+            for (int j=0; j < vals[0].size(); ++j)
+                cout << vals[i][j] << ",";
+            cout << "\n";
+        }
+
+
 	}
 };
 

@@ -56,7 +56,6 @@ class ellyn(BaseEstimator):
         # if not disable_update_check and not ellyn.update_checked:
         #     update_check('ellyn', __version__)
         #     ellyn.update_checked = True
-
         if input_dict:
             self.param_dict = input_dict
             self.random_state = input_dict['random_state']
@@ -82,7 +81,7 @@ class ellyn(BaseEstimator):
                                     'R2':r2_score,'VAF':explained_variance_score,
                                     'combo':mean_absolute_error}[self.param_dict['fit_type']]
         else:
-            self.scoring_fucntion = mean_squared_error
+            self.scoring_function = mean_squared_error
 
     def fit(self, features, labels):
         """Fit model to data"""
@@ -129,7 +128,7 @@ class ellyn(BaseEstimator):
         # print("best_inds:",self._best_inds)
         # print("best estimator size:",self._best_estimator.coef_.shape)
         tmp = self._out(self._best_estimator,testing_features)
-        pdb.set_trace()
+        # pdb.set_trace()
         return self._out(self._best_estimator,testing_features)
 
     def fit_predict(self, features, labels):
@@ -533,14 +532,14 @@ def main():
     #                     help='Show ellyn\'s version number and exit.')
 
     args = parser.parse_args()
-
-    if args.VERBOSITY >= 2:
-        print('\nellyn settings:')
-        for arg in sorted(args.__dict__):
-            if arg == 'DISABLE_UPDATE_CHECK':
-                continue
-            print('{}\t=\t{}'.format(arg, args.__dict__[arg]))
-        print('')
+    #
+    # if args.VERBOSITY >= 2:
+    #     print('\nellyn settings:')
+    #     for arg in sorted(args.__dict__):
+    #         if arg == 'DISABLE_UPDATE_CHECK':
+    #             continue
+    #         print('{}\t=\t{}'.format(arg, args.__dict__[arg]))
+    #     print('')
 
     # load data from csv file
     if args.INPUT_SEPARATOR is None:
@@ -561,7 +560,8 @@ def main():
 
     training_features = np.array(input_data.loc[train_i].drop('label', axis=1).values,dtype=np.float32, order='C')
     training_labels = np.array(input_data.loc[train_i, 'label'].values,dtype=np.float32,order='C')
-
+    # training_features = np.array(input_data.drop('label', axis=1).values,dtype=np.float32, order='C')
+    # training_labels = np.array(input_data['label'].values,dtype=np.float32,order='C')
     testing_features = input_data.loc[test_i].drop('label', axis=1).values
     testing_labels = input_data.loc[test_i, 'label'].values
 
