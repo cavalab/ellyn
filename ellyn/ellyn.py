@@ -11,7 +11,7 @@ import argparse
 
 from sklearn.base import BaseEstimator
 from sklearn.cross_validation import train_test_split
-from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, explained_variance_score
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, explained_variance_score, accuracy_score
 import numpy as np
 import pandas as pd
 import warnings
@@ -20,6 +20,7 @@ import itertools as it
 import pdb
 import ellen.lib.elgp as elgp
 from update_checker import update_check
+from DistanceClassifier import DistanceClassifier
 # from numpy.ctypeslib import ndpointer
 # import ctypes
 # from joblib import Parallel, delayed
@@ -80,45 +81,24 @@ class ellyn(BaseEstimator):
             self.scoring_function = {'MAE':mean_absolute_error,'MSE':mean_squared_error,
                                     'R2':r2_score,'VAF':explained_variance_score,
                                     'combo':mean_absolute_error}[self.param_dict['fit_type']]
+        elif self.param_dict['classification']:
+            self.scoring_function = accuracy_score
         else:
             self.scoring_function = mean_squared_error
 
     def fit(self, features, labels):
         """Fit model to data"""
         np.random.seed(self.random_state)
-        # setup data
-        # setup call to ellenGP library
-        # curdir = os.path.split(os.path.abspath( __file__))[0]
-        # curdirList = curdir.split(os.path.sep)
-        # reporootdir = os.path.sep.join(curdirList[:-2])
-        # lib = ctypes.cdll.LoadLibrary(
-        # os.path.join(reporootdir,'lib/ellengp.so'))
-        # lib.runEllenGP.argtypes = [
-        #     ndpointer(ctypes.c_float),
-        #     ndpointer(ctypes.c_float),
-        #     ctypes.c_int,
-        #     ctypes.c_int]
-        # run GP code
-        # lib_elgp = ctypes.cdll.LoadLibrary('/media/bill/Drive/Dropbox/PostDoc/code/ellyn/ellyn/ellen/lib/elgp.so')
-        # pdb.set_trace()
-
-        # fun = lib_elgp.runEllenGP
-
-        # fun.argtypes = [ctypes.c_void_p,
-        #                 ndpointer(ctypes.c_float, ndim=2, flags="C_CONTIGUOUS"),
-        #                 ndpointer(ctypes.c_float, ndim=1, flags="C_CONTIGUOUS"),
-        #                 ctypes.c_int,
-        #                 ctypes.c_int,
-        #                 ctypes.c_char_p,
-        #                 ctypes.c_char_p]
-
-        # x_pt = features.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
-        # y_pt = labels.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
-        # pdb.set_trace()
-        # self.param_dict = {}
-        # print("features:",features[:5])
+        # run ellenGP
         elgp.runEllenGP(self.param_dict,features,labels,self._best_estimator)
         print("best program:",self._best_estimator)
+
+        # if M4GP is used, call Distance Classifier
+        if self.param_dict['class_m3gp']:
+            print("Storing DistanceClassifier...")
+            self.DC = DistanceClassifier()
+            self.DC.fit(self._out(self._best_estimator,features),labels)
+
         ####
         # initial model
 
@@ -127,9 +107,11 @@ class ellyn(BaseEstimator):
         """predict on a holdout data set."""
         # print("best_inds:",self._best_inds)
         # print("best estimator size:",self._best_estimator.coef_.shape)
-        tmp = self._out(self._best_estimator,testing_features)
-        # pdb.set_trace()
-        return self._out(self._best_estimator,testing_features)
+        # tmp = self._out(self._best_estimator,testing_features)
+        if self.param_dict['class_m3gp']:
+            return self.DC.predict(self._out(self._best_estimator,testing_features))
+        else:
+            return self._out(self._best_estimator,testing_features)
 
     def fit_predict(self, features, labels):
         """Convenience function that fits a pipeline then predicts on the provided features
@@ -195,8 +177,11 @@ class ellyn(BaseEstimator):
         for n in I:
             self._eval(n,features,stack_float,stack_bool)
             # print("stack_float:",stack_float)
-
-        return stack_float[-1]
+        if self.param_dict['class_m3gp']:
+            # pdb.set_trace()
+            return np.asarray(stack_float).transpose()
+        else:
+            return stack_float[-1]
 
 eval_dict = {
 # float operations
