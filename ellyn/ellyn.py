@@ -57,11 +57,13 @@ class ellyn(BaseEstimator):
         # if not disable_update_check and not ellyn.update_checked:
         #     update_check('ellyn', __version__)
         #     ellyn.update_checked = True
+        # pdb.set_trace()
         if input_dict:
             self.param_dict = input_dict
             self.random_state = input_dict['random_state']
         elif kwargs:
-            self.param_dict = kwargs.__dict__
+            self.param_dict = kwargs
+            self.random_state = np.random.randint(4294967295)
         else:
             self.param_dict = dict()
         # self.param_file = ''
@@ -81,23 +83,38 @@ class ellyn(BaseEstimator):
             self.scoring_function = {'MAE':mean_absolute_error,'MSE':mean_squared_error,
                                     'R2':r2_score,'VAF':explained_variance_score,
                                     'combo':mean_absolute_error}[self.param_dict['fit_type']]
-        elif self.param_dict['classification']:
-            self.scoring_function = accuracy_score
+        elif 'classification' in self.param_dict:
+            if self.param_dict['classification']:
+                self.scoring_function = accuracy_score
         else:
             self.scoring_function = mean_squared_error
+
+        # set verbosity
+        if 'verbosity' in self.param_dict:
+            self.param_dict['print_log'] = self.param_dict['verbosity'] > 1
+        else:
+            self.param_dict['print_log'] = False
+
+        if 'class_m3gp' in self.param_dict: #convert m4gp argument to m3gp used in ellenGP
+            self.param_dict['class_m4gp'] = self.param_dict['class_m3gp']
+        if 'classification' in self.param_dict and not ('class_m3gp' in self.param_dict or 'class_bool' in self.param_dict):
+            #default to M4GP in the case no learner specified
+            self.param_dict['class_m3gp'] = True
 
     def fit(self, features, labels):
         """Fit model to data"""
         np.random.seed(self.random_state)
         # run ellenGP
-        elgp.runEllenGP(self.param_dict,features,labels,self._best_estimator)
+        elgp.runEllenGP(self.param_dict,np.asarray(features,dtype=np.float32,order='C'),
+                        np.asarray(labels,dtype=np.float32,order='C'),self._best_estimator)
         print("best program:",self._best_estimator)
 
         # if M4GP is used, call Distance Classifier
-        if self.param_dict['class_m3gp']:
-            print("Storing DistanceClassifier...")
-            self.DC = DistanceClassifier()
-            self.DC.fit(self._out(self._best_estimator,features),labels)
+        if 'class_m3gp' in self.param_dict:
+            if self.param_dict['class_m3gp']:
+                print("Storing DistanceClassifier...")
+                self.DC = DistanceClassifier()
+                self.DC.fit(self._out(self._best_estimator,features),labels)
 
         ####
         # initial model
@@ -108,8 +125,9 @@ class ellyn(BaseEstimator):
         # print("best_inds:",self._best_inds)
         # print("best estimator size:",self._best_estimator.coef_.shape)
         # tmp = self._out(self._best_estimator,testing_features)
-        if self.param_dict['class_m3gp']:
-            return self.DC.predict(self._out(self._best_estimator,testing_features))
+        if 'class_m3gp' in self.param_dict:
+            if self.param_dict['class_m3gp']:
+                return self.DC.predict(self._out(self._best_estimator,testing_features))
         else:
             return self._out(self._best_estimator,testing_features)
 
@@ -137,6 +155,7 @@ class ellyn(BaseEstimator):
         # print("test features shape:",testing_features.shape)
         # print("testing labels shape:",testing_labels.shape)
         yhat = self.predict(testing_features)
+        pdb.set_trace()
         return self.scoring_function(testing_labels,yhat)
 
     def export(self, output_file_name):
@@ -177,9 +196,9 @@ class ellyn(BaseEstimator):
         for n in I:
             self._eval(n,features,stack_float,stack_bool)
             # print("stack_float:",stack_float)
-        if self.param_dict['class_m3gp']:
-            # pdb.set_trace()
-            return np.asarray(stack_float).transpose()
+        if 'class_m3gp' in self.param_dict:
+            if self.param_dict['class_m3gp']:
+                return np.asarray(stack_float).transpose()
         else:
             return stack_float[-1]
 

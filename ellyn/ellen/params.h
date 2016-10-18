@@ -386,7 +386,7 @@ struct params {
 	void set(dict& d){
 		/* function called from python to set parameter values. equivalent behavior to load_params,
 		but for setting params in python.*/
-		std::cout << "in set params\n";
+		// std::cout << "in set params\n";
 		if (d.has_key("g"))
 			g = extract<int>(d["g"]);
 		if (d.has_key("popsize"))
@@ -412,17 +412,7 @@ struct params {
 		if (d.has_key("resultspath"))
 		{
 			resultspath = extract<string>(d["resultspath"]);
-			// int q = 0;
-			// for(unsigned int i = 0; i<len(d["resultspath"]); ++i)
-			// {
-			// 	if (q > 0)
-			// 		resultspath = resultspath + ' ';
-			// 	string tmp = extract<string>(d["resultspath"][i]);
-			// 	resultspath.insert(resultspath.end(),tmp.begin(),tmp.end());
-			// 	// resultspath.push_back(extract<string>(d["resultspath"][i])); //.insert(resultspath.end(), std::begin(extract<string>(d["resultspath"][i])), std::end(extract<string>(d["resultspath"][i])));
-			// 	++q;
-			// }
-			cout << "resultspath:" << resultspath << "\n";
+			// cout << "resultspath:" << resultspath << "\n";
 
 		}
 
@@ -463,13 +453,13 @@ struct params {
 			min_fit = extract<float>(d["min_fit"]);
 		if (d.has_key("op_list"))
 		{
-			cout << "op_list: ";
+			// cout << "op_list: ";
 			for(unsigned int i = 0; i<len(d["op_list"]); ++i){
 				string tmp = extract<string>(d["op_list"][i]);
-				cout << tmp << ",";
+				// cout << tmp << ",";
 		   		op_list.push_back(extract<string>(d["op_list"][i]));
 			}
-			cout << "\n";
+			// cout << "\n";
 		}
 		if (d.has_key("op_weight"))
 		{
@@ -656,7 +646,7 @@ struct params {
 			max_len_init = max_len;
 		// op_list
 		if (op_list.empty()){ // set default operator list
-			cout << "using default operator list\n";
+			// cout << "using default operator list\n";
 			op_list.push_back("n");
 			op_list.push_back("v");
 			op_list.push_back("+");
@@ -826,7 +816,7 @@ struct params {
 		//normalize fn weights
 		if (weight_ops_on)
 		{
-			cout <<"weight_ops_on\n";
+			// cout <<"weight_ops_on\n";
 
 			float sumweight = accumulate(op_weight.begin(),op_weight.end(),0.0);
 			for(unsigned int i=0;i<op_weight.size();++i)
@@ -851,26 +841,26 @@ struct params {
 		}
 
 		// debugging
-		cout << "op_list: ";
-		for (auto i : op_list){
-			cout << i << ",";
-		}
-		cout << "\n";
-		cout << "op_choice: ";
-		for (auto i : op_choice){
-			cout << i << ",";
-		}
-		cout << "\n";
-		cout << "op_arity: ";
-		for (auto i : op_arity){
-			cout << i << ",";
-		}
-		cout << "\n";
-		cout << "return_type: ";
-		for (auto i : return_type){
-			cout << i << ",";
-		}
-		cout << "\n";
+		// cout << "op_list: ";
+		// for (auto i : op_list){
+		// 	cout << i << ",";
+		// }
+		// cout << "\n";
+		// cout << "op_choice: ";
+		// for (auto i : op_choice){
+		// 	cout << i << ",";
+		// }
+		// cout << "\n";
+		// cout << "op_arity: ";
+		// for (auto i : op_arity){
+		// 	cout << i << ",";
+		// }
+		// cout << "\n";
+		// cout << "return_type: ";
+		// for (auto i : return_type){
+		// 	cout << i << ",";
+		// }
+		// cout << "\n";
 
 		// turn off AR_nb if AR is not being used
 		if (!AR){

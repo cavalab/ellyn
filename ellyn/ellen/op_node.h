@@ -7,9 +7,12 @@ using namespace std;
 //#include <boost/ptr_container/ptr_vector.hpp>
 //#include <boost/utility.hpp>
 //enum {NUM,OP,SYM};
-
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+// boost::uuids::basic_random_generator<boost::mt19937> gen;
 class node{
 public:
+	boost::uuids::uuid tag; // uuid for graph database tracking
 	char type;
 	bool on;
 	int arity_float;
@@ -20,17 +23,22 @@ public:
 	int c; // complexity
 	bool intron; // behavioral intron declaration (used in getComplexity())
 	char return_type;
-	node() {type=0; on=1; arity_float=0; arity_bool=0; intron = true;return_type='f';}
+	node()
+	:tag(boost::uuids::random_generator()())
+	{type=0; on=1; arity_float=0; arity_bool=0; intron = true;return_type='f';}
 	//node(int set) {type=set;on=1;}
 	//operator with specified arity
-	node(char stype,int sarity){type=stype; arity_float=sarity;arity_bool=0; on=1; setComplexity(); intron = true;return_type='f';}
+	node(char stype,int sarity)
+		:tag(boost::uuids::random_generator()())
+	{type=stype; arity_float=sarity;arity_bool=0; on=1; setComplexity(); intron = true;return_type='f';}
 	//operator with arity lookup
 	node(char stype)
+	:tag(boost::uuids::random_generator()())
 	{
 		type=stype;
 		if (type=='s' || type=='c' || type=='e' || type=='l' || type=='q'){
-			arity_float = 1; 
-			arity_bool=0;		
+			arity_float = 1;
+			arity_bool=0;
 			return_type='f';
 		}
 		else if (type=='+' || type=='-' || type=='*' || type=='/' || type=='^'){
@@ -73,9 +81,13 @@ public:
 		intron = true;
 	}
 	//number
-	node(float svalue){type='n'; value=svalue; on=1; arity_float=0;arity_bool=0; c=1;intron = 0;return_type='f';}
+	node(float svalue)
+		:tag(boost::uuids::random_generator()())
+	{type='n'; value=svalue; on=1; arity_float=0;arity_bool=0; c=1;intron = 0;return_type='f';}
 	//variable
-	node(string& vname){type='v';varname=vname;on=1;arity_float=0;arity_bool=0; c=1;intron = 0;return_type='f';}
+	node(string& vname)
+		:tag(boost::uuids::random_generator()())
+	{type='v';varname=vname;on=1;arity_float=0;arity_bool=0; c=1;intron = 0;return_type='f';}
 	int arity()
 	{
 		return arity_float + arity_bool;
@@ -92,15 +104,15 @@ private:
 	void setComplexity()
 	{
 		// assign complexity
-		if (type=='i' || type=='t') 
+		if (type=='i' || type=='t')
 			c = 5;
-		else if (type=='e' || type=='l' || type=='^') 
-			c = 4; 
-		else if (type=='s' || type=='c' ) 
+		else if (type=='e' || type=='l' || type=='^')
+			c = 4;
+		else if (type=='s' || type=='c' )
 			c = 3;
-		else if (type=='/' || type=='q' || type=='<' || type=='>' || type=='{' || type=='}' || type=='&' || type=='|') 
+		else if (type=='/' || type=='q' || type=='<' || type=='>' || type=='{' || type=='}' || type=='&' || type=='|')
 			c = 2;
-		else 
+		else
 			c = 1;
 	}
 };
