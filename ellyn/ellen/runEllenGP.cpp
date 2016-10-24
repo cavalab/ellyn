@@ -181,6 +181,7 @@ void printGenome(tribe& T,int gen,string& logname,Data& d,params& p)
 }
 void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A){
 //boost::progress_timer timer;
+
 s.out << "--- Generation " << i << "---------------------------------------------------------------" << "\n";
 s.out << "population size: " << T.pop.size() << "\n";
 s.out << "Number of evals: " << s.genevals.back() << "\n";
@@ -590,46 +591,48 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 	 }
 	 std::ofstream dfout;
 	 initdatafile(dfout,logname,p);
-	 s.out << "_______________________________________________________________________________ \n";
-	 s.out << "                                    ellenGP                                     \n";
-	 s.out << "_______________________________________________________________________________ \n";
-	 //s.out << "Time right now is " << std::put_time(&tm, "%c %Z") << '\n';
-	 s.out<< "Results Path: " << p.resultspath  << "\n";
-	 s.out << "parameter name: " << pname << "\n";
-	 s.out << "data file: " << dname << "\n";
-	 if(trials) {s.out << "Running in Trial Mode\n";
-	 s.out << "Trial ID: " << trialnum << "\n";
+	 if (p.verbosity>0){
+		 s.out << "_______________________________________________________________________________ \n";
+		 s.out << "                                    ellenGP                                     \n";
+		 s.out << "_______________________________________________________________________________ \n";
+		 //s.out << "Time right now is " << std::put_time(&tm, "%c %Z") << '\n';
+		 s.out<< "Results Path: " << p.resultspath  << "\n";
+		 s.out << "parameter name: " << pname << "\n";
+		 s.out << "data file: " << dname << "\n";
+		 if(trials) {s.out << "Running in Trial Mode\n";
+		 s.out << "Trial ID: " << trialnum << "\n";
+		 }
+		 s.out << "Settings: \n";
+		 // get evolutionary method
+		 s.out << "Evolutionary Method: ";
+		 switch(p.sel){
+			 case 1:
+				 s.out << "Standard Tournament\n";
+				 break;
+			 case 2:
+				 s.out << "Deterministic Crowding\n";
+				 break;
+			 case 3:
+				 s.out << "Lexicase Selection\n";
+				 break;
+			 case 4:
+				 s.out << "Age-Fitness Pareto\n";
+				 break;
+		 }
+		 s.out << "ERC: " << p.ERC << "\n";
+		 s.out << "Parameter Hill Climber: " << p.pHC_on <<"\n";
+		 s.out << "Epigenetic Hill Climber: " << p.eHC_on <<"\n";
+		 if(p.train) s.out << "Data split " << p.train_pct << "/" << 1-p.train_pct << " for training and validation.\n";
+		 s.out << "Total Population Size: " << p.popsize << "\n";
+		 if (p.limit_evals) s.out << "Maximum Point Evals: " << p.max_evals << "\n";
+		 else s.out << "Maximum Generations: " << p.g << "\n";
+		 s.out << "Number of log points: " << p.num_log_pts << " (0 means log all points)\n";
+		 if (trials && p.islands){
+			s.out << "WARNING: cannot run island populations in trial mode. This trial will run on one core.\n";
+			p.islands = false;
+		 }
+		 s.out << "fitness type: " << p.fit_type << "\n";
 	 }
-	 s.out << "Settings: \n";
-	 // get evolutionary method
-	 s.out << "Evolutionary Method: ";
-	 switch(p.sel){
-		 case 1:
-			 s.out << "Standard Tournament\n";
-			 break;
-		 case 2:
-			 s.out << "Deterministic Crowding\n";
-			 break;
-		 case 3:
-			 s.out << "Lexicase Selection\n";
-			 break;
-		 case 4:
-			 s.out << "Age-Fitness Pareto\n";
-			 break;
-	 }
-	 s.out << "ERC: " << p.ERC << "\n";
-	 s.out << "Parameter Hill Climber: " << p.pHC_on <<"\n";
-	 s.out << "Epigenetic Hill Climber: " << p.eHC_on <<"\n";
-	 if(p.train) s.out << "Data split " << p.train_pct << "/" << 1-p.train_pct << " for training and validation.\n";
-	 s.out << "Total Population Size: " << p.popsize << "\n";
-	 if (p.limit_evals) s.out << "Maximum Point Evals: " << p.max_evals << "\n";
-	 else s.out << "Maximum Generations: " << p.g << "\n";
-	 s.out << "Number of log points: " << p.num_log_pts << " (0 means log all points)\n";
-	 if (trials && p.islands){
-		s.out << "WARNING: cannot run island populations in trial mode. This trial will run on one core.\n";
-		p.islands = false;
-	 }
-	 s.out << "fitness type: " << p.fit_type << "\n";
 
 	int nt=0;
 	//int ntt=0;
@@ -638,20 +641,20 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 	{
 		nt = omp_get_num_threads();
 	}
-	s.out << "Number of threads: " << nt << "\n";
+	if (p.verbosity>0) s.out << "Number of threads: " << nt << "\n";
 	//s.out << "OMP Number of threads: " << omp_get_num_threads() << "\n";
 	p.nt = nt;
 
 	//initialize random number generator
 	unsigned int seed1 = int(time(NULL));
-	s.out << "seeds: \n";
+	if (p.verbosity>0) s.out << "seeds: \n";
 	r.resize(omp_get_max_threads());
 	#pragma omp parallel
 	{
 			//cout << "seeder: " << seeder <<endl;
 			//cout << "seed1: " << seed1*seeder <<endl;
 			if(!trials){
-				s.out << to_string(static_cast<long long>(seed1*(omp_get_thread_num()+1))) + "\n";
+				if (p.verbosity>0) s.out << to_string(static_cast<long long>(seed1*(omp_get_thread_num()+1))) + "\n";
 				//r.at(seeder).SetSeed(seed1*(seeder+1));
 				r.at(omp_get_thread_num()).SetSeed(seed1*(omp_get_thread_num()+1));
 			}
@@ -659,7 +662,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 				r.at(omp_get_thread_num()).SetSeed(seed1*(omp_get_thread_num()+1)*trialnum);
 	}
 	if(trials)
-		s.out << (omp_get_thread_num()+1)*seed1*trialnum << "\n";
+		if (p.verbosity>0) s.out << (omp_get_thread_num()+1)*seed1*trialnum << "\n";
 
 	//shuffle data for training
 	if (p.shuffle_data)
@@ -691,7 +694,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 		p.popsize = subpops*num_islands;
 		vector<tribe> T;
 		tribe World(subpops*num_islands,p.max_fit,p.min_fit); //total population of tribes
-		s.out << num_islands << " islands of " << subpops << " individuals, total pop " << p.popsize <<"\n";
+		if (p.verbosity>0) s.out << num_islands << " islands of " << subpops << " individuals, total pop " << p.popsize <<"\n";
 
 
 		for(int i=0;i<num_islands;++i)
@@ -699,10 +702,10 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 		// run separate islands
 		if (p.pop_restart) // initialize population from file
 		{
-			s.out << "loading pop from " + p.pop_restart_path + "...\n";
+			if (p.verbosity>0) s.out << "loading pop from " + p.pop_restart_path + "...\n";
 			int tmp = load_pop(World.pop,p,s);
 			if (tmp < p.popsize){
-				s.out << "WARNING: population size loaded from file (" << tmp << ") is smaller than set pop size (" << p.popsize << "). " << (p.popsize-tmp) << " randomly initiated individuals will be added...\n";
+				if (p.verbosity>0) s.out << "WARNING: population size loaded from file (" << tmp << ") is smaller than set pop size (" << p.popsize << "). " << (p.popsize-tmp) << " randomly initiated individuals will be added...\n";
 				vector<ind> tmppop(p.popsize-tmp);
 				InitPop(tmppop,p,r);
 				swap_ranges(World.pop.end()-(p.popsize-tmp),World.pop.end(),tmppop.begin());
@@ -723,7 +726,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 		{
 			if (p.init_validate_on)
 			{
-				s.out << "Initial validation...";
+				if (p.verbosity>0) s.out << "Initial validation...";
 
 
 				#pragma omp parallel for
@@ -775,11 +778,11 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 						worstfit = T.at(i).worstFit();
 						counter++;
 						if(counter==100)
-							s.out << "initial population count exceeded. Starting evolution...\n";
+							if (p.verbosity>0) s.out << "initial population count exceeded. Starting evolution...\n";
 					}
 				}
 				s.setgenevals();
-				s.out << " number of evals: " << s.getgenevals() << "\n";
+				if (p.verbosity>0) s.out << " number of evals: " << s.getgenevals() << "\n";
 				//}
 				//else{
 				//
@@ -1084,15 +1087,17 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 							else
 								EvolveFE(World.pop,tmpFE,trainers,p,d,s,r);
 							if (!p.limit_evals || s.totalptevals() >= print_trigger){
-								s.out << "Evolving fitness estimators...\n";
-								s.out << "Best FE fit: " << FE[0].fitness <<"\n";
+								if (p.verbosity>0) s.out << "Evolving fitness estimators...\n";
+								if (p.verbosity>0) s.out << "Best FE fit: " << FE[0].fitness <<"\n";
 								if (p.estimate_generality) s.out << "Best FE genty: " << FE[0].genty <<"\n";
-								s.out << "Ave FE fit: " << aveFEfit << "\n";
-								s.out << "Current Fitness Estimator:\n";
+								if (p.verbosity>0) s.out << "Ave FE fit: " << aveFEfit << "\n";
+								if (p.verbosity>0) s.out << "Current Fitness Estimator:\n";
 
-								for (int b=0;b<FE[0].FEpts.size();b++)
-									s.out << FE[0].FEpts[b] << " ";
-								s.out << "\n";
+								if (p.verbosity>0){
+									for (int b=0;b<FE[0].FEpts.size();b++)
+										 s.out << FE[0].FEpts[b] << " ";
+									s.out << "\n";
+								}
 							}
 
 						}
@@ -1105,7 +1110,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 							//shuffle population
 							std::random_shuffle(World.pop.begin(),World.pop.end(),r[q]);
 							//redistribute populations to islands
-							s.out << "Shuffling island populations...\n";
+							if (p.verbosity>0) s.out << "Shuffling island populations...\n";
 							migrate = true;
 							mixtrigger+=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
 						}
@@ -1154,7 +1159,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 								cout <<"avefit error\n";*/
 							if(gen>trainer_trigger) { //pick new trainers when FE pop has converged or when it has been enough generations
 							//if(gen>trainer_trigger) {
-								s.out << "Picking trainers...\n";
+								if (p.verbosity>0) s.out << "Picking trainers...\n";
 								PickTrainers(World.pop,FE,trainers,p,d,s);
 								trainer_trigger = gen + p.FE_train_gens; //p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
 								//trainer_trigger=0;
@@ -1196,10 +1201,10 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
  		tribe T(p.popsize,p.max_fit,p.min_fit);
 		if (p.pop_restart) // initialize population from file
 		{
-			s.out << "loading pop from " + p.pop_restart_path + "...\n";
+			if (p.verbosity>0) s.out << "loading pop from " + p.pop_restart_path + "...\n";
 			int tmp = load_pop(T.pop,p,s);
 			if (tmp < p.popsize){
-				s.out << "WARNING: population size loaded from file (" << tmp << ") is smaller than set pop size (" << p.popsize << "). " << (p.popsize-tmp) << " randomly initiated individuals will be added...\n";
+				if (p.verbosity>0) s.out << "WARNING: population size loaded from file (" << tmp << ") is smaller than set pop size (" << p.popsize << "). " << (p.popsize-tmp) << " randomly initiated individuals will be added...\n";
 				vector<ind> tmppop(p.popsize-tmp);
 				InitPop(tmppop,p,r);
 				swap_ranges(T.pop.end()-(p.popsize-tmp),T.pop.end(),tmppop.begin());
@@ -1211,7 +1216,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 		else{
 			if (p.init_validate_on)
 			{
-				s.out << "Initial validation...";
+				if (p.verbosity>0) s.out << "Initial validation...";
 				//bool tmp = p.EstimateFitness;
 				//p.EstimateFitness=0;
 
@@ -1245,7 +1250,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 							++j;
 					}
 
-					s.out << "\ntmppop size: " << tmppop.size();
+					if (p.verbosity>0) s.out << "\ntmppop size: " << tmppop.size();
 					InitPop(tmppop,p,r);
 					Fitness(tmppop,p,d,s,FE[0]);
 
@@ -1254,7 +1259,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 					worstfit = T.worstFit();
 					cnt++;
 					if(cnt==100)
-						s.out << "initial population count exceeded. Starting evolution...\n";
+						if (p.verbosity>0) s.out << "initial population count exceeded. Starting evolution...\n";
 				}
 				//p.EstimateFitness=tmp;
 			}
@@ -1270,7 +1275,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 			}
 		}
 		s.setgenevals();
-		s.out << " number of evals: " << s.getgenevals() << "\n";
+		if (p.verbosity>0) s.out << " number of evals: " << s.getgenevals() << "\n";
 		int its = 1;
 		long long termits;
 		int gits=1;
@@ -1384,21 +1389,23 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 			if (p.EstimateFitness){
 				EvolveFE(T.pop,FE,trainers,p,d,s,r);
 				if (!p.limit_evals || printed){
-					s.out << "Evolving fitness estimators...\n";
-					s.out << "Best FE fit: " << FE[0].fitness <<"\n";
+					if (p.verbosity>0) s.out << "Evolving fitness estimators...\n";
+					if (p.verbosity>0) s.out << "Best FE fit: " << FE[0].fitness <<"\n";
 					if (p.estimate_generality) s.out << "Best FE genty: " << FE[0].genty <<"\n";
-					s.out << "Current Fitness Estimator:\n";
+					if (p.verbosity>0) s.out << "Current Fitness Estimator:\n";
 
-					for (int b=0;b<FE[0].FEpts.size();b++)
-						s.out << FE[0].FEpts[b] << " ";
-					s.out << "\n";
+					if (p.verbosity>0) {
+						for (int b=0;b<FE[0].FEpts.size();b++)
+							s.out << FE[0].FEpts[b] << " ";
+						s.out << "\n";
+					}
 				}
 			}
 
 
 			if (p.EstimateFitness){
 				if(counter>trainer_trigger) {
-					s.out << "Picking trainers...\n";
+					if (p.verbosity>0) s.out << "Picking trainers...\n";
 					PickTrainers(T.pop,FE,trainers,p,d,s);
 					trainer_trigger= counter + p.FE_train_gens; //*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
 					//trainer_trigger=0;
@@ -1435,7 +1442,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 	}
 
 
-	s.out << "\n Program finished sucessfully.\n";
+	if (p.verbosity>0) s.out << "\n Program finished sucessfully.\n";
 
 }
 catch(std::exception& e){

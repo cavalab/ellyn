@@ -188,6 +188,7 @@ struct params {
 	bool print_genome; // print genome every generation
 	bool print_epigenome; // print epigenome every generation
 	bool print_novelty; // print novelty in data file
+	int verbosity; // setting for what gets printed 0: nothing 1: some stuff 2: all stuff
 
 	// number of log points to print (with eval limitation)
 	int num_log_pts;
@@ -259,6 +260,8 @@ struct params {
 		print_epigenome = 0;
 		// print number of unique output vectors
 		print_novelty = 0;
+		// verbosity
+		verbosity = 0;
 
 		// ============ Fitness settings
 		fit_type = "MSE"; // 1: error, 2: corr, 3: combo
@@ -631,7 +634,8 @@ struct params {
 			lex_eps_global = extract<bool>(d["lex_eps_global"]);
 		if (d.has_key("test_at_end"))
 			test_at_end = extract<bool>(d["test_at_end"]);
-
+		if (d.has_key("verbosity"))
+			verbosity = extract<int>(d["verbosity"]);
 		// finished reading from dict.
 
 		allvars = intvars;

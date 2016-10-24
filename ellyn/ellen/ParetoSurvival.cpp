@@ -32,12 +32,12 @@ public:
 	int dim;
 	SPEA2(){}
 	SPEA2(int size, int d)
-	{	
+	{
 		fitness_bucket.resize(size*size,0);
 		fitness_bucket_mod.resize(size,0);
 		copies.resize(size,1);
 		for(int i=0;i<size;++i){
-			dist.push_back(vector<double>(size,-1));	
+			dist.push_back(vector<double>(size,-1));
 			NN.push_back(vector<int>(size,-1));
 		}
 		dim = d;
@@ -49,18 +49,20 @@ public:
 
 void free_ind(vector<ind>& pop,int i)
 {
-	pop[i].swap(pop.back());
-	pop.pop_back();
+  if (pop.size() > i){
+  	pop[i].swap(pop.back());
+  	pop.pop_back();
+  }
 }
 bool is_equal(ind& p_ind_a, ind& p_ind_b)
 /* Determines if two individuals are equal in all objective values.*/
 {
-     
+
      bool equal = 1;
-     
+
      for (size_t i = 0; i < p_ind_a.f.size() && equal; ++i)
 		equal = (p_ind_a.f[i] == p_ind_b.f[i]);
-     
+
      return (equal);
 }
 //int dominates(ind& p_ind_a, ind& p_ind_b);
@@ -93,7 +95,7 @@ float var(vector<float>& x) {
 	return var;
 }
 void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
-{	
+{
 	// implements SPEA2 environmental selection based on pareto strength and fitness
 	// calc SPEA2 fitness (calcFitnesses())
 	// calc SPEA2 distance (calcDistances())
@@ -119,7 +121,7 @@ void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
 		if (pop[i].complexity>max_complexity) max_complexity = pop[i].complexity;
 		if (pop[i].dim>max_dim) max_dim = pop[i].dim;
 		for (unsigned j=0;j<pop[i].error.size();++j){
-			if (pop[i].error[j]>max_error[j]) 
+			if (pop[i].error[j]>max_error[j])
 				max_error[j] = pop[i].error[j];
 		}
 	}
@@ -133,8 +135,8 @@ void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
 		}
 	}
 	else if(p.PS_sel==6 && p.classification) // objectives are the class-based fitnesses and dimensionality
-	{ 
-		
+	{
+
 		for (size_t i = 0; i<pop.size(); ++i){
 			pop[i].f.resize(0);
 			for (unsigned j=0;j<pop[i].error.size();++j)
@@ -143,8 +145,8 @@ void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
 		}
 	}
 	if(p.PS_sel==5 && p.classification) // objectives are the class-based fitnesses and age
-	{ 
-		
+	{
+
 		for (size_t i = 0; i<pop.size(); ++i){
 			pop[i].f.resize(0);
 			for (unsigned j=0;j<pop[i].error.size();++j)
@@ -153,8 +155,8 @@ void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
 		}
 	}
 	if(p.PS_sel==4 && p.classification) // objectives are the class-based fitnesses
-	{ 
-		
+	{
+
 		for (size_t i = 0; i<pop.size(); ++i){
 			pop[i].f.resize(0);
 			for (unsigned j=0;j<pop[i].error.size();++j)
@@ -178,7 +180,7 @@ void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
 			pop[i].f.push_back(pop[i].age/max_age);
 			pop[i].f.push_back(pop[i].genty/max_genty);
 		}
-	}	
+	}
 	else // fitness, age
 	{
 		for (size_t i = 0; i<pop.size(); ++i){
@@ -191,7 +193,7 @@ void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
 	calcFitnesses(pop,S);
 	//calcDistances(pop,S); //distances are calculated on a case-by-case basis to keep costs down
 	environmentalSelection(pop,(pop.size()-1)/2,S);
-	
+
 	ages.resize(0);
 	fitnesses.resize(0);
 	for (size_t i =0; i<pop.size(); ++i){
@@ -207,14 +209,14 @@ void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
 	//int counter =0;
 	//bool draw=true;
 	//int popsize = (int)floor((float)pop.size()/2);
-	////vector<ind> tourn_pop; 
+	////vector<ind> tourn_pop;
 	////tourn_pop.reserve(2);
 	//// remove all frontier pareto individuals from the tournament and give them a free pass:
 	////vector<int> tournament; for(int i=0; i<pop.size(); ++i){tournament.push_back(i);}
 
 	//while (pop.size()>popsize && counter<p.popsize*10)//pow(float(p.popsize),2))
 	//{
-	//	
+	//
 	//	for (int j=0;j<2;++j)
 	//	{
 	//		fitindex.at(j)=r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
@@ -235,7 +237,7 @@ void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
 	//			loser = fitindex[0];
 	//		draw=false;
 	//	}
-	//	
+	//
 	//	// delete losers from population
 	//	if(!draw){
 	//		pop.at(loser).swap(pop.back());
@@ -265,7 +267,7 @@ void ParetoSurvival(vector<ind>& pop,params& p,vector<Randclass>& r,state& s)
 	//	//pop.erase(pop.end()-1);
 	//	pop.pop_back();
 	//}
-	
+
 
 }
 
@@ -273,16 +275,16 @@ bool dominates(ind& p_ind_a, ind& p_ind_b)
 /* Determines if one individual dominates another.
    Minimizing fitness values. */
 {
-   
+
     bool a_is_worse = 0;
     bool equal = 1;
-   
+
      for (size_t i = 0; i < p_ind_a.f.size() && !a_is_worse; ++i)
      {
 		 a_is_worse = p_ind_a.f[i] > p_ind_b.f[i];
          equal = (p_ind_a.f[i] == p_ind_b.f[i]) && equal;
      }
-     
+
      return (!equal && !a_is_worse);
 }
 void calcFitnesses(vector<ind>& pop, SPEA2& S)
@@ -290,7 +292,7 @@ void calcFitnesses(vector<ind>& pop, SPEA2& S)
     int i, j;
     int size;
     //int *strength;
-    
+
     size = pop.size();
     //strength = (int*) chk_malloc(size * sizeof(int));
     vector<int> strength(size,0);
@@ -299,13 +301,13 @@ void calcFitnesses(vector<ind>& pop, SPEA2& S)
   //  {
   //      pop[i].spea_fit = 0;
 		////S.fitness_bucket[i] = 0;
-		////S.fitness_bucket_mod[i] = 0;	
+		////S.fitness_bucket_mod[i] = 0;
 		///*for (j = 0; j < size; j++)
 		//{
 		//	S.fitness_bucket[i * size + j] = 0;
 		//}*/
   //  }
-    
+
     /* calculate strength values */
     for (i = 0; i < size; i++)
     {
@@ -320,7 +322,7 @@ void calcFitnesses(vector<ind>& pop, SPEA2& S)
 			}
 		}
     }
-    
+
     /* Fitness values =  sum of strength values of dominators */
     for (i = 0; i < size; ++i)
     {
@@ -342,25 +344,25 @@ void calcFitnesses(vector<ind>& pop, SPEA2& S)
 		S.fitness_bucket_mod[(sum / size)]++;
 		pop[i].dominated.resize(0);
     }
-    
+
     //free(strength);
     //strength = NULL;
-   
+
     return;
 }
 double calcDistance(ind& p_ind_a, ind& p_ind_b)
 {
     int i;
     double distance = 0;
-    
+
     if (is_equal(p_ind_a, p_ind_b))
     {
 		return (0);
     }
-    
+
     for (i = 0; i < p_ind_a.f.size(); i++)
 	distance += pow(p_ind_a.f[i]-p_ind_b.f[i],2);
-    
+
     if (0.0 == distance)
         distance = 0.00000000001;
 
@@ -370,7 +372,7 @@ void calcDistances(vector<ind>& pop, SPEA2& S)
 {
     int i, j;
     int size = pop.size();
-    
+
     /* initialize copies[] vector and S.NN[][] matrix */
     /*for (i = 0; i < size; i++)
     {
@@ -380,7 +382,7 @@ void calcDistances(vector<ind>& pop, SPEA2& S)
 			S.NN[i][j] = -1;
 		}
     }*/
-    
+
     /* calculate distances */
     for (i = 0; i < size; i++)
     {
@@ -416,7 +418,7 @@ void environmentalSelection(vector<ind>& pop, int alpha, SPEA2& S)
 {
     int i;
     int new_size = 0;
-	bool td;
+	  bool td;
     vector<int> marked_inds;
 
     if (S.fitness_bucket[0] > alpha){
@@ -432,12 +434,12 @@ void environmentalSelection(vector<ind>& pop, int alpha, SPEA2& S)
 	}
 
     sort(marked_inds.begin(),marked_inds.end());
-	// move remaining pop to top of pop (plop slop)
-	for (i = marked_inds.size()-1; i>=0; --i)
-		free_ind(pop,marked_inds[i]);
-	
-	assert(pop.size() == alpha);
-	
+	  // move remaining pop to top of pop (plop slop)
+  	for (i = marked_inds.size()-1; i>=0; --i)
+	 	 free_ind(pop,marked_inds[i]);
+
+	  assert(pop.size() == alpha);
+
     return;
 }
 int getNN(int index, int k, int size, SPEA2& S,vector<ind>& pop)
@@ -459,7 +461,7 @@ int getNN(int index, int k, int size, SPEA2& S,vector<ind>& pop)
 		int prev_min_index = S.NN[index][k-1];
 		double prev_min_dist = S.dist[index][prev_min_index];
 		/*double prev_min_dist;
-		if (S.dist[index][prev_min_index]!=-1) 
+		if (S.dist[index][prev_min_index]!=-1)
 			prev_min_dist = S.dist[index][prev_min_index];
 		else{
 			prev_min_dist = calcDistance(pop[index],pop[prev_min_index]);
@@ -472,7 +474,7 @@ int getNN(int index, int k, int size, SPEA2& S,vector<ind>& pop)
 		{
 			my_dist = S.dist[index][i];
 			//my_dist = calcDistance(pop[index],pop[i]);
-			/*if (S.dist[index][i]!=-1) 
+			/*if (S.dist[index][i]!=-1)
 				my_dist = S.dist[index][i];
 			else{
 				my_dist = calcDistance(pop[index],pop[i]);
@@ -501,7 +503,7 @@ double getNNd(int index, int k, int dim, SPEA2& S, vector<ind>& pop)
    For for already deleted individuals, returns -1 */
 {
     int neighbor_index = getNN(index, k, dim, S,pop);
-    
+
     if (S.copies[neighbor_index] == 0)
 		return (-1);
     else
@@ -517,7 +519,7 @@ int irand(int range)
 void truncate_nondominated(vector<int>& marked_inds, vector<ind>& pop, int& alpha, SPEA2& S)
 /* truncate from nondominated individuals (if too many) */
 {
-    int i;	
+    int i;
 
     /* delete all dominated individuals */
     for (i = 0; i<pop.size(); ++i)
@@ -555,11 +557,11 @@ void truncate_nondominated(vector<int>& marked_inds, vector<ind>& pop, int& alph
 			count++;
 			}
 		}
-	
+
 		assert(count >= max_copies);
-	
+
 		if (count > max_copies)
-		{    
+		{
 			if (!dist_calc){
 				calcDistances(pop,S);
 				dist_calc=true;
@@ -571,12 +573,12 @@ void truncate_nondominated(vector<int>& marked_inds, vector<ind>& pop, int& alph
 			{
 			neighbor[i] = 1;  /* pointers to next neighbor */
 			}
-	    
+
 			while (count > max_copies)
 			{
 				double min_dist = MAX_DOUBLE;
 				int count2 = 0;
-		
+
 				for (i = 0; i < count; i++)
 				{
 					double my_dist = -1;
@@ -585,7 +587,7 @@ void truncate_nondominated(vector<int>& marked_inds, vector<ind>& pop, int& alph
 						my_dist = getNNd(marked[i],neighbor[i],pop.size(),S,pop);
 						neighbor[i]++;
 					}
-		    
+
 					if (my_dist < min_dist)
 					{
 						count2 = 0;
@@ -603,11 +605,11 @@ void truncate_nondominated(vector<int>& marked_inds, vector<ind>& pop, int& alph
 				{
 					break;
 				}
-			}   
+			}
 			//free(neighbor);
 			//    neighbor = NULL;
 		}
-	
+
 		/* remove individual from population */
 		delete_index = marked[irand(count)];
 		marked_inds.push_back(delete_index);
@@ -630,7 +632,7 @@ void truncate_nondominated(vector<int>& marked_inds, vector<ind>& pop, int& alph
 		S.fitness_bucket[0]--;
 		S.fitness_bucket_mod[0]--;
     }
-    
+
     return;
 }
 void truncate_dominated(vector<int>& marked_inds, vector<ind>& pop, int& alpha, SPEA2& S)
@@ -640,14 +642,14 @@ void truncate_dominated(vector<int>& marked_inds, vector<ind>& pop, int& alpha, 
     int size = pop.size();
     int num = 0;
    // size = pop.size();
-    
+
     i = -1;
     while (num < alpha)
     {
 		++i;
 		num += S.fitness_bucket_mod[i];
     }
-    
+
     j = i * size;
     num = num - S.fitness_bucket_mod[i] + S.fitness_bucket[j];
     while (num < alpha)
@@ -655,14 +657,14 @@ void truncate_dominated(vector<int>& marked_inds, vector<ind>& pop, int& alpha, 
 		++j;
 		num += S.fitness_bucket[j];
     }
-    
+
     if (num == alpha)
     {
 		for (i = size-1; i >= 0; --i)
 		{
 			if (pop[i].spea_fit > j)
 				marked_inds.push_back(i);
-				//free_ind(pop,i);			
+				//free_ind(pop,i);
 		}
     }
     else /* if not all fit into the next generation */
@@ -734,9 +736,9 @@ void truncate_dominated(vector<int>& marked_inds, vector<ind>& pop, int& alpha, 
 					}
 				}
 			}
-		}     
+		}
 		//for (int n=pop.size()-1; n>=0; --n){
-		//	if(pop[n].spea_fit<0) 
+		//	if(pop[n].spea_fit<0)
 		//		marked_inds.push_back(i);
 		//		//free_ind(pop,n);
 		//}
@@ -746,4 +748,3 @@ void truncate_dominated(vector<int>& marked_inds, vector<ind>& pop, int& alpha, 
 			return;
     }
 }
-

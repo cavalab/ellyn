@@ -1419,7 +1419,7 @@ void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>
 			me.fitness=p.max_fit;
 		else{
 			if (!(p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0)){
-				s.out << "warning: fit_type not set to error. using error anyway (because classification is being output)\n";
+				if (p.verbosity>0) s.out << "warning: fit_type not set to error. using error anyway (because classification is being output)\n";
 				p.fit_type="MAE";
 			}
 			me.fitness = me.abserror;
@@ -1437,7 +1437,7 @@ void CalcClassOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>
 				me.fitness_v=p.max_fit;
 			else{
 				if (!(p.fit_type.compare("1")==0 || p.fit_type.compare("MAE")==0)){
-					s.out << "WARNING: fit_type not set to error. using error anyway (because classification is being output)\n";
+					if (p.verbosity>0) s.out << "WARNING: fit_type not set to error. using error anyway (because classification is being output)\n";
 					p.fit_type="MAE";
 				}
 				me.fitness_v = me.abserror_v;

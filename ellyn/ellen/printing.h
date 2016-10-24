@@ -7,7 +7,7 @@ using namespace std;
 
 void printbestind(tribe& T,params& p,state& s,string& logname)
 {
-	s.out << "saving best ind... \n";
+	if (p.verbosity>0) s.out << "saving best ind... \n";
 	ind best;
 	T.getbestind(best);
 	string bestname = logname.substr(0,logname.size()-4)+".best_ind";
@@ -59,7 +59,7 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 		for (unsigned i = 0; i<p.number_of_classes; ++i){
 			fout << "C[" << i << "]:\n";
 			fout << best.C[i] << "\n";
-		}	
+		}
 	}
 	fout << "output:\n";
 	for(unsigned int i =0;i<best.output.size();++i)
@@ -77,7 +77,7 @@ void initdatafile(std::ofstream& dfout,string & logname,params& p)
 	dfout << "gen \t pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t best_MSE \t best_MSE_v \t best_R2 \t best_R2_v \t best_VAF \t best_VAF_v \t size \t eff_size \t pHC_pct \t eHC_pct \t eHC_ties \t good_g_pct \t neut_g_pct \t bad_g_pct \t time";
 	if (p.print_homology)
 		dfout << "\t tot_hom \t on_hom \t off_hom";
-	if (p.classification && p.class_m3gp) 
+	if (p.classification && p.class_m3gp)
 		dfout << "\t dimension" ;
 	if (p.print_novelty)
 		dfout << "\t novelty" ;
@@ -107,7 +107,7 @@ void printdatafile(tribe& T,state& s,params& p, vector<Randclass>& r,std::ofstre
 		T.hom(r,tot_hom,on_hom,off_hom);
 		dfout << "\t" << tot_hom << "\t" << on_hom << "\t" << off_hom;
 	}
-	if (p.classification && p.class_m3gp) 
+	if (p.classification && p.class_m3gp)
 		dfout << "\t" << best_ind.dim ;
 	if (p.print_novelty){
 		float novelty;
@@ -136,24 +136,24 @@ void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
 	}
 	else if (type == 2){
 		string gen = to_string(static_cast<long long>(s.genevals.size()));
-		s.out << "saving pop... \n";
+		if (p.verbosity>0) s.out << "saving pop... \n";
 		bestname = logname.substr(0,logname.size()-4) + "gen" + gen + ".pop";
 		sort(pop.begin(),pop.end(),SortFit());
 	}
 	else if (type == 3){
 		string gen = to_string(static_cast<long long>(s.genevals.size()));
-		s.out << "saving initial pop... \n";
+		if (p.verbosity>0) s.out << "saving initial pop... \n";
 		bestname = logname.substr(0,logname.size()-4) + ".init_pop";
 		sort(pop.begin(),pop.end(),SortFit());
 	}
 	else {
-		s.out << "saving last pop... \n";
+		if (p.verbosity>0) s.out << "saving last pop... \n";
 		bestname = logname.substr(0,logname.size()-4)+".last_pop";
 		//bestname = "lastpop.last_pop";
 		sort(pop.begin(),pop.end(),SortComplexity());
 		stable_sort(pop.begin(),pop.end(),SortFit());
 	}
-	
+
 	std::ofstream fout;
 	fout.open(bestname);
 	//boost::progress_timer timer;
