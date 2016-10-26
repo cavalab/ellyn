@@ -53,7 +53,7 @@ Given a set of data with variables X and target Y, fit ellyn using the ```fit()`
 learner.fit(X,Y)
 ```
 
-You have now learned a model for your data, as well as a predictor that uses the chosen machine learning algorithm with these feaures. Predict your model's response on a new set of variables as
+You have now learned a model for your data. Predict your model's response on a new set of variables as
 
 ```python
 y_pred = learner.predict(X_unseen)
