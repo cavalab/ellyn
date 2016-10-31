@@ -53,7 +53,7 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 	fout << "origin: " << best.origin << "\n";
 	fout << "age: " << best.age << "\n";
 	fout << "eqn form: " << best.eqn_form << "\n";
-	if (p.classification && p.class_m3gp){
+	if (p.classification && p.class_m4gp){
 		fout << "M:\n";
 		fout << best.M << "\n";
 		for (unsigned i = 0; i<p.number_of_classes; ++i){
@@ -77,7 +77,7 @@ void initdatafile(std::ofstream& dfout,string & logname,params& p)
 	dfout << "gen \t pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t best_MSE \t best_MSE_v \t best_R2 \t best_R2_v \t best_VAF \t best_VAF_v \t size \t eff_size \t pHC_pct \t eHC_pct \t eHC_ties \t good_g_pct \t neut_g_pct \t bad_g_pct \t time";
 	if (p.print_homology)
 		dfout << "\t tot_hom \t on_hom \t off_hom";
-	if (p.classification && p.class_m3gp)
+	if (p.classification && p.class_m4gp)
 		dfout << "\t dimension" ;
 	if (p.print_novelty)
 		dfout << "\t novelty" ;
@@ -107,7 +107,7 @@ void printdatafile(tribe& T,state& s,params& p, vector<Randclass>& r,std::ofstre
 		T.hom(r,tot_hom,on_hom,off_hom);
 		dfout << "\t" << tot_hom << "\t" << on_hom << "\t" << off_hom;
 	}
-	if (p.classification && p.class_m3gp)
+	if (p.classification && p.class_m4gp)
 		dfout << "\t" << best_ind.dim ;
 	if (p.print_novelty){
 		float novelty;
@@ -201,7 +201,7 @@ void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
 		fout << "origin: " << pop.at(h).origin << "\n";
 		fout << "age: " << pop.at(h).age << "\n";
 		fout << "eqn form: " << pop.at(h).eqn_form << "\n";
-		if (p.classification && p.class_m3gp) fout << "dimensions: " << pop[h].dim << "\n";
+		if (p.classification && p.class_m4gp) fout << "dimensions: " << pop[h].dim << "\n";
 		/*fout << "output: ";
 		for(unsigned int i =0;i<pop.at(h).output.size();++i)
 		{

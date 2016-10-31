@@ -1,4 +1,0 @@
-50 ..\in\params_linmsd_p1000_g1000_eHC_off.txt ..\in\lin_msd.txt
-50 ..\in\params_linmsd_p1000_g1000_eHC_on.txt ..\in\lin_msd.txt
-50 ..\in\params_vdp_p1000_g1000_eHC_off.txt ..\in\VDP.txt
-50 ..\in\params_vdp_p1000_g1000_eHC_on.txt ..\in\VDP.txt

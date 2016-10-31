@@ -1,7 +1,8 @@
 CC=g++
 CFLAGS= -c -fPIC -I /usr/include/eigen3 -I /usr/include/python3.5m -std=c++0x -fopenmp -Ofast
 LDFLAGS= -std=c++0x -fopenmp -Ofast -fPIC -shared -L/usr/lib/x86_64-linux-gnu/ -lpython3.5m
-LDFLAGS2= /usr/include/boost_1_61_0/stage/lib/libboost_python3.a
+# LDFLAGS2= /usr/include/boost_1_61_0/stage/lib/libboost_python3.a
+LDFLAGS2= include/libboost_python3.a
 #-L/usr/lib/x86_64-linux-gnu
 SOURCES= stdafx.cpp AgeBreed.cpp AgeFitSurvival.cpp AgeFitGenSurvival.cpp ApplyGenetics.cpp BruteforceAlgo.cpp Crossover.cpp Datapoint.cpp DC.cpp EpiHC.cpp EpiMut.cpp Eqn2Line.cpp Fitness.cpp FitnessEstimator.cpp general_fns.cpp Generation.cpp HillClimb.cpp InitPop.cpp LexicaseSelect.cpp Line2Eqn.cpp Mutate.cpp NondominatedsortAlgo.cpp pareto.cpp pareto_fc.cpp ParetoSurvival.cpp Prune.cpp runEllenGP.cpp StablesortAlgo.cpp strdist.cpp Tournament.cpp
 #SOURCES = $(wildcard *.cpp)

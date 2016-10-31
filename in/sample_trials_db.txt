@@ -1,1 +1,0 @@
-32 C:\Users\BionicBill\Documents\PhD\C++\VS\Develep\in\sampleparams.txt	C:\Users\BionicBill\Documents\PhD\C++\VS\Develep\in\sampledata.txt

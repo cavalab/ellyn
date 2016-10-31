@@ -245,7 +245,7 @@ int getComplexity(ind& me, params& p)
 
 	if (c_float.empty())
 		complexity = p.max_fit;
-	else if (p.classification && p.class_m3gp)
+	else if (p.classification && p.class_m4gp)
 		complexity = accumulate(c_float.begin(), c_float.end(), 0);
 	else
 		complexity = c_float.back();
@@ -430,7 +430,7 @@ void Fitness(vector<ind>& pop,params& p,Data& d,state& s,FitnessEstimator& FE)
 		//if(p.sel!=3){
 		StandardFitness(pop.at(count),p,d,s,FE,datatable,dattovar);
 
-		if (p.classification && p.class_m3gp)
+		if (p.classification && p.class_m4gp)
 			pop[count].dim = pop[count].M.cols();
 		//} // if p.sel!=3
 		//else //LEXICASE FITNESS
@@ -474,7 +474,7 @@ void StandardFitness(ind& me,params& p,Data& d,state& s,FitnessEstimator& FE,uno
 
 // calculate error
 		if(!p.EstimateFitness){
-			if(p.classification && p.class_m3gp)
+			if(p.classification && p.class_m4gp)
 				Calc_M3GP_Output(me,p,d.vals,dattovar,d.target,s);
 			else if (p.classification)
 				CalcClassOutput(me,p,d.vals,dattovar,d.target,s);
@@ -488,7 +488,7 @@ void StandardFitness(ind& me,params& p,Data& d,state& s,FitnessEstimator& FE,uno
 			vector<vector<float>> FEvals;
 			vector<float> FEtarget;
 			setFEvals(FEvals,FEtarget,FE,d);
-			if(p.classification && p.class_m3gp)  Calc_M3GP_Output(me,p,FEvals,dattovar,FEtarget,s);
+			if(p.classification && p.class_m4gp)  Calc_M3GP_Output(me,p,FEvals,dattovar,FEtarget,s);
 			else if(p.classification) CalcClassOutput(me,p,FEvals,dattovar,FEtarget,s);
 			else CalcOutput(me,p,FEvals,dattovar,FEtarget,s);
 		} // if estimate fitness

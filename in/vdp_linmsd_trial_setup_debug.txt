@@ -1,4 +1,0 @@
-2 C:\Users\BionicBill\Documents\PhD\C++\VS\Develep\in\params_linmsd_p1000_g1000_eHC_off.txt C:\Users\BionicBill\Documents\PhD\C++\VS\Develep\in\lin_msd.txt
-2 C:\Users\BionicBill\Documents\PhD\C++\VS\Develep\in\params_linmsd_p1000_g1000_eHC_on.txt C:\Users\BionicBill\Documents\PhD\C++\VS\Develep\in\lin_msd.txt
-2 C:\Users\BionicBill\Documents\PhD\C++\VS\Develep\in\params_vdp_p1000_g1000_eHC_off.txt C:\Users\BionicBill\Documents\PhD\C++\VS\Develep\in\VDP.txt
-2 C:\Users\BionicBill\Documents\PhD\C++\VS\Develep\in\params_vdp_p1000_g1000_eHC_on.txt C:\Users\BionicBill\Documents\PhD\C++\VS\Develep\in\VDP.txt

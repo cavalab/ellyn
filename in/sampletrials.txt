@@ -1,1 +1,0 @@
-8 C:\Users\TheQuarry\Dropbox\Automated_modeling\ellen\in\sampleparams.txt	C:\Users\TheQuarry\Dropbox\Automated_modeling\ellen\in\sampledata.txt

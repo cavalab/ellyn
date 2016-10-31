@@ -50,7 +50,7 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, Data
 		int pt1,begin1,end1;
 		int action; // 1: delete tree; 2: swap tree; 3: add tree (m3gp only)
 		// specialization for m3gp
-			if (p.classification && p.class_m3gp){
+			if (p.classification && p.class_m4gp){
 
 				if ( r[omp_get_thread_num()].rnd_flt(0.0,1.0) <= 0.333 && kid[0].line.size()<p.max_len){
 					action=3;
@@ -72,7 +72,7 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, Data
 				}
 
 			}
-			//else if (p.classification && p.class_m3gp) //just add tree to end				
+			//else if (p.classification && p.class_m4gp) //just add tree to end				
 			//	action = 3;
 			else{
 				// choose action

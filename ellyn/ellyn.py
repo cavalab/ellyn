@@ -44,9 +44,29 @@ class ellyn(BaseEstimator):
 
     def __init__(self, g=100, popsize=500, limit_evals=False, max_evals = 0,
                  selection='tournament',sel=1,classification=False,islands=False,
-                 fit_type=None,verbosity=0,random_state=0,class_m3gp=False,
+                 fit_type=None,verbosity=0,random_state=0,
                  class_m4gp=False,scoring_function=mean_squared_error,print_log=False,
-                 class_bool=False,max_len=None,island_gens=50):
+                 class_bool=False,max_len=None,island_gens=50, numERC=None,
+                 print_every_pop=None, op_weights=None,
+                 FE_pop_size=None, rt_cross=None, ERC_ints=None,
+                 train_pct=None, eHC_on=None, PS_sel=None,
+                 lex_eps_global=None, lex_pool=None, AR_nka=None,
+                 print_homology=None, max_len_init=None, prto_arch_size=None,
+                 cvals=None, stop_condition=None, lex_metacases=None,
+                 FE_rank=None, EHC_its=None, lex_eps_error_mad=True,
+                 ERC=None, erc_ints=None, AR_na=None, rt_mut=None,
+                 pop_restart=None, seeds=None, tourn_size=None, prto_arch_on=None,
+                 FE_ind_size=None, lex_eps_target_mad=None, maxERC=None,
+                 resultspath=None, AR=None, rt_rep=None, estimate_fitness=None,
+                 pHC_on=None, INPUT_FILE=None, FE_train_size=None,
+                 DISABLE_UPDATE_CHECK=False, AR_lookahead=None, VERBOSITY=0, pop_restart_path=None,
+                 INPUT_SEPARATOR=None,
+                 AR_nkb=None, num_log_pts=None, train=None,
+                 FE_train_gens=None, AR_nb=None, init_trees=None,
+                 print_novelty=None, EHC_slim=None, elitism=None,
+                 print_genome=None, pHC_its=None, shuffle_data=None, class_prune=None,
+                 EHC_init=None, init_validate_on=None, minERC=None,
+                 op_list=None, EHC_mut=None, min_len=None):
                 # sets up GP.
 
         # Save params to be recalled later by get_params()
@@ -76,10 +96,9 @@ class ellyn(BaseEstimator):
 
         self._best_estimator = []
         #convert m4gp argument to m3gp used in ellenGP
-        self.params['class_m3gp'] = self.params['class_m4gp']
-        if classification and not (self.params['class_m3gp'] or self.params['class_bool']):
+        if classification and not (self.params['class_m4gp'] or self.params['class_bool']):
             #default to M4GP in the case no classifier specified
-            self.params['class_m3gp'] = True
+            self.params['class_m4gp'] = True
 
         # # delete items that have a default value of None so that the elgp defaults will be used
         for k in list(self.params.keys()):
@@ -97,7 +116,8 @@ class ellyn(BaseEstimator):
         # print("best program:",self._best_estimator)
 
         # if M4GP is used, call Distance Classifier
-        if self.params['class_m3gp']:
+        # pdb.set_trace()
+        if self.params['class_m4gp']:
             if self.params['verbosity'] > 0: print("Storing DistanceClassifier...")
             self.DC = DistanceClassifier()
             self.DC.fit(self._out(self._best_estimator,features),labels)
@@ -111,8 +131,8 @@ class ellyn(BaseEstimator):
         # print("best_inds:",self._best_inds)
         # print("best estimator size:",self._best_estimator.coef_.shape)
         # tmp = self._out(self._best_estimator,testing_features)
-        if 'class_m3gp' in self.params:
-            if self.params['class_m3gp']:
+        if 'class_m4gp' in self.params:
+            if self.params['class_m4gp']:
                 return self.DC.predict(self._out(self._best_estimator,testing_features))
         else:
             return self._out(self._best_estimator,testing_features)
@@ -182,8 +202,8 @@ class ellyn(BaseEstimator):
         for n in I:
             self._eval(n,features,stack_float,stack_bool)
             # print("stack_float:",stack_float)
-        if 'class_m3gp' in self.params:
-            if self.params['class_m3gp']:
+        if 'class_m4gp' in self.params:
+            if self.params['class_m4gp']:
                 return np.asarray(stack_float).transpose()
         else:
             return stack_float[-1]
@@ -389,7 +409,7 @@ def main():
     parser.add_argument('--class_bool', action='store_true', dest='class_bool', default=None,
                     help='Flag to interpret class labels as bit-string conversion of boolean stack output.')
 
-    parser.add_argument('--class_m4gp', action='store_true', dest='class_m4gp', default=None,
+    parser.add_argument('--class_m4gp', action='store_true', dest='class_m4gp', default=False,
                     help='Flag to use the M4GP algorithm.')
 
     parser.add_argument('--class_prune', action='store_true', dest='class_prune', default=None,
@@ -554,7 +574,7 @@ def main():
     # training_labels = np.array(input_data['label'].values,dtype=np.float32,order='C')
     testing_features = input_data.loc[test_i].drop('label', axis=1).values
     testing_labels = input_data.loc[test_i, 'label'].values
-
+    # pdb.set_trace()
     learner = ellyn(**args.__dict__)
     # learner = ellyn(generations=args.GENERATIONS, population_size=args.POPULATION_SIZE,
     #             mutation_rate=args.MUTATION_RATE, crossover_rate=args.CROSSOVER_RATE,

@@ -1,4 +1,0 @@
-50 ..\in\params_lv_eHC_on_i100_t10.txt ..\in\lv1.txt
-50 ..\in\params_lv_eHC_on_i100_t10.txt ..\in\lv2.txt
-50 ..\in\params_lv_eHC_off.txt ..\in\lv1.txt
-50 ..\in\params_lv_eHC_off.txt ..\in\lv2.txt

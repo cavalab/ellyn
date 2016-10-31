@@ -225,7 +225,7 @@ else{
 		}*/
 	}
 }
-//if (p.classification && p.class_m3gp){
+//if (p.classification && p.class_m4gp){
 //	ind best_ind;
 //	T.getbestind(best_ind);
 //	s.out << "best M:\n";

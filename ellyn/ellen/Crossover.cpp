@@ -219,7 +219,7 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 			int pt1, pt2;
 
 			// specialization for m3gp
-			if (p.classification && p.class_m3gp && r[omp_get_thread_num()].rnd_flt(0.0,1.0) > 0.5){
+			if (p.classification && p.class_m4gp && r[omp_get_thread_num()].rnd_flt(0.0,1.0) > 0.5){
 				// find root nodes of r1
 				vector<unsigned> roots_r1;
 				find_root_nodes(parents[r1].line, roots_r1);

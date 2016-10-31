@@ -278,8 +278,8 @@ void load_params(params &p, std::ifstream& fs)
 			ss>>p.classification;
 		else if(varname.compare("class_bool")==0)
 			ss>>p.class_bool;
-		else if(varname.compare("class_m3gp")==0)
-			ss>>p.class_m3gp;
+		else if(varname.compare("class_m4gp")==0)
+			ss>>p.class_m4gp;
 		else if(varname.compare("class_prune")==0)
 			ss>>p.class_prune;
 		else if(varname.compare("number_of_classes")==0)
@@ -547,7 +547,7 @@ void load_params(params &p, std::ifstream& fs)
 		p.lex_eps_global = true;
 
 	// make p.min_len equal the number of classes if m3gp is used
-	if(p.class_m3gp && p.min_len < p.number_of_classes)
+	if(p.class_m4gp && p.min_len < p.number_of_classes)
 		p.min_len = p.number_of_classes;
 
 }

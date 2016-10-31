@@ -187,7 +187,7 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s
 		cout << "Bad p.sel parameter. " << endl;
 		break;
 	}
-	if (p.classification && p.class_m3gp && p.class_prune)
+	if (p.classification && p.class_m4gp && p.class_prune)
 		Prune(pop,p,r,d,s,FE);
 
 	//if (p.loud ) fcout << "  Gentime...";

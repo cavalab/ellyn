@@ -199,7 +199,7 @@ struct params {
 	//classification
 	bool classification;
 	bool class_bool; // use binary or multiclass
-	bool class_m3gp; // use m3gp fitness
+	bool class_m4gp; // use m3gp fitness
 	bool class_prune; // prune dimensions of best individual each generation
 	int number_of_classes; // number of unique classes
 
@@ -354,7 +354,7 @@ struct params {
 		// classification
 		classification = 0;
 		class_bool = 0;
-		class_m3gp = 0;
+		class_m4gp = 0;
 		class_prune = 0;
 		//class_multiclass=0; // use multiclass
 		number_of_classes=1; //for use with multiclass
@@ -596,8 +596,8 @@ struct params {
 			classification = extract<bool>(d["classification"]);
 		if(d.has_key("class_bool"))
 			class_bool = extract<bool>(d["class_bool"]);
-		if(d.has_key("class_m3gp"))
-			class_m3gp = extract<bool>(d["class_m3gp"]);
+		if(d.has_key("class_m4gp"))
+			class_m4gp = extract<bool>(d["class_m4gp"]);
 		if(d.has_key("class_prune"))
 			class_prune = extract<bool>(d["class_prune"]);
 		if(d.has_key("number_of_classes"))
@@ -893,7 +893,7 @@ struct params {
 			lex_eps_global = true;
 
 		// make min_len equal the number of classes if m3gp is used
-		if(class_m3gp && min_len < number_of_classes)
+		if(class_m4gp && min_len < number_of_classes)
 			min_len = number_of_classes;
 
 	}
