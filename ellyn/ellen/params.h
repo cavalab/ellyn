@@ -182,6 +182,7 @@ struct params {
 	// ==== Printing Options === //
 	//print initial population
 	bool print_init_pop;
+	bool print_last_pop;
 	bool print_homology; // print homology
 	bool print_log; //print log
 	bool print_every_pop; // print pop every generation
@@ -248,10 +249,12 @@ struct params {
 		print_every_pop=0;
 		//print initial population
 		print_init_pop = 0;
+		//print last population
+		print_last_pop = 0;
 		// print homology
 		print_homology = 0;
 		//print log
-		print_log = 1;
+		print_log = 0;
 		// number of log points to print (with eval limitation)
 		num_log_pts = 0;
 		// print csv files of genome each print cycle
