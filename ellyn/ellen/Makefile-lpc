@@ -12,7 +12,7 @@ BIN=./lib
 EXECUTABLE=lib/elgp.so
 
 
-all: lib_dir load_module program
+all: lib_dir program
 
 debug:	CFLAGS += -ggdb
 debug: lib_dir program
@@ -20,9 +20,9 @@ debug: lib_dir program
 lib_dir:
 	mkdir -p $(BIN)
 
-load_module:
-	module load eigen/3.2.7
-	module load gcc/5.2.0
+#load_module:
+#	module load eigen/3.2.7
+#	module load gcc/5.2.0
 
 program: $(SOURCES) $(EXECUTABLE)
 
