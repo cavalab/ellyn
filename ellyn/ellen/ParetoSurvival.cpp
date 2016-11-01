@@ -422,16 +422,15 @@ void environmentalSelection(vector<ind>& pop, int alpha, SPEA2& S)
     vector<int> marked_inds;
 
     if (S.fitness_bucket[0] > alpha){
-		//calcDistances(pop,S);
-		truncate_nondominated(marked_inds,pop,alpha,S);
-		td=false;
-
-	}
+  		//calcDistances(pop,S);
+  		truncate_nondominated(marked_inds,pop,alpha,S);
+  		td=false;
+    }
     else if (pop.size() > alpha){
-		//calcDistances(pop,S);
-		truncate_dominated(marked_inds,pop,alpha,S);
-		td=true;
-	}
+  		//calcDistances(pop,S);
+  		truncate_dominated(marked_inds,pop,alpha,S);
+  		td=true;
+  	}
 
     sort(marked_inds.begin(),marked_inds.end());
 	  // move remaining pop to top of pop (plop slop)
