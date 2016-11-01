@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS= -c -fPIC -I $(CPATH)-I /usr/include/eigen3 -I /home/lacava/anaconda3/include/python3.5m -std=c++0x -fopenmp -Ofast
+CFLAGS= -c -fPIC -I $(CPATH) -I /home/lacava/anaconda3/include/python3.5m -std=c++0x -fopenmp -Ofast
 LDFLAGS= -std=c++0x -fopenmp -Ofast -fPIC -shared -I $(LD_LIBRARY_PATH) -L/home/lacava/anaconda3/lib/python3.5
 # LDFLAGS2= /usr/include/boost_1_61_0/stage/lib/libboost_python3.a
 LDFLAGS2= include/libboost_python3.a
