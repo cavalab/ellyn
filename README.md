@@ -32,7 +32,7 @@ Usage
 In a python script, import ellyn:
 
 ```python
-import ellen.lib.elgp as elgp
+from ellyn import ellyn
 ```
 
 ellyn uses the same nomenclature as [sklearn](http://scikit-learn.org/) supervised learning modules. You can initialize a few learner in python as:
