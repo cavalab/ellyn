@@ -59,7 +59,7 @@ class ellyn(BaseEstimator):
                  FE_ind_size=None, lex_eps_target_mad=None, maxERC=None,
                  resultspath=None, AR=None, rt_rep=None, estimate_fitness=None,
                  pHC_on=None, INPUT_FILE=None, FE_train_size=None,
-                 DISABLE_UPDATE_CHECK=False, AR_lookahead=None, VERBOSITY=0, pop_restart_path=None,
+                 DISABLE_UPDATE_CHECK=False, AR_lookahead=None, pop_restart_path=None,
                  INPUT_SEPARATOR=None,
                  AR_nkb=None, num_log_pts=None, train=None,
                  FE_train_gens=None, AR_nb=None, init_trees=None,
@@ -532,7 +532,7 @@ def main():
                         type=int, help='Random number generator seed for reproducibility. Note that using multi-threading may '
                                        'make exacts results impossible to reproduce.')
 
-    parser.add_argument('-v', action='store', dest='VERBOSITY', default=0, choices=[0, 1, 2, 3],
+    parser.add_argument('-v', action='store', dest='verbosity', default=0, choices=[0, 1, 2, 3],
                         type=int, help='How much information ellyn communicates while it is running: 0 = none, 1 = minimal, 2 = lots, 3 = all.')
 
     parser.add_argument('--no-update-check', action='store_true', dest='DISABLE_UPDATE_CHECK', default=False,
@@ -586,7 +586,7 @@ def main():
 
     learner.fit(training_features, training_labels)
 
-    if args.VERBOSITY >= 1:
+    if args.verbosity >= 1:
         print('\nTraining accuracy: {}'.format(learner.score(training_features, training_labels)))
         print('Holdout accuracy: {}'.format(learner.score(testing_features, testing_labels)))
 
