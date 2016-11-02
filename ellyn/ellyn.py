@@ -43,7 +43,7 @@ class ellyn(BaseEstimator):
     update_checked = False
 
     def __init__(self, g=100, popsize=500, limit_evals=False, max_evals = 0,
-                 selection='tournament',sel=1,classification=False,islands=False,
+                 selection='tournament',classification=False,islands=False,
                  fit_type=None,verbosity=0,random_state=0,
                  class_m4gp=False,scoring_function=mean_squared_error,print_log=False,
                  class_bool=False,max_len=None,island_gens=50, numERC=None,
@@ -66,17 +66,17 @@ class ellyn(BaseEstimator):
                  print_novelty=None, EHC_slim=None, elitism=None,
                  print_genome=None, pHC_its=None, shuffle_data=None, class_prune=None,
                  EHC_init=None, init_validate_on=None, minERC=None,
-                 op_list=None, EHC_mut=None, min_len=None):
+                 op_list=None, EHC_mut=None, min_len=None,sel=None):
                 # sets up GP.
 
         # Save params to be recalled later by get_params()
         self.params = locals()  # Must be placed before any local variable definitions
         self.params.pop('self')
         # convert selection method to number
+
         try:
             self.params['sel']={'tournament': 1,'dc':2,'lexicase': 3,'afp': 4,'rand': 5}[selection]
         except Exception:
-            print("sel:",selection)
             raise(Exception)
 
 
@@ -323,7 +323,7 @@ def main():
     parser.add_argument('-me', action='store', dest='max_evals', default=None,
                         type=float_range, help='Max point evaluations.')
 
-    parser.add_argument('-sel', action='store', dest='sel', default='tournament', choices = ['tournament','dc','lexicase','afp','rand'],
+    parser.add_argument('-sel', action='store', dest='selection', default='tournament', choices = ['tournament','dc','lexicase','afp','rand'],
                         type=str, help='Selection method (Default: tournament)')
 
     parser.add_argument('-PS_sel', action='store', dest='PS_sel', default=None, choices = [1,2,3,4,5],
@@ -559,6 +559,9 @@ def main():
 
     if 'Label' in input_data.columns.values:
         input_data.rename(columns={'Label': 'label'}, inplace=True)
+
+    input_data.rename(columns={'target': 'label', 'class': 'label'}, inplace=True)
+
 
     random_state = args.random_state if args.random_state > 0 else None
 
