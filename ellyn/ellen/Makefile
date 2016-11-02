@@ -1,6 +1,7 @@
 CC=g++
 CFLAGS= -c -fPIC -I /usr/include/eigen3 -I /usr/include/python3.5m -std=c++0x -fopenmp -Ofast
-LDFLAGS= -std=c++0x -fopenmp -Ofast -fPIC -shared -L/usr/lib/x86_64-linux-gnu/ -lpython3.5m
+LDFLAGS= -std=c++0x -fopenmp -Ofast -shared -lpython3.5m 
+#-L/usr/lib/x86_64-linux-gnu/
 # LDFLAGS2= /usr/include/boost_1_61_0/stage/lib/libboost_python3.a
 LDFLAGS2= include/libboost_python3.a
 #-L/usr/lib/x86_64-linux-gnu
@@ -21,6 +22,8 @@ lib_dir:
 	mkdir -p $(BIN)
 
 program: $(SOURCES) $(EXECUTABLE)
+
+link: $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) $(LDFLAGS2) -o $@
