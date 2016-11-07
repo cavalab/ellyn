@@ -75,7 +75,7 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 						treelen=1;
 					else if (treelen>p.max_len_init)
 						treelen=p.max_len_init;
-
+						
 					makeline_rec(tmp_line,p,r,treelen);
 					pop[i].line.insert(pop[i].line.end(),tmp_line.begin(),tmp_line.end());
 					remain_len -= tmp_line.size();

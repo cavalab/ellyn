@@ -185,6 +185,7 @@ struct params {
 	bool print_last_pop;
 	bool print_homology; // print homology
 	bool print_log; //print log
+	bool print_data;
 	bool print_every_pop; // print pop every generation
 	bool print_genome; // print genome every generation
 	bool print_epigenome; // print epigenome every generation
@@ -255,6 +256,8 @@ struct params {
 		print_homology = 0;
 		//print log
 		print_log = 0;
+		//print data
+		print_data = 0;
 		// number of log points to print (with eval limitation)
 		num_log_pts = 0;
 		// print csv files of genome each print cycle
@@ -326,7 +329,7 @@ struct params {
 		// Pareto settings
 
 		prto_arch_on = 0;
-		prto_arch_size = 20;
+		prto_arch_size = 1;
 		prto_sel_on = 0;
 
 		//island model
@@ -559,6 +562,8 @@ struct params {
 			print_homology = extract<bool>(d["print_homology"]);
 		if (d.has_key("print_log"))
 			print_log = extract<bool>(d["print_log"]);
+		if (d.has_key("print_data"))
+			print_data = extract<bool>(d["print_data"]);
 		if (d.has_key("print_init_pop"))
 			print_init_pop = extract<bool>(d["print_init_pop"]);
 		if (d.has_key("print_genome"))

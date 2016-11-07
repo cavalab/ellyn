@@ -21,6 +21,21 @@ import pdb
 import ellen.lib.elgp as elgp
 from update_checker import update_check
 from DistanceClassifier import DistanceClassifier
+from functools import wraps
+import inspect
+
+def initializer(fun):
+   names, varargs, keywords, defaults = inspect.getargspec(fun)
+   @wraps(fun)
+   def wrapper(self, *args, **kargs):
+       if type(kargs.items()) is list:
+           for name, arg in zip(names[1:], args) + kargs.items():
+               setattr(self, name, arg)
+       else:
+           for name, arg in zip(names[1:], args) | kargs.items():
+               setattr(self, name, arg)
+       fun(self, *args, **kargs)
+   return wrapper
 # from numpy.ctypeslib import ndpointer
 # import ctypes
 # from joblib import Parallel, delayed
@@ -41,16 +56,15 @@ class ellyn(BaseEstimator):
 
     """
     update_checked = False
-
-    def __init__(self, g=100, popsize=500, limit_evals=False, max_evals = 0,
-                 selection='tournament',classification=False,islands=False,
-                 fit_type=None,verbosity=0,random_state=0,
-                 class_m4gp=False,scoring_function=mean_squared_error,print_log=False,
-                 class_bool=False,max_len=None,island_gens=50, numERC=None,
-                 print_every_pop=None, op_weights=None,
-                 FE_pop_size=None, rt_cross=None, ERC_ints=None,
-                 train_pct=None, eHC_on=None, PS_sel=None,
-                 lex_eps_global=None, lex_pool=None, AR_nka=None,
+    @initializer
+    def __init__(self, g=100, popsize=500, limit_evals=False, max_evals=0,
+                 selection='tournament', classification=False, islands=False,
+                 fit_type=None, verbosity=0, random_state=0, class_m4gp=False,
+                 scoring_function=mean_squared_error, print_log=False,
+                 class_bool=False, max_len=None, island_gens=50, numERC=None,
+                 print_every_pop=None, op_weights=None, FE_pop_size=None,
+                 rt_cross=None, ERC_ints=None, train_pct=None, eHC_on=None,
+                 PS_sel=None, lex_eps_global=None, lex_pool=None, AR_nka=None,
                  print_homology=None, max_len_init=None, prto_arch_size=None,
                  cvals=None, stop_condition=None, lex_metacases=None,
                  FE_rank=None, EHC_its=None, lex_eps_error_mad=True,
@@ -60,65 +74,92 @@ class ellyn(BaseEstimator):
                  resultspath=None, AR=None, rt_rep=None, estimate_fitness=None,
                  pHC_on=None, INPUT_FILE=None, FE_train_size=None,
                  DISABLE_UPDATE_CHECK=False, AR_lookahead=None, pop_restart_path=None,
-                 INPUT_SEPARATOR=None,
-                 AR_nkb=None, num_log_pts=None, train=None,
+                 INPUT_SEPARATOR=None, AR_nkb=None, num_log_pts=None, train=None,
                  FE_train_gens=None, AR_nb=None, init_trees=None,
                  print_novelty=None, EHC_slim=None, elitism=None,
                  print_genome=None, pHC_its=None, shuffle_data=None, class_prune=None,
                  EHC_init=None, init_validate_on=None, minERC=None,
-                 op_list=None, EHC_mut=None, min_len=None,sel=None):
+                 op_list=None, EHC_mut=None, min_len=None):
                 # sets up GP.
 
-        # Save params to be recalled later by get_params()
-        self.params = locals()  # Must be placed before any local variable definitions
-        self.params.pop('self')
-        # convert selection method to number
-
-        try:
-            self.params['sel']={'tournament': 1,'dc':2,'lexicase': 3,'afp': 4,'rand': 5}[selection]
-        except Exception:
-            raise(Exception)
-
-
         if fit_type:
-            self.params['scoring_function'] = {'MAE':mean_absolute_error,'MSE':mean_squared_error,
+            self.scoring_function = {'MAE':mean_absolute_error,'MSE':mean_squared_error,
                                     'R2':r2_score,'VAF':explained_variance_score,
                                     'combo':mean_absolute_error}[fit_type]
         elif classification:
-            # self.params['fit_type'] = 'MAE'
-            self.params['scoring_function'] = accuracy_score
+            # self.fit_type = 'MAE'
+            self.scoring_function = accuracy_score
         else:
-            self.params['scoring_function'] = mean_squared_error
+            self.scoring_function = mean_squared_error
         #
         # # set verbosity
         if not print_log:
-            self.params['print_log'] = self.params['verbosity'] > 1
+            self.print_log = self.verbosity > 1
 
         self._best_estimator = []
+        self.hof = []
         #convert m4gp argument to m3gp used in ellenGP
-        if classification and not (self.params['class_m4gp'] or self.params['class_bool']):
+        if classification and not (self.class_m4gp or self.class_bool):
             #default to M4GP in the case no classifier specified
-            self.params['class_m4gp'] = True
-
-        # # delete items that have a default value of None so that the elgp defaults will be used
-        for k in list(self.params.keys()):
-            if self.params[k] is None:
-                del self.params[k]
+            self.class_m4gp = True
 
     def fit(self, features, labels):
         """Fit model to data"""
-
         # pdb.set_trace()
-        np.random.seed(self.params['random_state'])
+        # set sel number from selection
+        self.sel = {'tournament': 1,'dc':2,'lexicase': 3,'afp': 4,'rand': 5,None: 1}[self.selection]
+
+        np.random.seed(self.random_state)
+        # get parameters
+        params = dict(self.__dict__)
+
+        for k in list(params.keys()):
+            if params[k] is None:
+                del params[k]
+
+        if self.prto_arch_on:
+            # split data into training and internal validation for choosing final model
+            train_i, val_i = train_test_split(np.arange(features.shape[0]),
+                                                                 stratify=None,
+                                                                 train_size=0.75,
+                                                                 test_size=0.25,
+                                                                 random_state=self.random_state)
+        else:
+            train_i = np.arange(features.shape[0])
+
+        result = []
         # run ellenGP
-        elgp.runEllenGP(self.params,np.asarray(features,dtype=np.float32,order='C'),
-                        np.asarray(labels,dtype=np.float32,order='C'),self._best_estimator)
+        elgp.runEllenGP(params,np.asarray(features[train_i],dtype=np.float32,order='C'),
+                        np.asarray(labels[train_i],dtype=np.float32,order='C'),result)
         # print("best program:",self._best_estimator)
+        print("archive:")
+        print(self.stacks_2_eqns(result))
+        # pdb.set_trace()
+
+        if self.prto_arch_on:
+            self.hof = result[:]
+            #evaluate archive on validation set and choose best
+            fit_v = []
+            for model in self.hof:
+                if self.class_m4gp:
+                    self.DC = DistanceClassifier()
+                    self.DC.fit(self._out(model,features[train_i]),labels[train_i])
+                    fit_v.append(self.scoring_function(labels[val_i],
+                                                       self.DC.predict(self._out(model,features[val_i]))))
+                else:
+                    fit_v.append(self.scoring_function(labels[val_i],self._out(model,features[val_i])))
+            # best estimator has best validation score
+            if self.scoring_function is r2_score or self.scoring_function is accuracy_score:
+                self._best_estimator = self.hof[np.argmax(fit_v)]
+            else:
+                self._best_estimator = self.hof[np.argmin(fit_v)]
+        else:
+            self._best_estimator = result
 
         # if M4GP is used, call Distance Classifier
         # pdb.set_trace()
-        if self.params['class_m4gp']:
-            if self.params['verbosity'] > 0: print("Storing DistanceClassifier...")
+        if self.class_m4gp:
+            if self.verbosity > 0: print("Storing DistanceClassifier...")
             self.DC = DistanceClassifier()
             self.DC.fit(self._out(self._best_estimator,features),labels)
 
@@ -131,9 +172,8 @@ class ellyn(BaseEstimator):
         # print("best_inds:",self._best_inds)
         # print("best estimator size:",self._best_estimator.coef_.shape)
         # tmp = self._out(self._best_estimator,testing_features)
-        if 'class_m4gp' in self.params:
-            if self.params['class_m4gp']:
-                return self.DC.predict(self._out(self._best_estimator,testing_features))
+        if self.class_m4gp:
+            return self.DC.predict(self._out(self._best_estimator,testing_features))
         else:
             return self._out(self._best_estimator,testing_features)
 
@@ -162,28 +202,28 @@ class ellyn(BaseEstimator):
         # print("testing labels shape:",testing_labels.shape)
         yhat = self.predict(testing_features)
         # pdb.set_trace()
-        return self.params['scoring_function'](testing_labels,yhat)
+        return self.scoring_function(testing_labels,yhat)
 
     def export(self, output_file_name):
         """does nothing currently"""
 
-    def get_params(self, deep=None):
-        """Get parameters for this estimator
-
-        This function is necessary for ellyn to work as a drop-in feature constructor in,
-        e.g., sklearn.cross_validation.cross_val_score
-
-        Parameters
-        ----------
-        deep: unused
-            Only implemented to maintain interface for sklearn
-
-        Returns
-        -------
-        params: mapping of string to any
-            Parameter names mapped to their values
-        """
-        return self.params
+    # def get_params(self, deep=None):
+    #     """Get parameters for this estimator
+    #
+    #     This function is necessary for ellyn to work as a drop-in feature constructor in,
+    #     e.g., sklearn.cross_validation.cross_val_score
+    #
+    #     Parameters
+    #     ----------
+    #     deep: unused
+    #         Only implemented to maintain interface for sklearn
+    #
+    #     Returns
+    #     -------
+    #     params: mapping of string to any
+    #         Parameter names mapped to their values
+    #     """
+    #     return self.__dict__
 
     def _eval(self,n, features, stack_float, stack_bool):
         """evaluation function for best estimator"""
@@ -202,11 +242,34 @@ class ellyn(BaseEstimator):
         for n in I:
             self._eval(n,features,stack_float,stack_bool)
             # print("stack_float:",stack_float)
-        if 'class_m4gp' in self.params:
-            if self.params['class_m4gp']:
-                return np.asarray(stack_float).transpose()
+
+        if self.class_m4gp:
+            return np.asarray(stack_float).transpose()
         else:
             return stack_float[-1]
+
+    def stacks_2_eqns(self,stacks):
+        """returns equation strings from stacks"""
+        if stacks:
+            return list(map(lambda p: self.stack_2_eqn(p), stacks))
+        else:
+            return []
+
+    def stack_2_eqn(self,p):
+        """returns equation string for program stack"""
+        stack_eqn = []
+        if p: # if stack is not empty
+            for n in p:
+                self.eval_eqn(n,stack_eqn)
+        if self.class_m4gp:
+            return stack_eqn
+        else:
+            return stack_eqn[-1]
+        return []
+
+    def eval_eqn(self,n,stack_eqn):
+        if len(stack_eqn) >= n[1]:
+            stack_eqn.append(eqn_dict[n[0]](n,stack_eqn))
 
 eval_dict = {
 # float operations
@@ -253,6 +316,26 @@ def logs(x):
     nonzero_x = np.abs(x) >= 0.000001
     tmp[nonzero_x] = np.log(np.abs(x[nonzero_x]))
     return tmp
+
+# equation conversion
+eqn_dict = {
+    '+': lambda n,stack_eqn: '(' + stack_eqn.pop() + '+' + stack_eqn.pop() + ')',
+    '-': lambda n,stack_eqn: '(' + stack_eqn.pop() + '-' + stack_eqn.pop()+ ')',
+    '*': lambda n,stack_eqn: '(' + stack_eqn.pop() + '*' + stack_eqn.pop()+ ')',
+    '/': lambda n,stack_eqn: '(' + stack_eqn.pop() + '/' + stack_eqn.pop()+ ')',
+    'sin': lambda n,stack_eqn: 'sin(' + stack_eqn.pop() + ')',
+    'cos': lambda n,stack_eqn: 'cos(' + stack_eqn.pop() + ')',
+    'exp': lambda n,stack_eqn: 'exp(' + stack_eqn.pop() + ')',
+    'log': lambda n,stack_eqn: 'log(' + stack_eqn.pop() + ')',
+    '^2': lambda n,stack_eqn: '(' + stack_eqn.pop() + '^2)',
+    '^3': lambda n,stack_eqn: '(' + stack_eqn.pop() + '^3)',
+    'sqrt': lambda n,stack_eqn: 'sqrt(|' + stack_eqn.pop() + '|)',
+    # 'rbf': lambda n,stack_eqn: 'exp(-||' + stack_eqn.pop()-stack_eqn.pop() '||^2/2)',
+    'x':  lambda n,stack_eqn: 'x_' + str(n[2]),
+    'k': lambda n,stack_eqn: str(n[2])
+}
+
+
 
 def positive_integer(value):
     """Ensures that the provided value is a positive integer; throws an exception otherwise

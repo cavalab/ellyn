@@ -446,9 +446,33 @@ void line_to_py(vector<node>& line,bp::list& prog){
 				prog.append(bp::make_tuple(n.type, n.arity_float + n.arity_bool));
 				break;
 			}
+		}
 	}
 }
+void archive_to_py(vector<ind>& archive,bp::list& arch_list){
+	// converts program to tuple for export to python.
+	for (auto i: archive){
+		bp::list prog;
+		for (auto n: i.line){
+			if (n.on){
+				switch(n.type)
+				{
+				case 'v':
+					prog.append(bp::make_tuple("x", n.arity_float + n.arity_bool, stoi(string(n.varname.begin()+2,n.varname.end()))));
+					break;
+				case 'n':
+					prog.append(bp::make_tuple("k", n.arity_float + n.arity_bool, n.value));
+					break;
+				default:
+					prog.append(bp::make_tuple(n.type, n.arity_float + n.arity_bool));
+					break;
+				}
+			}
+		}
+		arch_list.append(prog);
+	}
 }
+
 void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::list& best_prog) //string pname,string dname
 
 {
@@ -584,7 +608,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 
 
 	 s.out.set(trials);
-	 s.out.set_v(p.verbosity>0); // only print a log file if verbosity > 0
+	 s.out.set_v(p.verbosity>0 && p.print_log); // only print a log file if verbosity > 0
 	 std::ofstream dfout; // datafile stream, used if verbosity > 0
 	 if (p.verbosity>0){
 		 s.out.open(logname);
@@ -789,50 +813,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 				}
 				s.setgenevals();
 				if (p.verbosity>0) s.out << " number of evals: " << s.getgenevals() << "\n";
-				//}
-				//else{
-				//
-				//	#pragma omp parallel for
-				//	for(int i=0;i<num_islands;++i)
-				//	{
-				//		float worstfit;
-				//		float bestfit;
-				//		vector<ind> tmppop;
-				//		// s.out << "Initialize Population..." << "\n";
-				//		InitPop(T.at(i).pop,p,r);
-				//		// s.out << "Fitness..." << "\n";
-				//		Fitness(T.at(i).pop,p,d,s,FE[0]);
-				//		worstfit = T.at(i).worstFit();
-				//		bestfit = T.at(i).bestFit();
-				//		int counter=0;
-				//		while(worstfit == p.max_fit && counter<100)
-				//		{
-				//			for (vector<ind>::iterator j=T.at(i).pop.begin();j!=T.at(i).pop.end();)
-				//			{
-				//				if ( (*j).fitness == p.max_fit)
-				//				{
-				//					j=T.at(i).pop.erase(j);
-				//					tmppop.push_back(ind());
-				//				}
-				//				else
-				//					++j;
-				//			}
 
-				//			InitPop(tmppop,p,r);
-				//			Fitness(tmppop,p,d,s,FE[0]);
-				//			T.at(i).pop.insert(T.at(i).pop.end(),tmppop.begin(),tmppop.end());
-				//			tmppop.clear();
-				//			worstfit = T.at(i).worstFit();
-				//			counter++;
-				//			if(counter==100)
-				//				s.out << "initial population count exceeded. Starting evolution...\n";
-				//		}
-				//
-				//	}
-
-				//	s.setgenevals();
-				//	s.out << " number of evals: " << s.getgenevals() << "\n";
-				//}
 			}
 			else // normal population initialization
 			{
@@ -893,132 +874,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 		// while(gen<=p.g && !stopcondition(World.best))
 		// {
 		int q;
-//			int task_num;
-			//int index=-1;
-//			int cntr;
-			/*
-			vector<int> task_status;
-			vector<int> task_assignments(num_islands,0);
-			task_assignments.push_back(1);	*/
 
-		//#pragma omp parallel private(q, task_num, cntr) shared(pass, index)
-		//{
-		//	q = omp_get_thread_num();
-
-		//	while(gen<=p.g && pass)
-		//	{
-		//		#pragma omp critical
-		//		{
-		//			task_num = get_next_task(index,task_assignments);
-		//		}
-		//		while(task_num!=-1){
-		//			switch(task_num){
-		//			case 0: //evolve solution population
-		//				if(pass){
-		//					Generation(T[q].pop,p,r,d,s,FE[0]);
-
-		//					if (stopcondition(T[q],p,d,s,FE[0]))
-		//						pass=0;
-		//				}
-
-		//				if (pass) {
-		//					if (p.pHC_on && p.ERC){
-		//						for(int k=0; k<T[q].pop.size(); ++k)
-		//							HillClimb(T[q].pop.at(k),p,r,d,s,FE[0]);
-		//					}
-		//					if (p.eHC_on){
-		//						for(int m=0; m<T[q].pop.size(); m++)
-		//							EpiHC(T[q].pop.at(m),p,r,d,s,FE[0]);
-		//					}
-		//
-		//					if (stopcondition(T[q],p,d,s,FE[0]))
-		//						pass=0;
-		//				}
-
-		//				// construct world population
-		//				cntr=0;
-		//				for(int k=q*subpops;k<(q+1)*subpops;++k){
-		//					World.pop.at(k)=T[q].pop.at(cntr);
-		//					makenew(World.pop.at(k));
-		//					cntr++;
-		//				}
-		//				break;
-		//			case 1: //evolve fitness estimator
-		//				s.out << "Evolving fitness estimators...\n";
-		//				EvolveFE(World.pop,tmpFE,trainers,p,d,s,r);
-		//
-		//				break;
-			//		case 2: // print out
-			//			printstatsP(World,gen,s,p,A);
-			//			if (p.print_every_pop) printpop(World.pop,p,s,logname,2);
-			//			s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
-			//			s.out << "Total Evals: " << s.totalevals() << "\n";
-			//			s.out << "Point Evals: " << s.totalptevals() << "\n";
-			//			s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
-			//			s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
-			//			break;
-			//			}// switch(task_num)
-			//			#pragma omp critical
-			//			{
-			//				task_num = get_next_task(index,task_assignments);
-			//			}
-		//		} // while(task_num!=-1)
-		//		#pragma omp barrier
-		//		#pragma omp single  // mix island populations at regular intervals
-		//		{
-		//			s.setgenevals();
-		//			if(s.totalevals()>mixtrigger)
-		//			{
-		//				//shuffle population
-		//				std::random_shuffle(World.pop.begin(),World.pop.end(),r[q]);
-		//				//redistribute populations to islands
-		//				s.out << "Shuffling island populations...\n";
-		//				migrate = true;
-		//				mixtrigger+=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
-		//			}
-		//			else
-		//				migrate=false;
-		//		}
-		//
-		//		#pragma omp single // pick new trainers for fitness estimation at regular intervals
-		//		{
-		//			if (p.EstimateFitness){
-		//				FE.assign(tmpFE.begin(),tmpFE.end());
-		//				if(s.totalevals()>trainer_trigger) {
-		//					s.out << "Picking trainers...\n";
-		//					PickTrainers(World.pop,FE,trainers,p,d,s);
-		//					trainer_trigger+=p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
-		//					//trainer_trigger=0;
-		//				}
-		//			}
-		//		}
-		//		#pragma omp single // print status each generation
-		//		{
-		//			//update pareto archive
-		//			A.update(World.pop);
-		//			printpop(A.pop,p,s,logname,1);
-		//
-		//			ge++n;
-		//			if (p.EstimateFitness)
-		//			{
-		//				s.out << "Best FE fit: " << tmpFE[0].fitness <<"\n";
-		//				s.out << "Fitness Estimators:\n";
-		//				for (int a=0;a<tmpFE.size();a++){
-		//					for (int b=0;b<tmpFE[a].FEpts.size();b++)
-		//						s.out << tmpFE[a].FEpts[b] << " ";
-		//					s.out << "\n";
-		//				}
-		//			}
-		//		}
-
-		//		if (migrate)
-		//			T[q].pop.assign(World.pop.begin()+q*subpops,World.pop.begin()+(q+1)*subpops);
-
-
-		//		if (gen>p.g) pass=0;
-		//	} // while gen<=p.g
-		//} // pragma omp parallel
-		//print initial population
 		// construct world population
 		if (!p.EstimateFitness || !p.pop_restart){
 			int cntr=0;
@@ -1038,15 +894,18 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 
 			q = omp_get_thread_num();
 
-			while(termits<=term && pass)
+			while(termits<=term)
 			{
 
 
 				if(pass){
+					// cout << "thread " + std::to_string(static_cast<long long>(q)) + " Generation\n";
 					Generation(T[q].pop,p,r,d,s,FE[0]);
 
-					if (stopcondition(T[q],p,d,s,FE[0]))
+					if (stopcondition(T[q],p,d,s,FE[0])){
 						pass=0;
+						// cout << "thread " + std::to_string(static_cast<long long>(q)) + " solution\n";
+					}
 				}
 
 				if (pass) {
@@ -1061,9 +920,12 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 								EpiHC(T[q].pop.at(m),p,r,d,s,FE[0]);
 					}
 
-					if (stopcondition(T[q],p,d,s,FE[0]))
+					if (stopcondition(T[q],p,d,s,FE[0])){
 						pass=0;
+						// cout << "thread " + std::to_string(static_cast<long long>(q)) + " solution\n";
+					}
 				}
+				// cout << "thread " + std::to_string(static_cast<long long>(q)) + " pass val: " + std::to_string(static_cast<long long>(pass)) + "\n";
 
 
 					// construct world population
@@ -1075,9 +937,13 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 						//makenew(World.pop.at(k));
 						cntr++;
 					}
+					// cout << "thread " + std::to_string(static_cast<long long>(q)) + " World pop constructed\n";
 
 					#pragma omp barrier
 
+					if (!pass)
+						break;
+					// cout << "thread " + std::to_string(static_cast<long long>(q)) + " past the barrier\n";
 					#pragma omp single  nowait //coevolve fitness estimators
 					{
 
@@ -1127,7 +993,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 					{
 						if(p.prto_arch_on){
 							A.update(World.pop);
-							printpop(A.pop,p,s,logname,1);
+							if (p.verbosity>0) printpop(A.pop,p,s,logname,1);
 						}
 						if (!p.limit_evals || s.totalptevals() >= print_trigger){
 							if (p.verbosity>0) printdatafile(World,s,p,r,dfout,gen,time.elapsed());
@@ -1164,11 +1030,9 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 							if (avefit>1)
 								cout <<"avefit error\n";*/
 							if(gen>trainer_trigger) { //pick new trainers when FE pop has converged or when it has been enough generations
-							//if(gen>trainer_trigger) {
 								if (p.verbosity>0) s.out << "Picking trainers...\n";
 								PickTrainers(World.pop,FE,trainers,p,d,s);
 								trainer_trigger = gen + p.FE_train_gens; //p.island_gens*(p.popsize+p.popsize*p.eHC_on+p.popsize*p.pHC_on);
-								//trainer_trigger=0;
 							}
 						}
 					}
@@ -1179,8 +1043,38 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 					//if (gen>p.g) pass=0;
 
 
-			} // s.out << "exited while loop...\n";
-		} // s.out << "exited parallel region ...\n";
+			} if (p.verbosity>1) s.out << "thread " + std::to_string(static_cast<long long>(q)) + " exited while loop...\n";
+			if (!pass){ //make sure archive was updated and generation prints out (may be redundant)
+				#pragma omp single
+				{
+					if(p.prto_arch_on){
+						A.update(World.pop);
+						if (p.verbosity>0) printpop(A.pop,p,s,logname,1);
+					}
+					if (!p.limit_evals || s.totalptevals() >= print_trigger){
+						if (p.verbosity>0 && p.print_data) printdatafile(World,s,p,r,dfout,gen,time.elapsed());
+						if (p.print_every_pop) printpop(World.pop,p,s,logname,2);
+						if (p.print_log) {
+							printstats(World,gen,s,p,A);
+							s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
+							s.out << "Total Evals: " << s.totalevals() << "\n";
+							s.out << "Point Evals: " << s.totalptevals() << "\n";
+							s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
+							s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
+						}
+						if (print_trigger!=0) print_trigger += p.max_evals/p.num_log_pts;
+						if (p.print_genome) printGenome(World,gen,logname,d,p);
+					}
+					++gen;
+					if (p.limit_evals) termits = s.totalptevals();
+					else ++termits;
+
+					if (!p.EstimateFitness && p.estimate_generality && p.G_shuffle)
+						shuffle_data(d,p,r,s);
+
+				}
+			}
+		} if (p.verbosity>1) s.out << "exited parallel region ...\n";
 
 
 		if (p.EstimateFitness || p.test_at_end){// assign real fitness values to final population and archive
@@ -1196,13 +1090,18 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 			printbestind(World,p,s,logname);
 			printpop(World.pop,p,s,logname,0);
 		}
-		if (p.prto_arch_on)
-			printpop(A.pop,p,s,logname,1);
+		if (p.prto_arch_on){
+			if (p.verbosity>0) printpop(A.pop,p,s,logname,1);
+			// save archive to best_prog for python
+			archive_to_py(A.pop,best_prog);
+		}
+		else{
+			// save best individual to best_prog for python
+			vector<ind> best(1);
+			World.getbestind(best[0]);
+			line_to_py(best[0].line,best_prog);
+		}
 
-		// save best individual to best_prog for python
-		vector<ind> best(1);
-		World.getbestind(best[0]);
-		line_to_py(best[0].line,best_prog);
 	}
 	else //no islands
 	{
@@ -1370,7 +1269,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 				//s.out << "Elapsed time: \n";
 				if (p.prto_arch_on){
 					A.update(T.pop);
-					printpop(A.pop,p,s,logname,1);
+					if (p.verbosity>0) printpop(A.pop,p,s,logname,1);
 				}
 				if (!p.limit_evals || s.totalptevals() >= print_trigger){
 					if (p.verbosity>0) printdatafile(T,s,p,r,dfout,counter,time.elapsed());
@@ -1441,14 +1340,18 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 			printbestind(T,p,s,logname);
 			printpop(T.pop,p,s,logname,0);
 		}
-		if (p.prto_arch_on)
-			printpop(A.pop,p,s,logname,1);
 
-		// save best individual to best_prog for python
-		vector<ind> best(1);
-		T.getbestind(best[0]);
-		line_to_py(best[0].line,best_prog);
-
+		if (p.prto_arch_on){
+			if (p.verbosity>0) printpop(A.pop,p,s,logname,1);
+			// save archive to best_prog for python
+			archive_to_py(A.pop,best_prog);
+		}
+		else{
+			// save best individual to best_prog for python
+			vector<ind> best(1);
+			T.getbestind(best[0]);
+			line_to_py(best[0].line,best_prog);
+		}
 	}
 
 
