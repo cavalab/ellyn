@@ -132,8 +132,7 @@ class ellyn(BaseEstimator):
         elgp.runEllenGP(params,np.asarray(features[train_i],dtype=np.float32,order='C'),
                         np.asarray(labels[train_i],dtype=np.float32,order='C'),result)
         # print("best program:",self._best_estimator)
-        print("archive:")
-        print(self.stacks_2_eqns(result))
+
         # pdb.set_trace()
 
         if self.prto_arch_on:
@@ -164,7 +163,14 @@ class ellyn(BaseEstimator):
             self.DC.fit(self._out(self._best_estimator,features),labels)
 
         ####
-        # initial model
+        # print
+        if self.verbosity>1:
+             print("final model(s):")
+             for m in result:
+                 if m is self._best_estimator:
+                     print('[best]',self.stack_2_eqn(m))
+                 else:
+                     print(self.stack_2_eqn(m))
 
 
     def predict(self, testing_features):
