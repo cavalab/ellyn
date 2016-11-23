@@ -1,6 +1,6 @@
 CC=g++
-CFLAGS= -c -fPIC -I $(CPATH) -I /appl/eigen-3.2.7/include/eigen3 -I /home/lacava/anaconda3/include/python3.5m -I /home/lacava/anaconda3/lib/python3.5/site-packages/numpy/core/include/ -std=c++0x -fopenmp -Ofast
-LDFLAGS= -std=c++0x -fopenmp -Ofast -fPIC -shared -L$(LD_LIBRARY_PATH) -L/home/lacava/anaconda3/lib/python3.5 
+CFLAGS= -c -fPIC -I $(CPATH) -I /appl/eigen-3.2.7/include/eigen3 -I /home/weixuanf/anaconda3/include/python3.5m -I /home/weixuanf/anaconda3/lib/python3.5/site-packages/numpy/core/include/ -std=c++0x -fopenmp -Ofast
+LDFLAGS= -std=c++0x -fopenmp -Ofast -fPIC -shared -L$(LD_LIBRARY_PATH) -L/home/weixuanf/anaconda3/lib/python3.5 
 # LDFLAGS2= /usr/include/boost_1_61_0/stage/lib/libboost_python3.a
 LDFLAGS2= /home/weixuanf/boost_1_62_0/stage/lib/libboost_python3.so -Wl,-rpath,'/home/weixuanf/boost_1_62_0/stage/lib/' 
 #-L/usr/lib/x86_64-linux-gnu
