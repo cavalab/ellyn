@@ -105,7 +105,6 @@ class ellyn(BaseEstimator):
 
     def fit(self, features, labels):
         """Fit model to data"""
-        # pdb.set_trace()
         # set sel number from selection
         self.sel = {'tournament': 1,'dc':2,'lexicase': 3,'afp': 4,'rand': 5,None: 1}[self.selection]
 
@@ -133,8 +132,6 @@ class ellyn(BaseEstimator):
                         np.asarray(labels[train_i],dtype=np.float32,order='C'),result)
         # print("best program:",self._best_estimator)
 
-        # pdb.set_trace()
-
         if self.prto_arch_on:
             self.hof = result[:]
             #evaluate archive on validation set and choose best
@@ -156,7 +153,6 @@ class ellyn(BaseEstimator):
             self._best_estimator = result
 
         # if M4GP is used, call Distance Classifier
-        # pdb.set_trace()
         if self.class_m4gp:
             if self.verbosity > 0: print("Storing DistanceClassifier...")
             self.DC = DistanceClassifier()
@@ -166,11 +162,14 @@ class ellyn(BaseEstimator):
         # print
         if self.verbosity>1:
              print("final model(s):")
-             for m in result:
-                 if m is self._best_estimator:
-                     print('[best]',self.stack_2_eqn(m))
-                 else:
-                     print(self.stack_2_eqn(m))
+             if self.prto_arch_on:
+                 for m in result:
+                     if m is self._best_estimator:
+                         print('[best]',self.stack_2_eqn(m))
+                     else:
+                         print(self.stack_2_eqn(m))
+             else:
+                 print(self.stack_2_eqn(result))
 
 
     def predict(self, testing_features):
@@ -207,7 +206,6 @@ class ellyn(BaseEstimator):
         # print("test features shape:",testing_features.shape)
         # print("testing labels shape:",testing_labels.shape)
         yhat = self.predict(testing_features)
-        # pdb.set_trace()
         return self.scoring_function(testing_labels,yhat)
 
     def export(self, output_file_name):
@@ -309,7 +307,6 @@ eval_dict = {
 }
 def divs(x,y):
     """safe division"""
-    # pdb.set_trace()
     tmp = np.ones(y.shape)
     nonzero_y = np.abs(y) >= 0.000001
     # print("nonzero_y.sum:", np.sum(nonzero_y))
@@ -666,7 +663,6 @@ def main():
     # training_labels = np.array(input_data['label'].values,dtype=np.float32,order='C')
     testing_features = input_data.loc[test_i].drop('label', axis=1).values
     testing_labels = input_data.loc[test_i, 'label'].values
-    # pdb.set_trace()
     learner = ellyn(**args.__dict__)
     # learner = ellyn(generations=args.GENERATIONS, population_size=args.POPULATION_SIZE,
     #             mutation_rate=args.MUTATION_RATE, crossover_rate=args.CROSSOVER_RATE,
