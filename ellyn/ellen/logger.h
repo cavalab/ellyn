@@ -4,11 +4,11 @@
 
 class logger {
 public:
-	bool trials;
+	bool print_to_file;
 	bool verbose;
-	logger(){trials=false;verbose=true;}	// Opens a file for use with ofstream fout.
+	logger(){print_to_file=false;verbose=true;}	// Opens a file for use with ofstream fout.
 	~logger(){fout.close();}			// Flushes and closes the logging file.
-	void set(bool t) {trials=t;};
+	void set_ptf(bool t) {print_to_file=t;};
 	void set_v(bool v) {verbose=v;};
 	void open(std::string filename){
 			fout.open(filename);
@@ -36,11 +36,11 @@ public:
 template<class T>
 logger& operator<<( logger& log, const T& output ) {
 
-	if(log.verbose){
-		if(!log.trials)
-			std::cout << output;
+	if(log.verbose)
+		std::cout << output;
+	if (log.print_to_file)
 		log.fout << output;
-	}
+
 	return log;
 }
 #endif

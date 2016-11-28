@@ -160,7 +160,7 @@ class ellyn(BaseEstimator):
 
         ####
         # print
-        if self.verbosity>1:
+        if self.verbosity>0:
              print("final model(s):")
              if self.prto_arch_on:
                  for m in result:

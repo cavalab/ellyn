@@ -310,13 +310,13 @@ void shuffle_data(Data& d, params& p, vector<Randclass>& r,state& s)
 
 
 	if (p.EstimateFitness){
-		bool tmp = s.out.trials;
-		s.out.trials=1; // keep output from going to console
+		bool tmp = s.out.print_to_file;
+		s.out.print_to_file=1; // keep output from going to console
 		s.out << "data shuffle index: ";
 		for (int i=0; i<shuffler.size(); ++i)
 			s.out << shuffler.at(i) << " ";
 		s.out << "\n";
-		s.out.trials=tmp;
+		s.out.print_to_file=tmp;
 	}
 	for(int i=0;i<d.vals.size();++i)
 	{
@@ -607,19 +607,21 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 
 
 
-	 s.out.set(trials);
-	 s.out.set_v(p.verbosity>0 && p.print_log); // only print a log file if verbosity > 0
-	 std::ofstream dfout; // datafile stream, used if verbosity > 0
-	 if (p.verbosity>0){
+	 s.out.set_ptf(trials && p.print_log); // only print to file if print_log
+	 s.out.set_v(p.verbosity>1); // only print a log file to screen if verbosity > 1
+	 // print log setup
+	 if (p.print_log){
 		 s.out.open(logname);
 		 if (!s.out.is_open()){
 			 cerr << "Write-to File " << logname << " did not open correctly.\n";
 			 exit(1);
 		 }
-		 // initialize data file
+	 	}
+	 // initialize data file
+	 std::ofstream dfout;
+	 if (p.print_data)	initdatafile(dfout,logname,p);
 
-		 initdatafile(dfout,logname,p);
-	 }
+
 
 	 if (p.verbosity>0){
 		 s.out << "_______________________________________________________________________________ \n";
@@ -993,10 +995,10 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 					{
 						if(p.prto_arch_on){
 							A.update(World.pop);
-							if (p.verbosity>0) printpop(A.pop,p,s,logname,1);
+							if (p.print_archive) printpop(A.pop,p,s,logname,1);
 						}
 						if (!p.limit_evals || s.totalptevals() >= print_trigger){
-							if (p.verbosity>0) printdatafile(World,s,p,r,dfout,gen,time.elapsed());
+							if (p.print_data) printdatafile(World,s,p,r,dfout,gen,time.elapsed());
 							if (p.print_every_pop) printpop(World.pop,p,s,logname,2);
 							if (p.print_log) {
 								printstats(World,gen,s,p,A);
@@ -1049,10 +1051,10 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 				{
 					if(p.prto_arch_on){
 						A.update(World.pop);
-						if (p.verbosity>0) printpop(A.pop,p,s,logname,1);
+						if (p.print_archive) printpop(A.pop,p,s,logname,1);
 					}
 					if (!p.limit_evals || s.totalptevals() >= print_trigger){
-						if (p.verbosity>0 && p.print_data) printdatafile(World,s,p,r,dfout,gen,time.elapsed());
+						if (p.print_data) printdatafile(World,s,p,r,dfout,gen,time.elapsed());
 						if (p.print_every_pop) printpop(World.pop,p,s,logname,2);
 						if (p.print_log) {
 							printstats(World,gen,s,p,A);
@@ -1085,13 +1087,12 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 			p.EstimateFitness=1;
 		}
 
-		if (p.verbosity>0) {
-			printdatafile(World,s,p,r,dfout,gen,time.elapsed());
-			printbestind(World,p,s,logname);
-			printpop(World.pop,p,s,logname,0);
-		}
+		if (p.print_data) printdatafile(World,s,p,r,dfout,gen,time.elapsed());
+		if (p.print_best_ind) printbestind(World,p,s,logname);
+		if (p.print_last_pop) printpop(World.pop,p,s,logname,0);
+
 		if (p.prto_arch_on){
-			if (p.verbosity>0) printpop(A.pop,p,s,logname,1);
+			if (p.print_archive) printpop(A.pop,p,s,logname,1);
 			// save archive to best_prog for python
 			archive_to_py(A.pop,best_prog);
 		}
@@ -1269,10 +1270,10 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 				//s.out << "Elapsed time: \n";
 				if (p.prto_arch_on){
 					A.update(T.pop);
-					if (p.verbosity>0) printpop(A.pop,p,s,logname,1);
+					if (p.print_archive) printpop(A.pop,p,s,logname,1);
 				}
 				if (!p.limit_evals || s.totalptevals() >= print_trigger){
-					if (p.verbosity>0) printdatafile(T,s,p,r,dfout,counter,time.elapsed());
+					if (p.print_data) printdatafile(T,s,p,r,dfout,counter,time.elapsed());
 					if (p.print_every_pop) printpop(T.pop,p,s,logname,2);
 					if (p.print_log){
 						printstats(T,counter,s,p,A);
@@ -1335,14 +1336,13 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 			p.EstimateFitness=1;
 		}
 
-		if (p.verbosity>0) {
-			printdatafile(T,s,p,r,dfout,counter,time.elapsed());
-			printbestind(T,p,s,logname);
-			printpop(T.pop,p,s,logname,0);
-		}
+			if (p.print_data) printdatafile(T,s,p,r,dfout,counter,time.elapsed());
+			if (p.print_best_ind) printbestind(T,p,s,logname);
+			if (p.print_last_pop) printpop(T.pop,p,s,logname,0);
+
 
 		if (p.prto_arch_on){
-			if (p.verbosity>0) printpop(A.pop,p,s,logname,1);
+			if (p.print_archive) printpop(A.pop,p,s,logname,1);
 			// save archive to best_prog for python
 			archive_to_py(A.pop,best_prog);
 		}
