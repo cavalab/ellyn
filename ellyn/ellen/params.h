@@ -355,7 +355,7 @@ struct params {
 		lex_eps_target_mad=false; // errors in a standard dev of the best are pass, otherwise fail
 		lex_eps_error_mad=false; // errors in a standard dev of the best are pass, otherwise fail
 		lex_epsilon = 0.1;
-		lex_eps_global = true; //pass conditions in lex eps defined relative to whole population (rather than selection pool).
+		lex_eps_global = false; //pass conditions in lex eps defined relative to whole population (rather than selection pool).
 		                       //should be true for regular lexicase (forced in load_params)
 		//pareto survival setting
 		PS_sel=1;
@@ -573,7 +573,7 @@ struct params {
 		if (d.has_key("print_best_ind"))
 			print_data = extract<bool>(d["print_best_ind"]);
 		if (d.has_key("print_archive"))
-			print_data = extract<bool>(d["print_archive"]);
+			print_archive = extract<bool>(d["print_archive"]);
 		if (d.has_key("print_init_pop"))
 			print_init_pop = extract<bool>(d["print_init_pop"]);
 		if (d.has_key("print_genome"))

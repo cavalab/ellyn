@@ -427,7 +427,7 @@ void dereference(PyObject* o)
 //     }
 // };
 
-// #define MARK_FUNCTION \
+// #define MARK_FUNCTION 
 //   SourcePointMarker sourcepointmarker(__FILE__, __LINE__);
 void line_to_py(vector<node>& line,bp::list& prog){
 	// converts program to tuple for export to python.

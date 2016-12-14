@@ -10,7 +10,7 @@ import argparse
 # from ._version import __version__
 
 from sklearn.base import BaseEstimator
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, explained_variance_score, accuracy_score
 import numpy as np
 import pandas as pd
@@ -60,14 +60,14 @@ class ellyn(BaseEstimator):
     def __init__(self, g=100, popsize=500, limit_evals=False, max_evals=0,
                  selection='tournament', classification=False, islands=False,
                  fit_type=None, verbosity=0, random_state=0, class_m4gp=False,
-                 scoring_function=mean_squared_error, print_log=False,
-                 class_bool=False, max_len=None, island_gens=50, numERC=None,
+                 scoring_function=mean_squared_error, print_log=False, print_archive=False,
+                 print_data=False, class_bool=False, max_len=None, island_gens=50, numERC=None,
                  print_every_pop=None, op_weights=None, FE_pop_size=None,
                  rt_cross=None, ERC_ints=None, train_pct=None, eHC_on=None,
                  PS_sel=None, lex_eps_global=None, lex_pool=None, AR_nka=None,
                  print_homology=None, max_len_init=None, prto_arch_size=None,
                  cvals=None, stop_condition=None, lex_metacases=None,
-                 FE_rank=None, EHC_its=None, lex_eps_error_mad=True,
+                 FE_rank=None, eHC_its=None, lex_eps_error_mad=True,
                  ERC=None, erc_ints=None, AR_na=None, rt_mut=None,
                  pop_restart=None, seeds=None, tourn_size=None, prto_arch_on=None,
                  FE_ind_size=None, lex_eps_target_mad=None, maxERC=None,
@@ -76,10 +76,10 @@ class ellyn(BaseEstimator):
                  DISABLE_UPDATE_CHECK=False, AR_lookahead=None, pop_restart_path=None,
                  INPUT_SEPARATOR=None, AR_nkb=None, num_log_pts=None, train=None,
                  FE_train_gens=None, AR_nb=None, init_trees=None,
-                 print_novelty=None, EHC_slim=None, elitism=None,
+                 print_novelty=None, eHC_slim=None, elitism=None,
                  print_genome=None, pHC_its=None, shuffle_data=None, class_prune=None,
-                 EHC_init=None, init_validate_on=None, minERC=None,
-                 op_list=None, EHC_mut=None, min_len=None):
+                 eHC_init=None, init_validate_on=None, minERC=None,
+                 op_list=None, eHC_mut=None, min_len=None):
                 # sets up GP.
 
         if fit_type:
@@ -106,7 +106,8 @@ class ellyn(BaseEstimator):
     def fit(self, features, labels):
         """Fit model to data"""
         # set sel number from selection
-        self.sel = {'tournament': 1,'dc':2,'lexicase': 3,'afp': 4,'rand': 5,None: 1}[self.selection]
+        self.sel = {'tournament': 1,'dc':2,'lexicase': 3,'epsilon_lexicase': 3, 'afp': 4,'rand': 5,None: 1}[self.selection]
+
 
         np.random.seed(self.random_state)
         # get parameters
@@ -145,6 +146,7 @@ class ellyn(BaseEstimator):
                 else:
                     fit_v.append(self.scoring_function(labels[val_i],self._out(model,features[val_i])))
             # best estimator has best validation score
+            # pdb.set_trace()
             if self.scoring_function is r2_score or self.scoring_function is accuracy_score:
                 self._best_estimator = self.hof[np.argmax(fit_v)]
             else:
@@ -210,24 +212,6 @@ class ellyn(BaseEstimator):
 
     def export(self, output_file_name):
         """does nothing currently"""
-
-    # def get_params(self, deep=None):
-    #     """Get parameters for this estimator
-    #
-    #     This function is necessary for ellyn to work as a drop-in feature constructor in,
-    #     e.g., sklearn.cross_validation.cross_val_score
-    #
-    #     Parameters
-    #     ----------
-    #     deep: unused
-    #         Only implemented to maintain interface for sklearn
-    #
-    #     Returns
-    #     -------
-    #     params: mapping of string to any
-    #         Parameter names mapped to their values
-    #     """
-    #     return self.__dict__
 
     def _eval(self,n, features, stack_float, stack_bool):
         """evaluation function for best estimator"""
@@ -575,17 +559,17 @@ def main():
     parser.add_argument('--ehc', action='store_true', dest='eHC_on', default=None,
                         help='Flag to use epigenetic hillclimbing.')
 
-    parser.add_argument('-ehc_its', action='store', dest='EHC_its', default=None, type = positive_integer,
+    parser.add_argument('-ehc_its', action='store', dest='eHC_its', default=None, type = positive_integer,
                     help='Number of iterations of epigenetic hill climbing each generation.')
 
-    parser.add_argument('-ehc_init', action='store', dest='EHC_init', default=None, type = positive_integer,
+    parser.add_argument('-ehc_init', action='store', dest='eHC_init', default=None, type = positive_integer,
                         help='Fraction of initial population''s genes that are silenced.')
 
-    parser.add_argument('--emut', action='store_true', dest='EHC_mut', default=None,
+    parser.add_argument('--emut', action='store_true', dest='eHC_mut', default=None,
                         help='Flag to use epigenetic mutation. Only works if ehc flag is present.')
 
-    parser.add_argument('--e_slim', action='store_true', dest='EHC_slim', default=None,
-                        help='Flag to store partial program outputs such that point evaluations are minimized during EHC.')
+    parser.add_argument('--e_slim', action='store_true', dest='eHC_slim', default=None,
+                        help='Flag to store partial program outputs such that point evaluations are minimized during eHC.')
 # Pareto Archive
     parser.add_argument('--archive', action='store_true', dest='prto_arch_on', default=None,
                         help='Flag to save the Pareto front of equations (fitness and complexity) during the run.')
