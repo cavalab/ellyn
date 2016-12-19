@@ -142,6 +142,17 @@ struct Data {
     		}
     	}
 
+        //debugging
+        cout << "data before AR:\n";
+        for (auto l : label)
+            cout << l << ",";
+
+        cout << "\n";
+        for (int i = 0; i<10; ++i){
+            for (int j=0; j < vals[0].size(); ++j)
+                cout << vals[i][j] << ",";
+            cout << "\n";
+        }
     	if (p.AR){ // make auto-regressive variables
     		vector<vector<float> > tmp_vals = vals;
 
@@ -172,8 +183,8 @@ struct Data {
     			//}
     			for (unsigned i = 0; i < p.AR_nb; ++i) {
     				for (unsigned k=0; k<tmp;++k){ // add delay variable names
-    					label.push_back(tmp_label[k] + "_" + to_string(static_cast<long long>(i+p.AR_nkb)));
-    					p.allvars.push_back(tmp_label[k] + "_" + to_string(static_cast<long long>(i+p.AR_nkb)));
+    					label.push_back(tmp_label[k] + "_d" + to_string(static_cast<long long>(i+p.AR_nkb)));
+    					p.allvars.push_back(tmp_label[k] + "_d" + to_string(static_cast<long long>(i+p.AR_nkb)));
     				}
     			}
     			// add target AR variables
@@ -188,16 +199,16 @@ struct Data {
     	assert(target.size() == vals.size());
 
         //debugging
-        // cout << "data:\n";
-        // for (auto l : label)
-        //     cout << l << ",";
-        //
-        // cout << "\n";
-        // for (int i = 0; i<10; ++i){
-        //     for (int j=0; j < vals[0].size(); ++j)
-        //         cout << vals[i][j] << ",";
-        //     cout << "\n";
-        // }
+        cout << "data:\n";
+        for (auto l : label)
+            cout << l << ",";
+
+        cout << "\n";
+        for (int i = 0; i<10; ++i){
+            for (int j=0; j < vals[0].size(); ++j)
+                cout << vals[i][j] << ",";
+            cout << "\n";
+        }
 
 
 	}

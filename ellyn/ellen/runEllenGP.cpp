@@ -403,74 +403,56 @@ void dereference(PyObject* o)
 {
     Py_DECREF(o);
 }
-// struct SourcePoint
-// {
-//     const char *filename;
-//     int line;
-//     SourcePoint(const char *filename, int line)
-// 			: filename(filename), line(line)
-//     { }
-// }
-//
-// std::vector<SourcePoint> callstack;
-//
-// struct SourcePointMarker
-// {
-//     SourcePointMarker(const char *filename, int line)
-//     {
-//         callstack.push_back(SourcePoint(filename, line);
-//     }
-//
-//     ~SourcePointMarker()
-//     {
-//         callstack.pop_back();
-//     }
-// };
 
-// #define MARK_FUNCTION 
-//   SourcePointMarker sourcepointmarker(__FILE__, __LINE__);
 void line_to_py(vector<node>& line,bp::list& prog){
 	// converts program to tuple for export to python.
-
+	cout << "in line to py\n";
 	for (auto n: line){
 		if (n.on){
 			switch(n.type)
 			{
 			case 'v':
-				prog.append(bp::make_tuple("x", n.arity_float + n.arity_bool, stoi(string(n.varname.begin()+2,n.varname.end()))));
+				if(n.varname.compare(0,6,"target")==0){
+					cout << "autoregressing " << n.varname << "\n";
+					prog.append(bp::make_tuple("y", n.arity_float + n.arity_bool, stoi(string(n.varname.begin()+7,n.varname.end()))));
+				}
+				else{
+					if (n.varname.find("_d") != std::string::npos) {
+						size_t pos = n.varname.find("_d");
+						// this is an auto-regressive variable
+						cout << "auto-regressive variable index: " << string(n.varname.begin()+2,n.varname.begin()+pos) << "\n";
+						cout << "auto-regressive variable delay: " << string(n.varname.begin()+pos+2,n.varname.end()) << "\n";
+						prog.append(bp::make_tuple("x", n.arity_float + n.arity_bool, stoi(string(n.varname.begin()+2,n.varname.begin()+pos)),stoi(string(n.varname.begin()+pos+2,n.varname.end()))));
+					}
+					else{
+						cout << n.varname << " regular\n";
+						prog.append(bp::make_tuple("x", n.arity_float + n.arity_bool, stoi(string(n.varname.begin()+2,n.varname.end()))));
+					}
+				}
 				break;
 			case 'n':
 				prog.append(bp::make_tuple("k", n.arity_float + n.arity_bool, n.value));
 				break;
 			default:
 				prog.append(bp::make_tuple(n.type, n.arity_float + n.arity_bool));
-				break;
 			}
 		}
 	}
 }
 void archive_to_py(vector<ind>& archive,bp::list& arch_list){
 	// converts program to tuple for export to python.
+	cout << "archive_to_py\n";
+	cout << "size of vector<ind> archive: " << archive.size() << "\n";
 	for (auto i: archive){
+	// for (unsigned int i = 0; i < archive.size(); ++i){
+		// cout << i << "\n";
+		cout << i.eqn << "\n";
 		bp::list prog;
-		for (auto n: i.line){
-			if (n.on){
-				switch(n.type)
-				{
-				case 'v':
-					prog.append(bp::make_tuple("x", n.arity_float + n.arity_bool, stoi(string(n.varname.begin()+2,n.varname.end()))));
-					break;
-				case 'n':
-					prog.append(bp::make_tuple("k", n.arity_float + n.arity_bool, n.value));
-					break;
-				default:
-					prog.append(bp::make_tuple(n.type, n.arity_float + n.arity_bool));
-					break;
-				}
-			}
-		}
+		line_to_py(i.line,prog);
 		arch_list.append(prog);
 	}
+	cout << "size of arch_list: " << bp::len(arch_list) << "\n";
+	cout <<"beepbopboop";
 }
 
 void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::list& best_prog) //string pname,string dname
@@ -608,6 +590,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 
 
 	 s.out.set_ptf(trials && p.print_log); // only print to file if print_log
+	 cout << "verbosity: " << p.verbosity << "\n";
 	 s.out.set_v(p.verbosity>1); // only print a log file to screen if verbosity > 1
 	 // print log setup
 	 if (p.print_log){
@@ -1000,7 +983,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 						if (!p.limit_evals || s.totalptevals() >= print_trigger){
 							if (p.print_data) printdatafile(World,s,p,r,dfout,gen,time.elapsed());
 							if (p.print_every_pop) printpop(World.pop,p,s,logname,2);
-							if (p.print_log) {
+							if (p.verbosity > 1) {
 								printstats(World,gen,s,p,A);
 								s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
 								s.out << "Total Evals: " << s.totalevals() << "\n";
@@ -1056,7 +1039,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 					if (!p.limit_evals || s.totalptevals() >= print_trigger){
 						if (p.print_data) printdatafile(World,s,p,r,dfout,gen,time.elapsed());
 						if (p.print_every_pop) printpop(World.pop,p,s,logname,2);
-						if (p.print_log) {
+						if (p.verbosity > 1) {
 							printstats(World,gen,s,p,A);
 							s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
 							s.out << "Total Evals: " << s.totalevals() << "\n";
@@ -1275,7 +1258,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 				if (!p.limit_evals || s.totalptevals() >= print_trigger){
 					if (p.print_data) printdatafile(T,s,p,r,dfout,counter,time.elapsed());
 					if (p.print_every_pop) printpop(T.pop,p,s,logname,2);
-					if (p.print_log){
+					if (p.verbosity > 1){
 						printstats(T,counter,s,p,A);
 						s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
 						s.out << "Total Evals: " << s.totalevals() << "\n";

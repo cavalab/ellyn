@@ -240,7 +240,7 @@ struct params {
 		pop_restart_path=""; // restart population file path
 		AR = 0;
 		AR_nb = 1;
-		AR_nkb = 1;
+		AR_nkb = 0;
 		AR_na = 1;
 		AR_nka = 1;
 		AR_lookahead = 0;
