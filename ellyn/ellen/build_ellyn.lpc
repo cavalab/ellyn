@@ -7,6 +7,5 @@ module load eigen/3.2.7
 # clean build directory
 make clean -f Makefile-lpc
 
-# run MakefileUMG
+# run Makefile
 make -f Makefile-lpc
-

@@ -142,17 +142,17 @@ struct Data {
     		}
     	}
 
-        //debugging
-        cout << "data before AR:\n";
-        for (auto l : label)
-            cout << l << ",";
-
-        cout << "\n";
-        for (int i = 0; i<10; ++i){
-            for (int j=0; j < vals[0].size(); ++j)
-                cout << vals[i][j] << ",";
-            cout << "\n";
-        }
+        // //debugging
+        // cout << "data before AR:\n";
+        // for (auto l : label)
+        //     cout << l << ",";
+        //
+        // cout << "\n";
+        // for (int i = 0; i<10; ++i){
+        //     for (int j=0; j < vals[0].size(); ++j)
+        //         cout << vals[i][j] << ",";
+        //     cout << "\n";
+        // }
     	if (p.AR){ // make auto-regressive variables
     		vector<vector<float> > tmp_vals = vals;
 
@@ -199,16 +199,16 @@ struct Data {
     	assert(target.size() == vals.size());
 
         //debugging
-        cout << "data:\n";
-        for (auto l : label)
-            cout << l << ",";
-
-        cout << "\n";
-        for (int i = 0; i<10; ++i){
-            for (int j=0; j < vals[0].size(); ++j)
-                cout << vals[i][j] << ",";
-            cout << "\n";
-        }
+        // cout << "data:\n";
+        // for (auto l : label)
+        //     cout << l << ",";
+        //
+        // cout << "\n";
+        // for (int i = 0; i<10; ++i){
+        //     for (int j=0; j < vals[0].size(); ++j)
+        //         cout << vals[i][j] << ",";
+        //     cout << "\n";
+        // }
 
 
 	}

@@ -60,11 +60,11 @@ class ellyn(BaseEstimator):
     @initializer
     def __init__(self, g=100, popsize=500, limit_evals=False, max_evals=0,
                  selection='tournament', classification=False, islands=False,
-                 fit_type=None, verbosity=0, random_state=0, class_m4gp=False,
-                 scoring_function=mean_squared_error, print_log=False, print_archive=False,
-                 print_data=False, class_bool=False, max_len=None, island_gens=50, numERC=None,
+                 num_islands=None,fit_type=None, verbosity=0, random_state=0,
+                 class_m4gp=False,scoring_function=mean_squared_error, print_log=False,
+                 print_archive=False,print_data=False, class_bool=False, max_len=None, island_gens=50,
                  print_every_pop=None, op_weights=None, FE_pop_size=None,
-                 rt_cross=None, ERC_ints=None, train_pct=None, eHC_on=None,
+                 rt_cross=None, ERC_ints=None, numERC=None, train_pct=None, eHC_on=None,
                  PS_sel=None, lex_eps_global=None, lex_pool=None, AR_nka=None,
                  print_homology=None, max_len_init=None, prto_arch_size=None,
                  cvals=None, stop_condition=None, stop_threshold=None, lex_metacases=None,
@@ -641,6 +641,9 @@ def main():
 # island model
     parser.add_argument('--islands', action='store_true', dest='islands', default=None,
                     help='Flag to use island populations. Parallel execution across codes on a single node.')
+
+    parser.add_argument('-num_islands', action='store', dest='num_islands', default=None, type = positive_integer,
+                help='Number of islands to use (limits number of cores).')
 
     parser.add_argument('-island_gens', action='store', dest='island_gens', default=None, type = positive_integer,
                     help='Number of generations between synchronized shuffling of island populations.')

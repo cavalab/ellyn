@@ -161,6 +161,7 @@ struct params {
 
 	//island model
 	bool islands;
+	int num_islands;
 	int island_gens;
 	int nt; // number of threads
 
@@ -341,6 +342,7 @@ struct params {
 
 		//island model
 		islands = 0;
+		num_islands=0;
 		island_gens = 100;
 		nt = 1;
 
@@ -529,6 +531,8 @@ struct params {
 			prto_sel_on = extract<bool>(d["prto_sel_on"]);
 		if (d.has_key("islands"))
 			islands = extract<bool>(d["islands"]);
+		if (d.has_key("num_islands"))
+			num_islands = extract<int>(d["num_islands"]);
 		if (d.has_key("island_gens"))
 			island_gens = extract<int>(d["island_gens"]);
 		if (d.has_key("train"))

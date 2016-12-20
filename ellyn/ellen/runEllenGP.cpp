@@ -406,26 +406,26 @@ void dereference(PyObject* o)
 
 void line_to_py(vector<node>& line,bp::list& prog){
 	// converts program to tuple for export to python.
-	cout << "in line to py\n";
+	// cout << "in line to py\n";
 	for (auto n: line){
 		if (n.on){
 			switch(n.type)
 			{
 			case 'v':
 				if(n.varname.compare(0,6,"target")==0){
-					cout << "autoregressing " << n.varname << "\n";
+					// cout << "autoregressing " << n.varname << "\n";
 					prog.append(bp::make_tuple("y", n.arity_float + n.arity_bool, stoi(string(n.varname.begin()+7,n.varname.end()))));
 				}
 				else{
 					if (n.varname.find("_d") != std::string::npos) {
 						size_t pos = n.varname.find("_d");
 						// this is an auto-regressive variable
-						cout << "auto-regressive variable index: " << string(n.varname.begin()+2,n.varname.begin()+pos) << "\n";
-						cout << "auto-regressive variable delay: " << string(n.varname.begin()+pos+2,n.varname.end()) << "\n";
+						// cout << "auto-regressive variable index: " << string(n.varname.begin()+2,n.varname.begin()+pos) << "\n";
+						// cout << "auto-regressive variable delay: " << string(n.varname.begin()+pos+2,n.varname.end()) << "\n";
 						prog.append(bp::make_tuple("x", n.arity_float + n.arity_bool, stoi(string(n.varname.begin()+2,n.varname.begin()+pos)),stoi(string(n.varname.begin()+pos+2,n.varname.end()))));
 					}
 					else{
-						cout << n.varname << " regular\n";
+						// cout << n.varname << " regular\n";
 						prog.append(bp::make_tuple("x", n.arity_float + n.arity_bool, stoi(string(n.varname.begin()+2,n.varname.end()))));
 					}
 				}
@@ -441,8 +441,8 @@ void line_to_py(vector<node>& line,bp::list& prog){
 }
 void archive_to_py(vector<ind>& archive,bp::list& arch_list){
 	// converts program to tuple for export to python.
-	cout << "archive_to_py\n";
-	cout << "size of vector<ind> archive: " << archive.size() << "\n";
+	// cout << "archive_to_py\n";
+	// cout << "size of vector<ind> archive: " << archive.size() << "\n";
 	for (auto i: archive){
 	// for (unsigned int i = 0; i < archive.size(); ++i){
 		// cout << i << "\n";
@@ -451,8 +451,8 @@ void archive_to_py(vector<ind>& archive,bp::list& arch_list){
 		line_to_py(i.line,prog);
 		arch_list.append(prog);
 	}
-	cout << "size of arch_list: " << bp::len(arch_list) << "\n";
-	cout <<"beepbopboop";
+	// cout << "size of arch_list: " << bp::len(arch_list) << "\n";
+	// cout <<"beepbopboop";
 }
 
 void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::list& best_prog) //string pname,string dname
@@ -590,7 +590,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 
 
 	 s.out.set_ptf(trials && p.print_log); // only print to file if print_log
-	 cout << "verbosity: " << p.verbosity << "\n";
+
 	 s.out.set_v(p.verbosity>1); // only print a log file to screen if verbosity > 1
 	 // print log setup
 	 if (p.print_log){
@@ -647,14 +647,21 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 			p.islands = false;
 		 }
 		 s.out << "fitness type: " << p.fit_type << "\n";
+		 s.out << "verbosity: " << p.verbosity << "\n";
 	 }
 
 	int nt=0;
 	//int ntt=0;
-
-	#pragma omp parallel
-	{
-		nt = omp_get_num_threads();
+	// if specified by the user, override the default omp number of threads
+	if (p.islands && p.num_islands !=0){
+		nt = p.num_islands;
+		omp_set_num_threads(nt);
+	}
+	else{
+		#pragma omp parallel
+		{
+			nt = omp_get_num_threads();
+		}
 	}
 	if (p.verbosity>0) s.out << "Number of threads: " << nt << "\n";
 	//s.out << "OMP Number of threads: " << omp_get_num_threads() << "\n";
@@ -691,8 +698,8 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 	paretoarchive A;
 	if (p.prto_arch_on){
 		A.resize(p.prto_arch_size);
-		tribe FinalArchive(p.prto_arch_size,p.max_fit,p.min_fit);
-		FinalArchive.pop = A.pop;
+		// tribe FinalArchive(p.prto_arch_size,p.max_fit,p.min_fit);
+		// FinalArchive.pop = A.pop;
 	}
 
 	vector<FitnessEstimator> FE(1);
@@ -1075,6 +1082,8 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 		if (p.print_last_pop) printpop(World.pop,p,s,logname,0);
 
 		if (p.prto_arch_on){
+			// if (A.pop.empty()) A.update(World.pop);
+
 			if (p.print_archive) printpop(A.pop,p,s,logname,1);
 			// save archive to best_prog for python
 			archive_to_py(A.pop,best_prog);
@@ -1325,6 +1334,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 
 
 		if (p.prto_arch_on){
+			if (A.pop.empty()) A.update(T.pop);
 			if (p.print_archive) printpop(A.pop,p,s,logname,1);
 			// save archive to best_prog for python
 			archive_to_py(A.pop,best_prog);
