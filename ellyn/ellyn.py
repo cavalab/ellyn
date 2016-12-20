@@ -479,6 +479,8 @@ def main():
 
     parser.add_argument('--no_stop', action='store_false', dest='stop_condition', default=None,
                     help='Flag to keep running even though fitness < 1e-6 has been reached.')
+    parser.add_argument('-stop_threshold', action='store', dest='stop_threshold', default=None,
+                    type=float, help='Fitness theshold for stopping execution.')
 # Data Options
     parser.add_argument('--validate', action='store_true', dest='train', default=None,
                 help='Flag to split data into training and validation sets.')

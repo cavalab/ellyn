@@ -208,7 +208,7 @@ struct params {
 
 	// stop condition
 	bool stop_condition;
-	bool stop_threshold;
+	float stop_threshold;
 	//print protected operators
 	bool print_protected_operators;
 	// number of threads
