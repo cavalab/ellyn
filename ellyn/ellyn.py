@@ -118,8 +118,8 @@ class ellyn(BaseEstimator):
             # split data into training and internal validation for choosing final model
             if self.AR:
                 # don't shuffle the rows of ordered data
-                train_i = np.arange(math.floor(features.shape[0]*.75))
-                val_i = np.arange(math.ceil(features.shape[0]*.75),features.shape[0])
+                train_i = np.arange(round(features.shape[0]*.75))
+                val_i = np.arange(round(features.shape[0]*.75),features.shape[0])
             else:
                 train_i, val_i = train_test_split(np.arange(features.shape[0]),
                                                                  stratify=None,
@@ -130,12 +130,12 @@ class ellyn(BaseEstimator):
             train_i = np.arange(features.shape[0])
 
         result = []
-        # pdb.set_trace()
+        #
         # run ellenGP
         elgp.runEllenGP(params,np.asarray(features[train_i],dtype=np.float32,order='C'),
                         np.asarray(labels[train_i],dtype=np.float32,order='C'),result)
         # print("best program:",self._best_estimator)
-        # pdb.set_trace()
+        #
         if self.prto_arch_on:
             self.hof = result[:]
             #evaluate archive on validation set and choose best
@@ -147,11 +147,19 @@ class ellyn(BaseEstimator):
                     fit_v.append(self.scoring_function(labels[val_i],
                                                        self.DC.predict(self._out(model,features[val_i]))))
                 else:
-                    tmp = self._out(model,features[val_i])
-                    # pdb.set_trace()
-                    fit_v.append(self.scoring_function(labels[val_i],self._out(model,features[val_i])))
+
+                    if self.AR:
+                        #
+                        if not self.AR_na: self.AR_na = 0
+                        if not self.AR_nka: self.AR_nka = 0
+
+                        ic = labels[train_i[-(self.AR_na+self.AR_nka)::]]
+                        tmp = self._out(model,features[val_i],ic)
+                        fit_v.append(self.scoring_function(labels[val_i],self._out(model,features[val_i],ic)))
+                    else:
+                        fit_v.append(self.scoring_function(labels[val_i],self._out(model,features[val_i])))
             # best estimator has best validation score
-            # pdb.set_trace()
+            #
             if self.scoring_function is r2_score or self.scoring_function is accuracy_score:
                 self._best_estimator = self.hof[np.argmax(fit_v)]
             else:
@@ -170,25 +178,25 @@ class ellyn(BaseEstimator):
         if self.verbosity>0:
              print("final model(s):")
              if self.prto_arch_on:
-                 for m in result:
+                 for m in result[::-1]:
                      if m is self._best_estimator:
-                         print('[best]',self.stack_2_eqn(m))
+                         print('[best]',self.stack_2_eqn(m),sep='\t')
                      else:
-                         print(self.stack_2_eqn(m))
+                         print('',self.stack_2_eqn(m),sep='\t')
              else:
                  print(self.stack_2_eqn(result))
 
 
-    def predict(self, testing_features):
+    def predict(self, testing_features,ic=None):
         """predict on a holdout data set."""
         # print("best_inds:",self._best_inds)
         # print("best estimator size:",self._best_estimator.coef_.shape)
         # tmp = self._out(self._best_estimator,testing_features)
-        # pdb.set_trace()
+        #
         if self.class_m4gp:
             return self.DC.predict(self._out(self._best_estimator,testing_features))
         else:
-            return self._out(self._best_estimator,testing_features)
+            return self._out(self._best_estimator,testing_features,ic)
 
     def fit_predict(self, features, labels):
         """Convenience function that fits a pipeline then predicts on the provided features
@@ -209,11 +217,11 @@ class ellyn(BaseEstimator):
         self.fit(features, labels)
         return self.predict(features)
 
-    def score(self, testing_features, testing_labels):
+    def score(self, testing_features, testing_labels,ic=None):
         """estimates accuracy on testing set"""
         # print("test features shape:",testing_features.shape)
         # print("testing labels shape:",testing_labels.shape)
-        yhat = self.predict(testing_features)
+        yhat = self.predict(testing_features,ic)
         return self.scoring_function(testing_labels,yhat)
 
     def export(self, output_file_name):
@@ -233,39 +241,30 @@ class ellyn(BaseEstimator):
 
             if np.any(np.isnan(stack_float[-1])) or np.any(np.isinf(stack_float[-1])):
                 print("problem operator:",n)
-        # pdb.set_trace()
-    def _out(self,I,features):
+        #
+    def _out(self,I,features,ic=None):
         """computes the output for individual I"""
         stack_float = []
         stack_bool = []
         # print("stack:",I.stack)
         # evaulate stack over rows of features,labels
-        # pdb.set_trace()
         if self.AR:
             #for autoregressive models, need to evaluate each sample in a loop,
             # setting delayed outputs as you go
             y = np.zeros(features.shape[0])
 
-            # #augment features based on order of inputs and delay variables
-            # newcols = np.zeros((features.shape[0], self.AR_nb * features.shape[1]))
-            # # each column equals the corresponding feature column, prepended with
-            # num_feats = features.shape[1]
-            # # self.AR_nkb zeros + features[]
-            # for i in np.arange(self.AR_nb):
-            #     for x in np.arange(num_feats):
-            #         ar_feat = np.array([features[j,x] for j in features[:,x] if j >= i + p.AR_nkb]) + np.zeros(i+p.AR_nkb)
-            #         features = np.hstack((features,) append(features[j][])
+            # evaluate models sample by sample
             for i,f in enumerate(features):
+                stack_float=[]
+                stack_bool=[]
+                # use initial condition if one exists
+                if ic is not None:
+                    tmpy = np.hstack((ic,y[:i]))
+                else:
+                    tmpy = y[:i]
+
                 for n in I:
-                    if i ==0:
-                        tmpy = np.array((0.0,))
-                    else:
-                        tmpy = y[:i]
-                    # pdb.set_trace()
                     self._eval(n,np.reshape(f,(-1,f.shape[0])),stack_float,stack_bool,tmpy)
-                    #np.reshape(tmpy,(-1,tmpy.shape[0]))
-                    # pdb.set_trace()
-                    # y.append(stack_float[-1])
                 y[i] = stack_float[-1]
 
         else: # normal vectorized evaluation over all rows / samples
@@ -276,7 +275,7 @@ class ellyn(BaseEstimator):
         if self.class_m4gp:
             return np.asarray(stack_float).transpose()
         elif self.AR:
-            # pdb.set_trace()
+            #
             return np.array(y)
         else:
             return stack_float[-1]
@@ -339,7 +338,7 @@ class ellyn(BaseEstimator):
     def delay_feature(self,feature,delay):
         """returns delayed feature value for auto-regressive models"""
         ar_feat = np.vstack((np.array([feature[j] for j in feature if j >= delay + self.AR_nkb]) , np.zeros(delay+self.AR_nkb)))
-        pdb.set_trace()
+        #
         return ar_feat
 
 
@@ -348,7 +347,7 @@ def divs(x,y):
     try:
         if x.shape != y.shape:
             y = np.asarray(y)
-        # pdb.set_trace()
+        #
         tmp = np.ones(y.shape)
         nonzero_y = np.abs(y) >= 0.000001
         # print("nonzero_y.sum:", np.sum(nonzero_y))
@@ -454,7 +453,7 @@ def main():
     parser.add_argument('-me', action='store', dest='max_evals', default=None,
                         type=float_range, help='Max point evaluations.')
 
-    parser.add_argument('-sel', action='store', dest='selection', default='tournament', choices = ['tournament','dc','lexicase','afp','rand'],
+    parser.add_argument('-sel', action='store', dest='selection', default='tournament', choices = ['tournament','dc','lexicase','epsilon_lexicase','afp','rand'],
                         type=str, help='Selection method (Default: tournament)')
 
     parser.add_argument('-PS_sel', action='store', dest='PS_sel', default=None, choices = [1,2,3,4,5],
@@ -697,8 +696,8 @@ def main():
     random_state = args.random_state if args.random_state > 0 else None
 
     if args.AR:
-        train_i = input_data.index[:math.floor(0.75*len(input_data.index))]
-        test_i = input_data.index[math.ceil(0.75*len(input_data.index)):]
+        train_i = input_data.index[:round(0.75*len(input_data.index))]
+        test_i = input_data.index[round(0.75*len(input_data.index)):]
     else:
         train_i, test_i = train_test_split(input_data.index,
                                                         stratify = None,#  stratify=input_data['label'].values,
