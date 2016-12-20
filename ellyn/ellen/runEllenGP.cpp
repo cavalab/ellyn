@@ -446,7 +446,7 @@ void archive_to_py(vector<ind>& archive,bp::list& arch_list){
 	for (auto i: archive){
 	// for (unsigned int i = 0; i < archive.size(); ++i){
 		// cout << i << "\n";
-		cout << i.eqn << "\n";
+		// cout << i.eqn << "\n";
 		bp::list prog;
 		line_to_py(i.line,prog);
 		arch_list.append(prog);

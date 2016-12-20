@@ -338,7 +338,7 @@ class ellyn(BaseEstimator):
     def delay_feature(self,feature,delay):
         """returns delayed feature value for auto-regressive models"""
         ar_feat = np.vstack((np.array([feature[j] for j in feature if j >= delay + self.AR_nkb]) , np.zeros(delay+self.AR_nkb)))
-        #
+        pdb.set_trace()
         return ar_feat
 
 
