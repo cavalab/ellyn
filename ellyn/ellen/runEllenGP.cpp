@@ -333,8 +333,8 @@ bool stopcondition(tribe& T,params p,Data& d,state& s,FitnessEstimator& FE)
 	if (!p.stop_condition)
 		return false;
 	if (!p.EstimateFitness){
-		if (T.bestFit() <= 0.000001){
-			s.out << "best fitness criterion achieved: " << T.bestFit() <<"\n";
+		if (T.bestFit() <= p.stop_threshold){
+			s.out << "best fitness criterion achieved: " << T.bestFit() << "<" << p.stop_threshold << "\n";
 			return true;
 		}
 		else
@@ -347,8 +347,8 @@ bool stopcondition(tribe& T,params p,Data& d,state& s,FitnessEstimator& FE)
 		p.EstimateFitness=0;
 		Fitness(best,p,d,s,FE);
 		p.EstimateFitness=1;
-		if (best[0].fitness <= 0.000001){
-			s.out << "best fitness criterion achieved: " << best[0].fitness <<"\n";
+		if (best[0].fitness <= p.stop_threshold){
+			s.out << "best fitness criterion achieved: " << best[0].fitness << "<" << p.stop_threshold << "\n";
 			return true;
 		}
 		else

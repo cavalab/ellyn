@@ -67,7 +67,7 @@ class ellyn(BaseEstimator):
                  rt_cross=None, ERC_ints=None, train_pct=None, eHC_on=None,
                  PS_sel=None, lex_eps_global=None, lex_pool=None, AR_nka=None,
                  print_homology=None, max_len_init=None, prto_arch_size=None,
-                 cvals=None, stop_condition=None, lex_metacases=None,
+                 cvals=None, stop_condition=None, stop_threshold=None, lex_metacases=None,
                  FE_rank=None, eHC_its=None, lex_eps_error_mad=True,
                  ERC=None, erc_ints=None, AR_na=None, rt_mut=None,
                  pop_restart=None, seeds=None, tourn_size=None, prto_arch_on=None,

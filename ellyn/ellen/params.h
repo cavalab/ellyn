@@ -208,6 +208,7 @@ struct params {
 
 	// stop condition
 	bool stop_condition;
+	bool stop_threshold;
 	//print protected operators
 	bool print_protected_operators;
 	// number of threads
@@ -369,7 +370,7 @@ struct params {
 		number_of_classes=1; //for use with multiclass
 
 		stop_condition=1;
-
+		stop_threshold = 0.000001;
 		print_protected_operators = 0;
 	}
 	~params(){}
@@ -621,6 +622,8 @@ struct params {
 			elitism = extract<bool>(d["elitism"]);
 		if(d.has_key("stop_condition"))
 			stop_condition = extract<bool>(d["stop_condition"]);
+		if(d.has_key("stop_threshold"))
+			stop_threshold = extract<float>(d["stop_threshold"]);
 		if(d.has_key("mutate"))
 			mutate = extract<int>(d["mutate"]);
 		if(d.has_key("print_novelty"))
