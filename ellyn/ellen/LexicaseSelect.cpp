@@ -290,7 +290,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 				for (int j=0;j<pool.size();++j)
 				{
 
-					if (pop[pool[j]].error[case_order[h]]<minfit)
+					if (pop[pool[j]].error[case_order[h]]<minfit || j == 0)
 					{
 						minfit=pop[pool[j]].error[case_order[h]];
 						winner.resize(0);
@@ -334,13 +334,28 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 			parloc[i]=winner[0];
 		else{ // otherwise throw an ??
 			cout << "??";
-			cout << "winner is not correct size\n";
+			cout << "winner is size " << winner.size() << ", not > 1\n";
 			cout << "pool size:" << pool.size() << "\n";
 			cout << "minfit: " << minfit << "\n";
+			cout << "epsilon size:" << epsilon.size() << "\n";
 			cout << "epsilon:\n";
 			for (size_t i = 0; i< epsilon.size(); ++i)
 				cout << epsilon[i] << ",";
+
+			cout << "pool fitness cases:\n";
+			cout << "case:\t";
+			for (size_t c =0; c<h; ++c){
+				cout << case_order[c] << ",";
+			}
+			cout << "\n";
+			for (size_t i=0; i<pool.size(); ++i){
+				cout << i << ":\t";
+				for (size_t c =0; c<h; ++c)
+					cout << pop[pool[i]].error[case_order[h]] << ",";
+				cout << "\n";
+			}
 		}
+
 		assert(winner.size()>0);
 		// reset minfit
 

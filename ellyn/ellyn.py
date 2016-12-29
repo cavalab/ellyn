@@ -37,13 +37,6 @@ def initializer(fun):
                setattr(self, name, arg)
        fun(self, *args, **kargs)
    return wrapper
-# from numpy.ctypeslib import ndpointer
-# import ctypes
-# from joblib import Parallel, delayed
-
-# import multiprocessing as mp
-# NUM_THREADS = mp.cpu_count()
-
 
 class ellyn(BaseEstimator):
     """ellyn uses GP to build its models.
@@ -93,18 +86,24 @@ class ellyn(BaseEstimator):
         else:
             self.scoring_function = mean_squared_error
 
-        self._best_estimator = []
+        self.random_state = random_state
+        self.best_estimator_ = []
         self.hof = []
         #convert m4gp argument to m3gp used in ellenGP
-        if classification and not (self.class_m4gp or self.class_bool):
+        if classification and not class_m4gp and not class_bool:
             #default to M4GP in the case no classifier specified
             self.class_m4gp = True
+        elif not classification:
+            self.class_m4gp = False
 
     def fit(self, features, labels):
         """Fit model to data"""
         # set sel number from selection
-        self.sel = {'tournament': 1,'dc':2,'lexicase': 3,'epsilon_lexicase': 3, 'afp': 4,'rand': 5,None: 1}[self.selection]
+        self.sel = {'tournament': 1,'dc':2,'lexicase': 3,'epsilon_lexicase': 3,
+                    'afp': 4,'rand': 5,None: 1}[self.selection]
 
+        if self.selection=='epsilon_lexicase':
+            self.lex_eps_error_mad = True
 
         np.random.seed(self.random_state)
         # get parameters
@@ -134,44 +133,49 @@ class ellyn(BaseEstimator):
         # run ellenGP
         elgp.runEllenGP(params,np.asarray(features[train_i],dtype=np.float32,order='C'),
                         np.asarray(labels[train_i],dtype=np.float32,order='C'),result)
-        # print("best program:",self._best_estimator)
-        #
+        # print("best program:",self.best_estimator_)
+        if self.AR: # set defaults
+            if not self.AR_na: self.AR_na = 0
+            if not self.AR_nka: self.AR_nka = 1
+            if not self.AR_nb: self.AR_nb = 0
+            if not self.AR_nkb: self.AR_nkb = 0
+
         if self.prto_arch_on:
             self.hof = result[:]
             #evaluate archive on validation set and choose best
-            fit_v = []
+            self.fit_v = []
             for model in self.hof:
                 if self.class_m4gp:
                     self.DC = DistanceClassifier()
                     self.DC.fit(self._out(model,features[train_i]),labels[train_i])
-                    fit_v.append(self.scoring_function(labels[val_i],
-                                                       self.DC.predict(self._out(model,features[val_i]))))
+                    self.fit_v.append(self.scoring_function(labels[val_i],
+                                 self.DC.predict(self._out(model,features[val_i]))))
                 else:
-
                     if self.AR:
                         #
-                        if not self.AR_na: self.AR_na = 0
-                        if not self.AR_nka: self.AR_nka = 0
-
-                        ic = labels[train_i[-(self.AR_na+self.AR_nka)::]]
+                        ic = dict()
+                        ic['labels'] = labels[train_i[-(self.AR_na+self.AR_nka):]]
+                        ic['features'] = features[train_i[-(self.AR_nb+self.AR_nkb):]]
                         tmp = self._out(model,features[val_i],ic)
-                        fit_v.append(self.scoring_function(labels[val_i],self._out(model,features[val_i],ic)))
+                        self.fit_v.append(self.scoring_function(labels[val_i],
+                                     self._out(model,features[val_i],ic)))
                     else:
-                        fit_v.append(self.scoring_function(labels[val_i],self._out(model,features[val_i])))
+                        self.fit_v.append(self.scoring_function(labels[val_i],
+                                    self._out(model,features[val_i])))
             # best estimator has best validation score
             #
             if self.scoring_function is r2_score or self.scoring_function is accuracy_score:
-                self._best_estimator = self.hof[np.argmax(fit_v)]
+                self.best_estimator_ = self.hof[np.argmax(self.fit_v)]
             else:
-                self._best_estimator = self.hof[np.argmin(fit_v)]
+                self.best_estimator_ = self.hof[np.argmin(self.fit_v)]
         else:
-            self._best_estimator = result
+            self.best_estimator_ = result
 
         # if M4GP is used, call Distance Classifier
         if self.class_m4gp:
             if self.verbosity > 0: print("Storing DistanceClassifier...")
             self.DC = DistanceClassifier()
-            self.DC.fit(self._out(self._best_estimator,features),labels)
+            self.DC.fit(self._out(self.best_estimator_,features),labels)
 
         ####
         # print
@@ -179,7 +183,7 @@ class ellyn(BaseEstimator):
              print("final model(s):")
              if self.prto_arch_on:
                  for m in result[::-1]:
-                     if m is self._best_estimator:
+                     if m is self.best_estimator_:
                          print('[best]',self.stack_2_eqn(m),sep='\t')
                      else:
                          print('',self.stack_2_eqn(m),sep='\t')
@@ -190,13 +194,13 @@ class ellyn(BaseEstimator):
     def predict(self, testing_features,ic=None):
         """predict on a holdout data set."""
         # print("best_inds:",self._best_inds)
-        # print("best estimator size:",self._best_estimator.coef_.shape)
-        # tmp = self._out(self._best_estimator,testing_features)
+        # print("best estimator size:",self.best_estimator_.coef_.shape)
+        # tmp = self._out(self.best_estimator_,testing_features)
         #
         if self.class_m4gp:
-            return self.DC.predict(self._out(self._best_estimator,testing_features))
+            return self.DC.predict(self._out(self.best_estimator_,testing_features))
         else:
-            return self._out(self._best_estimator,testing_features,ic)
+            return self._out(self.best_estimator_,testing_features,ic)
 
     def fit_predict(self, features, labels):
         """Convenience function that fits a pipeline then predicts on the provided features
@@ -229,48 +233,99 @@ class ellyn(BaseEstimator):
 
     def _eval(self,n, features, stack_float, stack_bool, y= None):
         """evaluation function for best estimator"""
+        eval_dict = {
+        # float operations
+            '+': lambda n,features,stack_float,stack_bool: stack_float.pop() + stack_float.pop(),
+            '-': lambda n,features,stack_float,stack_bool: stack_float.pop() - stack_float.pop(),
+            '*': lambda n,features,stack_float,stack_bool: stack_float.pop() * stack_float.pop(),
+            '/': lambda n,features,stack_float,stack_bool: self.divs(stack_float.pop(),stack_float.pop()),
+            'sin': lambda n,features,stack_float,stack_bool: np.sin(stack_float.pop()),
+            'cos': lambda n,features,stack_float,stack_bool: np.cos(stack_float.pop()),
+            'exp': lambda n,features,stack_float,stack_bool: np.exp(stack_float.pop()),
+            'log': lambda n,features,stack_float,stack_bool: self.logs(np.asarray(stack_float.pop())),#np.log(np.abs(stack_float.pop())),
+            'x':  lambda n,features,stack_float,stack_bool: features[:,n[2]],
+            'k': lambda n,features,stack_float,stack_bool: np.ones(features.shape[0])*n[2],
+            '^2': lambda n,features,stack_float,stack_bool: stack_float.pop()**2,
+            '^3': lambda n,features,stack_float,stack_bool: stack_float.pop()**3,
+            'sqrt': lambda n,features,stack_float,stack_bool: np.sqrt(np.abs(stack_float.pop())),
+            'xd': lambda n,features,stack_float,stack_bool: features[-1-n[3],n[2]],
+            'kd': lambda n,features,stack_float,stack_bool: n[2],
+        # bool operations
+            '!': lambda n,features,stack_float,stack_bool: not stack_bool.pop(),
+            '&': lambda n,features,stack_float,stack_bool: stack_bool.pop() and stack_bool.pop(),
+            '|': lambda n,features,stack_float,stack_bool: stack_bool.pop() or stack_bool.pop(),
+            '==': lambda n,features,stack_float,stack_bool: stack_bool.pop() == stack_bool.pop(),
+            '>': lambda n,features,stack_float,stack_bool: stack_float.pop() > stack_float.pop(),
+            '<': lambda n,features,stack_float,stack_bool: stack_float.pop() < stack_float.pop(),
+            '}': lambda n,features,stack_float,stack_bool: stack_float.pop() >= stack_float.pop(),
+            '{': lambda n,features,stack_float,stack_bool: stack_float.pop() <= stack_float.pop(),
+            # '>_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() > stack_bool.pop(),
+            # '<_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() < stack_bool.pop(),
+            # '>=_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() >= stack_bool.pop(),
+            # '<=_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() <= stack_bool.pop(),
+        }
+
         np.seterr(all='ignore')
         if len(stack_float) >= n[1]:
             if n[0] == 'y': # return auto-regressive variable
                 if len(y)>=n[2]:
-                    stack_float.append(np.array((y[-n[2]],)))
+                    stack_float.append(y[-n[2]])
                 else:
-                    stack_float.append(np.array((0.0,)))
+                    stack_float.append(0.0)
             else:
-                stack_float.append(self.eval_dict[n[0]](n,features,stack_float,stack_bool))
+                stack_float.append(eval_dict[n[0]](n,features,stack_float,stack_bool))
+            try:
+                if np.any(np.isnan(stack_float[-1])) or np.any(np.isinf(stack_float[-1])):
+                    print("problem operator:",n)
+            except:
+                pdb.set_trace()
 
-            if np.any(np.isnan(stack_float[-1])) or np.any(np.isinf(stack_float[-1])):
-                print("problem operator:",n)
-        #
     def _out(self,I,features,ic=None):
         """computes the output for individual I"""
         stack_float = []
         stack_bool = []
         # print("stack:",I.stack)
         # evaulate stack over rows of features,labels
+        # pdb.set_trace()
         if self.AR:
+
+            delay = self.AR_nb+self.AR_nkb+1
+
+            if ic is not None:
+                tmp_features = np.vstack([ic['features'],features])
+            else:
+                tmp_features = np.vstack([np.zeros((self.AR_nb,features.shape[1])),features])
             #for autoregressive models, need to evaluate each sample in a loop,
             # setting delayed outputs as you go
             y = np.zeros(features.shape[0])
-
             # evaluate models sample by sample
-            for i,f in enumerate(features):
+            for i,f in enumerate([tmp_features[j-delay:j] for j in np.arange(features.shape[0])+delay]):
                 stack_float=[]
                 stack_bool=[]
+
                 # use initial condition if one exists
                 if ic is not None:
-                    tmpy = np.hstack((ic,y[:i]))
+                    # pdb.set_trace()
+                    tmpy = np.hstack((ic['labels'],y[:i]))
                 else:
                     tmpy = y[:i]
 
                 for n in I:
-                    self._eval(n,np.reshape(f,(-1,f.shape[0])),stack_float,stack_bool,tmpy)
-                y[i] = stack_float[-1]
-
+                    if n[0]=='x': pdb.set_trace()
+                    if n[0]=='k':
+                        n = ('kd',n[1],n[2])
+                    self._eval(n,f,stack_float,stack_bool,tmpy)
+                    # pdb.set_trace()
+                try:
+                    y[i] = stack_float[-1]
+                except:
+                    pdb.set_trace()
         else: # normal vectorized evaluation over all rows / samples
             for n in I:
                 self._eval(n,features,stack_float,stack_bool)
                 # print("stack_float:",stack_float)
+        # pdb.set_trace()
+        # if y.shape[0] != features.shape[0]:
 
         if self.class_m4gp:
             return np.asarray(stack_float).transpose()
@@ -279,6 +334,7 @@ class ellyn(BaseEstimator):
             return np.array(y)
         else:
             return stack_float[-1]
+
 
     def stacks_2_eqns(self,stacks):
         """returns equation strings from stacks"""
@@ -303,65 +359,63 @@ class ellyn(BaseEstimator):
         if len(stack_eqn) >= n[1]:
             stack_eqn.append(eqn_dict[n[0]](n,stack_eqn))
 
-    eval_dict = {
-    # float operations
-        '+': lambda n,features,stack_float,stack_bool: stack_float.pop() + stack_float.pop(),
-        '-': lambda n,features,stack_float,stack_bool: stack_float.pop() - stack_float.pop(),
-        '*': lambda n,features,stack_float,stack_bool: stack_float.pop() * stack_float.pop(),
-        '/': lambda n,features,stack_float,stack_bool: divs(np.asarray(stack_float.pop()),np.asarray(stack_float.pop())),
-        'sin': lambda n,features,stack_float,stack_bool: np.sin(stack_float.pop()),
-        'cos': lambda n,features,stack_float,stack_bool: np.cos(stack_float.pop()),
-        'exp': lambda n,features,stack_float,stack_bool: np.exp(stack_float.pop()),
-        'log': lambda n,features,stack_float,stack_bool: logs(np.asarray(stack_float.pop())),#np.log(np.abs(stack_float.pop())),
-        'x':  lambda n,features,stack_float,stack_bool: features[:,n[2]],
-        'k': lambda n,features,stack_float,stack_bool: np.ones(features.shape[0])*n[2],
-        '^2': lambda n,features,stack_float,stack_bool: stack_float.pop()**2,
-        '^3': lambda n,features,stack_float,stack_bool: stack_float.pop()**3,
-        'sqrt': lambda n,features,stack_float,stack_bool: np.sqrt(np.abs(stack_float.pop())),
-        'xd': lambda n,features,stack_float,stack_bool: delay_feature(features[:,n[2]],n[3]),
-        # 'rbf': lambda n,features,stack_float,stack_bool: np.exp(-(np.norm(stack_float.pop()-stack_float.pop())**2)/2)
-    # bool operations
-        '!': lambda n,features,stack_float,stack_bool: not stack_bool.pop(),
-        '&': lambda n,features,stack_float,stack_bool: stack_bool.pop() and stack_bool.pop(),
-        '|': lambda n,features,stack_float,stack_bool: stack_bool.pop() or stack_bool.pop(),
-        '==': lambda n,features,stack_float,stack_bool: stack_bool.pop() == stack_bool.pop(),
-        '>': lambda n,features,stack_float,stack_bool: stack_float.pop() > stack_float.pop(),
-        '<': lambda n,features,stack_float,stack_bool: stack_float.pop() < stack_float.pop(),
-        '}': lambda n,features,stack_float,stack_bool: stack_float.pop() >= stack_float.pop(),
-        '{': lambda n,features,stack_float,stack_bool: stack_float.pop() <= stack_float.pop(),
-        # '>_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() > stack_bool.pop(),
-        # '<_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() < stack_bool.pop(),
-        # '>=_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() >= stack_bool.pop(),
-        # '<=_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() <= stack_bool.pop(),
-    }
+    # def delay_feature(self,feature,delay):
+    #     """returns delayed feature value for auto-regressive models"""
+    #     # ar_feat = np.vstack((np.zeros(delay+self.AR_nkb), np.array([feature[j-(delay+self.AR_nkb)] for j in feature if j >= delay + self.AR_nkb]) ))
+    #     pdb.set_trace()
+    #     if len(feature)>=delay:
+    #         return feature[-delay]
+    #     else:
+    #         return 0.0
 
-    def delay_feature(self,feature,delay):
-        """returns delayed feature value for auto-regressive models"""
-        ar_feat = np.vstack((np.array([feature[j] for j in feature if j >= delay + self.AR_nkb]) , np.zeros(delay+self.AR_nkb)))
-        pdb.set_trace()
-        return ar_feat
+    def divs(self,x,y):
+        """safe division"""
+        # pdb.set_trace()
+
+        if type(x) == np.ndarray:
+            tmp = np.ones(y.shape)
+            nonzero_y = np.abs(y) >= 0.000001
+            # print("nonzero_y.sum:", np.sum(nonzero_y))
+            tmp[nonzero_y] = x[nonzero_y]/y[nonzero_y]
+            return tmp
+        else:
+            # pdb.set_trace()
+            if abs(y) >= 0.000001:
+                return x/y
+            else:
+                return 1
 
 
-def divs(x,y):
-    """safe division"""
-    try:
-        if x.shape != y.shape:
-            y = np.asarray(y)
-        #
-        tmp = np.ones(y.shape)
-        nonzero_y = np.abs(y) >= 0.000001
-        # print("nonzero_y.sum:", np.sum(nonzero_y))
-        tmp[nonzero_y] = x[nonzero_y]/y[nonzero_y]
+    def logs(self,x):
+        """safe log"""
+        tmp = np.zeros(x.shape)
+        nonzero_x = np.abs(x) >= 0.000001
+        tmp[nonzero_x] = np.log(np.abs(x[nonzero_x]))
         return tmp
-    except:
-        pdb.set_trace()
 
-def logs(x):
-    """safe log"""
-    tmp = np.zeros(x.shape)
-    nonzero_x = np.abs(x) >= 0.000001
-    tmp[nonzero_x] = np.log(np.abs(x[nonzero_x]))
-    return tmp
+    def plot_archive(self):
+        """plots pareto archive in terms of model accuracy and complexity"""
+        if not self.hof:
+            raise(ValueError,"no archive to print")
+        else:
+            import matplotlib.pyplot as plt
+
+            f_v = np.array(self.fit_v)[::-1]
+            m_v = self.hof[::-1]
+            plt.plot(f_v,np.arange(len(f_v)))
+
+            for i,(m,f) in enumerate(zip(m_v,f_v)):
+                plt.plot(f,i,'x')
+                plt.text((min(f_v))*0.9,i,self.stack_2_eqn(m))
+                if f == max(f_v):
+                    plt.plot(f,i,'ro')
+            plt.ylabel('Complexity')
+            plt.gca().set_yticklabels('')
+            plt.xlabel('Internal Validation Accuracy')
+            plt.xlim((min(f_v))*.8,max(f_v)*1.1)
+            plt.ylim(-1,len(m_v)+1)
+
+            return plt.gcf()
 
 # equation conversion
 eqn_dict = {
@@ -378,8 +432,9 @@ eqn_dict = {
     'sqrt': lambda n,stack_eqn: 'sqrt(|' + stack_eqn.pop() + '|)',
     # 'rbf': lambda n,stack_eqn: 'exp(-||' + stack_eqn.pop()-stack_eqn.pop() '||^2/2)',
     'x':  lambda n,stack_eqn: 'x_' + str(n[2]),
-    'k': lambda n,stack_eqn: str(n[2]),
+    'k': lambda n,stack_eqn: str(round(n[2],3)),
     'y': lambda n,stack_eqn: 'y_{t-' + str(n[2]) + '}',
+    'xd': lambda n,stack_eqn: 'x_' + str(n[2]) + '_{t-' + str(n[3]) + '}'
 }
 
 

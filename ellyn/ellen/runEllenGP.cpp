@@ -422,7 +422,7 @@ void line_to_py(vector<node>& line,bp::list& prog){
 						// this is an auto-regressive variable
 						// cout << "auto-regressive variable index: " << string(n.varname.begin()+2,n.varname.begin()+pos) << "\n";
 						// cout << "auto-regressive variable delay: " << string(n.varname.begin()+pos+2,n.varname.end()) << "\n";
-						prog.append(bp::make_tuple("x", n.arity_float + n.arity_bool, stoi(string(n.varname.begin()+2,n.varname.begin()+pos)),stoi(string(n.varname.begin()+pos+2,n.varname.end()))));
+						prog.append(bp::make_tuple("xd", n.arity_float + n.arity_bool, stoi(string(n.varname.begin()+2,n.varname.begin()+pos)),stoi(string(n.varname.begin()+pos+2,n.varname.end()))));
 					}
 					else{
 						// cout << n.varname << " regular\n";
