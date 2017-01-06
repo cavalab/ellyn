@@ -212,7 +212,9 @@ struct params {
 	float stop_threshold;
 	//print protected operators
 	bool print_protected_operators;
-	// number of threads
+	// return population to python
+	bool return_pop;
+
 	params(){ //default values
 		g=100; // number of generations (limited by default)
 		popsize=500; //population size
@@ -374,6 +376,9 @@ struct params {
 		stop_condition=1;
 		stop_threshold = 0.000001;
 		print_protected_operators = 0;
+
+		// return population to python
+		return_pop = false;
 	}
 	~params(){}
 
@@ -661,6 +666,8 @@ struct params {
 			test_at_end = extract<bool>(d["test_at_end"]);
 		if (d.has_key("verbosity"))
 			verbosity = extract<int>(d["verbosity"]);
+		if (d.has_key("return_pop"))
+			return_pop = extract<bool>(d["return_pop"]);
 		// finished reading from dict.
 
 		allvars = intvars;

@@ -52,7 +52,7 @@ class ellyn(BaseEstimator):
     update_checked = False
     @initializer
     def __init__(self, g=100, popsize=500, limit_evals=False, max_evals=0,
-                 selection='tournament', classification=False, islands=False,
+                 selection='tournament', classification=False, islands=True,
                  num_islands=None,fit_type=None, verbosity=0, random_state=0,
                  class_m4gp=False,scoring_function=mean_squared_error, print_log=False,
                  print_archive=False,print_data=False, class_bool=False, max_len=None, island_gens=50,
@@ -73,7 +73,7 @@ class ellyn(BaseEstimator):
                  print_novelty=None, eHC_slim=None, elitism=None,
                  print_genome=None, pHC_its=None, shuffle_data=None, class_prune=None,
                  eHC_init=None, init_validate_on=None, minERC=None,
-                 op_list=None, eHC_mut=None, min_len=None):
+                 op_list=None, eHC_mut=None, min_len=None, return_pop=False):
                 # sets up GP.
 
         if fit_type:
@@ -87,6 +87,10 @@ class ellyn(BaseEstimator):
             self.scoring_function = mean_squared_error
 
         self.random_state = random_state
+        self.selection  = selection
+        self.prto_arch_on = prto_arch_on
+        self.AR = AR
+        self.verbosity = verbosity
         self.best_estimator_ = []
         self.hof = []
         #convert m4gp argument to m3gp used in ellenGP
@@ -168,6 +172,9 @@ class ellyn(BaseEstimator):
                 self.best_estimator_ = self.hof[np.argmax(self.fit_v)]
             else:
                 self.best_estimator_ = self.hof[np.argmin(self.fit_v)]
+        elif self.return_pop:
+            self.hof = result[:]
+            self.best_estimator_ = result[0]
         else:
             self.best_estimator_ = result
 
@@ -181,7 +188,7 @@ class ellyn(BaseEstimator):
         # print
         if self.verbosity>0:
              print("final model(s):")
-             if self.prto_arch_on:
+             if self.prto_arch_on or self.return_pop:
                  for m in result[::-1]:
                      if m is self.best_estimator_:
                          print('[best]',self.stack_2_eqn(m),sep='\t')

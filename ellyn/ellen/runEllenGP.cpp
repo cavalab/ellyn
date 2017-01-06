@@ -439,9 +439,9 @@ void line_to_py(vector<node>& line,bp::list& prog){
 		}
 	}
 }
-void archive_to_py(vector<ind>& archive,bp::list& arch_list){
+void pop_to_py(vector<ind>& archive,bp::list& arch_list){
 	// converts program to tuple for export to python.
-	// cout << "archive_to_py\n";
+	// cout << "pop_to_py\n";
 	// cout << "size of vector<ind> archive: " << archive.size() << "\n";
 	for (auto i: archive){
 	// for (unsigned int i = 0; i < archive.size(); ++i){
@@ -1086,13 +1086,24 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 
 			if (p.print_archive) printpop(A.pop,p,s,logname,1);
 			// save archive to best_prog for python
-			archive_to_py(A.pop,best_prog);
+			if (p.return_pop){
+				World.sortpop();
+				pop_to_py(World.pop,best_prog);
+			}
+			else
+				pop_to_py(A.pop,best_prog);
 		}
 		else{
 			// save best individual to best_prog for python
-			vector<ind> best(1);
-			World.getbestind(best[0]);
-			line_to_py(best[0].line,best_prog);
+			if (p.return_pop){
+				World.sortpop();
+				pop_to_py(World.pop,best_prog);
+			}
+			else{
+				vector<ind> best(1);
+				World.getbestind(best[0]);
+				line_to_py(best[0].line,best_prog);
+			}
 		}
 
 	}
@@ -1337,13 +1348,25 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 			if (A.pop.empty()) A.update(T.pop);
 			if (p.print_archive) printpop(A.pop,p,s,logname,1);
 			// save archive to best_prog for python
-			archive_to_py(A.pop,best_prog);
+			if (p.return_pop){
+				T.sortpop();
+				pop_to_py(T.pop,best_prog);
+			}
+			else
+				pop_to_py(A.pop,best_prog);
 		}
 		else{
 			// save best individual to best_prog for python
-			vector<ind> best(1);
-			T.getbestind(best[0]);
-			line_to_py(best[0].line,best_prog);
+
+			if (p.return_pop){
+				T.sortpop();
+				pop_to_py(T.pop,best_prog);
+			}
+			else{
+				vector<ind> best(1);
+				T.getbestind(best[0]);
+				line_to_py(best[0].line,best_prog);
+			}
 		}
 	}
 
