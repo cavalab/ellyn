@@ -93,6 +93,7 @@ class ellyn(BaseEstimator):
         self.verbosity = verbosity
         self.best_estimator_ = []
         self.hof = []
+        self.return_pop = return_pop
         #convert m4gp argument to m3gp used in ellenGP
         if classification and not class_m4gp and not class_bool:
             #default to M4GP in the case no classifier specified
