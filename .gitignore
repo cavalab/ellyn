@@ -37,3 +37,4 @@ in/
 *.last_pop
 *.fuse*
 __pycache__
+*/lib

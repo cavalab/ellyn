@@ -26,9 +26,10 @@ import inspect
 import math
 
 def initializer(fun):
-   names, varargs, keywords, defaults = inspect.getargspec(fun)
-   @wraps(fun)
-   def wrapper(self, *args, **kargs):
+    """automatically assigns attributes to ellyn class upon instantiation"""
+    names, varargs, keywords, defaults = inspect.getargspec(fun)
+    @wraps(fun)
+    def wrapper(self, *args, **kargs):
        if type(kargs.items()) is list:
            for name, arg in zip(names[1:], args) + kargs.items():
                setattr(self, name, arg)
@@ -36,7 +37,7 @@ def initializer(fun):
            for name, arg in zip(names[1:], args) | kargs.items():
                setattr(self, name, arg)
        fun(self, *args, **kargs)
-   return wrapper
+    return wrapper
 
 class ellyn(BaseEstimator):
     """ellyn uses GP to build its models.
