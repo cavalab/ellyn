@@ -4,7 +4,7 @@
 #include "rnd.h"
 #include "data.h"
 #include "general_fns.h"
-
+#include <boost/uuid/uuid_io.hpp>
 void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& r)
 {
 	vector<ind> parents; parents.reserve(2);
@@ -19,7 +19,7 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 	int r2,off1,off2,offset,head;
 	//std::vector<int>::iterator it;
 	int tmpinssize = 0;
-	vector<int> psize; 
+	vector<int> psize;
 	psize.push_back(p1.line.size());
 	psize.push_back(p2.line.size());
 
@@ -31,7 +31,7 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 				r2=1;
 			else
 				r2=0;
-		
+
 			//if(parents[r1].line.size()>parents[r2].line.size())
 			//{
 			//	off1 = r[omp_get_thread_num()].rnd_int(0,parents[r1].line.size()-parents[r2].line.size()-1);
@@ -44,7 +44,7 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 			//}
 			//else
 			//{
-			//	off1=0; 
+			//	off1=0;
 			//	off2=0;
 			//}
 			//head = r1;
@@ -67,7 +67,7 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 			//			offset=off1;
 			//		}
 			//	}
-			//		
+			//
 			//	kids.at(r1).line.push_back(parents[head].line.at(i+offset));
 			//}
 			//if(kids.at(r1).line.size() < parents[r1].line.size())
@@ -87,25 +87,25 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 					if(head==r1)
 					{
 						head=r2;
-						
+
 					}
 					else
 					{
 						head=r1;
 						//offset=r[omp_get_thread_num()].gasdev()*parents[head].line.size()*p.cross_ar;
 					}
-					if (p.align_dev) 
+					if (p.align_dev)
 						offset=r[omp_get_thread_num()].gasdev();//*parents[head].line.size()*p.cross_ar;
 				}
-				
 
-				if (i+offset>=parents[head].line.size() || i+offset <= 0) 
+
+				if (i+offset>=parents[head].line.size() || i+offset <= 0)
 					offset = 0;
 
-				if (i < parents[head].line.size() && kids.at(r1).line.size() < p.max_len) 
+				if (i < parents[head].line.size() && kids.at(r1).line.size() < p.max_len)
 					kids.at(r1).line.push_back(parents[head].line.at(i+offset));
-				
-				
+
+
 			}
 			/*if(kids.at(r1).line.size() < parents[r1].line.size())
 			{
@@ -127,22 +127,22 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 				int tmp2 = point2;
 
 				point1 += r[omp_get_thread_num()].gasdev(); //*abs(int(p1.line.size()-p2.line.size()))/10;
-				int tmp1_1 = point1; 
+				int tmp1_1 = point1;
 
-				if (point1 < 0) 
+				if (point1 < 0)
 					point1 = 0;
 				else if (point1 > p1.line.size()) {
 					point1 = p1.line.size();
 				}
-		
 
-				if (point2 < 0) 
+
+				if (point2 < 0)
 					point2 = 0;
 				else if (point2 > p2.line.size()) {
 					int p2size = p2.line.size();
 					point2 = p2.line.size();
 				}
-		
+
 
 				kids[0].line.assign(parents[0].line.begin(),parents[0].line.begin()+point1);
 				kids[0].line.insert(kids[0].line.end(),parents[1].line.begin()+point2,parents[1].line.end());
@@ -151,12 +151,12 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 				kids[1].line.insert(kids[1].line.end(),parents[0].line.begin()+point1,parents[0].line.end());
 
 				if (kids[0].line.empty() || kids[1].line.empty() || kids[0].line.size()>p.max_len || kids[1].line.size()>p.max_len)
-					tryagain = true; 
+					tryagain = true;
 				else
 					tryagain = false;
 
 				++tries;
-			
+
 			}
 			if (tryagain)
 			{
@@ -172,7 +172,7 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 		}
 		else{
 			int point1 = r[omp_get_thread_num()].rnd_int(0,min(p1.line.size(),p2.line.size()));
-			
+
 			kids[0].line.assign(parents[0].line.begin(),parents[0].line.begin()+point1);
 			kids[0].line.insert(kids[0].line.end(),parents[1].line.begin()+point1,parents[1].line.end());
 
@@ -194,7 +194,7 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 		//	++empty_count;
 		//}
 		//if (empty_count==10) // split parents half and half
-		//{	
+		//{
 		//	int point1 = (p1.line.size()-1)/2;
 		//	int point2 = (p2.line.size()-1)/2;
 
@@ -207,8 +207,8 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 
 	}
 	else if (p.cross == 3) // sub-tree-like crossover
-	{	
-		
+	{
+
 		for (int r1=0; r1 < 2; ++r1)
 		{
 			if(r1==0)
@@ -241,14 +241,14 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 				--pt1;
 				--sum_arity;
 				sum_arity+=parents[r1].line[pt1].arity_float;
-				
+
 			}
 			int begin1 = pt1;
 
 			int end2 = pt2;
 			sum_arity = parents[r2].line[pt2].arity_float;
 			while (sum_arity > 0 && pt2 > 0)
-			{				
+			{
 				--pt2;
 				--sum_arity;
 				sum_arity+=parents[r2].line[pt2].arity_float;
@@ -257,7 +257,7 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 			ind st1, st2;
 			st1.line.assign(parents[r1].line.begin()+begin1,parents[r1].line.begin()+end1+1);
 			st2.line.assign(parents[r2].line.begin()+begin2,parents[r2].line.begin()+end2+1);
-			
+
 			kids[r1].line.assign(parents[r1].line.begin(),parents[r1].line.begin()+begin1);
 			kids[r1].line.insert(kids[r1].line.end(),parents[r2].line.begin()+begin2,parents[r2].line.begin()+end2+1);
 			kids[r1].line.insert(kids[r1].line.end(),parents[r1].line.begin()+end1+1,parents[r1].line.end());
@@ -265,8 +265,8 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 			if (kids[r1].line.size()>p.max_len)
 				kids[r1].line = parents[r1].line;
 		}
-		
-		
+
+
 	}
 	//tmpinssize=0;
 	//for(unsigned int t=0; t<kids[0].line.size();t++)
@@ -274,7 +274,7 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 	//if(tmpinssize!=kids[0].args.size())
 	//	cout << "size mismatch" << endl;
 	assert(~kids[0].line.empty() && ~kids[1].line.empty());
-		
+
 	/*assert(kids[0].line.size() >= p.min_len);
 	assert(kids[1].line.size() >= p.min_len);*/
 
@@ -285,6 +285,13 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 	kids[1].origin = 'c';
 	kids[1].parentfitness = parents[1].fitness;
 
+	// database tracking
+	kids[0].parent_id.resize(0);
+	kids[0].parent_id.push_back(parents[0].tag);
+	kids[0].parent_id.push_back(parents[1].tag);
+	kids[1].parent_id.resize(0);
+	kids[1].parent_id.push_back(parents[1].tag);
+	kids[1].parent_id.push_back(parents[0].tag);
 	//makenew(kids[0]);
 	//makenew(kids[1]);
 

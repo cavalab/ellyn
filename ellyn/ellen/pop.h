@@ -13,18 +13,20 @@
 //#include <Eigen/Dense>
 using Eigen::MatrixXf;
 using Eigen::VectorXf;
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
 //#include "general_fns.h"
 //#include "pareto.h"
 
 struct ind {
-	/* 
+	/*
 	===================================================================
 	BE SURE TO ADD ANY NEW VARIABLES TO THE SWAP FUNCTION FOR COPYING!!
 	===================================================================
 	*/
 	//unsigned int id;
 	/*vector <std::shared_ptr<node> > line;*/
-	
+
 	vector <node> line;
 	vector<float> output;
 	vector<float> output_v;
@@ -34,9 +36,9 @@ struct ind {
 	std::vector<float> stack_float; // linearized stack_float
 	std::vector<int> dominated; //for spea2 strength
 	std::vector<MatrixXf> C; // covariance matrices for M3GP
-	
+
 	std::string eqn;
-	std::string eqn_form; // equation form for string distance comparison to other forms	
+	std::string eqn_form; // equation form for string distance comparison to other forms
 	std::string eqn_matlab; // equation for matlab (elementwise and protected operators)
 	MatrixXf M; // centroids for M3GP
 	float abserror;
@@ -48,7 +50,7 @@ struct ind {
 	float VAF;
 	float VAF_v;
 	float fitness;
-	float fitness_v;	
+	float fitness_v;
 	float FEvar; //variance in fitness estimates (for sorting purposes)
 	float GEvar; //variance in generality estimates (for sorting purposes)
 	float genty; //generality
@@ -60,14 +62,16 @@ struct ind {
 	int complexity;
 	int dim;
 	char origin; // x: crossover, m: mutation, i: initialization
-
-	/* 
+	boost::uuids::uuid tag; // uuid for graph database tracking
+	vector<boost::uuids::uuid> parent_id;
+	/*
 	===================================================================
 	BE SURE TO ADD ANY NEW VARIABLES TO THE SWAP FUNCTION FOR COPYING!!
 	===================================================================
 	*/
 
 	ind()
+	:tag(boost::uuids::random_generator()())
 	{
 		abserror = 0;
 		sq_error = 0;
@@ -90,26 +94,26 @@ struct ind {
 		//}
 		//
 	}
-	ind & operator = (ind s) // over-ride copy construction with swap 
+	ind & operator = (ind s) // over-ride copy construction with swap
     {
       s.swap (*this); // Non-throwing swap
       return *this;
     }
- 
-    void swap (ind &s) 
-	{	
-		
+
+    void swap (ind &s)
+	{
+
 		line.swap(s.line);						// vectors
 		output.swap(s.output);
 		output_v.swap(s.output_v);
 		error.swap(s.error);
 		f.swap(s.f);
 		stack_floatlen.swap(s.stack_floatlen);
-		stack_float.swap(s.stack_float);	
+		stack_float.swap(s.stack_float);
 		dominated.swap(dominated);
 		C.swap(s.C);
-		
-		
+		parent_id.swap(s.parent_id);
+
 		eqn.swap(s.eqn);						// strings
 		eqn_form.swap(s.eqn_form);
 		eqn_matlab.swap(s.eqn_matlab);
@@ -137,9 +141,10 @@ struct ind {
 		swap(this->rank,s.rank);
 		swap(this->complexity,s.complexity);
 		swap(this->dim,s.dim);
-		
+
 		swap(this->origin,s.origin);			// chars
-		
+
+		swap(this->tag,s.tag); 					//uuid identifier
 
 	}//throw (); // Also see the non-throwing swap idiom
 	////swap optimization
@@ -177,7 +182,7 @@ struct ind {
 		C.clear();
 		M.resize(0,0);
 		genty = 1;
-		
+
 		//stack_float.clear();
 		// nominal model must be encased in set of parenthesis. the pointer points to that which is encased.
 		//ptr[0]= 1;
@@ -205,18 +210,18 @@ struct sub_ind
 	int dim;
 	sub_ind(){}
 	void init(ind& x){
-		fitness = x.fitness; 
-		abserror = x.abserror; 
+		fitness = x.fitness;
+		abserror = x.abserror;
 		abserror_v = x.abserror_v;
 		sq_error = x.sq_error;
 		sq_error_v = x.sq_error_v;
-		corr = x.corr; 
-		corr_v = x.corr_v; 
+		corr = x.corr;
+		corr_v = x.corr_v;
 		VAF = x.VAF;
 		VAF_v = x.VAF_v;
-		eqn = x.eqn; 
+		eqn = x.eqn;
 		eqn_matlab = x.eqn_matlab;
-		age=x.age; 
+		age=x.age;
 		complexity = x.complexity;
 		dim = x.dim;
 	}
@@ -249,7 +254,7 @@ struct sameSizeFit{	bool operator() (ind& i,ind& j) { return (i.fitness==j.fitne
 struct sameFit{	bool operator() (ind& i,ind& j) { return (i.fitness==j.fitness);} };
 struct sameFit2{	bool operator() (sub_ind& i,sub_ind& j) { return (i.fitness==j.fitness);} };
 
-struct sameOutput{	bool operator() (ind& i, ind& j) { 
+struct sameOutput{	bool operator() (ind& i, ind& j) {
 	if (i.output.size()==j.output.size())
 		return std::equal(i.output.begin(),i.output.end(),j.output.begin());
 	else
@@ -261,13 +266,13 @@ struct sameComplexity{bool operator() (const ind& i,const ind& j) { return (i.co
 struct sameFitComplexity{bool operator() (const ind& i,const ind& j) { return (i.fitness==j.fitness && i.complexity==j.complexity);} };
 
 
-struct tribe{ 
+struct tribe{
 
 	vector <ind> pop; // population
 	float best;
 	float worst;
 
-	tribe(int size,float& max_fit,float& min_fit)	
+	tribe(int size,float& max_fit,float& min_fit)
 	{
 		pop.resize(size);
 		best=max_fit;
@@ -340,7 +345,7 @@ struct tribe{
 		 for(int i = 0; i < pop.size(); ++i)
 			 worst = max(worst, pop.at(i).fitness);
 		return worst;
-	}	
+	}
 	float medFit() //median fitness
 	{
 		vector<float> fitness(pop.size());
@@ -351,7 +356,7 @@ struct tribe{
 			return fitness.at((int)floor((float)pop.size()/2));
 		else
 			return (fitness.at(pop.size()/2)+fitness.at(pop.size()/2-1))/2;
-	} 
+	}
 	float medFit_v() //median fitness
 	{
 		vector<float> fitness(pop.size());
@@ -374,7 +379,7 @@ struct tribe{
 		}
 		return (float)answer/pop.size();
 	}
-			
+
 	float meanSize() // mean line length
 	{
 		float answer=0;
@@ -396,11 +401,11 @@ struct tribe{
 		return (float)answer/pop.size();
 	}
 	int medSize() // median line length
-	{		
+	{
 		//vector<ind> tmppop = pop;
 		sort(pop.begin(),pop.end(),SortSize());
 		int index = (int)floor((float)pop.size()/2);
-		return int(pop.at(index).line.size()); 
+		return int(pop.at(index).line.size());
 	}
 
 	void topTen(vector <sub_ind>& eqns) //returns address to vector of equation strings
@@ -410,7 +415,7 @@ struct tribe{
 		//vector<ind> tmppop = pop;
 		sort(tmppop.begin(),tmppop.end(),SortFit2());
 		unique(tmppop.begin(),tmppop.end(),sameFit2());
-		
+
 		for (int i=0;i<10;++i)
 			eqns.push_back(tmppop.at(i));
 
@@ -420,7 +425,7 @@ struct tribe{
 		while(eqns.size()<10 && i<pop.size())
 		{
 			fitnesses.push_back(pop.at(i).fitness);
-			for(unsigned int j=0;j<fitnesses.size()-1;++j)		 
+			for(unsigned int j=0;j<fitnesses.size()-1;++j)
 			{
 				if(fitnesses.at(j)==fitnesses.back())
 				{
@@ -462,7 +467,7 @@ struct tribe{
 	void novelty(float& novelty)
 	{ // calculate novelty, where novelty is defined as the percent of unique errors in population
 		/*vector<sub_ind> subpop(pop.size());
-		for (int i = 0;i<pop.size();++i) 
+		for (int i = 0;i<pop.size();++i)
 			subpop[i].init(pop.at(i));
 		std::sort(subpop.begin(),subpop.end(),SortFit2());
 		subpop.erase(unique(subpop.begin(),subpop.end(),sameFit2()),subpop.end());
@@ -485,8 +490,8 @@ struct tribe{
 		for (int i=0; i<samplesize; ++i)
 		{
 			//reset temporary strings
-			tmp1.resize(0); tmp2.resize(0); 
-			tmp1on.resize(0); tmp2on.resize(0); 
+			tmp1.resize(0); tmp2.resize(0);
+			tmp1on.resize(0); tmp2on.resize(0);
 			tmp1off.resize(0); tmp2off.resize(0);
 			tot_tmp = 0; on_tmp = 0; off_tmp = 0;
 			c1 = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
@@ -549,7 +554,7 @@ struct tribe{
 		tot_hom = 1-tot_hom/samplesize;
 		on_hom = 1-on_hom/samplesize;
 		off_hom = 1-off_hom/samplesize;
-		
+
 	}
 	/*float on_hom(vector<Randclass>& r){
 		float sum_strdist=0;
@@ -609,7 +614,7 @@ struct tribe{
 	}*/
 	/*
 private:
-	
+
 	bool fitlow (ind& i,ind& j) { return (i.fitness<j.fitness); }
 	bool eqncomp(ind& i,ind& j) { return (i.eqn_form.compare(j.eqn_form)==0); }
 	bool fitcomp (ind& i,ind& j) { return (i.fitness==j.fitness); }

@@ -1,7 +1,7 @@
 #pragma once
 #ifndef LOAD_PRINTING_H
 #define LOAD_PRINTING_H
-
+#include <boost/uuid/uuid_io.hpp>
 using namespace std;
 
 
@@ -211,5 +211,55 @@ void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type)
 		fout << "------------------------------------------------------------------" << "\n";
 		}
 }
+void printDB(vector<ind>& pop,string& logname,Data& d,params& p)
+{
+	// print JSON formatted inviduals for graph database use
+	// print format:
+//		{"individual": {
+// 			"id": uuid,
+// 			"program": [{nodes}],
+// 			"mse": mean_squared_error,
+// 			"origin": crossover, mutation
+// 			"parent-id": [parent1 uuid, parent2 uuid]
+// 		}
 
+	std::ofstream fout;
+	// reopen database file
+	fout.open(logname.substr(0,logname.size()-4)+".db", std::ios_base::app);
+
+	for (auto i: pop){
+		fout << "{\"individual\": {";
+		fout << "\"id\": " << i.tag;
+		fout << ", \"program\": [";
+		//  print program nodes  << [{nodes}];
+		int j = 0;
+		for (auto n: i.line){
+			if (n.on){
+				if (j != 0)
+					fout << ", ";
+				fout << "{\"type\": " << n.type << ", \"id\":" << n.tag;
+				if (n.type=='v')
+					fout << ", \"value\": " << n.varname << "\"";
+				else if (n.type=='n')
+					fout << ", \"value\": " << n.value;
+				fout << "}";
+				++j;
+			}
+		}
+		fout << ", \"mse\": " << i.sq_error;
+		fout << ", \"origin\": \"" << i.origin << "\"";
+		if (i.origin=='c'){
+			// int tmp = i.parent_id.size();
+			// fout << ", parent_id size: " << tmp ;
+ 			fout << ", \"parent-id\": [" << i.parent_id[0] << ", "<< i.parent_id[1] << "]";
+		}
+		else if (i.origin=='m'){
+			// int tmp = i.parent_id.size();
+			// fout << ", parent_id size: " << tmp ;
+			fout << ", \"parent-id\": [" << i.parent_id[0] << "]";
+		}
+		fout << "}}\n";
+	}
+	fout.close();
+}
 #endif

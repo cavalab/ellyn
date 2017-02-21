@@ -79,8 +79,6 @@ struct params {
 	int G_sel;
 	bool G_shuffle;
 
-
-
 	// Problem information
 	vector <string> intvars; // internal variables
 	//vector <string> extvars; // external variables (external forces)
@@ -193,6 +191,7 @@ struct params {
 	bool print_genome; // print genome every generation
 	bool print_epigenome; // print epigenome every generation
 	bool print_novelty; // print novelty in data file
+	bool print_db; // print individuals for graph database analysis
 	int verbosity; // setting for what gets printed 0: nothing 1: some stuff 2: all stuff
 
 	// number of log points to print (with eval limitation)
@@ -276,6 +275,8 @@ struct params {
 		print_epigenome = 0;
 		// print number of unique output vectors
 		print_novelty = 0;
+		// print individuals for graph database analysis
+		print_db = 0;
 		// verbosity
 		verbosity = 0;
 
@@ -588,6 +589,8 @@ struct params {
 			print_init_pop = extract<bool>(d["print_init_pop"]);
 		if (d.has_key("print_genome"))
 			print_genome = extract<bool>(d["print_genome"]);
+		if (d.has_key("print_db"))
+			print_db = extract<bool>(d["print_db"]);
 		if (d.has_key("print_epigenome"))
 			print_epigenome = extract<bool>(d["print_epigenome"]);
 		if (d.has_key("num_log_pts"))

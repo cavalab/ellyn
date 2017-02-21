@@ -56,7 +56,7 @@ class ellyn(BaseEstimator):
                  selection='tournament', classification=False, islands=True,
                  num_islands=None,fit_type=None, verbosity=0, random_state=0,
                  class_m4gp=False,scoring_function=mean_squared_error, print_log=False,
-                 print_archive=False,print_data=False, class_bool=False, max_len=None, island_gens=50,
+                 print_archive=False,print_data=False, print_db=False,class_bool=False, max_len=None, island_gens=50,
                  print_every_pop=None, op_weights=None, FE_pop_size=None,
                  rt_cross=None, ERC_ints=None, numERC=None, train_pct=None, eHC_on=None,
                  PS_sel=None, lex_eps_global=None, lex_pool=None, AR_nka=None,
@@ -593,6 +593,9 @@ def main():
 
     parser.add_argument('--print_homology', action='store_true', dest='print_homology', default=None,
                     help='Flag to print genetic homology in programs.')
+
+    parser.add_argument('--print_db', action='store_true', dest='print_db', default=None,
+                    help='Flag to print individuals for graph database analysis.')
 
     parser.add_argument('-num_log_pts', action='store', dest='num_log_pts', default=None,
                         type=positive_integer, help='number of log points to print (0 means print each generation)')

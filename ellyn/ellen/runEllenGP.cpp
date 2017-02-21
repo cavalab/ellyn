@@ -881,6 +881,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 		}
 		if (p.print_init_pop) printpop(World.pop,p,s,logname,3);
 		if (p.print_genome) printGenome(World,0,logname,d,p);
+		if (p.print_db) printDB(World.pop,logname,d,p);
 		#pragma omp parallel private(q) shared(pass)
 		{
 
@@ -1000,6 +1001,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 							}
 							if (print_trigger!=0) print_trigger += p.max_evals/p.num_log_pts;
 							if (p.print_genome) printGenome(World,gen,logname,d,p);
+							if (p.print_db) printDB(World.pop,logname,d,p);
 						}
 						++gen;
 						if (p.limit_evals) termits = s.totalptevals();
@@ -1056,6 +1058,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 						}
 						if (print_trigger!=0) print_trigger += p.max_evals/p.num_log_pts;
 						if (p.print_genome) printGenome(World,gen,logname,d,p);
+						if (p.print_db) printDB(World.pop,logname,d,p);
 					}
 					++gen;
 					if (p.limit_evals) termits = s.totalptevals();
@@ -1223,6 +1226,8 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 		//print initial population
 		if (p.print_init_pop) printpop(T.pop,p,s,logname,3);
 		if (p.print_genome) printGenome(T,0,logname,d,p);
+		if (p.print_db) printDB(T.pop,logname,d,p);
+
 		while (termits<=term && !stopcondition(T,p,d,s,FE[0]))
 		{
 
@@ -1288,6 +1293,8 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 					}
 					if (print_trigger!=0) print_trigger += p.max_evals/p.num_log_pts;
 					if (p.print_genome) printGenome(T,counter,logname,d,p);
+					if (p.print_db) printDB(T.pop,logname,d,p);
+
 					printed=true;
 				}
 

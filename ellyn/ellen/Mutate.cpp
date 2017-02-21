@@ -14,8 +14,10 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, Data
 	//makenew(kid[0]);
 	kid[0].origin='m';
 	kid[0].parentfitness=par.fitness;
+	kid[0].parent_id.resize(0);
+	kid[0].parent_id.push_back(par.tag);
 	kid[0].clrPhen();
-		
+
 	if (p.mutate==1){ // point mutation
 		for(unsigned int i = 0;i<kid[0].line.size();++i)
 		{
@@ -62,8 +64,8 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, Data
 					vector<unsigned> roots;
 					find_root_nodes(kid[0].line, roots);
 					if (r[omp_get_thread_num()].rnd_flt(0.0,1.0) <= 0.5 && roots.size()>1){
-						action = 1;					
-						pt1 = roots[r[omp_get_thread_num()].rnd_int(0,roots.size()-1)];		
+						action = 1;
+						pt1 = roots[r[omp_get_thread_num()].rnd_int(0,roots.size()-1)];
 					}
 					else { //swap
 						action = 2;
@@ -72,7 +74,7 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, Data
 				}
 
 			}
-			//else if (p.classification && p.class_m4gp) //just add tree to end				
+			//else if (p.classification && p.class_m4gp) //just add tree to end
 			//	action = 3;
 			else{
 				// choose action
@@ -84,7 +86,7 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, Data
 				// choose point of mutation
 				if (action==1){ // if deletion, don't choose the head
 					int tmp = 2;
-					while (!kid[0].line[kid[0].line.size()-tmp].on) 
+					while (!kid[0].line[kid[0].line.size()-tmp].on)
 						--tmp;
 					pt1 = r[omp_get_thread_num()].rnd_int(0,kid[0].line.size()-tmp);
 				}
@@ -99,16 +101,16 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, Data
 				{
 					--pt1;
 					--sum_arity;
-					sum_arity+=kid[0].line[pt1].arity_float;				
+					sum_arity+=kid[0].line[pt1].arity_float;
 				}
 				begin1 = pt1;
 			}
-			
+
 
 			if(action==1 && kid[0].line.size()-(end1-(begin1-1)) >= p.min_len)// delete subtree
 				kid[0].line.erase(kid[0].line.begin()+begin1,kid[0].line.begin()+end1+1);
 			else{ // create new subtree
-				vector<node> st; 
+				vector<node> st;
 				int linelen;
 				if (action==3){ // add a tree that does not violate max program size
 					linelen = r[omp_get_thread_num()].rnd_int(1,p.max_len-kid[0].line.size());
@@ -120,9 +122,9 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, Data
 
 				}
 					//linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len-kid[0].line.size()+end1-(begin1-1));
-				
+
 				//int tmp = p.min_len - (int(kid[0].line.size()) - (end1-(begin1-1)));
-				
+
 				makeline_rec(st,p,r,linelen);
 				// if the subtree is too small, make it bigger
 				while (st.size()+(int(kid[0].line.size()) - (end1-(begin1-1))) < p.min_len){
@@ -140,11 +142,11 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, Data
 
 				//assert(kid[0].line.size() >= p.min_len);
 			}
-			
-			
+
+
 	}
-	
+
 	tmppop.push_back(kid[0]);
 	kid.clear();
-		
+
 }
