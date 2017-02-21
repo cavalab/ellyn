@@ -256,6 +256,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 	vector<float> cases_used;
 	// measure median pool size at selection
 	vector<float> sel_size;
+
 	// for each selection event:
 	for (int i=0;i<parloc.size();++i)
 	{
@@ -303,15 +304,32 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 				}
 			}
 			else{// epsilon lexicase with local pool pass conditions
+				// pool for calculating mad on the fly if p.lex_eps_dynamic is on
+				vector<float> pool_error(pool.size());
+				float ep_dyn=1;
 				// get best fitness in selection pool
 				for (int j=0;j<pool.size();++j){
 					if (pop[pool[j]].error[case_order[h]]<minfit || j == 0)
 						minfit=pop[pool[j]].error[case_order[h]];
+					if (p.lex_eps_dynamic) // calculate MAD dynamically
+					{
+						pool_error[j] = pop[pool[j]].error[i];
+					}
 				}
-				// winners are within epsilon of the local pool's minimum fitness
-				for (int j=0;j<pool.size();++j){
-					if (pop[pool[j]].error[case_order[h]]<=minfit+epsilon[case_order[h]])
-						winner.push_back(pool[j]);
+				if (p.lex_eps_dynamic){
+					ep_dyn = mad(pool_error);
+					// winners are within epsilon of the local pool's minimum fitness
+					for (int j=0;j<pool.size();++j){
+						if (pop[pool[j]].error[case_order[h]]<=minfit+ep_dyn)
+							winner.push_back(pool[j]);
+					}
+				}
+				else{
+					// winners are within epsilon of the local pool's minimum fitness
+					for (int j=0;j<pool.size();++j){
+						if (pop[pool[j]].error[case_order[h]]<=minfit+epsilon[case_order[h]])
+							winner.push_back(pool[j]);
+					}
 				}
 			}
 			// if there is more than one elite individual and still more cases to consider
@@ -319,7 +337,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 			{
 				pass=true;
 				++h;
-				//reduce pool to elite individuals on case case_oder[h]
+				//reduce pool to elite individuals on case case_order[h]
 				pool = winner;
 			} // otherwise, a parent has been chosen or has to be chosen randomly from the remaining pool
 			else
