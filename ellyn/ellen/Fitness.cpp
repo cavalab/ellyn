@@ -272,9 +272,12 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 		{
 		case 'n':
 			stack_float.push_back(n.value);
+
 			break;
 		case 'v':
 			stack_float.push_back(*n.valpt);
+			if (boost::math::isnan(stack_float.back()))
+				cout << "nans in variable computation with input " << n.varname << "\n";
 			break;
 		case '+':
 			n1 = stack_float.back(); stack_float.pop_back();
@@ -310,7 +313,8 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 		case 'e':
 			n1 = stack_float.back(); stack_float.pop_back();
 			stack_float.push_back(exp(n1));
-
+			if (boost::math::isnan(stack_float.back()))
+				cout << "nans in exp computation with input " << n1 << "\n";
 			break;
 		case 'l':
 			n1 = stack_float.back(); stack_float.pop_back();
@@ -321,11 +325,30 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 				stack_float.push_back(log(abs(n1)));
 				// unsafe log of real value
 				//stack_float.push_back(log(n1));
+				// check
+				if (boost::math::isnan(stack_float.back()))
+					cout << "nans in log computation with input " << n1 << "\n";
 			break;
 		case 'q':
 			n1 = stack_float.back(); stack_float.pop_back();
 			// safe sqrt of absolute value of n1
 			stack_float.push_back(sqrt(abs(n1)));
+			break;
+		case '2':
+			n1 = stack_float.back(); stack_float.pop_back();
+			// square n1
+			stack_float.push_back(pow(n1,2));
+			break;
+		case '3':
+			n1 = stack_float.back(); stack_float.pop_back();
+			n2 = stack_float.back(); stack_float.pop_back();
+			// cube  n1
+			stack_float.push_back(pow(n1,n2));
+			break;
+		case '^':
+			n1 = stack_float.back(); stack_float.pop_back();
+			// safe sqrt of absolute value of n1
+			stack_float.push_back(pow(n1,3));
 			break;
 		case '=': // equals
 			n1 = stack_float.back(); stack_float.pop_back();
@@ -394,8 +417,8 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 		if (boost::math::isinf(abs(stack_float.back())))
 			stack_float[stack_float.size() - 1] = MAX_FLOAT;
 
-		if (boost::math::isnan(stack_float.back()))
-			cout << "nans in output\n";
+		// if (boost::math::isnan(stack_float.back()))
+		// 	cout << "nans in output\n";
 	}
 
 }

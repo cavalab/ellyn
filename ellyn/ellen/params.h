@@ -481,7 +481,7 @@ struct params {
 		{
 			// cout << "op_list: ";
 			for(unsigned int i = 0; i<len(d["op_list"]); ++i){
-				string tmp = extract<string>(d["op_list"][i]);
+				// string tmp = extract<string>(d["op_list"][i]);
 				// cout << tmp << ",";
 		   		op_list.push_back(extract<string>(d["op_list"][i]));
 			}
@@ -489,9 +489,13 @@ struct params {
 		}
 		if (d.has_key("op_weight"))
 		{
-			for(unsigned int i = 0; i<len(d["op_weight"]); ++i)
+			// cout << "op_weight: ";
+			for(unsigned int i = 0; i<len(d["op_weight"]); ++i){
+				// float tmp = extract<float>(d["op_weight"][i]);
+				// cout << tmp << ",";
 		   		op_weight.push_back(extract<float>(d["op_weight"][i]));
-
+			}
+			// cout << "\n";
 		}
 		if (d.has_key("weight_ops_on"))
 			weight_ops_on = extract<bool>(d["weight_ops_on"]);
@@ -765,69 +769,81 @@ struct params {
 				op_arity.push_back(1);
 				return_type.push_back('f');
 			}
-			else if (op_list.at(i).compare("^") == 0)
+			else if (op_list.at(i).compare("2")==0)
 			{
 				op_choice.push_back(12);
+				op_arity.push_back(1);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("3")==0)
+			{
+				op_choice.push_back(13);
+				op_arity.push_back(1);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("^") == 0)
+			{
+				op_choice.push_back(14);
 				op_arity.push_back(2);
 				return_type.push_back('f');
 			}
 			else if (op_list.at(i).compare("=")==0)
 			{
-				op_choice.push_back(13);
+				op_choice.push_back(15);
 				op_arity.push_back(2);
 				return_type.push_back('b');
 			}
 			else if (op_list.at(i).compare("!")==0)
 			{
-				op_choice.push_back(14);
+				op_choice.push_back(16);
 				op_arity.push_back(2);
 				return_type.push_back('b');
 			}
 			else if (op_list.at(i).compare("<")==0)
 			{
-				op_choice.push_back(15);
+				op_choice.push_back(17);
 				op_arity.push_back(2);
 				return_type.push_back('b');
 			}
 			else if (op_list.at(i).compare(">")==0)
 			{
-				op_choice.push_back(16);
+				op_choice.push_back(18);
 				op_arity.push_back(2);
 				return_type.push_back('b');
 			}
 			else if (op_list.at(i).compare("<=")==0)
 			{
-				op_choice.push_back(17);
+				op_choice.push_back(19);
 				op_arity.push_back(2);
 				return_type.push_back('b');
 			}
 			else if (op_list.at(i).compare(">=")==0)
 			{
-				op_choice.push_back(18);
+				op_choice.push_back(20);
 				op_arity.push_back(2);
 				return_type.push_back('b');
 			}
 			else if (op_list.at(i).compare("if-then")==0)
 			{
-				op_choice.push_back(19);
+				op_choice.push_back(21);
 				op_arity.push_back(2);
 				return_type.push_back('f');
 			}
 			else if (op_list.at(i).compare("if-then-else")==0)
 			{
-				op_choice.push_back(20);
+				op_choice.push_back(22);
 				op_arity.push_back(3);
 				return_type.push_back('f');
 			}
 			else if (op_list.at(i).compare("&")==0)
 			{
-				op_choice.push_back(21);
+				op_choice.push_back(23);
 				op_arity.push_back(3);
 				return_type.push_back('b');
 			}
 			else if (op_list.at(i).compare("|")==0)
 			{
-				op_choice.push_back(22);
+				op_choice.push_back(24);
 				op_arity.push_back(3);
 				return_type.push_back('b');
 			}

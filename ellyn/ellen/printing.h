@@ -218,6 +218,7 @@ void printDB(vector<ind>& pop,string& logname,Data& d,params& p)
 //		{"individual": {
 // 			"id": uuid,
 // 			"program": [{nodes}],
+//			"eqn":	equation string,
 // 			"mse": mean_squared_error,
 // 			"origin": crossover, mutation
 // 			"parent-id": [parent1 uuid, parent2 uuid]
@@ -246,6 +247,7 @@ void printDB(vector<ind>& pop,string& logname,Data& d,params& p)
 				++j;
 			}
 		}
+		fout << ", \"eqn:\" \"" << i.eqn << "\"";
 		fout << ", \"mse\": " << i.sq_error;
 		fout << ", \"origin\": \"" << i.origin << "\"";
 		if (i.origin=='c'){

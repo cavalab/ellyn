@@ -75,7 +75,7 @@ void InitPop(vector<ind> &pop,params& p, vector<Randclass>& r)
 						treelen=1;
 					else if (treelen>p.max_len_init)
 						treelen=p.max_len_init;
-						
+
 					makeline_rec(tmp_line,p,r,treelen);
 					pop[i].line.insert(pop[i].line.end(),tmp_line.begin(),tmp_line.end());
 					remain_len -= tmp_line.size();
@@ -225,34 +225,43 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 			case 11: //sqrt
 				newind.line.push_back(node('q'));
 				break;
-			case 12: // equals
+			case 12: //square
+				newind.line.push_back(node('2'));
+				break;
+			case 13: //cube
+				newind.line.push_back(node('3'));
+				break;
+			case 14: //power
+				newind.line.push_back(node('^'));
+				break;
+			case 15: // equals
 				newind.line.push_back(node('='));
 				break;
-			case 13: // does not equal
+			case 16: // does not equal
 				newind.line.push_back(node('!'));
 				break;
-			case 14: // less than
+			case 17: // less than
 				newind.line.push_back(node('<'));
 				break;
-			case 15: // greater than
+			case 18: // greater than
 				newind.line.push_back(node('>'));
 				break;
-			case 16: //less than or equal to
+			case 19: //less than or equal to
 				newind.line.push_back(node('{'));
 				break;
-			case 17: //greater than or equal to
+			case 20: //greater than or equal to
 				newind.line.push_back(node('}'));
 				break;
-			case 18: //if-then
+			case 21: //if-then
 				newind.line.push_back(node('i'));
 				break;
-			case 19: //if-then-else
+			case 22: //if-then-else
 				newind.line.push_back(node('t'));
 				break;
-			case 20: // and
+			case 23: // and
 				newind.line.push_back(node('&'));
 				break;
-			case 21: //or
+			case 24: //or
 				newind.line.push_back(node('|'));
 				break;
 			}
@@ -402,34 +411,45 @@ void push_back_node(vector <node>& line, int choice, params& p,vector<Randclass>
 			//line.push_back(shared_ptr<node>(new n_log()));
 			line.push_back(node('q'));
 			break;
-		case 12: // equals
+		case 12: // square
+			//line.push_back(shared_ptr<node>(new n_log()));
+			line.push_back(node('2'));
+			break;
+		case 13: // cube
+			//line.push_back(shared_ptr<node>(new n_log()));
+			line.push_back(node('3'));
+			break;
+		case 14: //power
+			line.push_back(node('^'));
+			break;
+		case 15: // equals
 			line.push_back(node('='));
 			break;
-		case 13: // does not equal
+		case 16: // does not equal
 			line.push_back(node('!'));
 			break;
-		case 14: // less than
+		case 17: // less than
 			line.push_back(node('<'));
 			break;
-		case 15: // greater than
+		case 18: // greater than
 			line.push_back(node('>'));
 			break;
-		case 16: //less than or equal to
+		case 19: //less than or equal to
 			line.push_back(node('{'));
 			break;
-		case 17: //greater than or equal to
+		case 20: //greater than or equal to
 			line.push_back(node('}'));
 			break;
-		case 18: //if-then
+		case 21: //if-then
 			line.push_back(node('i'));
 			break;
-		case 19: //if-then-else
+		case 22: //if-then-else
 			line.push_back(node('t'));
 			break;
-		case 20: // and
+		case 23: // and
 			line.push_back(node('&'));
 			break;
-		case 21: //or
+		case 24: //or
 			line.push_back(node('|'));
 			break;
 	}
@@ -511,34 +531,43 @@ void push_front_node(vector <node>& line, int choice, params& p,vector<Randclass
 		case 11: // sqrt
 			line.insert(line.begin(),node('q'));
 			break;
-		case 12: // equals
+		case 12: //  square
+			line.insert(line.begin(),node('2'));
+			break;
+		case 13: // cube
+			line.insert(line.begin(),node('3'));
+			break;
+		case 14: // power
+			line.insert(line.begin(),node('^'));
+			break;
+		case 15: // equals
 			line.insert(line.begin(),node('='));
 			break;
-		case 13: // does not equal
+		case 16: // does not equal
 			line.insert(line.begin(),node('!'));
 			break;
-		case 14: // less than
+		case 17: // less than
 			line.insert(line.begin(),node('<'));
 			break;
-		case 15: // greater than
+		case 18: // greater than
 			line.insert(line.begin(),node('>'));
 			break;
-		case 16: //less than or equal to
+		case 19: //less than or equal to
 			line.insert(line.begin(),node('{'));
 			break;
-		case 17: //greater than or equal to
+		case 20: //greater than or equal to
 			line.insert(line.begin(),node('}'));
 			break;
-		case 18: //if-then
+		case 21: //if-then
 			line.insert(line.begin(),node('i'));
 			break;
-		case 19: //if-then-else
+		case 22: //if-then-else
 			line.insert(line.begin(),node('t'));
 			break;
-		case 20: //and
+		case 23: //and
 			line.insert(line.begin(),node('&'));
 			break;
-		case 21: //or
+		case 24: //or
 			line.insert(line.begin(),node('|'));
 			break;
 	}

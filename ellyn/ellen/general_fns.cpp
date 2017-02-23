@@ -14,7 +14,7 @@ void find_root_nodes(vector<node>& line, vector<unsigned>& roots)
 {
 	// find "root" nodes of floating point program, where roots are final values that output something directly to the stack
 	int total_arity = -1; //end node is always a root
-	
+
 
 	for (vector<node>::iterator i = line.end()-1; i!=line.begin(); --i){
 		if ((*i).on){
@@ -24,8 +24,8 @@ void find_root_nodes(vector<node>& line, vector<unsigned>& roots)
 			}
 			else
 				--total_arity;
-		
-			total_arity += (*i).arity_float; 
+
+			total_arity += (*i).arity_float;
 		}
 	}
 	if (roots.empty())
@@ -41,7 +41,7 @@ bool is_number(const std::string& s)
 
 void MutInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,Data& d)
 {
-	
+
 	vector <string> load_choices(p.allblocks);
 	int choice=0;
 	//cout<<"iterator definition\n";
@@ -68,7 +68,7 @@ void MutInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,Data& d)
 	{
 		partial_sum(p.op_weight.begin(), p.op_weight.end(), wheel.begin());
 	}
-	
+
 	if (p.weight_ops_on) //fns are weighted
 	{
 		float tmp = r[omp_get_thread_num()].rnd_flt(0,1);
@@ -83,7 +83,7 @@ void MutInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,Data& d)
 			}
 		}
 	}
-	else 
+	else
 		choice = r[omp_get_thread_num()].rnd_int(0,p.op_list.size()-1);
 
 		string varchoice;
@@ -102,7 +102,7 @@ void MutInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,Data& d)
 					if (r[omp_get_thread_num()].rnd_flt(0,1)<.5)
 						/*newind.line.at(loc)=(shared_ptr<node>(new n_num(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1)))));*/
 					newind.line.at(loc) = node(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1)));
-					else{	
+					else{
 						if(p.ERCints)
 							/*newind.line.at(loc)=(shared_ptr<node>(new n_num((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC))));*/
 						newind.line.at(loc)=node((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC));						else
@@ -178,46 +178,52 @@ void MutInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,Data& d)
 		case 11: // sqrt
 			newind.line.at(loc) = node('q');
 			break;
-		case 12: // exponent 
+    case 12: // square
+      newind.line.at(loc) = node('2');
+      break;
+    case 13: // cube
+      newind.line.at(loc) = node('3');
+      break;
+		case 14: // exponent
 			newind.line.at(loc) = node('^');
 			break;
-		case 13: // equals
+		case 15: // equals
 			newind.line.at(loc) = node('=');
 			break;
-		case 14: // does not equal
+		case 16: // does not equal
 			newind.line.at(loc) = node('!');
 			break;
-		case 15: // less than
+		case 17: // less than
 			newind.line.at(loc) = node('<');
 			break;
-		case 16: // greater than
+		case 18: // greater than
 			newind.line.at(loc) = node('>');
 			break;
-		case 17: //less than or equal to
+		case 19: //less than or equal to
 			newind.line.at(loc) = node('{');
 			break;
-		case 18: //greater than or equal to
+		case 20: //greater than or equal to
 			newind.line.at(loc) = node('}');
 			break;
-		case 19: //if-then
+		case 21: //if-then
 			newind.line.at(loc) = node('i');
 			break;
-		case 20: //if-then-else
+		case 22: //if-then-else
 			newind.line.at(loc) = node('t');
 			break;
-		case 21: //and
+		case 23: //and
 			newind.line.at(loc) = node('&');
 			break;
-		case 22: //or
+		case 24: //or
 			newind.line.at(loc) = node('|');
 			break;
 		}
-		
+
 
 }
 void InsInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 {
-	
+
 	vector <string> load_choices(p.allblocks);
 	int choice=0;
    std::vector<node>::iterator it;
@@ -246,7 +252,7 @@ void InsInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 	{
 		partial_sum(p.op_weight.begin(), p.op_weight.end(), wheel.begin());
 	}
-	
+
 	if (p.weight_ops_on) //fns are weighted
 	{
 		float tmp = r[omp_get_thread_num()].rnd_flt(0,1);
@@ -261,7 +267,7 @@ void InsInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 			}
 		}
 	}
-	else 
+	else
 		choice = r[omp_get_thread_num()].rnd_int(0,p.op_list.size()-1);
 
 		string varchoice;
@@ -280,7 +286,7 @@ void InsInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 					if (r[omp_get_thread_num()].rnd_flt(0,1)<.5)
 						//newind.line.insert(it+loc,shared_ptr<node>(new n_num(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1)))));
 					newind.line.insert(it+loc,node(p.cvals.at(r[omp_get_thread_num()].rnd_int(0,p.cvals.size()-1))));
-					else{	
+					else{
 						if(p.ERCints)
 							//newind.line.insert(it+loc,shared_ptr<node>(new n_num((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC))));
 							newind.line.insert(it+loc,node((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC)));
@@ -357,38 +363,47 @@ void InsInstruction(ind& newind,int loc,params& p,vector<Randclass>& r)
 		case 11: // sqrt
 			newind.line.insert(it+loc,node('q'));
 			break;
-		case 12: // equals
+    case 12: // square
+      newind.line.insert(it+loc,node('2'));
+      break;
+    case 13: // cube
+      newind.line.insert(it+loc,node('3'));
+      break;
+    case 14: // exponent
+			newind.line.insert(it+loc,node('^'));
+			break;
+		case 15: // equals
 			newind.line.insert(it+loc,node('='));
 			break;
-		case 13: // does not equal
+		case 16: // does not equal
 			newind.line.insert(it+loc,node('!'));
 			break;
-		case 14: // less than
+		case 17: // less than
 			newind.line.insert(it+loc,node('<'));
 			break;
-		case 15: // greater than
+		case 18: // greater than
 			newind.line.insert(it+loc,node('>'));
 			break;
-		case 16: //less than or equal to
+		case 19: //less than or equal to
 			newind.line.insert(it+loc,node('{'));
 			break;
-		case 17: //greater than or equal to
+		case 20: //greater than or equal to
 			newind.line.insert(it+loc,node('}'));
 			break;
-		case 18: //if-then
+		case 21: //if-then
 			newind.line.insert(it+loc,node('i'));
 			break;
-		case 19: //if-then-else
+		case 22: //if-then-else
 			newind.line.insert(it+loc,node('t'));
 			break;
-		case 20: //and
+		case 23: //and
 			newind.line.insert(it+loc,node('&'));
 			break;
-		case 21: //or
+		case 24: //or
 			newind.line.insert(it+loc,node('|'));
 			break;
 		}
-		
+
 
 }
 

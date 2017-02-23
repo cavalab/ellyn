@@ -11,7 +11,7 @@ import argparse
 
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, explained_variance_score, accuracy_score
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, mean_absolute_error, explained_variance_score, accuracy_score
 import numpy as np
 import pandas as pd
 import warnings
@@ -57,7 +57,7 @@ class ellyn(BaseEstimator):
                  num_islands=None,fit_type=None, verbosity=0, random_state=0,
                  class_m4gp=False,scoring_function=mean_squared_error, print_log=False,
                  print_archive=False,print_data=False, print_db=False,class_bool=False, max_len=None, island_gens=50,
-                 print_every_pop=None, op_weights=None, FE_pop_size=None,
+                 print_every_pop=None, FE_pop_size=None,
                  rt_cross=None, ERC_ints=None, numERC=None, train_pct=None, eHC_on=None,
                  PS_sel=None, lex_eps_global=None, lex_eps_dynamic=None, lex_pool=None, AR_nka=None,
                  print_homology=None, max_len_init=None, prto_arch_size=None,
@@ -74,7 +74,7 @@ class ellyn(BaseEstimator):
                  print_novelty=None, eHC_slim=None, elitism=None,
                  print_genome=None, pHC_its=None, shuffle_data=None, class_prune=None,
                  eHC_init=None, init_validate_on=None, minERC=None,
-                 op_list=None, eHC_mut=None, min_len=None, return_pop=False):
+                 ops=None, ops_w=None, eHC_mut=None, min_len=None, return_pop=False):
                 # sets up GP.
 
         if fit_type:
@@ -101,6 +101,14 @@ class ellyn(BaseEstimator):
             self.class_m4gp = True
         elif not classification:
             self.class_m4gp = False
+
+        # set op_list
+        if ops:
+            self.op_list = ops.split(',')
+        if ops_w:
+            self.weight_ops_on = True
+            self.op_weight = [float(x) for x in ops_w.split(',')]
+
 
     def fit(self, features, labels):
         """Fit model to data"""
@@ -135,7 +143,6 @@ class ellyn(BaseEstimator):
             train_i = np.arange(features.shape[0])
 
         result = []
-        #
         # run ellenGP
         elgp.runEllenGP(params,np.asarray(features[train_i],dtype=np.float32,order='C'),
                         np.asarray(labels[train_i],dtype=np.float32,order='C'),result)
@@ -248,15 +255,15 @@ class ellyn(BaseEstimator):
             '-': lambda n,features,stack_float,stack_bool: stack_float.pop() - stack_float.pop(),
             '*': lambda n,features,stack_float,stack_bool: stack_float.pop() * stack_float.pop(),
             '/': lambda n,features,stack_float,stack_bool: self.divs(stack_float.pop(),stack_float.pop()),
-            'sin': lambda n,features,stack_float,stack_bool: np.sin(stack_float.pop()),
-            'cos': lambda n,features,stack_float,stack_bool: np.cos(stack_float.pop()),
-            'exp': lambda n,features,stack_float,stack_bool: np.exp(stack_float.pop()),
-            'log': lambda n,features,stack_float,stack_bool: self.logs(np.asarray(stack_float.pop())),#np.log(np.abs(stack_float.pop())),
+            's': lambda n,features,stack_float,stack_bool: np.sin(stack_float.pop()),
+            'c': lambda n,features,stack_float,stack_bool: np.cos(stack_float.pop()),
+            'e': lambda n,features,stack_float,stack_bool: np.exp(stack_float.pop()),
+            'l': lambda n,features,stack_float,stack_bool: self.logs(np.asarray(stack_float.pop())),#np.log(np.abs(stack_float.pop())),
             'x':  lambda n,features,stack_float,stack_bool: features[:,n[2]],
             'k': lambda n,features,stack_float,stack_bool: np.ones(features.shape[0])*n[2],
-            '^2': lambda n,features,stack_float,stack_bool: stack_float.pop()**2,
-            '^3': lambda n,features,stack_float,stack_bool: stack_float.pop()**3,
-            'sqrt': lambda n,features,stack_float,stack_bool: np.sqrt(np.abs(stack_float.pop())),
+            '2': lambda n,features,stack_float,stack_bool: stack_float.pop()**2,
+            '3': lambda n,features,stack_float,stack_bool: stack_float.pop()**3,
+            'q': lambda n,features,stack_float,stack_bool: np.sqrt(np.abs(stack_float.pop())),
             'xd': lambda n,features,stack_float,stack_bool: features[-1-n[3],n[2]],
             'kd': lambda n,features,stack_float,stack_bool: n[2],
         # bool operations
@@ -365,6 +372,8 @@ class ellyn(BaseEstimator):
         return []
 
     def eval_eqn(self,n,stack_eqn):
+        if n[0] == '<':
+            pdb.set_trace()
         if len(stack_eqn) >= n[1]:
             stack_eqn.append(eqn_dict[n[0]](n,stack_eqn))
 
@@ -432,13 +441,13 @@ eqn_dict = {
     '-': lambda n,stack_eqn: '(' + stack_eqn.pop() + '-' + stack_eqn.pop()+ ')',
     '*': lambda n,stack_eqn: '(' + stack_eqn.pop() + '*' + stack_eqn.pop()+ ')',
     '/': lambda n,stack_eqn: '(' + stack_eqn.pop() + '/' + stack_eqn.pop()+ ')',
-    'sin': lambda n,stack_eqn: 'sin(' + stack_eqn.pop() + ')',
-    'cos': lambda n,stack_eqn: 'cos(' + stack_eqn.pop() + ')',
-    'exp': lambda n,stack_eqn: 'exp(' + stack_eqn.pop() + ')',
-    'log': lambda n,stack_eqn: 'log(' + stack_eqn.pop() + ')',
-    '^2': lambda n,stack_eqn: '(' + stack_eqn.pop() + '^2)',
-    '^3': lambda n,stack_eqn: '(' + stack_eqn.pop() + '^3)',
-    'sqrt': lambda n,stack_eqn: 'sqrt(|' + stack_eqn.pop() + '|)',
+    's': lambda n,stack_eqn: 'sin(' + stack_eqn.pop() + ')',
+    'c': lambda n,stack_eqn: 'cos(' + stack_eqn.pop() + ')',
+    'e': lambda n,stack_eqn: 'exp(' + stack_eqn.pop() + ')',
+    'l': lambda n,stack_eqn: 'log(' + stack_eqn.pop() + ')',
+    '2': lambda n,stack_eqn: '(' + stack_eqn.pop() + '^2)',
+    '3': lambda n,stack_eqn: '(' + stack_eqn.pop() + '^3)',
+    'q': lambda n,stack_eqn: 'sqrt(|' + stack_eqn.pop() + '|)',
     # 'rbf': lambda n,stack_eqn: 'exp(-||' + stack_eqn.pop()-stack_eqn.pop() '||^2/2)',
     'x':  lambda n,stack_eqn: 'x_' + str(n[2]),
     'k': lambda n,stack_eqn: str(round(n[2],3)),
@@ -615,11 +624,11 @@ def main():
                         help='Flag to prune the dimensions of the best individual each generation.')
 
 # Terminal and Operator Options
-    parser.add_argument('-op_list', nargs = '*', action='store', dest='op_list', default=None,
-                    type=str, help='Operator list. Default: +,-,*,/,n,v. available operators: n v + - * / sin cos log exp sqrt = ! < <= > >= if-then if-then-else & |')
+    parser.add_argument('-ops', action='store', dest='ops', default=None,
+                    type=str, help='Operator list separated by commas (no spaces!). Default: +,-,*,/,n,v. available operators: n v + - * / sin cos log exp sqrt = ! < <= > >= if-then if-then-else & |')
 
-    parser.add_argument('-op_weight', nargs = '*',action='store', dest='op_weights', default=None,
-                    help='Operator weights for each element in operator list. If not specified all operators have the same weights.')
+    parser.add_argument('-ops_w', action='store', dest='ops_w', default=None,
+                    help='Operator weights for each element in operator list, separated by commas (no spaces!). If not specified all operators have the same weights.')
 
     parser.add_argument('-constants', nargs = '*', action='store', dest='cvals', default=None,
                         type=float, help='Seed GP initialization with constant values.')
@@ -718,8 +727,8 @@ def main():
     parser.add_argument('-lex_pool', action='store', dest='lex_pool', default=None,
                         type=float_range, help='Fraction of population to use in lexicase selection events [0.0, 1.0].')
 
-    parser.add_argument('-lex_metacases', nargs = '*',action='store', dest='lex_metacases', default=None,
-                    help='Specify extra cases for selection. Options: age, complexity.')
+    parser.add_argument('-lex_meta', action='store', dest='lex_metacases', default=None, choices=['age','complexity'],
+                    type=str,help='Specify extra cases for selection. Options: age, complexity.')
 
     parser.add_argument('--lex_eps_error_mad', action='store_true', dest='lex_eps_error_mad', default=None,
                     help='Flag to use epsilon lexicase with median absolute deviation, error-based epsilons.')
@@ -755,7 +764,7 @@ def main():
     #             continue
     #         print('{}\t=\t{}'.format(arg, args.__dict__[arg]))
     #     print('')
-
+    # pdb.set_trace()
     # load data from csv file
     if args.INPUT_SEPARATOR is None:
         input_data = pd.read_csv(args.INPUT_FILE, sep=args.INPUT_SEPARATOR,engine='python')

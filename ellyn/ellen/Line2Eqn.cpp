@@ -60,6 +60,12 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p,bool protect)
 						else
 							sop="sqrt";
 						break;
+					case '2':
+						sop="^2";
+						break;
+					case '3':
+						sop="^3";
+						break;
 					case '{':
 						sop = "<=";
 						break;
@@ -120,8 +126,14 @@ string Line2Eqn(vector<node>& line,string& eqnForm,params& p,bool protect)
 
 					if(line[i].return_type=='f'){
 						if(line[i].arity_float==1 && line[i].arity_bool==0){
-							eqn_floatstack.push_back(sop + "("+s1+")");
-							form_floatstack.push_back(sop + "("+s1f+")");
+							if (line[i].type=='2' || line[i].type=='3'){
+								eqn_floatstack.push_back("("+s1+")" + sop);
+								form_floatstack.push_back("("+s1f+")" + sop);
+							}
+							else{
+								eqn_floatstack.push_back(sop + "("+s1+")");
+								form_floatstack.push_back(sop + "("+s1f+")");
+							}
 						}
 						else if(line[i].arity_float==1 && line[i].arity_bool==1){
 							eqn_floatstack.push_back(sop + "("+b1+","+s1+")");
