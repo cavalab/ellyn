@@ -61,7 +61,7 @@ class ellyn(BaseEstimator):
                  rt_cross=None, ERC_ints=None, numERC=None, train_pct=None, eHC_on=None,
                  PS_sel=None, lex_eps_global=None, lex_eps_dynamic=None, lex_pool=None, AR_nka=None,
                  print_homology=None, max_len_init=None, prto_arch_size=None,
-                 cvals=None, stop_condition=None, stop_threshold=None, lex_metacases=None,
+                 cvals=None, stop_condition=None, stop_threshold=None, lex_meta=None,
                  FE_rank=None, eHC_its=None, lex_eps_error_mad=True,
                  ERC=None, erc_ints=None, AR_na=None, rt_mut=None,
                  pop_restart=None, seeds=None, tourn_size=None, prto_arch_on=None,
@@ -74,7 +74,8 @@ class ellyn(BaseEstimator):
                  print_novelty=None, eHC_slim=None, elitism=None,
                  print_genome=None, pHC_its=None, shuffle_data=None, class_prune=None,
                  eHC_init=None, init_validate_on=None, minERC=None,
-                 ops=None, ops_w=None, eHC_mut=None, min_len=None, return_pop=False):
+                 ops=None, ops_w=None, eHC_mut=None, min_len=None, return_pop=False,
+                 savename=None):
                 # sets up GP.
 
         if fit_type:
@@ -109,6 +110,8 @@ class ellyn(BaseEstimator):
             self.weight_ops_on = True
             self.op_weight = [float(x) for x in ops_w.split(',')]
 
+        if lex_meta:
+            self.lex_metacases = lex_meta.split(',')
 
     def fit(self, features, labels):
         """Fit model to data"""
@@ -586,8 +589,10 @@ def main():
                     type=positive_integer, help='AR input delay.')
 
 # Results and Printing Options
-    parser.add_argument('-o', action='store', dest='resultspath', default=None,
+    parser.add_argument('-op', action='store', dest='resultspath', default=None,
                         type=str, help='Path where results will be saved.')
+    parser.add_argument('-on', action='store', dest='savename', default=None,
+                        type=str, help='Name of the file where results will be saved.')
     parser.add_argument('--print_log', action='store_true', dest='print_log', default=False,
                     help='Flag to print log to terminal.')
 
@@ -727,7 +732,7 @@ def main():
     parser.add_argument('-lex_pool', action='store', dest='lex_pool', default=None,
                         type=float_range, help='Fraction of population to use in lexicase selection events [0.0, 1.0].')
 
-    parser.add_argument('-lex_meta', action='store', dest='lex_metacases', default=None, choices=['age','complexity'],
+    parser.add_argument('-lex_meta', action='store', dest='lex_metac', default=None, choices=['age','complexity'],
                     type=str,help='Specify extra cases for selection. Options: age, complexity.')
 
     parser.add_argument('--lex_eps_error_mad', action='store_true', dest='lex_eps_error_mad', default=None,

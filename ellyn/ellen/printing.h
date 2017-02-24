@@ -73,20 +73,20 @@ void initdatafile(std::ofstream& dfout,string & logname,params& p)
 	string dataname = logname.substr(0,logname.size()-4)+".data";
 	dfout.open(dataname,std::ofstream::out | std::ofstream::app);
 	//dfout.open(dataname,std::ofstream::app);
-	//dfout << "pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t best_R2 \t best_R2_v \t best_VAF \t best_VAF_v \t size \t eff_size \t pHC_pct \t eHC_pct \t good_g_pct \t neut_g_pct \t bad_g_pct \t tot_hom \t on_hom \t off_hom\n";
-	dfout << "gen \t pt_evals \t best_eqn \t best_fit \t best_fit_v \t med_fit \t med_fit_v \t best_MAE \t best_MAE_v \t best_MSE \t best_MSE_v \t best_R2 \t best_R2_v \t best_VAF \t best_VAF_v \t size \t eff_size \t pHC_pct \t eHC_pct \t eHC_ties \t good_g_pct \t neut_g_pct \t bad_g_pct \t time";
+	//dfout << "pt_evals\tbest_eqn\tbest_fit\tbest_fit_v\tmed_fit\tmed_fit_v\tbest_MAE\tbest_MAE_v\tbest_R2\tbest_R2_v\tbest_VAF\tbest_VAF_v\tsize\teff_size\tpHC_pct\teHC_pct\tgood_g_pct\tneut_g_pct\tbad_g_pct\ttot_hom\ton_hom\toff_hom\n";
+	dfout << "gen\tpt_evals\tbest_eqn\tbest_fit\tbest_fit_v\tmed_fit\tmed_fit_v\tbest_MAE\tbest_MAE_v\tbest_MSE\tbest_MSE_v\tbest_R2\tbest_R2_v\tbest_VAF\tbest_VAF_v\tsize\teff_size\tpHC_pct\teHC_pct\teHC_ties\tgood_g_pct\tneut_g_pct\tbad_g_pct\ttime";
 	if (p.print_homology)
-		dfout << "\t tot_hom \t on_hom \t off_hom";
+		dfout << "\ttot_hom\ton_hom\toff_hom";
 	if (p.classification && p.class_m4gp)
-		dfout << "\t dimension" ;
+		dfout << "\tdimension" ;
 	if (p.print_novelty)
-		dfout << "\t novelty" ;
+		dfout << "\tnovelty" ;
 	if (p.print_protected_operators)
-		dfout << "\t best_eqn_matlab";
+		dfout << "\tbest_eqn_matlab";
 	if (p.sel == 3) {
-		dfout << "\t median_lex_cases";
-		dfout << "\t median_lex_pool";
-		dfout << "\t median_passes_per_case";
+		dfout << "\tmedian_lex_cases";
+		dfout << "\tmedian_lex_pool";
+		dfout << "\tmedian_passes_per_case";
 	}
 	dfout << "\n";
 	//fout.close(dataname);
@@ -115,7 +115,7 @@ void printdatafile(tribe& T,state& s,params& p, vector<Randclass>& r,std::ofstre
 		dfout << "\t" << novelty;
 	}
 	if (p.print_protected_operators)
-		dfout << "\t " + best_ind.eqn_matlab;
+		dfout << "\t" + best_ind.eqn_matlab;
 	if (p.sel == 3) {
 		dfout << "\t" << s.get_median_lex_cases();
 		dfout << "\t" << s.get_median_lex_pool();

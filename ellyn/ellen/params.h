@@ -65,6 +65,7 @@ struct params {
 	string pop_restart_path; // restart population file path
 	// Results
 	string resultspath;
+	string savename; // savename for files
 	//bool loud;
 
 	// use fitness estimator coevolution
@@ -252,6 +253,8 @@ struct params {
 		char cCurrentPath[FILENAME_MAX];
 		bool tmp = GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
 		resultspath= (std::string) cCurrentPath;
+		//savename
+		savename="";
 		//print every population
 		print_every_pop=0;
 		//print initial population
@@ -441,7 +444,11 @@ struct params {
 			// cout << "resultspath:" << resultspath << "\n";
 
 		}
+		if (d.has_key("savename"))
+		{
+			savename = extract<string>(d["savename"]);
 
+		}
 		if (d.has_key("intvars"))
 		{
 			for(unsigned int i = 0; i<len(d["intvars"]); ++i)

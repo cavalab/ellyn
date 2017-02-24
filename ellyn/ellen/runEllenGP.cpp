@@ -573,18 +573,18 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 	 string thread;
 	 if (trials) thread = std::to_string(static_cast<long long>(trialnum));
 	 else thread = std::to_string(static_cast<long long>(thrd));
+// define save file name
+string logname;
 #if defined(_WIN32)
-	//  string pname = paramfile.substr(paramfile.rfind('\\')+1,paramfile.size());
-	//  string dname = datafile.substr(datafile.rfind('\\')+1,datafile.size());
-	//  pname = pname.substr(0,pname.size()-4);
-	//  dname = dname.substr(0,dname.size()-4);
-  string logname = p.resultspath + '\\' + "ellyn_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
+	if (!p.savename.empty())
+		logname = p.resultspath + '/' + p.savename + ".log";
+	else
+  	logname = p.resultspath + '\\' + "ellyn_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
 #else
-	//  string pname = paramfile.substr(paramfile.rfind('/')+1,paramfile.size());
-	//  string dname = datafile.substr(datafile.rfind('/')+1,datafile.size());
-	//  pname = pname.substr(0,pname.size()-4);
-	//  dname = dname.substr(0,dname.size()-4);
-	 string logname = p.resultspath + '/' + "ellyn_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
+	if (!p.savename.empty())
+		logname = p.resultspath + '/' + p.savename + ".log";
+	else
+		logname = p.resultspath + '/' + "ellyn_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
 #endif
 
 
@@ -612,6 +612,8 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 		 s.out << "_______________________________________________________________________________ \n";
 		 //s.out << "Time right now is " << std::put_time(&tm, "%c %Z") << '\n';
 		 s.out<< "Results Path: " << p.resultspath  << "\n";
+		 if (!p.savename.empty())
+		 	s.out << "Save filename: " << p.savename << "\n";
 		 s.out << "parameter name: " << pname << "\n";
 		 s.out << "data file: " << dname << "\n";
 		 if(trials) {s.out << "Running in Trial Mode\n";
