@@ -119,7 +119,6 @@ void Mutate(ind& par, vector<ind>& tmppop, params& p, vector<Randclass>& r, Data
 					linelen = std::max(p.min_len - (int(kid[0].line.size()) - (end1-(begin1-1))), end1-(begin1-1) + int(Round(r[omp_get_thread_num()].gasdev() * 0.5 * (end1-(begin1-1)))));
 					// new tree should at least result in the size of the final tree being the minimum length
 					//linelen = std::max(linelen, );
-
 				}
 					//linelen = r[omp_get_thread_num()].rnd_int(p.min_len,p.max_len-kid[0].line.size()+end1-(begin1-1));
 

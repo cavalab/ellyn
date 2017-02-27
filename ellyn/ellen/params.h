@@ -226,11 +226,11 @@ struct params {
 		sel=1; // 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
 		tourn_size=2;
 		rt_rep=0; //probability of reproduction
-		rt_cross=0.8;
-		rt_mut=0.2;
+		rt_cross=0.6;
+		rt_mut=0.4;
 		cross_ar=0.025; //crossover alternation rate
 		mut_ar=0.025;
-		cross=1; // 1: ultra; 2: one point; 3: subtree
+		cross=3; // 1: ultra; 2: one point; 3: subtree
 		mutate=1; // 1: one point; 2: subtree
 		align_dev = 0;
 		elitism = 0;

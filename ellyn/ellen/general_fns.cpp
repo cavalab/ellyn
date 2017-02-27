@@ -105,9 +105,10 @@ void MutInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,Data& d)
 					else{
 						if(p.ERCints)
 							/*newind.line.at(loc)=(shared_ptr<node>(new n_num((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC))));*/
-						newind.line.at(loc)=node((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC));						else
+              newind.line.at(loc)=node((float)r[omp_get_thread_num()].rnd_int(p.minERC,p.maxERC));
+            else
 							//newind.line.at(loc)=(shared_ptr<node>(new n_num(r[omp_get_thread_num()].rnd_flt(p.minERC,p.maxERC))));
-						newind.line.at(loc)=node(r[omp_get_thread_num()].rnd_flt(p.minERC,p.maxERC));
+			        newind.line.at(loc)=node(r[omp_get_thread_num()].rnd_flt(p.minERC,p.maxERC));
 					}
 				}
 				else{
