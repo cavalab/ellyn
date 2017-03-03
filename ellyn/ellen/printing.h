@@ -247,6 +247,7 @@ void printDB(vector<ind>& pop,string& logname,Data& d,params& p)
 				++j;
 			}
 		}
+		fout << "]"; // end of program
 		fout << ", \"eqn:\" \"" << i.eqn << "\"";
 		fout << ", \"mse\": " << i.sq_error;
 		fout << ", \"origin\": \"" << i.origin << "\"";

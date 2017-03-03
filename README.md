@@ -9,7 +9,7 @@ ellyn also inherits the `BaseEstimator` class used by [sklearn's](http://scikit-
 
 ellyn is also very fast due to its c++ underpinning. As a consequence, there are two library dependencies: [Boost](http://www.boost.org) and [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page), that need to be installed in order to make the ellyn library for python usage.
 
-Head over to the [docs](http://www.github.com/lacava/ellyn/docs) page for more info. 
+Head over to the [docs](https://epistasislab.github.io/ellyn/) page for more info. 
 
 FYI
 ===

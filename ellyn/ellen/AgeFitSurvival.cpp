@@ -19,9 +19,9 @@ void AgeFitSurvival(vector<ind>& pop,params& p,vector<Randclass>& r)
 	{
 		for (int j=0;j<2;++j)
 		{
-			fitindex.at(j)=r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
-			fit.at(j) = pop.at(fitindex.at(j)).fitness;
-			age.at(j) = pop.at(fitindex.at(j)).age;
+			fitindex[j]=r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
+			fit[j] = pop[fitindex[j]].fitness;
+			age[j] = pop[fitindex[j]].age;
 		}
 		if(fit[0]<=fit[1] && age[0]<=age[1])
 		{
@@ -42,10 +42,8 @@ void AgeFitSurvival(vector<ind>& pop,params& p,vector<Randclass>& r)
 
 		// delete losers from population
 		if(!draw){
-			pop.at(loser).swap(pop.back());
-			//std::swap(pop.at(loser),pop.back());
+			pop[loser].swap(pop.back());
 			pop.pop_back();
-			//pop.erase(pop.begin()+loser);
 		}
 
 		//minfit=p.max_fit;
@@ -53,14 +51,14 @@ void AgeFitSurvival(vector<ind>& pop,params& p,vector<Randclass>& r)
 		draw=true;
 		counter++;
 	}
+	// if too many individuals in pop, remove based on age then fitness
 	if (pop.size()>popsize)	{
 		sort(pop.begin(),pop.end(),SortAge());
 		stable_sort(pop.begin(),pop.end(),SortFit());
+
+		while(pop.size()>popsize){
+			pop.pop_back();
+		}
 	}
-	while(pop.size()>popsize){
-		//pop.erase(pop.end()-1);
-		pop.pop_back();
-	}
-	
 
 }
