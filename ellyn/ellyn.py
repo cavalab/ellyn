@@ -284,6 +284,12 @@ class ellyn(BaseEstimator):
             # '<=_b': lambda n,features,stack_float,stack_bool: stack_bool.pop() <= stack_bool.pop(),
         }
 
+        def safe(x):
+            """removes nans and infs from outputs."""
+            x[np.isinf(x)] = 1
+            x[np.isnan(x)] = 1
+            return x
+
         np.seterr(all='ignore')
         if len(stack_float) >= n[1]:
             if n[0] == 'y': # return auto-regressive variable
@@ -292,12 +298,12 @@ class ellyn(BaseEstimator):
                 else:
                     stack_float.append(0.0)
             else:
-                stack_float.append(eval_dict[n[0]](n,features,stack_float,stack_bool))
+                stack_float.append(safe(eval_dict[n[0]](n,features,stack_float,stack_bool)))
             try:
                 if np.any(np.isnan(stack_float[-1])) or np.any(np.isinf(stack_float[-1])):
                     print("problem operator:",n)
-            except:
-                pdb.set_trace()
+            except Exception:
+                raise(Exception)
 
     def _out(self,I,features,ic=None):
         """computes the output for individual I"""
@@ -732,7 +738,7 @@ def main():
     parser.add_argument('-lex_pool', action='store', dest='lex_pool', default=None,
                         type=float_range, help='Fraction of population to use in lexicase selection events [0.0, 1.0].')
 
-    parser.add_argument('-lex_meta', action='store', dest='lex_metac', default=None, choices=['age','complexity'],
+    parser.add_argument('-lex_meta', action='store', dest='lex_meta', default=None, choices=['age','complexity'],
                     type=str,help='Specify extra cases for selection. Options: age, complexity.')
 
     parser.add_argument('--lex_eps_error_mad', action='store_true', dest='lex_eps_error_mad', default=None,
