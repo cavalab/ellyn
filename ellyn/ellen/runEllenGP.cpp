@@ -580,7 +580,7 @@ string logname;
 		logname = p.resultspath + '/' + p.savename + ".log";
 	else
   	logname = p.resultspath + '\\' + "ellyn_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
-#else
+#else7
 	if (!p.savename.empty())
 		logname = p.resultspath + '/' + p.savename + ".log";
 	else
@@ -636,9 +636,15 @@ string logname;
 				 s.out << "Age-Fitness Pareto\n";
 				 break;
 		 }
-		 s.out << "ERC: " << p.ERC << "\n";
-		 s.out << "Parameter Hill Climber: " << p.pHC_on <<"\n";
-		 s.out << "Epigenetic Hill Climber: " << p.eHC_on <<"\n";
+		 if (p.sel==3){
+			 s.out << "Lexicase metacases:\n";
+			// add metacases if needed
+			for (auto i: p.lex_metacases)
+				s.out << "\t" << i << "\n";
+		 }
+		 if (p.ERC) s.out << "ERCs on\n";
+		 if (p.pHC_on) s.out << p.pHC_its << " iterations of Parameter Hill Climbing\n";
+		 if (p.eHC_on) s.out << p.eHC_its << " iterations of Epigenetic Hill Climbing\n";
 		 if(p.train) s.out << "Data split " << p.train_pct << "/" << 1-p.train_pct << " for training and validation.\n";
 		 s.out << "Total Population Size: " << p.popsize << "\n";
 		 if (p.limit_evals) s.out << "Maximum Point Evals: " << p.max_evals << "\n";
@@ -995,7 +1001,7 @@ string logname;
 							if (p.print_every_pop) printpop(World.pop,p,s,logname,2);
 							if (p.verbosity > 1) {
 								printstats(World,gen,s,p,A);
-								s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
+								s.out << "Total Time: " << (int)floor(time.elapsed()/num_islands/3600) << " hr " << ((int)(time.elapsed()/num_islands) % 3600)/60 << " min " << (int)(time.elapsed()/num_islands) % 60 << " s\n";
 								s.out << "Total Evals: " << s.totalevals() << "\n";
 								s.out << "Point Evals: " << s.totalptevals() << "\n";
 								s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
@@ -1052,7 +1058,7 @@ string logname;
 						if (p.print_every_pop) printpop(World.pop,p,s,logname,2);
 						if (p.verbosity > 1) {
 							printstats(World,gen,s,p,A);
-							s.out << "Total Time: " << (int)floor(time.elapsed()/3600) << " hr " << ((int)time.elapsed() % 3600)/60 << " min " << (int)time.elapsed() % 60 << " s\n";
+							s.out << "Total Time: " << (int)floor(time.elapsed()/num_islands/3600) << " hr " << ((int)(time.elapsed()/num_islands) % 3600)/60 << " min " << (int)(time.elapsed()/num_islands) % 60 << " s\n";
 							s.out << "Total Evals: " << s.totalevals() << "\n";
 							s.out << "Point Evals: " << s.totalptevals() << "\n";
 							s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
