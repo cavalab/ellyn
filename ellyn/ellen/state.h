@@ -34,26 +34,26 @@ struct state{
 	vector<int> neut_cross;
 	float good_cross_pct;
 	float neut_cross_pct;
-	float bad_cross_pct; 
-	
-	logger out; 
+	float bad_cross_pct;
+
+	logger out;
 
 	state()
 	{
 		int nt=0;
-		
+
 		#if defined(_WIN32)
-			#pragma omp parallel 
+			#pragma omp parallel
 			{
 				nt = omp_get_max_threads();
 			}
 		#else
-			#pragma omp parallel 
+			#pragma omp parallel
 			{
 				nt = omp_get_num_threads();
 			}
 		#endif
-		
+
 		ptevals.assign(nt,0);
 		//ptevals.resize(nt);
 		//numevals.resize(nt);
@@ -157,9 +157,9 @@ struct state{
 		int val = (updates-total_pHC_updates);
 		total_pHC_updates+=val;
 		current_pHC_updates = float(val);
-		return val; 
+		return val;
 
-	
+
 	}
 	int setEHCupdates()
 	{
@@ -170,7 +170,7 @@ struct state{
 		int val = (updates-total_eHC_updates);
 		total_eHC_updates+=val;
 		current_eHC_updates = float(val);
-		return val; 
+		return val;
 	}
 	int setEHCties()
 	{
@@ -185,7 +185,7 @@ struct state{
 	}
 	float getGoodCrossPct()
 	{
-		
+
 		float total_good=0;
 		float total=0;
 
@@ -201,14 +201,14 @@ struct state{
 		}
 		else
 		{
-			good_cross_pct = total_good/float(total)*100;	
+			good_cross_pct = total_good/float(total)*100;
 			return good_cross_pct;
 		}
-		
+
 	}
 	float getNeutCrossPct()
 	{
-	
+
 		float total_neut=0;
 		float total=0;
 
@@ -224,14 +224,14 @@ struct state{
 		}
 		else
 		{
-			neut_cross_pct = total_neut/total*100;			
+			neut_cross_pct = total_neut/total*100;
 			return neut_cross_pct;
 		}
 
 	}
 	float getBadCrossPct()
 	{
-	
+
 		float total_bad=0;
 		float total=0;
 
@@ -248,7 +248,7 @@ struct state{
 		else
 		{
 			bad_cross_pct = total_bad/total*100;
-			
+
 			return bad_cross_pct;
 		}
 
@@ -264,7 +264,7 @@ struct state{
 	}
 	void setCrossPct(vector<ind>& pop)
 	{
-		
+
 		for(int i=0;i<pop.size();++i)
 		{
 			if (pop.at(i).parentfitness > pop.at(i).fitness)

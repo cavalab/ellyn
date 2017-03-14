@@ -1005,7 +1005,7 @@ string logname;
 								s.out << "Total Evals: " << s.totalevals() << "\n";
 								s.out << "Point Evals: " << s.totalptevals() << "\n";
 								s.out << "Average evals per second: " << (float)s.totalevals()/time.elapsed() << "\n";
-								s.out << "Average point evals per second: " << (float)s.totalptevals()/time.elapsed() << "\n";
+								s.out << "Average point evals per second: " << (float)s.totalptevals()/(time.elapsed()/num_islands) << "\n";
 							}
 							if (print_trigger!=0) print_trigger += p.max_evals/p.num_log_pts;
 							if (p.print_genome) printGenome(World,gen,logname,d,p);
