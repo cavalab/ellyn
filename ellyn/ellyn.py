@@ -125,7 +125,7 @@ class ellyn(BaseEstimator):
         np.random.seed(self.random_state)
         # get parameters
         params = dict(self.__dict__)
-
+        
         for k in list(params.keys()):
             if params[k] is None:
                 del params[k]
