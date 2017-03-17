@@ -580,13 +580,12 @@ string logname;
 		logname = p.resultspath + '/' + p.savename + ".log";
 	else
   	logname = p.resultspath + '\\' + "ellyn_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
-#else7
+#else
 	if (!p.savename.empty())
 		logname = p.resultspath + '/' + p.savename + ".log";
 	else
 		logname = p.resultspath + '/' + "ellyn_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
 #endif
-
 
 
 	 s.out.set_ptf(trials && p.print_log); // only print to file if print_log
@@ -596,7 +595,7 @@ string logname;
 	 if (p.print_log){
 		 s.out.open(logname);
 		 if (!s.out.is_open()){
-			 cerr << "Write-to File " << logname << " did not open correctly.\n";
+			 cerr << "Write-to File " << p.resultspath + '/' + logname << " did not open correctly.\n";
 			 exit(1);
 		 }
 	 	}

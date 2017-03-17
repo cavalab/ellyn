@@ -71,7 +71,12 @@ void printbestind(tribe& T,params& p,state& s,string& logname)
 void initdatafile(std::ofstream& dfout,string & logname,params& p)
 {
 	string dataname = logname.substr(0,logname.size()-4)+".data";
+	// cout << "dataname: " << dataname << "\n";
 	dfout.open(dataname,std::ofstream::out | std::ofstream::app);
+	if (!dfout.is_open()){
+	   cerr << "data filee " << p.resultspath + '/' + dataname << " did not open correctly.\n";
+	   exit(1);
+   }
 	//dfout.open(dataname,std::ofstream::app);
 	//dfout << "pt_evals\tbest_eqn\tbest_fit\tbest_fit_v\tmed_fit\tmed_fit_v\tbest_MAE\tbest_MAE_v\tbest_R2\tbest_R2_v\tbest_VAF\tbest_VAF_v\tsize\teff_size\tpHC_pct\teHC_pct\tgood_g_pct\tneut_g_pct\tbad_g_pct\ttot_hom\ton_hom\toff_hom\n";
 	dfout << "gen\tpt_evals\tbest_eqn\tbest_fit\tbest_fit_v\tmed_fit\tmed_fit_v\tbest_MAE\tbest_MAE_v\tbest_MSE\tbest_MSE_v\tbest_R2\tbest_R2_v\tbest_VAF\tbest_VAF_v\tsize\teff_size\tpHC_pct\teHC_pct\teHC_ties\tgood_g_pct\tneut_g_pct\tbad_g_pct\ttime";
@@ -86,7 +91,6 @@ void initdatafile(std::ofstream& dfout,string & logname,params& p)
 	if (p.sel == 3) {
 		dfout << "\tmedian_lex_cases";
 		dfout << "\tmedian_lex_pool";
-		// dfout << "\tmedian_passes_per_case";
 	}
 	dfout << "\n";
 	//fout.close(dataname);
