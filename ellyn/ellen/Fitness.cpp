@@ -417,8 +417,8 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 		if (boost::math::isinf(abs(stack_float.back())))
 			stack_float[stack_float.size() - 1] = MAX_FLOAT;
 
-		// if (boost::math::isnan(stack_float.back()))
-		// 	cout << "nans in output\n";
+		if (boost::math::isnan(stack_float.back()))
+		 	stack_float[stack_float.size() - 1] = 0;
 	}
 
 }

@@ -47,11 +47,15 @@ float mad(vector<float>& x) {
 	// returns median absolute deviation (MAD)
 	// get median of x
 	float x_median = median(x);
-
+  if (boost::math::isnan(x_median))
+    return 0;
 	//calculate absolute deviation from median
 	vector<float> dev;
 	for (vector<float>::iterator it = x.begin(); it != x.end(); ++it)
 		dev.push_back(abs(*it - x_median));
+
+  if (boost::math::isnan(median(dev)))
+    return 0;
 
 	return median(dev);
 
@@ -208,7 +212,9 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 					}
 				}
 				if (p.lex_eps_dynamic){
+          // get dynamic epsilon
 					ep_dyn = mad(pool_error);
+
 					// winners are within epsilon of the local pool's minimum fitness
 					for (int j=0;j<pool.size();++j){
 						if (pop[pool[j]].error[case_order[h]]<=minfit+ep_dyn)
@@ -260,7 +266,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 		else{ // otherwise throw an ??
 			string print_at_once = "";
 			print_at_once += "??";
-			print_at_once += "winner is size " + to_string(winner.size()) + ", not > 1\n";
+			print_at_once += "winner pool is size " + to_string(winner.size()) + "\n";
 			print_at_once += "pool size:" + to_string(pool.size()) + "\n";
 			print_at_once += "minfit: " + to_string(minfit) + "\n";
 			print_at_once += "epsilon: " + to_string(epsilon[case_order[h]]) + "\n";
@@ -283,7 +289,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 				print_at_once += "\n";
 			}
 
-			// cout << print_at_once;
+			cout << print_at_once;
 		}
 
 		assert(winner.size()>0);

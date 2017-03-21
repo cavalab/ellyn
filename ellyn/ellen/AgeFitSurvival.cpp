@@ -6,9 +6,9 @@
 void AgeFitSurvival(vector<ind>& pop,params& p,vector<Randclass>& r)
 {
 	//boost::progress_timer timer;
-	vector<float> fit(p.tourn_size);
-	vector<int> age(p.tourn_size);
-	vector<int> fitindex(p.tourn_size);
+	vector<float> fit(2);
+	vector<int> age(2);
+	vector<int> fitindex(2);
 	//float minfit=p.max_fit;
 	//float minage=p.g; // maximum age = total max generations
 	int loser;
@@ -49,10 +49,11 @@ void AgeFitSurvival(vector<ind>& pop,params& p,vector<Randclass>& r)
 		//minfit=p.max_fit;
 		//minage=p.g;
 		draw=true;
-		counter++;
+		++counter;
 	}
 	// if too many individuals in pop, remove based on age then fitness
 	if (pop.size()>popsize)	{
+		// cout << "counter reached: " << counter << " \n";
 		sort(pop.begin(),pop.end(),SortAge());
 		stable_sort(pop.begin(),pop.end(),SortFit());
 

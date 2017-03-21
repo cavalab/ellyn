@@ -139,7 +139,6 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s
 		{   //scheme:
 			// produce a new population equal in size to the old
 			// pool all individuals from both populations
-
 			AgeBreed(pop,p,r,d,s,FE);
 
 			// add one new individual
@@ -149,13 +148,17 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s
 
 			Fitness(tmppop,p,d,s,FE);
 			pop.push_back(tmppop[0]);
+
 			// select new population with tournament size 2, based on pareto age-fitness
-			if (p.PS_sel==1) // age-fitness tournaments
+			if (p.PS_sel==1) {// age-fitness tournaments
 				AgeFitSurvival(pop,p,r);
+			}
 			// else if (p.PS_sel==2)
 			// 	AgeFitGenSurvival(pop,p,r);*/
-			else // if using other objectives, use SPEA2 survival routine instead
+			else{ // if using other objectives, use SPEA2 survival routine instead
 				ParetoSurvival(pop,p,r,s);
+			}
+
 		break;
 
 		}
