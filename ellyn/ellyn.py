@@ -125,7 +125,7 @@ class ellyn(BaseEstimator):
         np.random.seed(self.random_state)
         # get parameters
         params = dict(self.__dict__)
-        
+
         for k in list(params.keys()):
             if params[k] is None:
                 del params[k]
@@ -726,7 +726,7 @@ def main():
     parser.add_argument('-arch_size', action='store', dest='prto_arch_size', default=None,
                         help='Minimum size of the Pareto archive. By default, ellyn will save the entire front, but more individuals will be added if the front is less than arch_size.')
 # island model
-    parser.add_argument('--islands', action='store_true', dest='islands', default=None,
+    parser.add_argument('--islands', action='store_true', dest='islands', default=True,
                     help='Flag to use island populations. Parallel execution across codes on a single node.')
 
     parser.add_argument('-num_islands', action='store', dest='num_islands', default=None, type = positive_integer,
