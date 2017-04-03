@@ -242,7 +242,7 @@ void printDB(vector<ind>& pop,string& logname,Data& d,params& p)
 			if (n.on){
 				if (j != 0)
 					fout << ", ";
-				fout << "{\"type\": " << n.type << ", \"id\":" << n.tag;
+				fout << "{\"type\": \"" << n.type << "\", \"id\":" << n.tag;
 				if (n.type=='v')
 					fout << ", \"value\": \"" << n.varname << "\"";
 				else if (n.type=='n')
