@@ -225,7 +225,7 @@ void printDB(vector<ind>& pop,string& logname,Data& d,params& p)
 //			"eqn":	equation string,
 // 			"mse": mean_squared_error,
 // 			"origin": crossover, mutation
-// 			"parent-id": [parent1 uuid, parent2 uuid]
+// 			"parent_id": [parent1 uuid, parent2 uuid]
 // 		}
 
 	std::ofstream fout;
@@ -234,7 +234,7 @@ void printDB(vector<ind>& pop,string& logname,Data& d,params& p)
 
 	for (auto i: pop){
 		fout << "{\"individual\": {";
-		fout << "\"id\": " << i.tag;
+		fout << "\"id\": \"" << i.tag << "\"";
 		fout << ", \"program\": [";
 		//  print program nodes  << [{nodes}];
 		int j = 0;
@@ -242,7 +242,7 @@ void printDB(vector<ind>& pop,string& logname,Data& d,params& p)
 			if (n.on){
 				if (j != 0)
 					fout << ", ";
-				fout << "{\"type\": \"" << n.type << "\", \"id\":" << n.tag;
+				fout << "{\"type\": \"" << n.type << "\", \"id\":\"" << n.tag << "\"";
 				if (n.type=='v')
 					fout << ", \"value\": \"" << n.varname << "\"";
 				else if (n.type=='n')
@@ -252,18 +252,16 @@ void printDB(vector<ind>& pop,string& logname,Data& d,params& p)
 			}
 		}
 		fout << "]"; // end of program
-		fout << ", \"eqn:\" \"" << i.eqn << "\"";
+		fout << ", \"eqn\": \"" << i.eqn << "\"";
 		fout << ", \"mse\": " << i.sq_error;
 		fout << ", \"origin\": \"" << i.origin << "\"";
 		if (i.origin=='c'){
-			// int tmp = i.parent_id.size();
-			// fout << ", parent_id size: " << tmp ;
- 			fout << ", \"parent-id\": [" << i.parent_id[0] << ", "<< i.parent_id[1] << "]";
+ 			fout << ", \"parent_id\": [\"" << i.parent_id[0] << "\", \"" << i.parent_id[1] << "\"]";
 		}
 		else if (i.origin=='m'){
 			// int tmp = i.parent_id.size();
 			// fout << ", parent_id size: " << tmp ;
-			fout << ", \"parent-id\": [" << i.parent_id[0] << "]";
+			fout << ", \"parent_id\": [\"" << i.parent_id[0] << "\"]";
 		}
 		fout << "}}\n";
 	}
