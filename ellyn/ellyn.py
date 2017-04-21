@@ -59,7 +59,8 @@ class ellyn(BaseEstimator):
                  print_archive=False,print_data=False, print_db=False,class_bool=False, max_len=None, island_gens=50,
                  print_every_pop=None, FE_pop_size=None,
                  rt_cross=None, ERC_ints=None, numERC=None, train_pct=None, eHC_on=None,
-                 PS_sel=None, lex_eps_global=None, lex_eps_dynamic=None, lex_pool=None, AR_nka=None,
+                 PS_sel=None, lex_eps_static=None,lex_eps_semidynamic=None, lex_eps_dynamic=None,
+                 lex_eps_dynamic_rand=None,lex_pool=None, AR_nka=None,
                  print_homology=None, max_len_init=None, prto_arch_size=None,
                  cvals=None, stop_condition=None, stop_threshold=None, lex_meta=None,
                  FE_rank=None, eHC_its=None, lex_eps_error_mad=True,
@@ -121,6 +122,10 @@ class ellyn(BaseEstimator):
 
         if self.selection=='epsilon_lexicase':
             self.lex_eps_error_mad = True
+            if self.lex_eps_dynamic or self.lex_eps_semidynamic or self.lex_eps_dynamic_rand:
+                self.lex_eps_global = False
+            if self.lex_eps_dynamic_rand:
+                self.lex_eps_dynamic = True
 
         np.random.seed(self.random_state)
         # get parameters
@@ -747,11 +752,14 @@ def main():
     parser.add_argument('--lex_eps_target_mad', action='store_true', dest='lex_eps_target_mad', default=None,
                     help='Flag to use epsilon lexicase with median absolute deviation, target-based epsilons.')
 
-    parser.add_argument('--lex_eps_semidynamic', action='store_false', dest='lex_eps_global', default=None,
+    parser.add_argument('--lex_eps_semidynamic', action='store_true', dest='lex_eps_semidynamic', default=None,
                     help='Flag to use dynamically defined error in epsilon lexicase selection.')
 
     parser.add_argument('--lex_eps_dynamic', action='store_true', dest='lex_eps_dynamic', default=None,
                     help='Flag to use dynamic error and epsilon in epsilon lexicase selection.')
+
+    parser.add_argument('--lex_eps_dynamic_rand', action='store_true', dest='lex_eps_dynamic_rand', default=None,
+                help='Flag to use dynamic error and random thresholds in epsilon lexicase selection.')
 
     parser.add_argument('-s', action='store', dest='random_state', default=np.random.randint(4294967295),
                         type=int, help='Random number generator seed for reproducibility. Note that using multi-threading may '
