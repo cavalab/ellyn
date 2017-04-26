@@ -13,7 +13,7 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 	//assert (pop.size()== p.popsize) ;
 	//boost::progress_timer timer;
 	float choice;
-	
+
 	vector <ind> tmppop;
 	tmppop.reserve(pop.size());
 	///if(!p.parallel)
@@ -27,13 +27,13 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 	std::random_shuffle(parloc.begin(),parloc.end(),r[omp_get_thread_num()]);
 	while(tmppop.size()<parloc.size())
 	{
-		
+
 		choice = r[omp_get_thread_num()].rnd_flt(0,1);
 
 		if(choice < p.rep_wheel[0]) // reproduction
 		{
-			//pick parent from parloc 
-				
+			//pick parent from parloc
+
 			//push parent into tmppop
 			tmppop.push_back(pop.at(parloc[numits]));
 			//update ages
@@ -42,10 +42,10 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 			++numits;
 		}
 		else if (choice<p.rep_wheel[1] && parloc.size()>numits+1) // crossover, as long as there are at least two parents left
-		{			
-			// only breed if parents have different fitness 
-			if(pop.at(parloc[numits]).fitness!=pop.at(parloc[numits+1]).fitness) 
-			{				
+		{
+			// only breed if parents have different fitness
+			if(pop.at(parloc[numits]).fitness!=pop.at(parloc[numits+1]).fitness)
+			{
 				//cross parents to make two kids
 				Crossover(pop.at(parloc[numits]),pop.at(parloc[numits+1]),tmppop,p,r);
 				//update ages
@@ -63,7 +63,7 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 				//update ages
 				tmppop.at(tmppop.size()-2).age = pop.at(parloc[numits]).age;
 				tmppop.back().age = pop.at(parloc[numits+1]).age;
-				
+
 				++pop.at(parloc[numits]).age;
 				++pop.at(parloc[numits+1]).age;
 
@@ -79,15 +79,15 @@ void ApplyGenetics(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vecto
 			++numits;
 		}
 
-		
+
 	}
 
 	while(tmppop.size()>parloc.size())
 		tmppop.pop_back();
 //    assert (tmppop.size()== p.popsize) ;
-	if (p.sel==4) // insert new pop into old pop for pareto survival
+	if (p.sel==4 || p.lexage) // insert new pop into old pop for pareto survival
 	{
-		//get tmppop fitness 
+		//get tmppop fitness
 		Fitness(tmppop,p,d,s,FE);
 		// genetic stats
 		s.setCrossPct(tmppop);

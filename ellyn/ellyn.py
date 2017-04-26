@@ -77,7 +77,7 @@ class ellyn(BaseEstimator):
                  print_genome=None, pHC_its=None, shuffle_data=None, class_prune=None,
                  eHC_init=None, init_validate_on=None, minERC=None,
                  ops=None, ops_w=None, eHC_mut=None, min_len=None, return_pop=False,
-                 savename=None):
+                 savename=None,lexage=None):
                 # sets up GP.
 
         if fit_type:
@@ -128,6 +128,7 @@ class ellyn(BaseEstimator):
             if self.lex_eps_dynamic_rand:
                 self.lex_eps_dynamic = True
 
+        print("lex age:",self.lexage)
         np.random.seed(self.random_state)
         # get parameters
         params = dict(self.__dict__)
@@ -760,6 +761,9 @@ def main():
 
     parser.add_argument('--lex_eps_dynamic_rand', action='store_true', dest='lex_eps_dynamic_rand', default=None,
                 help='Flag to use dynamic error and random thresholds in epsilon lexicase selection.')
+
+    parser.add_argument('--lex_age', action='store_true', dest='lexage', default=None,
+                help='Flag to use age-fitness Pareto survival after lexicase selection.')
 
     parser.add_argument('-s', action='store', dest='random_state', default=np.random.randint(4294967295),
                         type=int, help='Random number generator seed for reproducibility. Note that using multi-threading may '

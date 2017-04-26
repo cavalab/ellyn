@@ -168,7 +168,7 @@ struct params {
 
 	// lexicase selection
 	float lexpool; // percent of population to use for lexicase selection events
-	bool lexage;// currently not used; up for deletion
+	bool lexage;// use afp survival after lexicase selection
 	bool lex_class; // use class-based fitness objectives instead of raw error
 	vector<string> lex_metacases; // extra cases to be used for lexicase selection
 	bool lex_eps_error; // errors within episilon of the best error are pass, otherwise fail
@@ -691,6 +691,8 @@ struct params {
 			verbosity = extract<int>(d["verbosity"]);
 		if (d.has_key("return_pop"))
 			return_pop = extract<bool>(d["return_pop"]);
+		if (d.has_key("lexage"))
+			lexage = extract<bool>(d["lexage"]);
 		// finished reading from dict.
 
 		allvars = intvars;
@@ -947,13 +949,13 @@ struct params {
 		// set train pct to 1 if train is zero
 		if (!train) train_pct=1;
 
-		// add lexage flag if age is a metacase
-		lexage=false;
-		for (unsigned i = 0; i<lex_metacases.size(); ++i)
-		{
-			if (lex_metacases[i].compare("age")==0)
-				lexage=true;
-		}
+		// // add lexage flag if age is a metacase
+		// lexage=false;
+		// for (unsigned i = 0; i<lex_metacases.size(); ++i)
+		// {
+		// 	if (lex_metacases[i].compare("age")==0)
+		// 		lexage=true;
+		// }
 		// turn on lex_eps_global if an epsilon method is not used
 		if (!lex_eps_global && !(lex_eps_std || lex_eps_error_mad || lex_eps_target_mad || lex_eps_error || lex_eps_target ))
 			lex_eps_global = true;
