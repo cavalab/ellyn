@@ -123,10 +123,11 @@ class ellyn(BaseEstimator):
 
         if self.selection=='epsilon_lexicase':
             self.lex_eps_error_mad = True
-            if self.lex_eps_dynamic or self.lex_eps_semidynamic or self.lex_eps_dynamic_rand:
-                self.lex_eps_global = False
-            if self.lex_eps_dynamic_rand:
-                self.lex_eps_dynamic = True
+            try:
+                if self.lex_eps_dynamic or self.lex_eps_semidynamic or self.lex_eps_dynamic_rand:
+                    self.lex_eps_global = False
+                if self.lex_eps_dynamic_rand:
+                    self.lex_eps_dynamic = True
 
         print("lex age:",self.lexage)
         np.random.seed(self.random_state)
