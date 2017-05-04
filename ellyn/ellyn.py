@@ -124,12 +124,7 @@ class ellyn(BaseEstimator):
 
         if self.selection=='epsilon_lexicase':
             self.lex_eps_error_mad = True
-            # if self.lex_eps_dynamic or self.lex_eps_semidynamic or self.lex_eps_dynamic_rand:
-            #     self.lex_eps_global = False
-            # if self.lex_eps_dynamic_rand:
-            #     self.lex_eps_dynamic = True
 
-        print("lex age:",self.lexage)
         np.random.seed(self.random_state)
         # get parameters
         params = dict(self.__dict__)
@@ -765,7 +760,7 @@ def main():
 
     parser.add_argument('--lex_eps_dynamic_madcap', action='store_true', dest='lex_eps_dynamic_madcap', default=None,
                 help='Flag to use dynamic error and mad capped thresholds in epsilon lexicase selection.')
-    
+
     parser.add_argument('--lex_age', action='store_true', dest='lexage', default=None,
                 help='Flag to use age-fitness Pareto survival after lexicase selection.')
 
