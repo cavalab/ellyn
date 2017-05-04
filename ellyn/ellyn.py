@@ -61,7 +61,8 @@ class ellyn(BaseEstimator):
                  print_every_pop=None, FE_pop_size=None, lex_eps_global=None,
                  rt_cross=None, ERC_ints=None, numERC=None, train_pct=None, eHC_on=None,
                  PS_sel=None, lex_eps_static=None,lex_eps_semidynamic=None, lex_eps_dynamic=None,
-                 lex_eps_dynamic_rand=None,lex_pool=None, AR_nka=None,
+                 lex_eps_dynamic_rand=None,lex_eps_dynamic_madcap=None,
+                 lex_pool=None, AR_nka=None,
                  print_homology=None, max_len_init=None, prto_arch_size=None,
                  cvals=None, stop_condition=None, stop_threshold=None, lex_meta=None,
                  FE_rank=None, eHC_its=None, lex_eps_error_mad=True,
@@ -762,6 +763,9 @@ def main():
     parser.add_argument('--lex_eps_dynamic_rand', action='store_true', dest='lex_eps_dynamic_rand', default=None,
                 help='Flag to use dynamic error and random thresholds in epsilon lexicase selection.')
 
+    parser.add_argument('--lex_eps_dynamic_madcap', action='store_true', dest='lex_eps_dynamic_madcap', default=None,
+                help='Flag to use dynamic error and mad capped thresholds in epsilon lexicase selection.')
+    
     parser.add_argument('--lex_age', action='store_true', dest='lexage', default=None,
                 help='Flag to use age-fitness Pareto survival after lexicase selection.')
 

@@ -221,6 +221,9 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 					else{
 						ep_dyn = mad(pool_error);
 					}
+					// lex eps madcap
+					if (p.lex_eps_dynamic_madcap && r[omp_get_thread_num()].rnd_int(0,1)<0.5)
+						ep_dyn = 0;
 					// winners are within epsilon of the local pool's minimum fitness
 					for (int j=0;j<pool.size();++j){
 						if (pop[pool[j]].error[case_order[h]]<=minfit+ep_dyn)

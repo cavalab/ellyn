@@ -180,6 +180,7 @@ struct params {
 	bool lex_eps_dynamic; // epsilon is defined relative to the pool instead of globally
 	bool lex_eps_dynamic_rand; /* epsilon is defined as a random threshold
 	corresponding to an error in the pool minus min error in pool*/
+	bool lex_eps_dynamic_madcap; // with prob of 0.5, epsilon is replaced with 0
 	float lex_epsilon;
 
 	// ==== Printing Options === //
@@ -370,6 +371,7 @@ struct params {
 		lex_eps_global = false; //pass conditions in lex eps defined relative to whole population (rather than selection pool).
 		lex_eps_dynamic = false;
 		lex_eps_dynamic_rand = false;
+		lex_eps_dynamic_madcap = false;
 		                       //should be true for regular lexicase (forced in load_params)
 		//pareto survival setting
 		PS_sel=1;
@@ -685,6 +687,8 @@ struct params {
 			lex_eps_dynamic = extract<bool>(d["lex_eps_dynamic"]);
 		if (d.has_key("lex_eps_dynamic_rand"))
 				lex_eps_dynamic_rand = extract<bool>(d["lex_eps_dynamic_rand"]);
+		if (d.has_key("lex_eps_dynamic_madcap"))
+				lex_eps_dynamic_madcap = extract<bool>(d["lex_eps_dynamic_madcap"]);
 		if (d.has_key("test_at_end"))
 			test_at_end = extract<bool>(d["test_at_end"]);
 		if (d.has_key("verbosity"))
@@ -964,7 +968,7 @@ struct params {
 		if(class_m4gp && min_len < number_of_classes)
 			min_len = number_of_classes;
 
-		cout << "lex_eps_dynamic_rand: " << lex_eps_dynamic_rand << "\n";
+		cout << "lex_eps_dynamic_madcap: " << lex_eps_dynamic_madcap << "\n";
 		cout << "lex_eps_global: " << lex_eps_global << "\n";
 
 	}
