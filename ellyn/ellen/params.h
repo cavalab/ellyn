@@ -953,13 +953,6 @@ struct params {
 		// set train pct to 1 if train is zero
 		if (!train) train_pct=1;
 
-		// // add lexage flag if age is a metacase
-		// lexage=false;
-		// for (unsigned i = 0; i<lex_metacases.size(); ++i)
-		// {
-		// 	if (lex_metacases[i].compare("age")==0)
-		// 		lexage=true;
-		// }
 		// turn on lex_eps_global if an epsilon method is not used
 		if (!lex_eps_global && !(lex_eps_std || lex_eps_error_mad || lex_eps_target_mad || lex_eps_error || lex_eps_target ))
 			lex_eps_global = true;
@@ -967,9 +960,6 @@ struct params {
 		// make min_len equal the number of classes if m3gp is used
 		if(class_m4gp && min_len < number_of_classes)
 			min_len = number_of_classes;
-
-		cout << "lex_eps_dynamic_madcap: " << lex_eps_dynamic_madcap << "\n";
-		cout << "lex_eps_global: " << lex_eps_global << "\n";
 
 	}
 };
