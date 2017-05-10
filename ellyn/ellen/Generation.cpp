@@ -101,12 +101,10 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s
 				Fitness(tmppop,p,d,s,FE);
 				pop.push_back(tmppop[0]);
 			}
-			cout << "pop size after inserting age 0 ind: " << pop.size() << "\n";
 
 
 			LexicaseSelect(pop,parloc,p,r,d,s);
 			//if (p.lex_age) vector<ind> tmppop(pop);
-			cout << "pop size after selection: " << pop.size() << "\n";
 
 			//elitism
 			ind best;
@@ -117,7 +115,6 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s
 
 			ApplyGenetics(pop,parloc,p,r,d,s,FE);
 			//FitnessLex(pop,parloc,p,r,d);
-			cout << "pop size after variation: " << pop.size() << "\n";
 
 			// epigenetic mutation
 			if (p.eHC_on && p.eHC_mut){
@@ -138,8 +135,8 @@ void Generation(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s
 				}
 				else{ // if using other objectives, use SPEA2 survival routine instead
 					ParetoSurvival(pop,p,r,s);
+				}
 			}
-			cout << "pop size after survival: " << pop.size() << "\n";}
 
 			//elitism
 			if (p.elitism & !p.lexage){ // replace (aggregate) worst ind with (aggregate) best ind

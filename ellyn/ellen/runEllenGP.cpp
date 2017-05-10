@@ -656,7 +656,8 @@ string logname;
 		 s.out << "fitness type: " << p.fit_type << "\n";
 		 s.out << "verbosity: " << p.verbosity << "\n";
 	 }
-
+	 // allow threads (release the Python GIL)
+	 Py_BEGIN_ALLOW_THREADS{
 	int nt=0;
 	//int ntt=0;
 	// if specified by the user, override the default omp number of threads
@@ -1387,7 +1388,7 @@ string logname;
 
 	if (p.verbosity>0) s.out << "\n Program finished sucessfully.\n";
 
-}
+}Py_END_ALLOW_THREADS	}
 catch(std::exception& e){
 	std::cerr << e.what();
 
