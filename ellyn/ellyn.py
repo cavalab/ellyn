@@ -55,7 +55,7 @@ class ellyn(BaseEstimator):
     def __init__(self, g=100, popsize=500, limit_evals=False, max_evals=0,
                  selection='tournament', classification=False, islands=True,
                  num_islands=None,fit_type=None, verbosity=0, random_state=0,
-                 class_m4gp=False,scoring_function=mean_squared_error, print_log=False,
+                 class_m4gp=False,scoring_function=None, print_log=False,
                  print_archive=False,print_data=False, print_db=False,
                  class_bool=False, max_len=None, island_gens=50,
                  print_every_pop=None, FE_pop_size=None, lex_eps_global=None,
@@ -94,7 +94,7 @@ class ellyn(BaseEstimator):
                 self.scoring_function = mean_squared_error
         else:
             self.scoring_function = scoring_function
-            
+
         self.random_state = random_state
         self.selection  = selection
         self.prto_arch_on = prto_arch_on
@@ -154,8 +154,8 @@ class ellyn(BaseEstimator):
 
         result = []
         # run ellenGP
-        if self.verbosity>0:
-            print('running ellenGP...')
+        # if self.verbosity>0:
+        #     print('running ellenGP...')
         elgp.runEllenGP(params,
                         np.asarray(features[train_i],dtype=np.float32,order='C'),
                         np.asarray(labels[train_i],dtype=np.float32,order='C'),
