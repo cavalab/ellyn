@@ -158,6 +158,8 @@ class ellyn(BaseEstimator):
         #     print('running ellenGP...')
         print('features:',features)
         print('labels:',labels)
+        print('params:',params)
+        print('result:',result)
         elgp.runEllenGP(params,
                         np.asarray(features[train_i],dtype=np.float32,order='C'),
                         np.asarray(labels[train_i],dtype=np.float32,order='C'),
