@@ -95,7 +95,7 @@ class ellyn(BaseEstimator):
                 self.scoring_function = mean_squared_error
         else:
             self.scoring_function = scoring_function
-            
+
         self.random_state = random_state
         self.selection  = selection
         self.prto_arch_on = prto_arch_on
@@ -155,7 +155,7 @@ class ellyn(BaseEstimator):
 
         result = []
         if self.verbosity>0:
-            print('params:')
+            print('params',10*'=',sep='\n')
             for key,item in params.items():
                 print(key,':',item)
         # run ellenGP
