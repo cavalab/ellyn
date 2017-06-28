@@ -80,17 +80,21 @@ class ellyn(BaseEstimator):
                  ops=None, ops_w=None, eHC_mut=None, min_len=None, return_pop=False,
                  savename=None,lexage=None):
                 # sets up GP.
-
-        if fit_type:
-            self.scoring_function = {'MAE':mean_absolute_error,'MSE':mean_squared_error,
-                                    'R2':r2_score,'VAF':explained_variance_score,
-                                    'combo':mean_absolute_error}[fit_type]
-        elif classification:
-            # self.fit_type = 'MAE'
-            self.scoring_function = accuracy_score
+        if scoring_function is None:
+            if fit_type:
+                self.scoring_function = {'MAE':mean_absolute_error,
+                                         'MSE':mean_squared_error,
+                                         'R2':r2_score,
+                                         'VAF':explained_variance_score,
+                                         'combo':mean_absolute_error}[fit_type]
+            elif classification:
+                # self.fit_type = 'MAE'
+                self.scoring_function = accuracy_score
+            else:
+                self.scoring_function = mean_squared_error
         else:
-            self.scoring_function = mean_squared_error
-
+            self.scoring_function = scoring_function
+            
         self.random_state = random_state
         self.selection  = selection
         self.prto_arch_on = prto_arch_on
@@ -150,9 +154,12 @@ class ellyn(BaseEstimator):
 
         result = []
         # run ellenGP
-        if self.verbosity>0: print('running ellenGP...')
-        elgp.runEllenGP(params,np.asarray(features[train_i],dtype=np.float32,order='C'),
-                        np.asarray(labels[train_i],dtype=np.float32,order='C'),result)
+        if self.verbosity>0:
+            print('running ellenGP...')
+        elgp.runEllenGP(params,
+                        np.asarray(features[train_i],dtype=np.float32,order='C'),
+                        np.asarray(labels[train_i],dtype=np.float32,order='C'),
+                        result)
         # print("best program:",self.best_estimator_)
         if self.AR: # set defaults
             if not self.AR_na: self.AR_na = 0
