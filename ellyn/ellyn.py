@@ -157,7 +157,7 @@ class ellyn(BaseEstimator):
         # if self.verbosity>0:
         #     print('running ellenGP...')
         print('features:',features[:10])
-        print('labels:',label[:10])
+        print('labels:',labels[:10])
         elgp.runEllenGP(params,
                         np.asarray(features[train_i],dtype=np.float32,order='C'),
                         np.asarray(labels[train_i],dtype=np.float32,order='C'),
