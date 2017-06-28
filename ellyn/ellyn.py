@@ -470,7 +470,7 @@ class ellyn(BaseEstimator):
 
             return plt.gcf()
 
-    def print_archive(self):
+    def output_archive(self):
         """prints pareto archive in terms of model accuracy and complexity
         format:
             model\tcomplexity\ttrain\ttest\n
