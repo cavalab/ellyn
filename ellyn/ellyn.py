@@ -150,7 +150,9 @@ class ellyn(BaseEstimator):
 
         result = []
         if self.verbosity>0:
-            print('params:',params)
+            print('params:')
+            for key,item in params.items():
+                print(key,':',item)
         # run ellenGP
         elgp.runEllenGP(params,np.asarray(features[train_i],dtype=np.float32,order='C'),
                         np.asarray(labels[train_i],dtype=np.float32,order='C'),result)
