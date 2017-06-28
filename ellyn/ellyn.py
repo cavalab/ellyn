@@ -150,6 +150,7 @@ class ellyn(BaseEstimator):
 
         result = []
         # run ellenGP
+        if self.verbosity>0: print('running ellenGP...')
         elgp.runEllenGP(params,np.asarray(features[train_i],dtype=np.float32,order='C'),
                         np.asarray(labels[train_i],dtype=np.float32,order='C'),result)
         # print("best program:",self.best_estimator_)
@@ -163,25 +164,39 @@ class ellyn(BaseEstimator):
             self.hof = result[:]
             #evaluate archive on validation set and choose best
             self.fit_v = []
+            self.fit_t = []
             for model in self.hof:
                 if self.class_m4gp:
                     self.DC = DistanceClassifier()
                     self.DC.fit(self._out(model,features[train_i]),labels[train_i])
+                    # training fitness
+                    self.fit_t.append(self.scoring_function(labels[train_i],
+                                 self.DC.predict(self._out(model,
+                                                           features[train_i]))))
+                    # validation fitness
                     self.fit_v.append(self.scoring_function(labels[val_i],
-                                 self.DC.predict(self._out(model,features[val_i]))))
+                                 self.DC.predict(self._out(model,
+                                                           features[val_i]))))
                 else:
                     if self.AR:
                         ic = dict()
                         ic['labels'] = labels[train_i[-(self.AR_na+self.AR_nka):]]
                         ic['features'] = features[train_i[-(self.AR_nb+self.AR_nkb):]]
                         tmp = self._out(model,features[val_i],ic)
+                        # training fitness
+                        self.fit_t.append(self.scoring_function(labels[train_i],
+                                     self._out(model,features[train_i],ic)))
+                        # validation fitness
                         self.fit_v.append(self.scoring_function(labels[val_i],
                                      self._out(model,features[val_i],ic)))
                     else:
+                        # training fitness
+                        self.fit_t.append(self.scoring_function(labels[train_i],
+                                    self._out(model,features[train_i])))
+                        # validation fitness
                         self.fit_v.append(self.scoring_function(labels[val_i],
                                     self._out(model,features[val_i])))
             # best estimator has best validation score
-            #
             if self.scoring_function is r2_score or self.scoring_function is accuracy_score:
                 self.best_estimator_ = self.hof[np.argmax(self.fit_v)]
             else:
@@ -429,22 +444,52 @@ class ellyn(BaseEstimator):
         else:
             import matplotlib.pyplot as plt
 
+            f_t = np.array(self.fit_t)[::-1]
             f_v = np.array(self.fit_v)[::-1]
             m_v = self.hof[::-1]
-            plt.plot(f_v,np.arange(len(f_v)))
 
-            for i,(m,f) in enumerate(zip(m_v,f_v)):
-                plt.plot(f,i,'x')
+            # lines
+            plt.plot(f_t,np.arange(len(f_t)),'b')
+            plt.plot(f_v,np.arange(len(f_v)),'r')
+            plt.legend()
+
+            for i,(m,f1,f2) in enumerate(zip(m_v,f_t,f_v)):
+                plt.plot(f1,i,'sb',label='Train')
+                plt.plot(f2,i,'xr',label='Validation')
                 plt.text((min(f_v))*0.9,i,self.stack_2_eqn(m))
-                if f == max(f_v):
-                    plt.plot(f,i,'ro')
+                if f2 == max(f_v):
+                    plt.plot(f2,i,'ko',markersize=4)
             plt.ylabel('Complexity')
             plt.gca().set_yticklabels('')
-            plt.xlabel('Internal Validation Accuracy')
+            plt.xlabel('Accuracy')
             plt.xlim((min(f_v))*.8,max(f_v)*1.1)
             plt.ylim(-1,len(m_v)+1)
 
             return plt.gcf()
+
+    def print_archive(self):
+        """prints pareto archive in terms of model accuracy and complexity
+        format:
+            model\tcomplexity\ttrain\ttest\n
+            x1\t0.05\t1\n
+        """
+        out = 'model\tcomplexity\ttrain\ttest\n'
+
+        if not self.hof:
+            raise(ValueError,"no archive to print")
+        else:
+
+            f_t = np.array(self.fit_t)[::-1]
+            f_v = np.array(self.fit_v)[::-1]
+            m_v = self.hof[::-1]
+
+            for i,(m,f1,f2) in enumerate(zip(m_v,f_t,f_v)):
+                out += '\t'.join([str(self.stack_2_eqn(m)),
+                                 str(i),
+                                 str(f1),
+                                 str(f2)])+'\n'
+
+            return out
 
 # equation conversion
 eqn_dict = {
