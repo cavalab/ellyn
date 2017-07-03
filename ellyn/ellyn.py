@@ -59,12 +59,13 @@ class ellyn(BaseEstimator):
                  print_archive=False,print_data=False, print_db=False,
                  class_bool=False, max_len=None, island_gens=50,
                  print_every_pop=None, FE_pop_size=None, lex_eps_global=None,
-                 rt_cross=None, ERC_ints=None, numERC=None, train_pct=None, eHC_on=None,
-                 PS_sel=None, lex_eps_static=None,lex_eps_semidynamic=None, lex_eps_dynamic=None,
+                 rt_cross=None, ERC_ints=None, numERC=None, train_pct=None,
+                 eHC_on=None, PS_sel=None, lex_eps_static=None,
+                 lex_eps_semidynamic=None, lex_eps_dynamic=None,
                  lex_eps_dynamic_rand=None,lex_eps_dynamic_madcap=None,
-                 lex_pool=None, AR_nka=None,
+                 lex_pool=None, AR_nka=None, lex_meta=None, train=None,
                  print_homology=None, max_len_init=None, prto_arch_size=None,
-                 cvals=None, stop_condition=None, stop_threshold=None, lex_meta=None,
+                 cvals=None, stop_condition=None, stop_threshold=None,
                  FE_rank=None, eHC_its=None, lex_eps_error_mad=True,
                  ERC=None, erc_ints=None, AR_na=None, rt_mut=None,
                  pop_restart=None, seeds=None, tourn_size=None, prto_arch_on=None,
@@ -72,7 +73,7 @@ class ellyn(BaseEstimator):
                  resultspath=None, AR=None, rt_rep=None, estimate_fitness=None,
                  pHC_on=None, INPUT_FILE=None, FE_train_size=None,
                  DISABLE_UPDATE_CHECK=False, AR_lookahead=None, pop_restart_path=None,
-                 INPUT_SEPARATOR=None, AR_nkb=None, num_log_pts=None, train=None,
+                 INPUT_SEPARATOR=None, AR_nkb=None, num_log_pts=None,
                  FE_train_gens=None, AR_nb=None, init_trees=None,
                  print_novelty=None, eHC_slim=None, elitism=None,
                  print_genome=None, pHC_its=None, shuffle_data=None, class_prune=None,
@@ -145,11 +146,14 @@ class ellyn(BaseEstimator):
                 train_i = np.arange(round(features.shape[0]*.75))
                 val_i = np.arange(round(features.shape[0]*.75),features.shape[0])
             else:
+                stratify=None
+                if self.classification:
+                    stratify = labels
                 train_i, val_i = train_test_split(np.arange(features.shape[0]),
-                                                                 stratify=None,
-                                                                 train_size=0.75,
-                                                                 test_size=0.25,
-                                                                 random_state=self.random_state)
+                                                stratify=stratify,
+                                                train_size=0.75,
+                                                test_size=0.25,
+                                                random_state=self.random_state)
         else:
             train_i = np.arange(features.shape[0])
 
