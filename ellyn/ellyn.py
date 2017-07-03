@@ -88,7 +88,9 @@ class ellyn(BaseEstimator):
                                          'MSE':mean_squared_error,
                                          'R2':r2_score,
                                          'VAF':explained_variance_score,
-                                         'combo':mean_absolute_error}[fit_type]
+                                         'combo':mean_absolute_error,
+                                         'F1':accuracy_score,
+                                         'F1W':accuracy_score}[fit_type]
             elif classification:
                 # self.fit_type = 'MAE'
                 self.scoring_function = accuracy_score
