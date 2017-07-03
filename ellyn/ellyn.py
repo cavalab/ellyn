@@ -735,7 +735,7 @@ def main():
     parser.add_argument('--trees', action='store_true', dest='init_trees', default=None,
                     help='Flag to initialize genotypes as syntactically valid trees rather than randomized stacks.')
 # Fitness Options
-    parser.add_argument('-fit', action='store', dest='fit_type', default=None, choices = ['MSE','MAE','R2','VAF','combo'],
+    parser.add_argument('-fit', action='store', dest='fit_type', default=None, choices = ['MSE','MAE','R2','VAF','combo','F1','F1W'],
                     type=str, help='Fitness metric (Default: mse). combo is mae/r2')
 
     parser.add_argument('--norm_error', action='store_true', dest='ERC_ints', default=None,
