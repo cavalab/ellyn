@@ -1360,7 +1360,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 		if (p.verbosity>0) s.out << "\n Program finished sucessfully.\n";
 
 // Py_END_ALLOW_THREADS	} //end python gil unlock
-	}	
+	}
 	catch(std::exception& e){
 		std::cerr << e.what();
 
