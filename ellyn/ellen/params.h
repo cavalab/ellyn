@@ -918,7 +918,7 @@ struct params {
 			}
 		}
 
-		// debugging
+		// // debugging
 		// cout << "savename: " << savename << "\n";
 		// cout << "op_list: ";
 		// for (auto i : op_list){
@@ -940,6 +940,7 @@ struct params {
 		// 	cout << i << ",";
 		// }
 		// cout << "\n";
+		//
 
 		// turn off AR_nb if AR is not being used
 		if (!AR){

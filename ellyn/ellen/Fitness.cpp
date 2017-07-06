@@ -343,12 +343,12 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 			n1 = stack_float.back(); stack_float.pop_back();
 			n2 = stack_float.back(); stack_float.pop_back();
 			// cube  n1
-			stack_float.push_back(pow(n1,n2));
+			stack_float.push_back(pow(n1,3));
 			break;
 		case '^':
 			n1 = stack_float.back(); stack_float.pop_back();
 			// safe sqrt of absolute value of n1
-			stack_float.push_back(pow(n1,3));
+			stack_float.push_back(pow(n1,n2));
 			break;
 		case '=': // equals
 			n1 = stack_float.back(); stack_float.pop_back();
