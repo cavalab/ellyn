@@ -160,8 +160,8 @@ class ellyn(BaseEstimator):
             train_i = np.arange(features.shape[0])
 
         result = []
-        if self.verbosity>0:
-            print('params',10*'=',sep='\n')
+        if self.verbosity>1:
+            print(10*'=','params',10*'=',sep='\n')
             for key,item in params.items():
                 print(key,':',item)
         # run ellenGP
@@ -177,6 +177,7 @@ class ellyn(BaseEstimator):
         if self.prto_arch_on:
             self.hof = result[:]
             #evaluate archive on validation set and choose best
+            if self.verbosity>0: print('Evaluating archive set...')
             self.fit_v = []
             self.fit_t = []
             for model in self.hof:
