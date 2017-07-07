@@ -46,16 +46,6 @@ namespace bp = boost::python;
 //#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 // global parameters structure
 
-
-//void load_params(params &p, std::ifstream& is);
-//void load_data(Data &d, std::ifstream& is,params&);
-//void load_lexdata(Data &d, std::ifstream& fs,params& p);
-//bool stopcondition(tribe& T,params& p,Data& d,state& s,FitnessEstimator& FE);
-//void printstats(tribe& T,int &i,state& s,params& p,paretoarchive& A);
-//void printbestind(tribe& T,params& p,state& s,string& logname);
-//void printpop(vector<ind>& pop,params& p,state& s,string& logname,int type);
-//void shuffle_data(Data& d, params& p, vector<Randclass>& r,state& s);
-
 bool check_genty(vector<ind>& pop,params& p){
 
 	for(int count = 0; count<pop.size(); ++count)
@@ -668,7 +658,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 			shuffle_data(d,p,r,s);
 
 		// define class weights for wighted F1 fitness
-		if (p.classification && (p.fit_type.compare("2")==0 || p.fit_type.compare("F1W")))
+		if (p.classification && (p.fit_type.compare("2")==0 || p.fit_type.compare("F1W")==0))
 			d.define_class_weights(p);
 
 		boost::timer time;

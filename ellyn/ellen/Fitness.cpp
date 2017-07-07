@@ -1144,7 +1144,7 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 			}
 			me.fitness = 1 - me.fitness;
 		}
-		else if (p.fit_type.compare("3") == 0 || p.fit_type.compare("F1")) {
+		else if (p.fit_type.compare("3") == 0 || p.fit_type.compare("F1")==0) {
 			float precision, recall;
 			me.fitness = 0;
 			for (unsigned int i = 0; i < p.number_of_classes; ++i) {
@@ -1215,7 +1215,7 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 				}
 				me.fitness_v = 1 - me.fitness_v;
 			}
-			else if (p.fit_type.compare("3") == 0 || p.fit_type.compare("F1")) {
+			else if (p.fit_type.compare("3") == 0 || p.fit_type.compare("F1")==0) {
 				float precision, recall;
 				me.fitness_v = 0;
 				for (unsigned int i = 0; i < p.number_of_classes; ++i) {
