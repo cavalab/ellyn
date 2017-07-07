@@ -149,15 +149,18 @@ class ellyn(BaseEstimator):
                 val_i = np.arange(round(features.shape[0]*.75),features.shape[0])
             else:
                 stratify=None
+                # if classification, make the train/test split even across class
                 if self.classification:
                     stratify = labels
-                train_i, val_i = train_test_split(np.arange(features.shape[0]),
+                    train_i, val_i = train_test_split(np.arange(features.shape[0]),
                                                 stratify=stratify,
                                                 train_size=0.75,
                                                 test_size=0.25,
                                                 random_state=self.random_state)
-        else:
-            train_i = np.arange(features.shape[0])
+                    features = features[list(train_i)+list(val_i)]
+                    labels = labels[list(train_i)+list(val_i)]
+                params['train'] = True
+                params['train_pct'] = 0.75
 
         result = []
         if self.verbosity>1:
@@ -165,8 +168,10 @@ class ellyn(BaseEstimator):
             for key,item in params.items():
                 print(key,':',item)
         # run ellenGP
-        elgp.runEllenGP(params,np.asarray(features[train_i],dtype=np.float32,order='C'),
-                        np.asarray(labels[train_i],dtype=np.float32,order='C'),result)
+        elgp.runEllenGP(params,
+                        np.asarray(features,dtype=np.float32,order='C'),
+                        np.asarray(labels,dtype=np.float32,order='C'),
+                        result)
         # print("best program:",self.best_estimator_)
         if self.AR: # set defaults
             if not self.AR_na: self.AR_na = 0
@@ -174,72 +179,41 @@ class ellyn(BaseEstimator):
             if not self.AR_nb: self.AR_nb = 0
             if not self.AR_nkb: self.AR_nkb = 0
 
-        if self.prto_arch_on:
-            self.hof = result[:]
-            #evaluate archive on validation set and choose best
+        if self.prto_arch_on or self.return_pop:
+            # a set of models is returned. choose the best
             if self.verbosity>0: print('Evaluating archive set...')
-            self.fit_v = []
-            self.fit_t = []
-            for model in self.hof:
-                if self.class_m4gp:
-                    self.DC = DistanceClassifier()
-                    self.DC.fit(self._out(model,features[train_i]),labels[train_i])
-                    # training fitness
-                    self.fit_t.append(self.scoring_function(labels[train_i],
-                                 self.DC.predict(self._out(model,
-                                                           features[train_i]))))
-                    # validation fitness
-                    self.fit_v.append(self.scoring_function(labels[val_i],
-                                 self.DC.predict(self._out(model,
-                                                           features[val_i]))))
-                else:
-                    if self.AR:
-                        ic = dict()
-                        ic['labels'] = labels[train_i[-(self.AR_na+self.AR_nka):]]
-                        ic['features'] = features[train_i[-(self.AR_nb+self.AR_nkb):]]
-                        tmp = self._out(model,features[val_i],ic)
-                        # training fitness
-                        self.fit_t.append(self.scoring_function(labels[train_i],
-                                     self._out(model,features[train_i],ic)))
-                        # validation fitness
-                        self.fit_v.append(self.scoring_function(labels[val_i],
-                                     self._out(model,features[val_i],ic)))
-                    else:
-                        # training fitness
-                        self.fit_t.append(self.scoring_function(labels[train_i],
-                                    self._out(model,features[train_i])))
-                        # validation fitness
-                        self.fit_v.append(self.scoring_function(labels[val_i],
-                                    self._out(model,features[val_i])))
+            # unpack results into model, train and test fitness
+            self.hof = [r[0] for r in result]
+            self.fit_t = [r[1] for r in result]
+            self.fit_v = [r[2] for r in result]
             # best estimator has best validation score
-            if self.scoring_function is r2_score or self.scoring_function is accuracy_score:
+            if (self.scoring_function is r2_score or
+                                    self.scoring_function is accuracy_score):
                 self.best_estimator_ = self.hof[np.argmax(self.fit_v)]
             else:
                 self.best_estimator_ = self.hof[np.argmin(self.fit_v)]
-        elif self.return_pop:
-            self.hof = result[:]
-            self.best_estimator_ = result[0]
         else:
+            # one model is returned
             self.best_estimator_ = result
 
-        # if M4GP is used, call Distance Classifier
+        # if M4GP is used, call Distance Classifier and fit it to the best
         if self.class_m4gp:
             if self.verbosity > 0: print("Storing DistanceClassifier...")
             self.DC = DistanceClassifier()
             self.DC.fit(self._out(self.best_estimator_,features),labels)
 
         ####
-        # print
+        # print final models
         if self.verbosity>0:
              print("final model(s):")
              if self.prto_arch_on or self.return_pop:
-                 for m in result[::-1]:
+                 for m in self.hof[::-1]:
                      if m is self.best_estimator_:
                          print('[best]',self.stack_2_eqn(m),sep='\t')
                      else:
                          print('',self.stack_2_eqn(m),sep='\t')
              else:
-                 print(self.stack_2_eqn(result))
+                 print(self.stack_2_eqn(self.hof))
 
 
     def predict(self, testing_features,ic=None):

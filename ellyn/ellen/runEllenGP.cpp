@@ -449,7 +449,7 @@ void pop_to_py(vector<ind>& archive,bp::list& arch_list){
 		// cout << i.eqn << "\n";
 		bp::list prog;
 		line_to_py(i.line,prog);
-		arch_list.append(prog);
+		arch_list.append(bp::make_tuple(prog,i.fitness,i.fitness_v));
 	}
 	// cout << "size of arch_list: " << bp::len(arch_list) << "\n";
 	// cout <<"beepbopboop";
