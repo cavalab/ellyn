@@ -81,7 +81,7 @@ class ellyn(BaseEstimator):
                  ops=None, ops_w=None, eHC_mut=None, min_len=None, return_pop=False,
                  savename=None,lexage=None):
                 # sets up GP.
-
+        self.classification = classification
         if scoring_function is None:
             if fit_type:
                 self.scoring_function = {'MAE':mean_absolute_error,
@@ -186,12 +186,8 @@ class ellyn(BaseEstimator):
             self.hof = [r[0] for r in result]
             self.fit_t = [r[1] for r in result]
             self.fit_v = [r[2] for r in result]
-            # best estimator has best validation score
-            if (self.scoring_function is r2_score or
-                                    self.scoring_function is accuracy_score):
-                self.best_estimator_ = self.hof[np.argmax(self.fit_v)]
-            else:
-                self.best_estimator_ = self.hof[np.argmin(self.fit_v)]
+            # best estimator has lowest internal validation score
+            self.best_estimator_ = self.hof[np.argmin(self.fit_v)]
         else:
             # one model is returned
             self.best_estimator_ = result
@@ -450,8 +446,10 @@ class ellyn(BaseEstimator):
                     plt.plot(f2,i,'ko',markersize=4)
             plt.ylabel('Complexity')
             plt.gca().set_yticklabels('')
-            plt.xlabel('Accuracy')
-            plt.xlim((min(f_v))*.8,max(f_v)*1.1)
+            plt.xlabel('Score')
+            xmin = min([min(f_t),min(f_v)])
+            xmax = max([max(f_t),max(f_v)])
+            plt.xlim(xmin*.8,xmax*1.2)
             plt.ylim(-1,len(m_v)+1)
 
             return plt.gcf()
