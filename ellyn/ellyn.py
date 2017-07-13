@@ -142,7 +142,8 @@ class ellyn(BaseEstimator):
                 del params[k]
 
         if self.prto_arch_on:
-            # split data into training and internal validation for choosing final model
+            # split data into training and internal validation for choosing
+            # final model
             if self.AR:
                 # don't shuffle the rows of ordered data
                 train_i = np.arange(round(features.shape[0]*.75))

@@ -102,6 +102,9 @@ struct Data {
 			else
 				p.class_w[i] /= target.size();
 		}
+        cout << "class weights:\n";
+        for (auto i : p.class_w)
+            cout << i << ",";
     }
 
 	void set_dependencies(params& p){

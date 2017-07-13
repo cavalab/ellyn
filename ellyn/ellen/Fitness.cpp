@@ -1145,6 +1145,7 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 			me.fitness = 1 - me.fitness;
 		}
 		else if (p.fit_type.compare("3") == 0 || p.fit_type.compare("F1")==0) {
+
 			float precision, recall;
 			me.fitness = 0;
 			for (unsigned int i = 0; i < p.number_of_classes; ++i) {
@@ -1159,9 +1160,26 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 					recall = TP[i] / (TP[i] + FN[i]);
 
 				if (recall + precision != 0)
-					me.fitness += 2 * (precision*recall) / (precision + recall);
+					me.fitness += 2 * (precision*recall) / (precision + recall) / p.number_of_classes;
 			}
+
 			me.fitness = 1 - me.fitness;
+			if (me.fitness<0.01){
+				cout << "precision: " << precision << "\n";
+				cout << "recall: " << recall << "\n";
+				cout << "fitness: " << me.fitness << "\n";
+				cout << "TP: ";
+				for (auto i : TP)
+					cout << i << ",";
+				cout << "FP: ";
+				for (auto i : FP)
+					cout << i << ",";
+				cout << "FN: ";
+				for (auto i : TP)
+					cout << i << ",";
+				cout << "\n";
+
+			}
 		}
 		/*if (p.norm_error)
 			me.fitness = me.fitness/target_std;*/
