@@ -1249,9 +1249,25 @@ void Calc_M3GP_Output(ind& me,params& p,vector<vector<float>>& vals,vector<float
 						recall = TP_v[i] / (TP_v[i] + FN_v[i]);
 
 					if (recall + precision != 0)
-						me.fitness_v += 2 * (precision*recall) / (precision + recall);
+						me.fitness_v += 2 * (precision*recall) / (precision + recall) / p.number_of_classes;
 				}
 				me.fitness_v = 1 - me.fitness_v;
+				//debug
+				if (me.fitness_v<0.01){
+					cout << "precision: " << precision << "\n";
+					cout << "recall: " << recall << "\n";
+					cout << "fitness_v: " << me.fitness_v << "\n";
+					cout << "TP: ";
+					for (auto i : TP)
+						cout << i << ",";
+					cout << "FP: ";
+					for (auto i : FP)
+						cout << i << ",";
+						cout << "FN: ";
+					for (auto i : TP)
+						cout << i << ",";
+					cout << "\n";
+				}
 			}
 		}
 
