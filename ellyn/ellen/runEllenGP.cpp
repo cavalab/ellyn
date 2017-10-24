@@ -780,7 +780,8 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 				{
 					/*bool tmp = p.EstimateFitness;
 					p.EstimateFitness=0;*/
-					#pragma omp parallel for
+					if (p.verbosity>1) s.out << "InitPop...\n";
+                    #pragma omp parallel for
 					for(int i=0;i<num_islands;++i)
 						InitPop(T.at(i).pop,p,r);
 

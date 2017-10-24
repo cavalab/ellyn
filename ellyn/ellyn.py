@@ -465,19 +465,19 @@ class ellyn(BaseEstimator):
 
         if not self.hof:
             raise(ValueError,"no archive to print")
-        else:
+            return 0
+           
+        f_t = np.array(self.fit_t)[::-1]
+        f_v = np.array(self.fit_v)[::-1]
+        m_v = self.hof[::-1]
 
-            f_t = np.array(self.fit_t)[::-1]
-            f_v = np.array(self.fit_v)[::-1]
-            m_v = self.hof[::-1]
+        for i,(m,f1,f2) in enumerate(zip(m_v,f_t,f_v)):
+            out += '\t'.join([str(self.stack_2_eqn(m)),
+                             str(i),
+                             str(f1),
+                             str(f2)])+'\n'
 
-            for i,(m,f1,f2) in enumerate(zip(m_v,f_t,f_v)):
-                out += '\t'.join([str(self.stack_2_eqn(m)),
-                                 str(i),
-                                 str(f1),
-                                 str(f2)])+'\n'
-
-            return out
+        return out
 
 # equation conversion
 eqn_dict = {

@@ -511,9 +511,14 @@ void StandardFitness(ind& me,params& p,Data& d,state& s,FitnessEstimator& FE,uno
 			vector<vector<float>> FEvals;
 			vector<float> FEtarget;
 			setFEvals(FEvals,FEtarget,FE,d);
-			if(p.classification && p.class_m4gp)  Calc_M3GP_Output(me,p,FEvals,dattovar,FEtarget,s);
-			else if(p.classification) CalcClassOutput(me,p,FEvals,dattovar,FEtarget,s);
-			else CalcOutput(me,p,FEvals,dattovar,FEtarget,s);
+			if(p.classification && p.class_m4gp)  
+                Calc_M3GP_Output(me,p,FEvals,dattovar,FEtarget,s);
+			else if(p.classification) 
+                CalcClassOutput(me,p,FEvals,dattovar,FEtarget,s);
+			else {
+                pass = CalcOutput(me,p,FEvals,dattovar,FEtarget,s);
+                CalcFitness(me,p,FEvals,dattovar,FEtarget,s, pass);
+            }
 		} // if estimate fitness
 		if (p.estimate_generality || p.PS_sel==2){
 				if (me.fitness == p.max_fit || me.fitness_v== p.max_fit || boost::math::isnan(me.fitness_v) || boost::math::isinf(me.fitness_v))
