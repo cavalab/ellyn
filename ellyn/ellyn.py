@@ -79,7 +79,7 @@ class ellyn(BaseEstimator):
                  print_genome=None, pHC_its=None, shuffle_data=None, class_prune=None,
                  eHC_init=None, init_validate_on=None, minERC=None,
                  ops=None, ops_w=None, eHC_mut=None, min_len=None, return_pop=False,
-                 savename=None,lexage=None):
+                 savename=None,lexage=None,SGD=None,learning_rate=None):
                 # sets up GP.
         self.classification = classification
         if scoring_function is None:
@@ -199,7 +199,7 @@ class ellyn(BaseEstimator):
             self.DC = DistanceClassifier()
             self.DC.fit(self._out(self.best_estimator_,features),labels)
 
-        ####
+        ####     
         # print final models
         if self.verbosity>0:
              print("final model(s):")
@@ -210,7 +210,7 @@ class ellyn(BaseEstimator):
                      else:
                          print('',self.stack_2_eqn(m),sep='\t')
              else:
-                 print(self.stack_2_eqn(self.hof))
+                 print('best model:',self.stack_2_eqn(self.best_estimator_))
 
 
     def predict(self, testing_features,ic=None):
@@ -796,6 +796,12 @@ def main():
 
     parser.add_argument('--lex_age', action='store_true', dest='lexage', default=None,
                 help='Flag to use age-fitness Pareto survival after lexicase selection.')
+# SGD
+    parser.add_argument('--SGD', action='store_true', dest='SGD', default=None,
+                help='Use stochastic gradient descent to update program constant values.')
+
+    parser.add_argument('-lr', action='store', dest='learning_rate', default=None,
+                        type=float_range, help='Learning rate for stochastic gradient descent.')
 
     parser.add_argument('-s', action='store', dest='random_state', default=np.random.randint(4294967295),
                         type=int, help='Random number generator seed for reproducibility. Note that using multi-threading may '
