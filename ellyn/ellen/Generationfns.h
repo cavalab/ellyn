@@ -10,6 +10,8 @@ void CrossoverP(ind&,ind&,ind&,ind&,params&,vector<Randclass>& r);
 void Mutate(ind&,vector<ind>&,params&,vector<Randclass>& r,Data& d);
 void MutateP(ind&,ind& tmpind,params&,vector<Randclass>& r);
 void HillClimb(ind&,params&,vector<Randclass>& r,Data& d,state& s,FitnessEstimator& FE);
+void StochasticGradient(ind& oldind,params& p,vector<Randclass>& r,Data& d,state& s,
+        FitnessEstimator& FE, int gen);
 void EpiHC(ind&,params&,vector<Randclass>& r,Data& d,state& s,FitnessEstimator& FE);
 void AgeBreed(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state&,FitnessEstimator& FE);
 void AgeFitSurvival(vector<ind>& pop,params& p,vector<Randclass>& r);

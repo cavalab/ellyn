@@ -152,7 +152,11 @@ struct params {
 	float eHC_init;
 	bool eHC_mut; // epigenetic mutation rather than hill climbing
 	bool eHC_slim; // use SlimFitness
-	// Pareto settings
+        // stochastic gradient descent
+    bool SGD;
+    float learning_rate;
+     
+    // Pareto settings
 
 	bool prto_arch_on;
 	int prto_arch_size;
@@ -344,6 +348,9 @@ struct params {
 		eHC_mut = 0; // epigenetic mutation rather than hill climbing
 		eHC_slim = 0; // use SlimFitness
 
+            // stochastic gradient descent
+        SGD = false;
+        learning_rate = 1.0;
 		// Pareto settings
 
 		prto_arch_on = 0;
@@ -697,6 +704,10 @@ struct params {
 			return_pop = extract<bool>(d["return_pop"]);
 		if (d.has_key("lexage"))
 			lexage = extract<bool>(d["lexage"]);
+        if (d.has_key("SGD"))
+            SGD = extract<bool>(d["SGD"]);
+        if (d.has_key("learning_rate"))
+            learning_rate = extract<float>(d["learning_rate"]);
 		// finished reading from dict.
 
 		allvars = intvars;

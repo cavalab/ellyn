@@ -880,7 +880,12 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 								for(int m=0; m<T[q].pop.size(); m++)
 									EpiHC(T[q].pop.at(m),p,r,d,s,FE[0]);
 						}
+                        if (p.SGD && p.ERC)
+                        {
+                            for(int k=0; k<T[q].pop.size(); ++k)
+									StochasticGradient(T[q].pop.at(k),p,r,d,s,FE[0],gen);
 
+                        }
 						if (stopcondition(T[q],p,d,s,FE[0])){
 							pass=0;
 							// cout << "thread " + std::to_string(static_cast<long long>(q)) + " solution\n";
@@ -1243,7 +1248,12 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 							EpiHC(T.pop.at(m),p,r,d,s,FE[0]);
 						 //s.out << "EHC evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
 					 }
+                     if (p.SGD && p.ERC)
+                    {
+                        for(int k=0; k<T.pop.size(); ++k)
+                                StochasticGradient(T.pop.at(k),p,r,d,s,FE[0],gen);
 
+                    }
 					s.setgenevals();
 					//s.out << "Elapsed time: \n";
 					if (p.prto_arch_on){
