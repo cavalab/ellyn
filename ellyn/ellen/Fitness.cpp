@@ -341,8 +341,7 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 			break;
 		case '3':
 			n1 = stack_float.back(); stack_float.pop_back();
-			n2 = stack_float.back(); stack_float.pop_back();
-			// cube  n1
+		    // cube  n1
 			stack_float.push_back(pow(n1,3));
 			break;
 		case '^':
