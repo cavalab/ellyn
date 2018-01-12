@@ -59,7 +59,7 @@ learner = ellyn()
 or specify the generations, population size and selection algorithm as:
 
 ```python
-learner = ellyn(generations = 100, popsize = 25, selection = 'lexicase')
+learner = ellyn(g = 100, popsize = 25, selection = 'lexicase')
 ```
 
 Given a set of data with variables X and target Y, fit ellyn using the ```fit()``` method:
