@@ -114,6 +114,9 @@ class ellyn(BaseEstimator):
         elif not classification:
             self.class_m4gp = False
 
+        # set seeds
+        self.seeds = seeds.split(',')
+
         # set op_list
         if ops:
             self.op_list = ops.split(',')
@@ -314,7 +317,6 @@ class ellyn(BaseEstimator):
         stack_bool = []
         # print("stack:",I.stack)
         # evaulate stack over rows of features,labels
-        # pdb.set_trace()
         if self.AR:
 
             delay = self.AR_nb+self.AR_nkb+1
@@ -333,7 +335,6 @@ class ellyn(BaseEstimator):
 
                 # use initial condition if one exists
                 if ic is not None:
-                    # pdb.set_trace()
                     tmpy = np.hstack((ic['labels'],y[:i]))
                 else:
                     tmpy = y[:i]
