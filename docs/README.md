@@ -17,7 +17,7 @@ tar -xzf boost_1_62_0.tar.gz # install boost
 # navigate to the installation folder
 cd boost_1_62_0 
 # bootstrap boost python builder
-./boostrap.sh --with-libraries=python --with-python-root=/home/$USER/anaconda3 
+./bootstrap.sh --with-libraries=python --with-python-root=/home/$USER/anaconda3 
 # add symbolic link to python3.5 include file
 ln -s /home/$USER/anaconda/include/python3.5m /home/$USER/anaconda/include/python3.5
 # build boost python
