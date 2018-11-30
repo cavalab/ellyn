@@ -115,7 +115,8 @@ class ellyn(BaseEstimator):
             self.class_m4gp = False
 
         # set seeds
-        self.seeds = seeds.split(',')
+        if seeds:
+            self.seeds = seeds.split(',')
 
         # set op_list
         if ops:
@@ -158,13 +159,13 @@ class ellyn(BaseEstimator):
                     stratify = labels
                     train_i, val_i = train_test_split(np.arange(features.shape[0]),
                                                 stratify=stratify,
-                                                train_size=0.75,
-                                                test_size=0.25,
+                                                train_size=0.9,
+                                                test_size=0.1,
                                                 random_state=self.random_state)
                     features = features[list(train_i)+list(val_i)]
                     labels = labels[list(train_i)+list(val_i)]
                 params['train'] = True
-                params['train_pct'] = 0.75
+                params['train_pct'] = 0.9
 
         result = []
         if self.verbosity>1:

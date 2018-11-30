@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS= -c -fPIC -I /usr/include/eigen3 -I /usr/include/python3.5m -std=c++0x -fopenmp -Ofast
+CFLAGS= -c -fPIC -I /usr/include/eigen3 -I /usr/include/python3.5/ -I /usr/local/lib/python3.5/dist-packages/numpy/core/include/ -std=c++0x -fopenmp -Ofast
 LDFLAGS= -std=c++0x -fopenmp -Ofast -shared -lpython3.5m -L/usr/include/boost_1_61_0/stage/lib/
 #-L/usr/lib/x86_64-linux-gnu/
 # LDFLAGS2= /usr/include/boost_1_61_0/stage/lib/libboost_python3.a
