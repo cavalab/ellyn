@@ -496,7 +496,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 		d.set_train(feat_ptr,dims[0],dims[1]);
 
 		float* target_ptr;
-	  dims.resize(0);
+        dims.resize(0);
 
 		reference_contiguous_array(target, target_ptr, dims);
 		d.set_target(target_ptr,dims[0]);
