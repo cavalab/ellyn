@@ -330,7 +330,6 @@ void PickTrainers(vector<ind> pop, vector <FitnessEstimator>& FE,vector <ind>& t
 			FEfits[i][h] = FEfits[i][h]/maxfit*pop.size();
 		}*/
 	}
-	float tmp;
 	// calculate variance in fitness estimates
 	for (int j=0;j<pop.size();++j){
 		for (int i=0;i<FE.size();++i)
@@ -339,7 +338,6 @@ void PickTrainers(vector<ind> pop, vector <FitnessEstimator>& FE,vector <ind>& t
 		meanfits[j]=meanfits[j]/FE.size(); // mean fitness over predictors
 		
 		for (int h=0;h<FE.size();++h){
-			tmp = FEfits[h][j]-meanfits[j];
 			varfits[j]+=pow(FEfits[h][j]-meanfits[j],2);
 		}
 		
@@ -359,7 +357,6 @@ void PickTrainers(vector<ind> pop, vector <FitnessEstimator>& FE,vector <ind>& t
 			meangenty[j]=meangenty[j]/FE.size(); // mean generality over predictors
 
 			for (int h=0;h<FE.size();++h){
-				tmp = FEgenty[h][j]-meangenty[j];
 				vargenty[j]+=pow(FEgenty[h][j]-meangenty[j],2);
 			}
 			

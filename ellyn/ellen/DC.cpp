@@ -58,14 +58,10 @@ void DC(vector<ind>& pop,params& p,vector<Randclass>& r,Data& d,state& s,Fitness
 	string kid1eqn = tmppop[0].eqn;
 	float kid1fit = tmppop[0].fitness;
 	string par2eqn;
-	float par2fit;
 	string kid2eqn; 
-	float kid2fit; 
 	if (tmppop.size()==2){
 			par2eqn = pop.at(p2).eqn;
-			par2fit = pop.at(p2).fitness;
 			kid2eqn = tmppop[1].eqn;
-			kid2fit = tmppop[1].fitness;
 	}
 
 

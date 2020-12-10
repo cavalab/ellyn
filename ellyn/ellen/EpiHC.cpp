@@ -19,7 +19,6 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,Data& d,state& s,FitnessEs
 		//tmp_ind[0] = oldind;
 		//makenew(tmp_ind[0]);
 		//tmp_ind[0].clrPhen();
-		bool updated = false;
 		int min_change;
 		bool pass = true;
 		int outstart = 0;
@@ -28,13 +27,6 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,Data& d,state& s,FitnessEs
 		for (int j=0;j<p.eHC_its; ++j) // for number of specified iterations
 		{
 		
-			/* if (updated)
-			{
-				//tmp_ind.clear();
-				tmp_ind.push_back(oldind); 
-				//makenew(tmp_ind[0]);
-				tmp_ind[0].clrPhen(); // clear phenotype
-			} */
 			// THIS NEEDS TO BE TESTED
 			tmp_ind.resize(0);
 			tmp_ind.push_back(oldind);
@@ -113,20 +105,16 @@ void EpiHC(ind& oldind,params& p,vector<Randclass>& r,Data& d,state& s,FitnessEs
 				if ( tmp_ind[0].fitness < oldind.fitness) // if fitness is better, replace individual
 				{
 					oldind = tmp_ind[0];
-					updated = true;
 					//tmp_ind.resize(0);
 					++s.eHC_updates[omp_get_thread_num()];
 				}
 				else if (tmp_ind[0].fitness == oldind.fitness && tmp_ind[0].complexity < oldind.complexity) // if fitness is same but equation is smaller, replace individual
 				{
 					oldind = tmp_ind[0];
-					updated = true;
 					//tmp_ind.resize(0);
 					++s.eHC_updates[omp_get_thread_num()];
 					++s.eHC_ties[omp_get_thread_num()];
 				}
-				else
-					updated = false;
 			}
 			else 
 				pass = 1;

@@ -212,7 +212,7 @@ void Eqn2Line(string& expr,vector<node>& eqnstack)
 	for(unsigned int i =0; i<expr.size(); ++i) {
 		if(tstart.empty()) 
 		{
-			if(op=getop(expr.substr(i,expr.size()-i),i)) 
+			if(op == getop(expr.substr(i,expr.size()-i),i)) 
 			{
 				if(lastop && (lastop==&startop || lastop->op.compare(")")!=0)) 
 				{

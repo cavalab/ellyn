@@ -11,7 +11,7 @@ SOURCES= stdafx.cpp AgeBreed.cpp AgeFitSurvival.cpp AgeFitGenSurvival.cpp ApplyG
 #OBJECTS=$(SOURCES:.cpp=.o)
 OBJECTS = $(patsubst %.cpp, $(BIN)/%.o, $(SOURCES))
 BIN=./lib
-EXECUTABLE=lib/elgp.so
+EXECUTABLE=../elgp.so
 
 
 all: lib_dir program

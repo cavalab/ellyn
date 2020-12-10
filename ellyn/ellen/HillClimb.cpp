@@ -19,7 +19,6 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,Data& d,state& s,Fitne
 			//makenew(tmp_ind[0]);
 			//tmp_ind[0].clrPhen(); // clear phenotype
 
-			bool updated=false;
 			int HCits; 
 			//if (oldind.corr >= 0.999)
 			//	HCits = 10;
@@ -28,12 +27,6 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,Data& d,state& s,Fitne
 
 			for (int j=0;j<HCits; ++j) // for number of specified iterations
 			{
-				//if (updated)
-				//{
-				//    tmp_ind[0] = oldind;  
-				//	//makenew(tmp_ind[0]);
-				//	tmp_ind[0].clrPhen(); // clear phenotype
-				//}
 				tmp_ind.resize(0);
 				tmp_ind.push_back(oldind);
 				tmp_ind[0].clrPhen();
@@ -57,18 +50,8 @@ void HillClimb(ind& oldind,params& p,vector<Randclass>& r,Data& d,state& s,Fitne
 					oldind = tmp_ind[0];
 					//swap(oldind,tmp_ind[0]);
 				    //tmp_ind.clear();
-					updated = true;
 					s.pHC_updates[omp_get_thread_num()]++;
 				}
-				//else if (tmp_ind[0].fitness == oldind.fitness && tmp_ind[0].eqn.size() < oldind.eqn.size()) // if fitness is same but equation is smaller, replace individual
-				//{
-				//	oldind = tmp_ind[0];
-				//	//tmp_ind.clear();
-				//	updated = true;
-				//	s.pHC_updates[omp_get_thread_num()]++;
-				//}
-				else
-					updated = false;
 			}
 
 			tmp_ind.clear();
