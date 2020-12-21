@@ -18,7 +18,6 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 
 	int r2,off1,off2,offset,head;
 	//std::vector<int>::iterator it;
-	int tmpinssize = 0;
 	vector<int> psize;
 	psize.push_back(p1.line.size());
 	psize.push_back(p2.line.size());
@@ -268,17 +267,10 @@ void Crossover(ind& p1,ind& p2,vector<ind>& tmppop,params& p,vector<Randclass>& 
 
 
 	}
-	//tmpinssize=0;
-	//for(unsigned int t=0; t<kids[0].line.size();t++)
-	//	if(kids[0].line.at(t)>99) tmpinssize++;
-	//if(tmpinssize!=kids[0].args.size())
-	//	cout << "size mismatch" << endl;
 	assert(~kids[0].line.empty() && ~kids[1].line.empty());
 
 	/*assert(kids[0].line.size() >= p.min_len);
 	assert(kids[1].line.size() >= p.min_len);*/
-
-	tmpinssize=0;
 
 	kids[0].origin = 'c';
 	kids[0].parentfitness = parents[0].fitness;

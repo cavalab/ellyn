@@ -18,8 +18,7 @@ import warnings
 import copy
 import itertools as it
 import pdb
-import ellen.lib.elgp as elgp
-from update_checker import update_check
+import ellyn.elgp as elgp
 from DistanceClassifier import DistanceClassifier
 from functools import wraps
 import inspect
@@ -50,7 +49,6 @@ class ellyn(BaseEstimator):
     All algorithm choices are accessible from the command line.
 
     """
-    update_checked = False
     @initializer
     def __init__(self, g=100, popsize=500, limit_evals=False, max_evals=0,
                  selection='tournament', classification=False, islands=True,

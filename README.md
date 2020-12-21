@@ -11,6 +11,23 @@ ellyn is also very fast due to its c++ underpinning. As a consequence, there are
 
 Head over to the [docs](https://epistasislab.github.io/ellyn/) page for more info. 
 
+Install
+=======
+
+Using conda and the included environment file is easiest.
+
+```bash
+
+git clone http://github.com/EpistasisLab/ellyn
+
+cd ellyn
+
+conda env create environment.yml
+
+python setup.py install
+```
+
+
 FYI
 ===
 ellyn

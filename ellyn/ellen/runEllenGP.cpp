@@ -740,12 +740,10 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 					#pragma omp parallel for
 					for(int i=0;i<num_islands;++i){
 						float worstfit;
-						float bestfit;
 						vector<ind> tmppop;
 
 						Fitness(T.at(i).pop,p,d,s,FE[0]);
 						worstfit = T.at(i).worstFit();
-						bestfit = T.at(i).bestFit();
 
 
 						int counter=0;
@@ -1112,7 +1110,6 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 
 					float worstfit;
 					int cnt=0;
-					//float bestfit;
 					vector<ind> tmppop;
 					// s.out << "Initialize Population..." << "\n";
 					InitPop(T.pop,p,r);
@@ -1197,7 +1194,6 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 			}
 
 
-			float etmp;
 			//print initial population
 			if (p.print_init_pop) printpop(T.pop,p,s,logname,3);
 			if (p.print_genome) printGenome(T,0,logname,d,p);
@@ -1206,7 +1202,6 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 			while (termits<=term && !stopcondition(T,p,d,s,FE[0]))
 			{
 
-				 etmp = s.numevals[omp_get_thread_num()];
 
 				 if (!p.EstimateFitness && p.estimate_generality && p.G_shuffle)
 					shuffle_data(d,p,r,s);
@@ -1223,30 +1218,25 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 					std::cerr << "not a standard error\n";
 				}
 				 assert (T.pop.size()== p.popsize);
-				 //s.out << "Generation evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
 
 
 				 if (its>trigger)
 				 {
 					 if (p.pHC_on && p.ERC)
 					 {
-						 etmp = s.numevals[omp_get_thread_num()];
 						//#pragma omp parallel for
 			 			for(int k=0; k<T.pop.size(); ++k)
 			 				HillClimb(T.pop.at(k),p,r,d,s,FE[0]);
-			 			 //s.out << "Hill climb evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
 
 
 			 		 }
 
 					 if (p.eHC_on&& !p.eHC_mut)
 					 {
-						 etmp = s.numevals[omp_get_thread_num()];
 						// boost::progress_timer tm1;
 						//#pragma omp parallel for
 						for(int m=0; m<T.pop.size(); m++)
 							EpiHC(T.pop.at(m),p,r,d,s,FE[0]);
-						 //s.out << "EHC evals = " + to_string(static_cast<long long>(s.numevals[omp_get_thread_num()]-etmp)) + "\n";
 					 }
                      if (p.SGD && p.ERC)
                     {

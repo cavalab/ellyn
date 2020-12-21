@@ -558,9 +558,6 @@ void StandardFitness(ind& me,params& p,Data& d,state& s,FitnessEstimator& FE,uno
 }
 void CalcFitness(ind& me, params& p, vector<vector<float>>& vals, vector<float>& dattovar, vector<float>& target, state& s, bool pass)
 {
-	float q = 0;
-	float var_target = 0;
-	float var_ind = 0;
 	float meanout = 0;
 	float meantarget = 0;
 	float meanout_v = 0;
@@ -640,9 +637,6 @@ void CalcFitness(ind& me, params& p, vector<vector<float>>& vals, vector<float>&
 
 		if (p.train && !p.test_at_end) // calc validation fitness
 		{
-			q = 0;
-			var_target = 0;
-			var_ind = 0;
 			// mean absolute error
 			me.abserror_v = me.abserror_v / ndata_v;
 			me.sq_error_v /= ndata_v;
@@ -1552,9 +1546,6 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 	float SStot=0;
 	float SSreg=0;
 	float SSres=0;
-	float q = 0;
-	float var_target = 0;
-	float var_ind = 0;
 	bool pass = true;
 	float meanout=0;
 	float meantarget=0;
@@ -1677,10 +1668,7 @@ bool CalcSlimOutput(ind& me,params& p,vector<vector<float>>& vals,vector<float>&
 
 			if (p.train && !p.test_at_end)
 			{
-				q = 0;
-				var_target = 0;
-				var_ind = 0;
-					// mean absolute error
+                // mean absolute error
 				me.abserror_v = me.abserror_v/ndata_v;
 				me.sq_error_v /= ndata_v;
 				meantarget_v = meantarget_v/ndata_v;
