@@ -7,40 +7,18 @@ Installation
 ============
 These instructions are written for an [anaconda3](https://www.continuum.io/downloads) default python installation, but you can easily modify the paths to point to your installation. 
 
-**boost**
-
-The hairiest part of the installation is getting boost installed with boost python. If you don't have boost yet, run 
-
 ```bash
-wget "https://sourceforge.net/projects/boost/files/boost/1.62.0/boost_1_62_0.tar.gz" 
-tar -xzf boost_1_62_0.tar.gz # install boost
-# navigate to the installation folder
-cd boost_1_62_0 
-# bootstrap boost python builder
-./bootstrap.sh --with-libraries=python --with-python-root=/home/$USER/anaconda3 
-# add symbolic link to python3.5 include file
-ln -s /home/$USER/anaconda/include/python3.5m /home/$USER/anaconda/include/python3.5
-# build boost python
-./b2 --with-python
+
+git clone http://github.com/EpistasisLab/ellyn
+
+cd ellyn
+
+conda env create environment.yml
+
+python setup.py install
 ```
 
-**eigen**
-
-[eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) is a sweet matrix library for c++. If you have deb / ubuntu, you can install it via
-
-```bash
-sudo apt-get install libeigen3-dev
-```
-otherwise, install it via their website. on linux systems it should be in `/usr/include/eigen3`, but if it's somewhere else, edit ellen/Makefile to point to it. 
-
-**ellen**
-
-Now you can build the c++ library ellen. Go to this repo in terminal. Then type
-
-```bash
-cd ellyn/ellen
-make
-```
+`environment.yml` lists the package dependencies for ellyn, if you'd like to install them yourself.
 
 Usage
 ===
@@ -105,8 +83,16 @@ ellyn uses a stack-based, syntax-free, linear genome for constructing candidate 
  - stochastic hill climbing
 
 Cite
-===
-ellyn has been used in several publications. Cite the one that best represents your use case, or you can cite my dissertation if you're not sure. 
+====
+
+ellyn has been used in several publications. 
+Cite the one that best represents your use case, or you can cite my dissertation if you're not sure. 
+
+2018
+
+ - Orzechowski, P., La Cava, W., & Moore, J. H. (2018). 
+Where are we now? A large benchmark study of recent symbolic regression methods. 
+GECCO 2018. [DOI](https://doi.org/10.1145/3205455.3205539), [Preprint](https://www.researchgate.net/profile/Patryk_Orzechowski/publication/324769381_Where_are_we_now_A_large_benchmark_study_of_recent_symbolic_regression_methods/links/5ae779b70f7e9b837d392dc9/Where-are-we-now-A-large-benchmark-study-of-recent-symbolic-regression-methods.pdf)
 
 2017 
 
