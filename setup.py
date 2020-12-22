@@ -44,7 +44,7 @@ CONDA_PATH = os.environ['CONDA_PREFIX']
 
 INCLUDE = [CONDA_PATH + '/include/eigen3',
            CONDA_PATH + '/include/', 
-           # '/usr/local/lib/python3.5/dist-packages/numpy/core/include/'
+           CONDA_PATH + '/lib/python3.9/site-packages/numpy/core/include/'
           ]
 LIB = [CONDA_PATH + '/lib','-lpython3']
 COMPILE_ARGS = ['-std=c++0x','-fopenmp', 
