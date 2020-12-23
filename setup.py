@@ -58,7 +58,7 @@ LINK_ARGS = ['-lboost_python39','-lpython3','-fopenmp',
 # LINK_ARGS=[]
 
 #avoid a gcc warning below:
-# cc1plus: warning: command line option ‘-Wstrict-prototypes’ is valid
+# cc1plus: warning: command line option 'Wstrict-prototypes' is valid
 # for C/ObjC but not for C++
 class BuildExt(build_ext):
     def build_extensions(self):
