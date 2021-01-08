@@ -11,14 +11,16 @@ import argparse
 
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, mean_absolute_error, explained_variance_score, accuracy_score
+from sklearn.metrics import (r2_score, mean_squared_error, mean_absolute_error, 
+                             mean_absolute_error, explained_variance_score, 
+                             accuracy_score)
 import numpy as np
 import pandas as pd
 import warnings
 import copy
 import itertools as it
 import pdb
-import ellyn.elgp as elgp
+from ellyn.ellen import elgp 
 from DistanceClassifier import DistanceClassifier
 from functools import wraps
 import inspect
@@ -41,10 +43,11 @@ def initializer(fun):
 class ellyn(BaseEstimator):
     """ellyn uses GP to build its models.
 
-    It uses a stack-based, syntax-free, linear genome for constructing candidate equations.
-    It is built to include different evolutionary methods for system identification
-    adapted from literature. The options include normal tournament selection,
-    deterministic crowding, (epsilon) lexicase selection, and age-pareto fitness selection.
+    It uses a stack-based, syntax-free, linear genome for constructing 
+    candidate equations. It is built to include different evolutionary methods 
+    for system identification adapted from literature. The options include 
+    normal tournament selection, deterministic crowding, (epsilon) lexicase 
+    selection, and age-pareto fitness selection.
 
     All algorithm choices are accessible from the command line.
 
@@ -66,17 +69,21 @@ class ellyn(BaseEstimator):
                  cvals=None, stop_condition=None, stop_threshold=None,
                  FE_rank=None, eHC_its=None, lex_eps_error_mad=True,
                  ERC=None, erc_ints=None, AR_na=None, rt_mut=None,
-                 pop_restart=None, seeds=None, tourn_size=None, prto_arch_on=None,
+                 pop_restart=None, seeds=None, tourn_size=None, 
+                 prto_arch_on=None,
                  FE_ind_size=None, lex_eps_target_mad=None, maxERC=None,
                  resultspath=None, AR=None, rt_rep=None, estimate_fitness=None,
                  pHC_on=None, INPUT_FILE=None, FE_train_size=None,
-                 DISABLE_UPDATE_CHECK=False, AR_lookahead=None, pop_restart_path=None,
+                 DISABLE_UPDATE_CHECK=False, AR_lookahead=None, 
+                 pop_restart_path=None,
                  INPUT_SEPARATOR=None, AR_nkb=None, num_log_pts=None,
                  FE_train_gens=None, AR_nb=None, init_trees=None,
                  print_novelty=None, eHC_slim=None, elitism=None,
-                 print_genome=None, pHC_its=None, shuffle_data=None, class_prune=None,
-                 eHC_init=None, init_validate_on=None, minERC=None,
-                 ops=None, ops_w=None, eHC_mut=None, min_len=None, return_pop=False,
+                 print_genome=None, pHC_its=None, shuffle_data=None, 
+                 class_prune=None, eHC_init=None, init_validate_on=None, 
+                 minERC=None,
+                 ops=None, ops_w=None, eHC_mut=None, min_len=None, 
+                 return_pop=False,
                  savename=None,lexage=None,SGD=None,learning_rate=None):
                 # sets up GP.
         self.classification = classification

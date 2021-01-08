@@ -38,7 +38,7 @@ SOURCES = [
            'StochasticGradient.cpp', 
            'strdist.cpp',
            'Tournament.cpp']
-SOURCES = ['ellyn/ellen/'+s for s in SOURCES]
+SOURCES = ['src/ellen/'+s for s in SOURCES]
 
 CONDA_PATH = os.environ['CONDA_PREFIX']
 
@@ -67,21 +67,25 @@ class BuildExt(build_ext):
         super().build_extensions()
 
 setup(name='ellyn',
-      version='0.1',
+      version='0.2',
       description='A Python-wrapped Genetic Programming System',
       author='William La Cava',
       author_email='williamlacava@gmail.com',
       url='https://github.com/EpistasisLab/ellyn',
-      py_modules = ['ellyn.ellyn'],
-      ext_modules = [Extension('ellyn.elgp',
+      packages = ['ellyn','ellyn.ellen'],
+      package_dir = {'ellyn':'src'},
+      # py_modules = ['ellyn'],
+      ext_modules = [Extension('ellyn.ellen.elgp',
                               SOURCES,
                               include_dirs = INCLUDE,
                               library_dirs = LIB,
                               extra_compile_args = COMPILE_ARGS,
-                              extra_link_args = LINK_ARGS 
+                              extra_link_args = LINK_ARGS,
+                              language='c++'
                              )
                     ],
-    cmdclass={'build_ext': BuildExt}
+    cmdclass={'build_ext': BuildExt},
+
 )
 
 
