@@ -24,6 +24,8 @@ cd ellyn
 
 conda env create environment.yml
 
+conda activate ellyn-env
+
 python setup.py install
 ```
 

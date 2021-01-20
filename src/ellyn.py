@@ -28,7 +28,7 @@ import math
 
 def initializer(fun):
     """automatically assigns attributes to ellyn class upon instantiation"""
-    names, varargs, keywords, defaults = inspect.getargspec(fun)
+    names, varargs, keywords, defaults = inspect.getfullargspec(fun)
     @wraps(fun)
     def wrapper(self, *args, **kargs):
        if type(kargs.items()) is list:
