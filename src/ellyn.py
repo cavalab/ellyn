@@ -26,20 +26,6 @@ from functools import wraps
 import inspect
 import math
 
-def initializer(fun):
-    """automatically assigns attributes to ellyn class upon instantiation"""
-    names, varargs, keywords, defaults, _, _, _ = inspect.getfullargspec(fun)
-    @wraps(fun)
-    def wrapper(self, *args, **kargs):
-       if type(kargs.items()) is list:
-           for name, arg in zip(names[1:], args) + kargs.items():
-               setattr(self, name, arg)
-       else:
-           for name, arg in zip(names[1:], args) | kargs.items():
-               setattr(self, name, arg)
-       fun(self, *args, **kargs)
-    return wrapper
-
 class ellyn(BaseEstimator):
     """ellyn uses GP to build its models.
 
@@ -52,103 +38,411 @@ class ellyn(BaseEstimator):
     All algorithm choices are accessible from the command line.
 
     """
-    @initializer
-    def __init__(self, g=100, popsize=500, limit_evals=False, max_evals=0,
-                 selection='tournament', classification=False, islands=True,
-                 num_islands=None,fit_type=None, verbosity=0, random_state=0,
-                 class_m4gp=False,scoring_function=None, print_log=False,
-                 print_archive=False,print_data=False, print_db=False,
-                 class_bool=False, max_len=None, island_gens=50,
-                 print_every_pop=None, FE_pop_size=None, lex_eps_global=None,
-                 rt_cross=None, ERC_ints=None, numERC=None, train_pct=None,
-                 eHC_on=None, PS_sel=None, lex_eps_static=None,
-                 lex_eps_semidynamic=None, lex_eps_dynamic=None,
-                 lex_eps_dynamic_rand=None,lex_eps_dynamic_madcap=None,
-                 lex_pool=None, AR_nka=None, lex_meta=None, train=None,
-                 print_homology=None, max_len_init=None, prto_arch_size=None,
-                 cvals=None, stop_condition=None, stop_threshold=None,
-                 FE_rank=None, eHC_its=None, lex_eps_error_mad=True,
-                 ERC=None, erc_ints=None, AR_na=None, rt_mut=None,
-                 pop_restart=None, seeds=None, tourn_size=None, 
-                 prto_arch_on=None,
-                 FE_ind_size=None, lex_eps_target_mad=None, maxERC=None,
-                 resultspath=None, AR=None, rt_rep=None, estimate_fitness=None,
-                 pHC_on=None, INPUT_FILE=None, FE_train_size=None,
-                 DISABLE_UPDATE_CHECK=False, AR_lookahead=None, 
-                 pop_restart_path=None,
-                 INPUT_SEPARATOR=None, AR_nkb=None, num_log_pts=None,
-                 FE_train_gens=None, AR_nb=None, init_trees=None,
-                 print_novelty=None, eHC_slim=None, elitism=None,
-                 print_genome=None, pHC_its=None, shuffle_data=None, 
-                 class_prune=None, eHC_init=None, init_validate_on=None, 
-                 minERC=None,
-                 ops=None, ops_w=None, eHC_mut=None, min_len=None, 
-                 return_pop=False,
-                 savename=None,lexage=None,SGD=None,learning_rate=None):
-                # sets up GP.
-        self.classification = classification
-        if scoring_function is None:
-            if fit_type:
-                self.scoring_function = {'MAE':mean_absolute_error,
+    # @initializer
+    def __init__(self,
+		 # ============== Generation Settings
+		 g=100, # number of generations (limited by default)
+		 popsize=500, #population size
+		 limit_evals=False, # limit evals instead of generations
+		 max_evals=0, # maximum number of evals before termination (only active if limit_evals is true)
+		 init_trees= True,
+                 selection='tournament',
+		 tourn_size=2,
+		 rt_rep=0, #probability of reproduction
+		 rt_cross=0.6,
+		 rt_mut=0.4,
+		 cross_ar=0.025, #crossover alternation rate
+		 mut_ar=0.025,
+		 cross=3, # 1: ultra, 2: one point, 3: subtree
+		 mutate=1, # 1: one point, 2: subtree
+		 align_dev = False,
+		 elitism = False,
+
+		 # ===============   Data settings
+		 init_validate_on=False, # initial fitness validation of individuals
+		 train=False, # choice to turn on training for splitting up the data set
+		 train_pct=0.5, # default split of data is 50/50
+		 shuffle_data=False, # shuffle the data
+		 test_at_end = False, # only run the test fitness on the population at the end of a run
+		 pop_restart = False, # restart from previous population
+		 pop_restart_path="", # restart population file path
+		 AR = False,
+		 AR_nb = 1,
+		 AR_nkb = 0,
+		 AR_na = 1,
+		 AR_nka = 1,
+		 AR_lookahead = False,
+		 # ================ Results and printing
+		 resultspath= './',
+		 #savename
+		 savename="",
+		 #print every population
+		 print_every_pop=False,
+		 #print initial population
+		 print_init_pop = False,
+		 #print last population
+		 print_last_pop = False,
+		 # print homology
+		 print_homology = False,
+		 #print log
+		 print_log = False,
+		 #print data
+		 print_data = False,
+		 #print best individual at end
+		 print_best_ind = False,
+		 #print archive
+		 print_archive = False,
+		 # number of log points to print (with eval limitation)
+		 num_log_pts = 0,
+		 # print csv files of genome each print cycle
+		 print_genome = False,
+		 # print csv files of epigenome each print cycle
+		 print_epigenome = False,
+		 # print number of unique output vectors
+		 print_novelty = False,
+		 # print individuals for graph database analysis
+		 print_db = False,
+		 # verbosity
+		 verbosity = 0,
+
+		 # ============ Fitness settings
+		 fit_type = "MSE", # 1: error, 2: corr, 3: combo
+		 norm_error = False , # normalize fitness by the standard deviation of the target output
+		 weight_error = False, # weight error vector by predefined weights from data file
+		 max_fit = 1.0E20,
+		 min_fit = 0.00000000000000000001,
+
+		 # Fitness estimators
+		 EstimateFitness=False,
+		 FE_pop_size=0,
+		 FE_ind_size=0,
+		 FE_train_size=0,
+		 FE_train_gens=0,
+		 FE_rank=False,
+		 estimate_generality=False,
+		 G_sel=1,
+		 G_shuffle=False,
+
+		 # =========== Program Settings
+                 # list of operators. choices:
+                 # n (constants), v (variables), +, -, *, /  
+                 # sin, cos, exp, log, sqrt, 2, 3, ^, =, !, <, <=, >, >=, 
+                 # if-then, if-then-else, &, | 
+                 op_list=['n','v','+','-','*','/'],
+                 # weights associated with each operator (default: uniform)
+                 op_weight=None,
+		 ERC = True, # ephemeral random constants
+		 ERCints = False ,
+		 maxERC = 1,
+		 minERC = -1,
+		 numERC = 1,
+
+		 min_len = 3,
+		 max_len = 20,
+		 max_len_init = 0,
+                    
+                 # 1: genotype size, 2: symbolic size, 3: effective genotype size
+		 complex_measure=1, 
+
+
+		 # Hill Climbing Settings
+
+		 # generic line hill climber (Bongard)
+		 lineHC_on =  False,
+		 lineHC_its = 0,
+
+		 # parameter Hill Climber
+		 pHC_on =  False,
+		 pHC_its = 1,
+		 pHC_gauss = 0,
+
+		 # epigenetic Hill Climber
+		 eHC_on = False,
+		 eHC_its = 1,
+		 eHC_prob = 0.1,
+		 eHC_init = 0.5,
+		 eHC_mut = False, # epigenetic mutation rather than hill climbing
+		 eHC_slim = False, # use SlimFitness
+
+                 # stochastic gradient descent
+                 SGD = False,
+                 learning_rate = 1.0,
+		 # Pareto settings
+
+		 prto_arch_on = False,
+		 prto_arch_size = 1,
+		 prto_sel_on = False,
+
+		 #island model
+		 islands = True,
+		 num_islands= 0,
+		 island_gens = 100,
+		 nt = 1,
+
+		 # lexicase selection
+		 lexpool = 1, # fraction of pop to use in selection events
+		 lexage = False, # use afp survival after lexicase selection
+		 lex_class = False, # use class-based fitness rather than error
+                 # errors within fixed epsilon of the best error are pass, 
+                 # otherwise fail
+		 lex_eps_error = False, 
+                 # errors within fixed epsilon of the target are pass, otherwise fail
+		 lex_eps_target = False, 		 
+                 # used w/ lex_eps_[error/target], ignored otherwise
+		 lex_epsilon = 0.1, 
+                 # errors in a standard dev of the best are pass, otherwise fail 
+                 lex_eps_std = False, 		 
+                 # errors in med abs dev of the target are pass, otherwise fail
+                 lex_eps_target_mad=False, 		 
+                 # errors in med abs dev of the best are pass, otherwise fail
+                 lex_eps_error_mad=False, 
+                 # pass conditions in lex eps defined relative to whole 
+                 # population (rather than selection pool).
+                 # turns on if no lex_eps_* parameter is True. 
+                 # a.k.a. "static" epsilon-lexicase
+		 lex_eps_global = False,                  
+                 # epsilon is defined for each selection pool instead of globally
+		 lex_eps_dynamic = False,
+                 # epsilon is defined as a random threshold corresponding to 
+                 # an error in the pool minus min error in pool 
+		 lex_eps_dynamic_rand = False,
+                 # with prob of 0.5, epsilon is replaced with 0
+		 lex_eps_dynamic_madcap = False,
+
+		 #pareto survival setting
+		 PS_sel=1,
+
+		 # classification
+		 classification = False,
+		 class_bool = False,
+		 class_m4gp = False,
+		 class_prune = False,
+
+		 stop_condition=True,
+		 stop_threshold = 0.000001,
+		 print_protected_operators = False,
+
+		 # return population to python
+		 return_pop = False,
+                 ################################# wrapper specific params
+                 scoring_function=None,
+                 random_state=None,
+                 lex_meta=None,
+                 seeds=None,    # seeding building blocks (equations)
+                 ):
+         self.g=g 
+         self.popsize=popsize 
+         self.limit_evals=limit_evals 
+         self.max_evals=max_evals 
+         self.init_trees=init_trees
+         # Generation Settings
+         self.selection=selection
+         self.tourn_size=tourn_size
+         self.rt_rep=rt_rep 
+         self.rt_cross=rt_cross
+         self.rt_mut=rt_mut
+         self.cross_ar=cross_ar 
+         self.mut_ar=mut_ar
+         self.cross=cross 
+         self.mutate=mutate 
+         self.align_dev =align_dev 
+         self.elitism =elitism 
+
+         # ===============   Data settings
+         self.init_validate_on=init_validate_on 
+         self.train=train 
+         self.train_pct=train_pct 
+         self.shuffle_data=shuffle_data 
+         self.test_at_end =test_at_end  
+         self.pop_restart =pop_restart  
+         self.pop_restart_path=pop_restart_path 
+         self.AR =AR 
+         self.AR_nb =AR_nb 
+         self.AR_nkb =AR_nkb 
+         self.AR_na =AR_na 
+         self.AR_nka =AR_nka 
+         self.AR_lookahead =AR_lookahead 
+         # ================ Results and printing
+         self.resultspath=resultspath
+         self.savename=savename
+         self.print_every_pop=print_every_pop
+         self.print_init_pop =print_init_pop 
+         self.print_last_pop =print_last_pop 
+         self.print_homology =print_homology 
+         self.print_log =print_log 
+         self.print_data =print_data 
+         self.print_best_ind =print_best_ind 
+         self.print_archive =print_archive 
+         self.num_log_pts =num_log_pts 
+         self.print_genome =print_genome 
+         self.print_epigenome =print_epigenome 
+         self.print_novelty =print_novelty 
+         self.print_db =print_db 
+         self.verbosity =verbosity 
+
+         # ============ Fitness settings
+         self.fit_type =fit_type  
+         self.norm_error =norm_error  
+         self.weight_error =weight_error  
+         self.max_fit =max_fit 
+         self.min_fit =min_fit 
+
+         # Fitness estimators
+         self.EstimateFitness = EstimateFitness
+         self.FE_pop_size=FE_pop_size
+         self.FE_ind_size=FE_ind_size
+         self.FE_train_size=FE_train_size
+         self.FE_train_gens=FE_train_gens
+         self.FE_rank=FE_rank
+         self.estimate_generality=estimate_generality
+         self.G_sel=G_sel
+         self.G_shuffle=G_shuffle
+
+         # =========== Program Settings
+         self.op_list = op_list
+         self.op_weight = op_weight
+         self.ERC =ERC  
+         self.ERCints =ERCints 
+         self.maxERC =maxERC 
+         self.minERC =minERC 
+         self.numERC =numERC 
+
+         self.min_len =min_len 
+         self.max_len =max_len 
+         self.max_len_init =max_len_init 
+
+         self.complex_measure=complex_measure 
+
+
+         # Hill Climbing Settings
+
+         # generic line hill climber (Bongard)
+         self.lineHC_on =lineHC_on 
+         self.lineHC_its =lineHC_its 
+
+         # parameter Hill Climber
+         self.pHC_on =pHC_on 
+         self.pHC_its =pHC_its 
+         self.pHC_gauss =pHC_gauss 
+
+         # epigenetic Hill Climber
+         self.eHC_on =eHC_on 
+         self.eHC_its =eHC_its 
+         self.eHC_prob =eHC_prob 
+         self.eHC_init =eHC_init 
+         self.eHC_mut =eHC_mut  # epigenetic mutation rather than hill climbing
+         self.eHC_slim =eHC_slim  # use SlimFitness
+
+         # stochastic gradient descent
+         self.SGD =SGD 
+         self.learning_rate =learning_rate 
+
+         # Pareto settings
+         self.prto_arch_on =prto_arch_on 
+         self.prto_arch_size =prto_arch_size 
+         self.prto_sel_on =prto_sel_on 
+         self.PS_sel=PS_sel
+
+         #island model
+         self.islands =islands 
+         self.num_islands=num_islands
+         self.island_gens =island_gens 
+         self.nt =nt 
+
+         # lexicase selection
+         self.lexpool =lexpool 
+         self.lexage =lexage 
+         self.lex_class =lex_class 
+         self.lex_eps_error =lex_eps_error  
+         self.lex_eps_target =lex_eps_target  
+         self.lex_eps_std =lex_eps_std  
+         self.lex_eps_target_mad=lex_eps_target_mad 
+         self.lex_eps_error_mad=lex_eps_error_mad 
+         self.lex_epsilon =lex_epsilon 
+         self.lex_eps_global =lex_eps_global  
+         self.lex_eps_dynamic =lex_eps_dynamic 
+         self.lex_eps_dynamic_rand =lex_eps_dynamic_rand 
+         self.lex_eps_dynamic_madcap =lex_eps_dynamic_madcap 
+         self.lex_meta=lex_meta
+
+         # classification
+         self.classification =classification 
+         self.class_bool =class_bool 
+         self.class_m4gp =class_m4gp 
+         self.class_prune =class_prune 
+         self.stop_condition=stop_condition
+         self.stop_threshold =stop_threshold 
+         self.print_protected_operators =print_protected_operators 
+         self.return_pop =return_pop 
+         self.scoring_function=scoring_function
+         self.selection=selection
+
+         #seed
+         self.random_state = random_state
+         self.seeds = seeds
+
+
+    # def get_params(self, deep=True):
+    #     return {k:v for k,v in self.__dict__.items() if not k.endswith('_')}
+
+    def _init(self):
+        """Tweaks parameters to harmonize with ellen"""
+        np.random.seed(self.random_state)
+
+        ellen_params = self.get_params()
+        print('ellen_params:',ellen_params)
+        # set sel number from selection
+        ellen_params['sel'] = {'tournament': 1,
+                            'dc':2,'lexicase': 3,
+                            'epsilon_lexicase': 3,
+                            'afp': 4,
+                            'rand': 5,
+                            None: 1}[self.selection]
+        if self.scoring_function is None:
+            if self.fit_type:
+                self.scoring_function_ = {'MAE':mean_absolute_error,
                                          'MSE':mean_squared_error,
                                          'R2':r2_score,
                                          'VAF':explained_variance_score,
                                          'combo':mean_absolute_error,
                                          'F1':accuracy_score,
-                                         'F1W':accuracy_score}[fit_type]
-            elif classification:
-                # self.fit_type = 'MAE'
-                self.scoring_function = accuracy_score
+                                         'F1W':accuracy_score}[self.fit_type]
+            elif self.classification:
+                self.scoring_function_ = accuracy_score
             else:
-                self.scoring_function = mean_squared_error
+                self.scoring_function_ = mean_squared_error
         else:
-            self.scoring_function = scoring_function
+            self.scoring_function_ = self.scoring_function
 
-        self.random_state = random_state
-        self.selection  = selection
-        self.prto_arch_on = prto_arch_on
-        self.AR = AR
-        self.verbosity = verbosity
+        #default to M4GP in the case no classifier specified
+        if self.classification and not self.class_m4gp and not self.class_bool:
+            ellen_params['class_m4gp'] = True
+        elif not self.classification:
+            ellen_params['class_m4gp'] = False
+
+        if self.op_weight:
+            assert len(self.op_weight) == len(self.op_list)
+            ellen_params['weight_ops_on'] = True
+
+        if self.lex_meta:
+            ellen_params['lex_metacases'] = self.lex_meta.split(',')
+
+        if self.selection=='epsilon_lexicase':
+            ellen_params['lex_eps_error_mad'] = True
+
         self.best_estimator_ = []
-        self.hof = []
-        self.return_pop = return_pop
-        #convert m4gp argument to m3gp used in ellenGP
-        if classification and not class_m4gp and not class_bool:
-            #default to M4GP in the case no classifier specified
-            self.class_m4gp = True
-        elif not classification:
-            self.class_m4gp = False
+        self.hof_ = []
 
-        # set seeds
-        if seeds:
-            self.seeds = seeds.split(',')
+        for k in list(ellen_params.keys()):
+            if ellen_params[k] is None:
+                del ellen_params[k]
 
-        # set op_list
-        if ops:
-            self.op_list = ops.split(',')
-        if ops_w:
-            self.weight_ops_on = True
-            self.op_weight = [float(x) for x in ops_w.split(',')]
-
-        if lex_meta:
-            self.lex_metacases = lex_meta.split(',')
+        return ellen_params
 
     def fit(self, features, labels):
         """Fit model to data"""
-        # set sel number from selection
-        self.sel = {'tournament': 1,'dc':2,'lexicase': 3,'epsilon_lexicase': 3,
-                    'afp': 4,'rand': 5,None: 1}[self.selection]
-
-        if self.selection=='epsilon_lexicase':
-            self.lex_eps_error_mad = True
-
-        np.random.seed(self.random_state)
         # get parameters
-        params = dict(self.__dict__)
-
-        for k in list(params.keys()):
-            if params[k] is None:
-                del params[k]
+        self.ellen_params_ = self._init() 
 
         if self.prto_arch_on:
             # split data into training and internal validation for choosing
@@ -162,42 +456,38 @@ class ellyn(BaseEstimator):
                 # if classification, make the train/test split even across class
                 if self.classification:
                     stratify = labels
-                    train_i, val_i = train_test_split(np.arange(features.shape[0]),
-                                                stratify=stratify,
-                                                train_size=0.9,
-                                                test_size=0.1,
-                                                random_state=self.random_state)
+                    train_i, val_i = train_test_split(
+                            np.arange(features.shape[0]),
+                            stratify=stratify,
+                            train_size=0.9,
+                            test_size=0.1,
+                            random_state=self.random_state)
                     features = features[list(train_i)+list(val_i)]
                     labels = labels[list(train_i)+list(val_i)]
-                params['train'] = True
-                params['train_pct'] = 0.9
+                self.ellen_params_['train'] = True
+                self.ellen_params_['train_pct'] = 0.9
 
         result = []
         if self.verbosity>1:
             print(10*'=','params',10*'=',sep='\n')
-            for key,item in params.items():
+            for key,item in self.ellen_params_.items():
                 print(key,':',item)
         # run ellenGP
-        elgp.runEllenGP(params,
+        elgp.runEllenGP(self.ellen_params_,
                         np.asarray(features,dtype=np.float32,order='C'),
                         np.asarray(labels,dtype=np.float32,order='C'),
                         result)
         # print("best program:",self.best_estimator_)
-        if self.AR: # set defaults
-            if not self.AR_na: self.AR_na = 0
-            if not self.AR_nka: self.AR_nka = 1
-            if not self.AR_nb: self.AR_nb = 0
-            if not self.AR_nkb: self.AR_nkb = 0
 
         if self.prto_arch_on or self.return_pop:
             # a set of models is returned. choose the best
             if self.verbosity>0: print('Evaluating archive set...')
             # unpack results into model, train and test fitness
-            self.hof = [r[0] for r in result]
+            self.hof_ = [r[0] for r in result]
             self.fit_t = [r[1] for r in result]
             self.fit_v = [r[2] for r in result]
             # best estimator has lowest internal validation score
-            self.best_estimator_ = self.hof[np.argmin(self.fit_v)]
+            self.best_estimator_ = self.hof_[np.argmin(self.fit_v)]
         else:
             # one model is returned
             self.best_estimator_ = result
@@ -213,7 +503,7 @@ class ellyn(BaseEstimator):
         if self.verbosity>0:
              print("final model(s):")
              if self.prto_arch_on or self.return_pop:
-                 for m in self.hof[::-1]:
+                 for m in self.hof_[::-1]:
                      if m is self.best_estimator_:
                          print('[best]',self.stack_2_eqn(m),sep='\t')
                      else:
@@ -221,9 +511,12 @@ class ellyn(BaseEstimator):
              else:
                  print('best model:',self.stack_2_eqn(self.best_estimator_))
 
+        return self
 
-    def predict(self, testing_features,ic=None):
-        """predict on a holdout data set."""
+    def predict(self, testing_features, ic=None):
+        """predict on a holdout data set.
+        ic: initial conditions, needed for dynamic models
+        """
         # print("best_inds:",self._best_inds)
         # print("best estimator size:",self.best_estimator_.coef_.shape)
         # tmp = self._out(self.best_estimator_,testing_features)
@@ -257,7 +550,7 @@ class ellyn(BaseEstimator):
         # print("test features shape:",testing_features.shape)
         # print("testing labels shape:",testing_labels.shape)
         yhat = self.predict(testing_features,ic)
-        return self.scoring_function(testing_labels,yhat)
+        return self.scoring_function_(testing_labels,yhat)
 
     def export(self, output_file_name):
         """does nothing currently"""
@@ -432,14 +725,14 @@ class ellyn(BaseEstimator):
 
     def plot_archive(self):
         """plots pareto archive in terms of model accuracy and complexity"""
-        if not self.hof:
+        if not self.hof_:
             raise(ValueError,"no archive to print")
         else:
             import matplotlib.pyplot as plt
 
             f_t = np.array(self.fit_t)[::-1]
             f_v = np.array(self.fit_v)[::-1]
-            m_v = self.hof[::-1]
+            m_v = self.hof_[::-1]
 
             # lines
             plt.plot(f_t,np.arange(len(f_t)),'b')
@@ -470,13 +763,13 @@ class ellyn(BaseEstimator):
         """
         out = 'model\tcomplexity\ttrain\ttest\n'
 
-        if not self.hof:
+        if not self.hof_:
             raise(ValueError,"no archive to print")
             return 0
            
         f_t = np.array(self.fit_t)[::-1]
         f_v = np.array(self.fit_v)[::-1]
-        m_v = self.hof[::-1]
+        m_v = self.hof_[::-1]
 
         for i,(m,f1,f2) in enumerate(zip(m_v,f_t,f_v)):
             out += '\t'.join([str(self.stack_2_eqn(m)),
@@ -680,7 +973,7 @@ def main():
     parser.add_argument('-ops', action='store', dest='ops', default=None,
                     type=str, help='Operator list separated by commas (no spaces!). Default: +,-,*,/,n,v. available operators: n v + - * / sin cos log exp sqrt = ! < <= > >= if-then if-then-else & |')
 
-    parser.add_argument('-ops_w', action='store', dest='ops_w', default=None,
+    parser.add_argument('-op_weight', action='store', dest='op_weight', default=None,
                     help='Operator weights for each element in operator list, separated by commas (no spaces!). If not specified all operators have the same weights.')
 
     parser.add_argument('-constants', nargs = '*', action='store', dest='cvals', default=None,
@@ -824,15 +1117,7 @@ def main():
     #                     help='Show ellyn\'s version number and exit.')
 
     args = parser.parse_args()
-    #
-    # if args.VERBOSITY >= 2:
-    #     print('\nellyn settings:')
-    #     for arg in sorted(args.__dict__):
-    #         if arg == 'DISABLE_UPDATE_CHECK':
-    #             continue
-    #         print('{}\t=\t{}'.format(arg, args.__dict__[arg]))
-    #     print('')
-    # pdb.set_trace()
+
     # load data from csv file
     if args.INPUT_SEPARATOR is None:
         input_data = pd.read_csv(args.INPUT_FILE, sep=args.INPUT_SEPARATOR,engine='python')
@@ -852,34 +1137,22 @@ def main():
         test_i = input_data.index[round(0.75*len(input_data.index)):]
     else:
         train_i, test_i = train_test_split(input_data.index,
-                                                        stratify = None,#  stratify=input_data['label'].values,
-                                                         train_size=0.75,
-                                                         test_size=0.25,
-                                                         random_state=random_state)
+                                           stratify = None,
+                                           train_size=0.75,
+                                           test_size=0.25,
+                                           random_state=random_state)
 
     training_features = np.array(input_data.loc[train_i].drop('label', axis=1).values,dtype=np.float32, order='C')
     training_labels = np.array(input_data.loc[train_i, 'label'].values,dtype=np.float32,order='C')
-    # training_features = np.array(input_data.drop('label', axis=1).values,dtype=np.float32, order='C')
-    # training_labels = np.array(input_data['label'].values,dtype=np.float32,order='C')
     testing_features = input_data.loc[test_i].drop('label', axis=1).values
     testing_labels = input_data.loc[test_i, 'label'].values
-    learner = ellyn(**args.__dict__)
-    # learner = ellyn(generations=args.GENERATIONS, population_size=args.POPULATION_SIZE,
-    #             mutation_rate=args.MUTATION_RATE, crossover_rate=args.CROSSOVER_RATE,
-    #             machine_learner = args.MACHINE_LEARNER, min_depth = args.MIN_DEPTH,
-    #             max_depth = args.MAX_DEPTH, sel = args.SEL, tourn_size = args.TOURN_SIZE,
-    #             seed_with_ml = args.SEED_WITH_ML, op_weight = args.OP_WEIGHT,
-    #             erc = args.ERC, random_state=args.random_state, verbosity=args.VERBOSITY,
-    #             disable_update_check=args.DISABLE_UPDATE_CHECK,fit_choice = args.FIT_CHOICE)
 
+    learner = ellyn(**args.__dict__)
     learner.fit(training_features, training_labels)
 
     if args.verbosity >= 1:
         print('\nTraining accuracy: {}'.format(learner.score(training_features, training_labels)))
         print('Holdout accuracy: {}'.format(learner.score(testing_features, testing_labels)))
-
-    # if args.OUTPUT_FILE != '':
-    #     learner.export(args.OUTPUT_FILE)
 
 
 if __name__ == '__main__':

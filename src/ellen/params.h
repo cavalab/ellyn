@@ -687,7 +687,7 @@ struct params {
 		if (d.has_key("lex_eps_error_mad"))
 			lex_eps_error_mad = extract<bool>(d["lex_eps_error_mad"]);
 		if (d.has_key("lex_epsilon"))
-			lex_epsilon = extract<bool>(d["lex_epsilon"]);
+			lex_epsilon = extract<float>(d["lex_epsilon"]);
 		if (d.has_key("lex_eps_global"))
 			lex_eps_global = extract<bool>(d["lex_eps_global"]);
 		if (d.has_key("lex_eps_dynamic"))
@@ -966,10 +966,13 @@ struct params {
 		if (!train) train_pct=1;
 
 		// turn on lex_eps_global if an epsilon method is not used
-		if (!lex_eps_global && !(lex_eps_std || lex_eps_error_mad || lex_eps_target_mad || lex_eps_error || lex_eps_target ))
+		if (!lex_eps_global 
+            && !(lex_eps_std || lex_eps_error_mad || lex_eps_target_mad 
+                 || lex_eps_error || lex_eps_target )
+           )
 			lex_eps_global = true;
 
-		// make min_len equal the number of classes if m3gp is used
+		// make min_len equal the number of classes if m4gp is used
 		if(class_m4gp && min_len < number_of_classes)
 			min_len = number_of_classes;
 

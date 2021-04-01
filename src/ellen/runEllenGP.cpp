@@ -538,7 +538,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 		if (!p.savename.empty())
 			logname = p.resultspath + '/' + p.savename + ".log";
 		else
-	  	logname = p.resultspath + '\\' + "ellyn_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
+	  	    logname = p.resultspath + '\\' + "ellyn_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
 	#else
 		if (!p.savename.empty())
 			logname = p.resultspath + '/' + p.savename + ".log";
