@@ -4,6 +4,7 @@ import subprocess
 import os
 import sys
 from glob import glob
+import numpy as np
 
 # SOURCES = sorted(list(glob('ellyn/ellen/*.cpp')))
 SOURCES = [
@@ -51,7 +52,7 @@ pyversion_p = str(pymajor)+ '.' + str(pyminor)
 
 INCLUDE = [CONDA_PATH + '/include/eigen3',
            CONDA_PATH + '/include/', 
-           CONDA_PATH + '/lib/python'+pyversion_p+'/site-packages/numpy/core/include/'
+           np.get_include()
           ]
 LIB = [CONDA_PATH + '/lib','-lpython3']
 COMPILE_ARGS = ['-std=c++0x','-fopenmp', 
