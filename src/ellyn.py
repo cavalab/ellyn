@@ -459,13 +459,13 @@ class ellyn(BaseEstimator):
                     train_i, val_i = train_test_split(
                             np.arange(features.shape[0]),
                             stratify=stratify,
-                            train_size=0.9,
-                            test_size=0.1,
+                            train_size=0.8,
+                            test_size=0.2,
                             random_state=self.random_state)
                     features = features[list(train_i)+list(val_i)]
                     labels = labels[list(train_i)+list(val_i)]
                 self.ellen_params_['train'] = True
-                self.ellen_params_['train_pct'] = 0.9
+                self.ellen_params_['train_pct'] = 0.8
 
         result = []
         if self.verbosity>1:
