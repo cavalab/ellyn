@@ -390,7 +390,6 @@ class ellyn(BaseEstimator):
         np.random.seed(self.random_state)
 
         ellen_params = self.get_params()
-        print('ellen_params:',ellen_params)
         # set sel number from selection
         ellen_params['sel'] = {'tournament': 1,
                             'dc':2,'lexicase': 3,
@@ -437,6 +436,12 @@ class ellyn(BaseEstimator):
             if ellen_params[k] is None:
                 del ellen_params[k]
 
+        if self.prto_arch_on:
+            self.ellen_params_['train'] = True
+            self.ellen_params_['train_pct'] = 0.8
+
+        if self.verbosity > 0:
+            print('ellen_params:',ellen_params)
         return ellen_params
 
     def fit(self, features, labels):
@@ -444,28 +449,16 @@ class ellyn(BaseEstimator):
         # get parameters
         self.ellen_params_ = self._init() 
 
-        if self.prto_arch_on:
-            # split data into training and internal validation for choosing
-            # final model
-            if self.AR:
-                # don't shuffle the rows of ordered data
-                train_i = np.arange(round(features.shape[0]*.75))
-                val_i = np.arange(round(features.shape[0]*.75),features.shape[0])
-            else:
-                stratify=None
-                # if classification, make the train/test split even across class
-                if self.classification:
-                    stratify = labels
-                    train_i, val_i = train_test_split(
-                            np.arange(features.shape[0]),
-                            stratify=stratify,
-                            train_size=0.8,
-                            test_size=0.2,
-                            random_state=self.random_state)
-                    features = features[list(train_i)+list(val_i)]
-                    labels = labels[list(train_i)+list(val_i)]
-                self.ellen_params_['train'] = True
-                self.ellen_params_['train_pct'] = 0.8
+        if self.prto_arch_on and self.classification:
+            # if classification, make the train/test split even across class
+            train_i, val_i = train_test_split(
+                    np.arange(features.shape[0]),
+                    stratify=labels,
+                    train_size=0.8,
+                    test_size=0.2,
+                    random_state=self.random_state)
+            features = features[list(train_i)+list(val_i)]
+            labels = labels[list(train_i)+list(val_i)]
 
         result = []
         if self.verbosity>1:
