@@ -877,8 +877,23 @@ struct params {
 				op_arity.push_back(3);
 				return_type.push_back('b');
 			}
+			else if (op_list.at(i).compare("asin")==0)
+			{
+				op_choice.push_back(25);
+				op_arity.push_back(1);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("acos")==0)
+			{
+				op_choice.push_back(26);
+				op_arity.push_back(1);
+				return_type.push_back('f');
+			}
 			else
-				cout << "bad command (load params op_choice)" << "\n";
+            {
+				cout << "bad operator (load params op_choice): " 
+                     << op_list.at(i) << " not found\n";
+            }
 		}
 
 

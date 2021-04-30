@@ -146,6 +146,9 @@ void printGenome(tribe& T,int gen,string& logname,Data& d,params& p)
 				 tmp=std::to_string(static_cast<long long>(k+10));
 				 out = tmp;
 				 break;
+            default:
+                 out="undefined";
+                 break;
 			 }
 			  gout_all << float(float(i)/float(T.pop.size())) << "," << y/p.max_len << "," << (log(1+T.pop[i].fitness)-min_fit)/(max_fit-min_fit) << "," << (float(T.pop[i].age)-min_age)/(max_age-min_age) << "," << out << "," << T.pop[i].line[j].on << "\n";
 			 ++y;

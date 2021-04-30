@@ -26,6 +26,8 @@ struct op_s {
 	{")", 0, ASSOC_NONE},
 	{"sin",10,ASSOC_RIGHT},
 	{"cos",10,ASSOC_RIGHT},
+	{"asin",10,ASSOC_RIGHT},
+	{"acos",10,ASSOC_RIGHT},
 	{"exp",10,ASSOC_RIGHT},
 	{"log",10,ASSOC_RIGHT}
 };
@@ -77,9 +79,15 @@ else if (ch.compare("*")==0)
 else if(ch.compare("sin")==0)
 	//eqnstack.push_back(shared_ptr<node>(new n_sin()));
 	eqnstack.push_back(node('s'));
+else if(ch.compare("asin")==0)
+	//eqnstack.push_back(shared_ptr<node>(new n_sin()));
+	eqnstack.push_back(node('a'));
 else if (ch.compare("cos")==0)
 	//eqnstack.push_back(shared_ptr<node>(new n_cos()));
 	eqnstack.push_back(node('c'));
+else if(ch.compare("acos")==0)
+	//eqnstack.push_back(shared_ptr<node>(new n_sin()));
+	eqnstack.push_back(node('d'));
 else if (ch.compare("exp")==0)
 	//eqnstack.push_back(shared_ptr<node>(new n_exp()));
 	eqnstack.push_back(node('e'));

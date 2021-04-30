@@ -266,6 +266,12 @@ void makeline(ind& newind,params& p,vector<Randclass>& r)
 			case 24: //or
 				newind.line.push_back(node('|'));
 				break;
+			case 25: // asin
+				newind.line.push_back(node('a'));
+				break;
+			case 26: // acos
+				newind.line.push_back(node('d'));
+				break;
 			}
 	}
 	/*while (newind.line.back()->type=='n'||newind.line.back()->type=='v')
@@ -455,6 +461,12 @@ void push_back_node(vector <node>& line, int choice, params& p,vector<Randclass>
 		case 24: //or
 			line.push_back(node('|'));
 			break;
+        case 25: // asin
+            line.push_back(node('a'));
+            break;
+        case 26: // acos
+            line.push_back(node('d'));
+            break;
 	}
 }
 void push_front_node(vector <node>& line, int choice, params& p,vector<Randclass>& r)
@@ -573,6 +585,12 @@ void push_front_node(vector <node>& line, int choice, params& p,vector<Randclass
 		case 24: //or
 			line.insert(line.begin(),node('|'));
 			break;
+        case 25: // asin
+            line.insert(line.begin(),node('a'));
+            break;
+        case 26: // acos
+            line.insert(line.begin(),node('d'));
+            break;
 	}
 }
 int maketree(vector<node>& line, int level, bool exactlevel, int lastnode,char type,params& p,vector<Randclass>& r)

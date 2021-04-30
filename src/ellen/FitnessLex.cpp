@@ -73,7 +73,11 @@ void FitnessLex(vector<ind>& pop,params& p,data& d,state& s)
 
 					if (pop.at(count).line.at(m)->type=='/')
 						pop.at(count).complexity++;
-					else if (pop.at(count).line.at(m)->type=='s' || pop.at(count).line.at(m)->type=='c')
+					else if (pop.at(count).line.at(m)->type=='s' 
+                             || pop.at(count).line.at(m)->type=='c'
+                             || pop.at(count).line.at(m)->type=='a'
+                             || pop.at(count).line.at(m)->type=='d'
+                             )
 						pop.at(count).eff_size=pop.at(count).eff_size+2;
 					else if (pop.at(count).line.at(m)->type=='e' || pop.at(count).line.at(m)->type=='l')
 						pop.at(count).eff_size=pop.at(count).eff_size+3;

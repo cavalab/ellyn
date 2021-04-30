@@ -36,7 +36,7 @@ public:
 	:tag(boost::uuids::random_generator()())
 	{
 		type=stype;
-		if (type=='s' || type=='c' || type=='e' || type=='l' || type=='q' || type=='2' || type=='3'){
+		if (type=='a' || type =='d' || type=='s' || type=='c' || type=='e' || type=='l' || type=='q' || type=='2' || type=='3'){
 			arity_float = 1;
 			arity_bool=0;
 			return_type='f';
@@ -108,7 +108,7 @@ private:
 			c = 5;
 		else if (type=='e' || type=='l' || type=='^')
 			c = 4;
-		else if (type=='s' || type=='c' || type=='q' || type=='2' || type=='3')
+		else if (type=='a' || type=='d' || type=='s' || type=='c' || type=='q' || type=='2' || type=='3')
 			c = 3;
 		else if (type=='/' || type=='<' || type=='>' || type=='{' || type=='}' || type=='&' || type=='|')
 			c = 2;
