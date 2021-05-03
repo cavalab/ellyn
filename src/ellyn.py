@@ -180,7 +180,7 @@ class ellyn(BaseEstimator):
 		 nt = 1,
 
 		 # lexicase selection
-		 lexpool = 1, # fraction of pop to use in selection events
+		 lexpool = 1.0, # fraction of pop to use in selection events
 		 lexage = False, # use afp survival after lexicase selection
 		 lex_class = False, # use class-based fitness rather than error
                  # errors within fixed epsilon of the best error are pass, 
@@ -437,8 +437,8 @@ class ellyn(BaseEstimator):
                 del ellen_params[k]
 
         if self.prto_arch_on:
-            self.ellen_params_['train'] = True
-            self.ellen_params_['train_pct'] = 0.8
+            ellen_params['train'] = True
+            ellen_params['train_pct'] = 0.8
 
         if self.verbosity > 0:
             print('ellen_params:',ellen_params)

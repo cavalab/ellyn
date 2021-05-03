@@ -366,7 +366,7 @@ struct params {
 		//seed = 0;
 
 		// lexicase selection
-		lexpool = 1;
+		lexpool = 1.0;
 		lexage = 0;
 		lex_class = 0;
 		lex_eps_error = false; // errors within episilon of the best error are pass, otherwise fail
@@ -553,7 +553,11 @@ struct params {
 		if (d.has_key("eHC_slim"))
 			eHC_slim = extract<bool>(d["eHC_slim"]);
 		if (d.has_key("lexpool"))
+        {
+            std::cout << "getting lexpool\n";
 			lexpool = extract<float>(d["lexpool"]);
+            std::cout << "lexpool = " << lexpool << "\n";
+        }
 		if (d.has_key("prto_arch_on"))
 			prto_arch_on = extract<bool>(d["prto_arch_on"]);
 		if (d.has_key("prto_arch_size"))
