@@ -45,6 +45,7 @@ class ellyn(BaseEstimator):
 		 popsize=500, #population size
 		 limit_evals=False, # limit evals instead of generations
 		 max_evals=0, # maximum number of evals before termination (only active if limit_evals is true)
+                 time_limit=None, # max time to run in seconds (zero=no limit)
 		 init_trees= True,
                  selection='tournament',
 		 tourn_size=2,
@@ -234,6 +235,7 @@ class ellyn(BaseEstimator):
          self.popsize=popsize 
          self.limit_evals=limit_evals 
          self.max_evals=max_evals 
+         self.time_limit=time_limit
          self.init_trees=init_trees
          # Generation Settings
          self.selection=selection

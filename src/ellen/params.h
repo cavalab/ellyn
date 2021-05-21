@@ -38,6 +38,7 @@ struct params {
 	int popsize; //population size
 	bool limit_evals; // limit evals instead of generations
 	long long max_evals; // maximum number of evals before termination (only active if limit_evals is true)
+    int time_limit; // maximum time in seconds to train
 
 	// Generation Settings
 	int sel; // 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
@@ -228,6 +229,7 @@ struct params {
 		popsize=500; //population size
 		limit_evals=false; // limit evals instead of generations
 		max_evals=0; // maximum number of evals before termination (only active if limit_evals is true)
+        time_limit= 0; // maximum time in seconds to train
 		init_trees=1;
 		// Generation Settings
 		sel=1; // 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
@@ -604,6 +606,8 @@ struct params {
 			limit_evals = extract<bool>(d["limit_evals"]);
 		if (d.has_key("max_evals"))
 			max_evals = extract<long long>(d["max_evals"]);
+		if (d.has_key("time_limit"))
+			time_limit = extract<int>(d["time_limit"]);
 		if (d.has_key("print_homology"))
 			print_homology = extract<bool>(d["print_homology"]);
 		if (d.has_key("print_log"))

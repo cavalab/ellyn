@@ -75,7 +75,7 @@ class BuildExt(build_ext):
         super().build_extensions()
 
 setup(name='ellyn',
-      version='0.2.5',
+      version='0.2.6',
       description='A Python-wrapped Genetic Programming System',
       author='William La Cava',
       author_email='williamlacava@gmail.com',
