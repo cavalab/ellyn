@@ -1,7 +1,7 @@
 ellyn
 =======
 
-ellyn is a Python-wrapped version of [ellenGP](http://www.github.com/lacava/ellen) that allows ellenGP to play nice with sci-kitlearn. ellyn's parameter settings are totally accessible from the commandline, whereas ellenGP relies on a parameter file. This can make batch jobs less tedious. 
+ellyn is a Python-wrapped version of [ellenGP](http://www.github.com/lacava/ellen) that allows ellenGP to play nice with scikit-learn. ellyn's parameter settings are totally accessible from the commandline, whereas ellenGP relies on a parameter file. This can make batch jobs less tedious. 
 
 ellyn is a genetic programming tool for symbolic regression and multi-class classification that incorporates epigenetic learning and uses a stack-based, linear representation.
 
