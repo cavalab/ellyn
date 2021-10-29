@@ -18,7 +18,7 @@ Using conda and the included environment file is easiest.
 
 ```bash
 
-git clone http://github.com/EpistasisLab/ellyn
+git clone http://github.com/cavalab/ellyn
 
 cd ellyn
 
