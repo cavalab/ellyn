@@ -306,9 +306,17 @@ void eval(node& n,vector<float>& stack_float,vector<bool>& stack_bool)
 			n1 = stack_float.back(); stack_float.pop_back();
 			stack_float.push_back(sin(n1));
 			break;
+		case 'a':
+			n1 = stack_float.back(); stack_float.pop_back();
+			stack_float.push_back(asin(n1));
+			break;
 		case 'c':
 			n1 = stack_float.back(); stack_float.pop_back();
 			stack_float.push_back(cos(n1));
+			break;
+		case 'd':
+			n1 = stack_float.back(); stack_float.pop_back();
+			stack_float.push_back(acos(n1));
 			break;
 		case 'e':
 			n1 = stack_float.back(); stack_float.pop_back();

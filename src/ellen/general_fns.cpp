@@ -217,6 +217,10 @@ void MutInstruction(ind& newind,int loc,params& p,vector<Randclass>& r,Data& d)
 			break;
 		case 24: //or
 			newind.line.at(loc) = node('|');
+		case 25: //asin
+			newind.line.at(loc) = node('a');
+		case 26: //acos
+			newind.line.at(loc) = node('d');
 			break;
 		}
 

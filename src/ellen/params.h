@@ -38,6 +38,7 @@ struct params {
 	int popsize; //population size
 	bool limit_evals; // limit evals instead of generations
 	long long max_evals; // maximum number of evals before termination (only active if limit_evals is true)
+    int time_limit; // maximum time in seconds to train
 
 	// Generation Settings
 	int sel; // 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
@@ -228,6 +229,7 @@ struct params {
 		popsize=500; //population size
 		limit_evals=false; // limit evals instead of generations
 		max_evals=0; // maximum number of evals before termination (only active if limit_evals is true)
+        time_limit= 0; // maximum time in seconds to train
 		init_trees=1;
 		// Generation Settings
 		sel=1; // 1: tournament 2: deterministic crowding 3: lexicase selection 4: age-fitness pareto algorithm
@@ -366,7 +368,7 @@ struct params {
 		//seed = 0;
 
 		// lexicase selection
-		lexpool = 1;
+		lexpool = 1.0;
 		lexage = 0;
 		lex_class = 0;
 		lex_eps_error = false; // errors within episilon of the best error are pass, otherwise fail
@@ -553,7 +555,11 @@ struct params {
 		if (d.has_key("eHC_slim"))
 			eHC_slim = extract<bool>(d["eHC_slim"]);
 		if (d.has_key("lexpool"))
+        {
+            std::cout << "getting lexpool\n";
 			lexpool = extract<float>(d["lexpool"]);
+            std::cout << "lexpool = " << lexpool << "\n";
+        }
 		if (d.has_key("prto_arch_on"))
 			prto_arch_on = extract<bool>(d["prto_arch_on"]);
 		if (d.has_key("prto_arch_size"))
@@ -600,6 +606,8 @@ struct params {
 			limit_evals = extract<bool>(d["limit_evals"]);
 		if (d.has_key("max_evals"))
 			max_evals = extract<long long>(d["max_evals"]);
+		if (d.has_key("time_limit"))
+			time_limit = extract<int>(d["time_limit"]);
 		if (d.has_key("print_homology"))
 			print_homology = extract<bool>(d["print_homology"]);
 		if (d.has_key("print_log"))
@@ -687,7 +695,7 @@ struct params {
 		if (d.has_key("lex_eps_error_mad"))
 			lex_eps_error_mad = extract<bool>(d["lex_eps_error_mad"]);
 		if (d.has_key("lex_epsilon"))
-			lex_epsilon = extract<bool>(d["lex_epsilon"]);
+			lex_epsilon = extract<float>(d["lex_epsilon"]);
 		if (d.has_key("lex_eps_global"))
 			lex_eps_global = extract<bool>(d["lex_eps_global"]);
 		if (d.has_key("lex_eps_dynamic"))
@@ -877,8 +885,23 @@ struct params {
 				op_arity.push_back(3);
 				return_type.push_back('b');
 			}
+			else if (op_list.at(i).compare("asin")==0)
+			{
+				op_choice.push_back(25);
+				op_arity.push_back(1);
+				return_type.push_back('f');
+			}
+			else if (op_list.at(i).compare("acos")==0)
+			{
+				op_choice.push_back(26);
+				op_arity.push_back(1);
+				return_type.push_back('f');
+			}
 			else
-				cout << "bad command (load params op_choice)" << "\n";
+            {
+				cout << "bad operator (load params op_choice): " 
+                     << op_list.at(i) << " not found\n";
+            }
 		}
 
 
@@ -966,10 +989,13 @@ struct params {
 		if (!train) train_pct=1;
 
 		// turn on lex_eps_global if an epsilon method is not used
-		if (!lex_eps_global && !(lex_eps_std || lex_eps_error_mad || lex_eps_target_mad || lex_eps_error || lex_eps_target ))
+		if (!lex_eps_global 
+            && !(lex_eps_std || lex_eps_error_mad || lex_eps_target_mad 
+                 || lex_eps_error || lex_eps_target )
+           )
 			lex_eps_global = true;
 
-		// make min_len equal the number of classes if m3gp is used
+		// make min_len equal the number of classes if m4gp is used
 		if(class_m4gp && min_len < number_of_classes)
 			min_len = number_of_classes;
 

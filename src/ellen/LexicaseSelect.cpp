@@ -80,7 +80,6 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 		}
 	}
 
-
 	//boost::progress_timer timer;
 	//vector<float> fitcompare;
 	vector<int> pool; // pool from which to choose parent. normally it is set to the whole population.
@@ -92,13 +91,10 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 	else
 		numcases = d.vals.size()*p.train_pct + p.lex_metacases.size();
 
-	if (p.lexpool==1){
-		for (int i=0;i<pop.size();++i){
-			if(pop[i].error.size() == numcases)
-				pool.push_back(i);
-		}
+	for (int i=0;i<p.lexpool*pop.size();++i){
+		if(pop[i].error.size() == numcases)
+			pool.push_back(i);
 	}
-
 	vector <int> starting_pool = pool;
 	vector <int> case_order;
 	for(int i=0;i<pop[pool[0]].error.size();++i)
@@ -111,7 +107,7 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 	int h;
 	// vector<int> num_passes(numcases-p.lex_metacases.size(),0);
 	int tmp;
-  vector<float> epsilon; // epsilon values for each case
+    vector<float> epsilon; // epsilon values for each case
 
 	if (p.lex_eps_error_mad) { // errors within mad of the best error pass
 									 // get minimum error on each case
@@ -164,11 +160,13 @@ void LexicaseSelect(vector<ind>& pop,vector<unsigned int>& parloc,params& p,vect
 				tmp = r[omp_get_thread_num()].rnd_int(0,pop.size()-1);
 				int n = 0;
 				while (pop[tmp].error.empty() && n < pop.size()) {
+                    std::cout << "pop at " << tmp << " has empty error?\n";
 					tmp = r[omp_get_thread_num()].rnd_int(0, pop.size() - 1);
 					n += 1;
 				}
 				pool.push_back(tmp);
 			}
+            std::cout << "done";
 		}
 		else //otherwise use the whole population for selection
 			pool = starting_pool;

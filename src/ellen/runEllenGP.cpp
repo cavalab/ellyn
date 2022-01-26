@@ -146,6 +146,9 @@ void printGenome(tribe& T,int gen,string& logname,Data& d,params& p)
 				 tmp=std::to_string(static_cast<long long>(k+10));
 				 out = tmp;
 				 break;
+            default:
+                 out="undefined";
+                 break;
 			 }
 			  gout_all << float(float(i)/float(T.pop.size())) << "," << y/p.max_len << "," << (log(1+T.pop[i].fitness)-min_fit)/(max_fit-min_fit) << "," << (float(T.pop[i].age)-min_age)/(max_age-min_age) << "," << out << "," << T.pop[i].line[j].on << "\n";
 			 ++y;
@@ -538,7 +541,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 		if (!p.savename.empty())
 			logname = p.resultspath + '/' + p.savename + ".log";
 		else
-	  	logname = p.resultspath + '\\' + "ellyn_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
+	  	    logname = p.resultspath + '\\' + "ellyn_" + tmplog + "_" + pname + "_" + dname + "_" + thread + ".log";
 	#else
 		if (!p.savename.empty())
 			logname = p.resultspath + '/' + p.savename + ".log";
@@ -607,6 +610,7 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 			 s.out << "Total Population Size: " << p.popsize << "\n";
 			 if (p.limit_evals) s.out << "Maximum Point Evals: " << p.max_evals << "\n";
 			 else s.out << "Maximum Generations: " << p.g << "\n";
+			 s.out << "Time Limit (s): " << p.time_limit << "\n";
 			 s.out << "Number of log points: " << p.num_log_pts << " (0 means log all points)\n";
 			 if (trials && p.islands){
 				s.out << "WARNING: cannot run island populations in trial mode. This trial will run on one core.\n";
@@ -853,7 +857,9 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 
 				q = omp_get_thread_num();
 
-				while(termits<=term)
+				while(termits<=term
+                      && (p.time_limit == 0 || time.elapsed()/num_islands < p.time_limit )
+                     )
 				{
 
 
@@ -1199,7 +1205,10 @@ void runEllenGP(bp::dict& param_dict, PyObject* features, PyObject* target, bp::
 			if (p.print_genome) printGenome(T,0,logname,d,p);
 			if (p.print_db) printDB(T.pop,logname,d,p);
 
-			while (termits<=term && !stopcondition(T,p,d,s,FE[0]))
+			while (termits<=term 
+                   && !stopcondition(T,p,d,s,FE[0])
+                   && (p.time_limit == 0 || time.elapsed() < p.time_limit )
+                  )
 			{
 
 
