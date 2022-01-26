@@ -111,6 +111,22 @@ Cite
 ellyn has been used in several publications. 
 Cite the one that best represents your use case, or you can cite my dissertation if you're not sure. 
 
+2021
+
+- La Cava, W., Orzechowski, P., Burlacu, B., França, F. O. de, Virgolin, M., Jin, Y., Kommenda, M., & Moore, J. H. (2021). 
+Contemporary Symbolic Regression Methods and their Relative Performance. 
+*Proceedings of the Neural Information Processing Systems Track on Datasets and Benchmarks* (Accepted).
+[arXiv](https://arxiv.org/abs/2107.14351),
+[repo](https://github.com/EpistasisLab/srbench)
+
+2019
+
+- La Cava, W., Silva, S., Danai, K., Spector, L., Vanneschi, L., & Moore, J. H. (2019). 
+Multidimensional genetic programming for multiclass classification. 
+*Swarm and Evolutionary Computation*. 
+[ScienceDirect](https://doi.org/10.1016/j.swevo.2018.03.015),
+[PDF](../pubs/Multiclass_GP_journal_preprint.pdf),
+
 2018
 
  - Orzechowski, P., La Cava, W., & Moore, J. H. (2018). 
