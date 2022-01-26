@@ -30,7 +30,9 @@ In a python script, import ellyn:
 from ellyn import ellyn
 ```
 
-ellyn uses the same nomenclature as [sklearn](http://scikit-learn.org/) supervised learning modules. You can initialize a few learner in python as:
+ellyn uses the same nomenclature as [sklearn](http://scikit-learn.org/) supervised learning modules. 
+By default, ellyn does **regression**. 
+You can initialize a few learner in python as:
 
 ```python
 learner = ellyn()
@@ -40,6 +42,18 @@ or specify the generations, population size and selection algorithm as:
 
 ```python
 learner = ellyn(g = 100, popsize = 25, selection = 'lexicase')
+```
+
+To do **classification**, ellyn implements the M4GP algorithm ([PDF](http://www.williamlacava.com/pubs/Multiclass_GP_journal_preprint.pdf)) for (multi-class) classification. 
+To use it, pass these parameters:
+
+```python 
+learner = ellyn(classification=True, 
+                class_m4gp=True, 
+                prto_arch_on=True,
+                selection='lexicase',
+                fit_type='F1' # can be 'F1' or 'F1W' (weighted F1)
+               )
 ```
 
 Given a set of data with variables X and target Y, fit ellyn using the ```fit()``` method:
