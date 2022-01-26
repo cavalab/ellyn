@@ -23,7 +23,7 @@ python setup.py install
 `environment.yml` lists the package dependencies for ellyn, if you'd like to install them yourself.
 
 Usage
-===
+=====
 In a python script, import ellyn:
 
 ```python
@@ -31,6 +31,10 @@ from ellyn import ellyn
 ```
 
 ellyn uses the same nomenclature as [sklearn](http://scikit-learn.org/) supervised learning modules. 
+
+Regression
+----------
+
 By default, ellyn does **regression**. 
 You can initialize a few learner in python as:
 
@@ -43,6 +47,9 @@ or specify the generations, population size and selection algorithm as:
 ```python
 learner = ellyn(g = 100, popsize = 25, selection = 'lexicase')
 ```
+
+Classification
+--------------
 
 To do **classification**, ellyn implements the M4GP algorithm ([PDF](http://www.williamlacava.com/pubs/Multiclass_GP_journal_preprint.pdf)) for (multi-class) classification. 
 To use it, pass these parameters:

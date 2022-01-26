@@ -1,6 +1,8 @@
 ellyn
 =======
 
+[**Docs**](https://cavalab.github.io/ellyn/) 
+
 ellyn is a Python-wrapped version of [ellenGP](http://www.github.com/lacava/ellen) that allows ellenGP to play nice with scikit-learn. ellyn's parameter settings are totally accessible from the commandline, whereas ellenGP relies on a parameter file. This can make batch jobs less tedious. 
 
 ellyn is a genetic programming tool for symbolic regression and multi-class classification that incorporates epigenetic learning and uses a stack-based, linear representation.
@@ -9,9 +11,8 @@ ellyn also inherits the `BaseEstimator` class used by [sklearn's](http://scikit-
 
 ellyn is also very fast due to its c++ underpinning. As a consequence, there are two library dependencies: [Boost](http://www.boost.org) and [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page), that need to be installed in order to make the ellyn library for python usage.
 
-Head over to the [docs](https://cavalab.github.io/ellyn/) page for more info. 
 
-Install
+Quick Install
 =======
 
 Using conda and the included environment file is easiest.
