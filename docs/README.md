@@ -5,11 +5,11 @@ ellyn is fast because it uses a c++ library to do most of the computation. Howev
 
 Installation
 ============
-These instructions are written for an [anaconda3](https://www.continuum.io/downloads) default python installation, but you can easily modify the paths to point to your installation. 
+These instructions are written for an [anaconda3](https://www.anaconda.com/products/distribution) default python installation, but you can easily modify the paths to point to your installation. 
 
 ```bash
 
-git clone http://github.com/EpistasisLab/ellyn
+git clone https://github.com/cavalab/ellyn
 
 cd ellyn
 
@@ -117,7 +117,7 @@ Cite the one that best represents your use case, or you can cite my dissertation
 Contemporary Symbolic Regression Methods and their Relative Performance. 
 *Proceedings of the Neural Information Processing Systems Track on Datasets and Benchmarks* (Accepted).
 [arXiv](https://arxiv.org/abs/2107.14351),
-[repo](https://github.com/EpistasisLab/srbench)
+[repo](https://github.com/cavalab/srbench)
 
 2019
 
